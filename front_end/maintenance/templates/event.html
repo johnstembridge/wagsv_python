@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>{{ year }} Event {{ event_id }}</h1>
+</div>
+
+<form method="POST">
+    {{ form.csrf_token }}
+    <table width="100%">
+        <tr>
+            <td>{{ form.event.label }}</td><td>{{ form.event }}</td>
+            <td>{{ form.organiser.label }}</td><td>{{ form.organiser }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.date.label }}</td><td>{{ form.date }}</td>
+            <td>{{ form.venue.label }}</td><td>{{ form.venue }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.member_price.label }} £</td><td>{{ form.member_price(size = 6) }}</td>
+            <td>{{ form.guest_price.label }} £</td><td>{{ form.guest_price(size = 6) }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.start_booking.label }}</td><td>{{ form.start_booking }}</td>
+            <td>{{ form.end_booking.label }}</td><td>{{ form.end_booking }}</td>
+        </tr>
+         <tr>
+            <td>{{ form.max.label }}</td><td>{{ form.max(size = 6) }}</td>
+            <td></td>
+        </tr>
+    </table>
+    <h3>Schedule</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>Time</th><th>Item</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in form.schedule %}
+        <tr>
+            <td>{{ item.time }}</td><td>{{ item.text(size=100) }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {{ form.directions.label }}
+    <br>
+    {{ form.directions(rows='5',cols='110') }}
+    <br>
+    {{ form.notes.label }}
+    <br>
+    {{ form.notes(rows='5',cols='110') }}
+    <hr/>
+    {{ form.submit(class="btn btn-primary") }}
+</form>
+{% endblock %}

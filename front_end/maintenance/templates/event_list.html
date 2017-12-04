@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Events {{ year }}</h1>
+</div>
+<form method="POST">
+    {{ form.csrf_token }}
+    <table width="100%" class="table table-striped">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Date</th>
+            <th>Event</th>
+            <th>Venue</th>
+            <th class="text-center">Details</th>
+            <th class="text-center">Result</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in form.event_list %}
+        <tr>
+            <td>{{ item.num.data }}</td>
+            <td>{{ item.date.data }}</td>
+            <td>{{ item.event.data }}</td>
+            <td>{{ item.venue.data }}</td>
+            {%if form.editable.data == 'y' %}
+                <td align="center">
+                    {{ render_link(
+                        url=url_for('edit_event', year=year, event_id=item.num.data),
+                        image=url_for('static', filename='images/go.jpg'),
+                        text='Edit event'
+                    )|safe }}
+                </td>
+                <td align="center">
+                    {{ render_link(
+                        url=url_for('results_event', year=year, event_id=item.num.data),
+                        image=url_for('static', filename='images/go.jpg'),
+                        text='Enter results'
+                    )|safe }}
+                </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <hr/>
+    {%if form.editable.data == 'y' %}
+    {{ form.add_event(class="btn btn-primary") }}
+    {% endif %}
+</form>
+{% endblock %}
