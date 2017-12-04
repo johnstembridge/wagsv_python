@@ -1,7 +1,8 @@
 from flask import Flask, render_template, redirect, url_for, flash
 from flask_wtf import CSRFProtect
 from flask_bootstrap import Bootstrap
-from event_form import EventForm, EventListForm
+from event_list_form import EventListForm
+from event_form import EventForm
 from event_result_form import EventResultsForm
 from event_handicap_form import EventHandicapsForm
 from event_card_form import EventCardForm

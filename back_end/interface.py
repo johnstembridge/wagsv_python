@@ -7,7 +7,10 @@ from data_utilities import encode_date, encode_price, decode_date, decode_price,
     sort_name_list, normalise_name, lookup, force_list, coerce, fmt_date
 from back_end.players import Player, Players
 
-# data_location = r'D:\python\wagsv\data'
+
+# region file_paths
+#
+#  data_location = r'D:\python\wagsv\data'
 data_location = r'C:\Users\jstembridge\PycharmProjects\wagsv\data'
 events_data = r'{}\events.tab'
 bookings_data = r'{}\event{}.csv'
@@ -21,7 +24,6 @@ scores_data = r'scores.tab'
 shots_data = r'shots.tab'
 
 
-# region file_paths
 def events_file(year):
     return os.path.join(data_location, events_data.format(year))
 
