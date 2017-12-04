@@ -11,6 +11,7 @@ class EventItemForm(FlaskForm):
     date = DateField(label='Date')
     event = StringField(label='Event')
     venue = StringField(label='Venue')
+    event_type = HiddenField(label='Event type')
 
 
 class EventListForm(FlaskForm):
@@ -28,6 +29,7 @@ class EventListForm(FlaskForm):
             item_form.date = item['date']
             item_form.event = item['event']
             item_form.venue = item['venue']
+            item_form.event_type = item['type']
             self.event_list.append_entry(item_form)
 
     def get_next_event_id(self, year):

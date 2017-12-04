@@ -30,7 +30,8 @@ class TestData:
         'jacket': '',
         'url': 'www.wsgc.co.uk/',
         'deadline': 'Thursday 18 May',
-        'max': '24'
+        'max': '24',
+        'type': '1'
     }
 
     example_event_record_updated = {
@@ -52,11 +53,15 @@ class TestData:
         'jacket': '',
         'url': 'www.wsgc.co.uk/',
         'deadline': 'Saturday 20 May',
-        'max': '24'
+        'max': '24',
+        'type': '1'
     }
 
     example_event_record_empty = {
-        'num': None, 'date': None, 'venue': None, 'event': None, 'address': None, 'post_code': None, 'phone': None, 'member_price': None, 'guest_price': None, 'schedule': None, 'organiser': None, 'directions': None, 'note': None, 'dinner_price': None, 'dinner_incl': None, 'jacket': None, 'url': None, 'deadline': None, 'max': None
+        'num': None, 'date': None, 'venue': None, 'event': None, 'address': None, 'post_code': None, 'phone': None,
+        'member_price': None, 'guest_price': None, 'schedule': None, 'organiser': None, 'directions': None,
+        'note': None, 'dinner_price': None, 'dinner_incl': None, 'jacket': None, 'url': None, 'deadline': None,
+        'max': None, 'type': None
     }
 
     example_event = {
@@ -86,7 +91,8 @@ class TestData:
         'max': '24',
         'end_booking': datetime.date(2017, 5, 18),
         'start_booking': datetime.date(2017, 5, 8),
-        'notes': 'If you are using Satellite Navigation, do not turn into Water Lane where there is no access to the club. The main entrance to the club is directly off Station Road.'
+        'notes': 'If you are using Satellite Navigation, do not turn into Water Lane where there is no access to the club. The main entrance to the club is directly off Station Road.',
+        'type': '1'
     }
 
     example_event_field = ['Richard Trinick', 'Gerry Robinson', 'John Stembridge', 'Anthony Shutes', 'Richard Latham', 'Mike Dearden', 'Mike Wells', 'Steve Shaw', 'Bob Hill', 'Quintin Heaney', 'Martin Dilke-Wing', 'Richard Latham', 'Peter Berring', 'Gerry McGuffie', 'Rhod James']

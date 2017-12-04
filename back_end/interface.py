@@ -4,8 +4,9 @@ from itertools import groupby
 from operator import itemgetter
 from file_access import get_field, get_record, update_record, get_records, get_file, update_records
 from data_utilities import encode_date, encode_price, decode_date, decode_price, decode_time, coerce_date, \
-    sort_name_list, normalise_name, lookup, force_list, coerce, fmt_date
+    sort_name_list, lookup, force_list, coerce
 from back_end.players import Player, Players
+from enumerations import EventType
 
 
 # region file_paths
@@ -63,6 +64,10 @@ def scores_file():
 def shots_file():
     return os.path.join(data_location, shots_data)
 # endregion
+
+
+def get_all_event_types():
+    return [(e.name, e.name) for e in EventType]
 
 
 def get_all_event_names():
@@ -182,7 +187,8 @@ def get_event_list(year=2017):
                     'num': data['num'],
                     'date': data['date'],
                     'venue': data['venue'],
-                    'event': data['event']
+                    'event': data['event'],
+                    'type': data['type'] if 'type' in data else '1'
                 }
             )
     return events
@@ -199,6 +205,8 @@ def get_event(year, event_id):
     data['start_booking'] = data['date'] - datetime.timedelta(days=14)
     data['member_price'] = decode_price(data['member_price'])
     data['guest_price'] = decode_price(data['guest_price'])
+    data['max'] = data.pop('max')
+    data['event_type'] = EventType(int(data.pop('type'))).name
     data['notes'] = data.pop('note')
     return data
 
@@ -260,12 +268,14 @@ def save_event(year, event_id, data):
     data['num'] = event_id
     data['schedule'] = encode_schedule(data['schedule'])
     data['date'] = encode_date(data['date'])
-    data['deadline'] = data.pop('end_booking')
+    data['deadline'] = encode_date(data['end_booking'])
     data['member_price'] = encode_price(data['member_price'])
     data['guest_price'] = encode_price(data['guest_price'])
     data['start_booking'] = encode_date(data['start_booking'])
-    data['end_booking'] = encode_date(data['end_booking'])  # data.pop('deadline')
+    data['max'] = data.pop('max')
+    data['type'] = EventType[data['event_type']].value
     data['note'] = data.pop('notes')
+    data['directions'] = data.pop('directions')
     update_record(events_file(year), 'num', data)
 
 

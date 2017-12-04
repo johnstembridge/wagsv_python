@@ -34,7 +34,7 @@ class MaintainEvents:
     @app.route('/events/<year>/<event_id>', methods=['GET', 'POST'])
     def edit_event(year, event_id):
         form = EventForm()
-        if form.validate_on_submit():
+        if form.is_submitted():
             if form.save_event(int(year), event_id):
                 flash('Event saved', 'success')
         if not form.is_submitted():

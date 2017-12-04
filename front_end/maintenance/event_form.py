@@ -5,7 +5,7 @@ from wtforms import StringField, SelectField, DecimalField, TextAreaField, Integ
 from wtforms_components import TimeField
 from wtforms.validators import DataRequired
 from wtforms.fields.html5 import DateField
-from interface import get_all_venue_names, get_all_event_names, get_event, save_event
+from interface import get_all_venue_names, get_all_event_types, get_all_event_names, get_event, save_event
 from back_end.players import Players
 
 
@@ -25,6 +25,7 @@ class EventForm(FlaskForm):
     start_booking = DateField(label='Booking Starts', validators=[DataRequired()])
     end_booking = DateField(label='Booking Ends', validators=[DataRequired()])
     max = IntegerField(label='Maximum', validators=[DataRequired()])
+    event_type = SelectField(label='Event Type', validators=[DataRequired()], choices=[('', 'Choose event type...')] + get_all_event_types())
     schedule = FieldList(FormField(ScheduleForm))
     directions = TextAreaField(label='Directions', default='')
     notes = TextAreaField(label='Notes', default='')
@@ -41,6 +42,7 @@ class EventForm(FlaskForm):
         self.start_booking.data = event['start_booking']
         self.end_booking.data = event['end_booking']
         self.max.data = event['max']
+        self.event_type.data = event['event_type']
         self.directions.data = event['directions']
         self.notes.data = event['notes']
         for item in event['schedule']:
@@ -64,11 +66,11 @@ class EventForm(FlaskForm):
             'start_booking': self.start_booking.data,
             'end_booking': self.end_booking.data,
             'max': self.max.data,
+            'event_type': self.event_type.data,
             'directions': self.directions.data,
             'notes': self.notes.data,
             'schedule': []
         }
-        # event['max'] = form.max.data
         for item in self.schedule.data:
             event['schedule'].append(item)
 

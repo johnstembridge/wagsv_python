@@ -33,13 +33,15 @@
                         text='Edit event'
                     )|safe }}
                 </td>
-                <td align="center">
-                    {{ render_link(
-                        url=url_for('results_event', year=year, event_id=item.num.data),
-                        image=url_for('static', filename='images/go.jpg'),
-                        text='Enter results'
-                    )|safe }}
-                </td>
+                {%if item.event_type.data != '0' %}
+                    <td align="center">
+                        {{ render_link(
+                            url=url_for('results_event', year=year, event_id=item.num.data),
+                            image=url_for('static', filename='images/go.jpg'),
+                            text='Enter results'
+                        )|safe }}
+                    </td>
+                {% endif %}
             {% endif %}
         </tr>
         {% endfor %}
