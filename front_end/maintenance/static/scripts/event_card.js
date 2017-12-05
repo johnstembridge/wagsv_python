@@ -109,13 +109,12 @@ function getItemValueForHole(hole, item){
     var id = getItemIdForHole(hole, item);
     var elm = document.getElementById(id);
     var value;
-    if (item == 'shots'){
+    if (formIsEditable() && item == 'shots')
         value = elm.value;
-        if (value == 0 || value == '-')
-            value = minShotsForNoScore(hole)
-        }
     else
         value = elm.innerHTML;
+    if (item == 'shots' && value == 0 || value == '-')
+        value = minShotsForNoScore(hole)
     return Number(value);
 }
 
@@ -123,8 +122,13 @@ function getItemValueForHole(hole, item){
 function setItemValueForHole(hole, item, value){
     var id = getItemIdForHole(hole, item);
     var elm = document.getElementById(id);
-    if (item == 'shots')
+    if (formIsEditable() && item == 'shots')
         elm.value = value;
     else
         elm.innerHTML = value;
+}
+
+function formIsEditable(){
+    var editable = document.getElementById('editable');
+    return editable.innerHTML == 'y'
 }

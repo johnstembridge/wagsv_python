@@ -27,19 +27,23 @@
             <td>{{ item.player.data }}</td>
             <td>{{ item.handicap.data }}</td>
             <td>{{ item.strokes.data }}</td>
-            <td>{{ item.points(size=10) }}</td>
             {%if form.editable.data == 'y' %}
+                <td>{{ item.points(size=10) }}</td>
+            {% else %}
+                <td>{{ item.points.data }}</td>
+            {% endif %}
             <td align="center">
                 {{ render_link(
                     url=url_for('card_event_player', year=form.year.data, event_id=form.event_id.data, player_id=item.player_id.data),
                     image=url_for('static', filename='images/go.jpg'),
-                    text='Edit card'
+                    text='Edit/show card'
                 )|safe }}
             </td>
-            <td>{{ item.player_id }}</td>
-            <td>{{ item.guest_return }}</td>
-            <td>{{ item.strokes_return }}</td>
-            <td>{{ item.handicap_return }}</td>
+            {%if form.editable.data == 'y' %}
+                <td>{{ item.player_id }}</td>
+                <td>{{ item.guest_return }}</td>
+                <td>{{ item.strokes_return }}</td>
+                <td>{{ item.handicap_return }}</td>
             {% endif %}
         </tr>
         {% endfor %}

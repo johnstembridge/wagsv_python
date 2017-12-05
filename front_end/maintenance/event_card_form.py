@@ -1,7 +1,8 @@
+import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField, HiddenField
 from interface import get_event, lookup_course, get_course_data, get_results, save_event_card, get_player_handicap, \
-    get_event_card, get_player_name, update_event_scores
+    get_event_card, get_player_name, update_event_scores, is_latest_event
 from data_utilities import fmt_date
 
 
@@ -41,7 +42,8 @@ class EventCardForm(FlaskForm):
         self.event_name.data = '{} {} {}'.format(event['event'], event['venue'], event['date'])
         self.player.data = get_player_name(player_id)
         self.handicap.data = hcap
-        self.editable.data = 'y'  # if event['date'] <= datetime.date.today() else 'n'
+        editable = datetime.date.today() > event['date'] and is_latest_event(int(event_id))
+        self.editable.data = 'y' if editable else 'n'
 
         holes = range(1, 19)
         for hole in holes:

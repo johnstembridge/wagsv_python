@@ -31,7 +31,11 @@
                 <td>{{ item.hole.data }}</td>
                 <td id="{{ 'scoresOut-' ~ loop.index0 ~ '-par' }}">{{ item.par.data }}</td>
                 <td id="{{ 'scoresOut-' ~ loop.index0 ~ '-si' }}">{{ item.si.data }}</td>
-                <td onchange="updatePoints(this); updateTotals()">{{ item.shots(size=2) }}</td>
+                {%if form.editable.data == 'y' %}
+                    <td onchange="updatePoints(this); updateTotals()">{{ item.shots(size=2) }}</td>
+                {% else %}
+                    <td id="{{ 'scoresOut-' ~ loop.index0 ~ '-shots' }}">{{ item.shots.data }}</td>
+                {% endif %}
                 <td id="{{ 'scoresOut-' ~ loop.index0 ~ '-points' }}">{{ item.points.data }}</td>
             </tr>
             {% endfor %}
@@ -63,7 +67,11 @@
                 <td>{{ item.hole.data }}</td>
                 <td id="{{ 'scoresIn-' ~ loop.index0 ~ '-par' }}">{{ item.par.data }}</td>
                 <td id="{{ 'scoresIn-' ~ loop.index0 ~ '-si' }}">{{ item.si.data }}</td>
-                <td onchange="updatePoints(this); updateTotals()">{{ item.shots(size=2) }}</td>
+                {%if form.editable.data == 'y' %}
+                    <td onchange="updatePoints(this); updateTotals()">{{ item.shots(size=2) }}</td>
+                {% else %}
+                    <td id="{{ 'scoresIn-' ~ loop.index0 ~ '-shots' }}">{{ item.shots.data }}</td>
+                {% endif %}
                 <td id="{{ 'scoresIn-' ~ loop.index0 ~ '-points' }}">{{ item.points.data }}</td>
             </tr>
             {% endfor %}
@@ -88,8 +96,9 @@
     {{ form.totalPointsReturn }}
     <hr/>
     {%if form.editable.data == 'y' %}
-    {{ form.save_card(class="btn btn-primary") }}
+        {{ form.save_card(class="btn btn-primary") }}
     {% endif %}
+    <span id="editable">{{ form.editable.data }}</span>
 </form>
 {% endblock %}
 
