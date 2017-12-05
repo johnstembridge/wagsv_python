@@ -179,16 +179,15 @@ def get_results(year, event_id):
 def get_event_list(year=2017):
     events = []
     for event_id in get_field(events_file(year), 'num'):
-        data = get_record(events_file(year), 'num', event_id)
-        data['date'] = decode_date(data['date'], year)
-        if 'venue' in data:
+        event = get_event(year, event_id)
+        if 'venue' in event:
             events.append(
                 {
-                    'num': data['num'],
-                    'date': data['date'],
-                    'venue': data['venue'],
-                    'event': data['event'],
-                    'type': data['type'] if 'type' in data else '1'
+                    'num': event['num'],
+                    'date': event['date'],
+                    'venue': event['venue'],
+                    'event': event['event'],
+                    'type': event['event_type'] if 'event_type' in event else EventType.wags_vl_event.name
                 }
             )
     return events
@@ -340,6 +339,12 @@ def event_date(year, event_id):
     event = get_event(year, event_id)
     date = event['date'].strftime('%Y/%m/%d')
     return date
+
+
+def event_type(year, event_id):
+    event = get_event(year, event_id)
+    event_type = event['event_type']
+    return event_type
 
 
 def save_hcaps(date, header, data):

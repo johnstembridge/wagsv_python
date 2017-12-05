@@ -16,6 +16,7 @@
             <th>Venue</th>
             <th class="text-center">Details</th>
             <th class="text-center">Result</th>
+            <th class="text-center">Hcaps</th>
         </tr>
         </thead>
         <tbody>
@@ -30,15 +31,22 @@
                     {{ render_link(
                         url=url_for('edit_event', year=year, event_id=item.num.data),
                         image=url_for('static', filename='images/go.jpg'),
-                        text='Edit event'
+                        text='View/Edit event'
                     )|safe }}
                 </td>
-                {%if item.event_type.data != '0' %}
+                {%if item.event_type.data != 'non_event' %}
                     <td align="center">
                         {{ render_link(
                             url=url_for('results_event', year=year, event_id=item.num.data),
                             image=url_for('static', filename='images/go.jpg'),
-                            text='Enter results'
+                            text='View/Enter results'
+                        )|safe }}
+                    </td>
+                     <td align="center">
+                        {{ render_link(
+                            url=url_for('handicaps_event', year=year, event_id=item.num.data),
+                            image=url_for('static', filename='images/go.jpg'),
+                            text='View/Enter handicaps'
                         )|safe }}
                     </td>
                 {% endif %}
