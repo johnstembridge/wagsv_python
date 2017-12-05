@@ -36,7 +36,7 @@ function updatePoints(elm){
     var id = c[0].id; // scores{In|Out}-{hole-1}-shots
     var inOut = id.match(/([A-Z])\w+/g);
     var i = Number(id.match(/(?:\d*\.)?\d+/g));
-    var hole = (inOut == 'Out') ? i + 1 : i +10;
+    var hole = (inOut == 'Out') ? i + 1 : i + 10;
     updatePointsForHole(hole);
     updateTotals();
 }
@@ -44,7 +44,7 @@ function updatePoints(elm){
 function updatePointsForHole(hole){
 
     var hcap = Math.round(document.getElementById("handicap").innerHTML);
-    var shots = getItemValueForHole(hole, "shots");
+    var shots = getShotsForHole(hole);
     var par = getItemValueForHole(hole, "par");
     var si = getItemValueForHole(hole, "si");
 
@@ -60,7 +60,7 @@ function updateTotals(){
     var hole, shots, points;
     while (i < 9) {
         hole = i + 1;
-        shots = getItemValueForHole(hole, "shots");
+        shots = getShotsForHole(hole);
         points = getItemValueForHole(hole, "points");;
         totalOutShots += shots;
         totalOutPoints += points;
@@ -68,7 +68,7 @@ function updateTotals(){
         totalPoints += points;
 
         hole = i + 10;
-        shots = getItemValueForHole(hole, "shots");
+        shots = getShotsForHole(hole);
         points = getItemValueForHole(hole, "points");;
         totalInShots += shots;
         totalInPoints += points;
@@ -113,9 +113,16 @@ function getItemValueForHole(hole, item){
         value = elm.value;
     else
         value = elm.innerHTML;
-    if (item == 'shots' && value == 0 || value == '-')
-        value = minShotsForNoScore(hole)
     return Number(value);
+}
+
+function getShotsForHole(hole){
+    var shots = getItemValueForHole(hole, "shots");
+    if (shots == 0 || isNaN(shots)){
+        shots = minShotsForNoScore(hole);
+        setItemValueForHole(hole, "shots", "-");
+        }
+    return shots;
 }
 
 //set the value for <item> (shots/par/si/points) for hole <hole>
@@ -130,5 +137,5 @@ function setItemValueForHole(hole, item, value){
 
 function formIsEditable(){
     var editable = document.getElementById('editable');
-    return editable.innerHTML == 'y'
+    return editable.value == 'y';
 }
