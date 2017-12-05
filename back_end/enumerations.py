@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class PlayerStatus:
     member = 0
     guest = 1

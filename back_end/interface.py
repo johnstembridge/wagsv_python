@@ -205,9 +205,7 @@ def get_event(year, event_id):
     data['start_booking'] = data['date'] - datetime.timedelta(days=14)
     data['member_price'] = decode_price(data['member_price'])
     data['guest_price'] = decode_price(data['guest_price'])
-    data['max'] = data.pop('max')
     data['event_type'] = EventType(int(data.pop('type'))).name
-    data['notes'] = data.pop('note')
     return data
 
 
@@ -272,9 +270,7 @@ def save_event(year, event_id, data):
     data['member_price'] = encode_price(data['member_price'])
     data['guest_price'] = encode_price(data['guest_price'])
     data['start_booking'] = encode_date(data['start_booking'])
-    data['max'] = data.pop('max')
     data['type'] = EventType[data['event_type']].value
-    data['note'] = data.pop('notes')
     data['directions'] = data.pop('directions')
     update_record(events_file(year), 'num', data)
 

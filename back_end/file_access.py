@@ -176,7 +176,7 @@ def keys_match(rec, keys, new_rec):
     try:
         keys = force_list(keys)
         if type(new_rec) is dict:
-            new_values = list(itemgetter(*keys)(new_rec))
+            new_values = force_list(itemgetter(*keys)(new_rec))
         else:
             new_values = force_list(new_rec)
         rec_values = force_list(itemgetter(*keys)(rec))

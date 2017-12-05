@@ -2,7 +2,7 @@ import copy
 import unittest
 import datetime
 from interface import encode_schedule, decode_schedule, get_event_card
-from file_access import get_record, get_field, update_record, file_delimiter, get_records, get_file
+from file_access import get_record, get_field, update_record, file_delimiter, get_records, get_file, keys_match
 from data_utilities import decode_date
 from test_data import TestData
 
@@ -91,3 +91,33 @@ class TestInterface(unittest.TestCase):
     def test_get_file(self):
         head, x = get_file(TestData.handicaps_file)
         self.assertTrue(len(x) > 0)
+
+    def test_keys_match_1(self):
+        keys = 'num'
+        rec1 = {'num': '10', 'type': '1', 'val': 'xxx'}
+        rec2 = {'num': '10', 'type': '1', 'val': 'zzz'}
+        self.assertTrue(keys_match(rec1, keys, rec2))
+
+    def test_keys_match_2(self):
+        keys = ['num']
+        rec1 = {'num': '10', 'type': '1', 'val': 'xxx'}
+        rec2 = {'num': '10', 'type': '1', 'val': 'zzz'}
+        self.assertTrue(keys_match(rec1, keys, rec2))
+
+    def test_keys_match_3(self):
+        keys = 'num'
+        rec1 = {'num': '10', 'type': '1', 'val': 'xxx'}
+        val = '10'
+        self.assertTrue(keys_match(rec1, keys, val))
+
+    def test_keys_match_4(self):
+        keys = ['num', 'type']
+        rec1 = {'num': '10', 'type': '1', 'val': 'xxx'}
+        rec2 = {'num': '10', 'type': '1', 'val': 'zzz'}
+        self.assertTrue(keys_match(rec1, keys, rec2))
+
+    def test_keys_match_4(self):
+        keys = ['num', 'type']
+        rec1 = {'num': '10', 'type': '1', 'val': 'xxx'}
+        val = ['10', '1']
+        self.assertTrue(keys_match(rec1, keys, val))

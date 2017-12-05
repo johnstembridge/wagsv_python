@@ -28,7 +28,7 @@ class EventForm(FlaskForm):
     event_type = SelectField(label='Event Type', validators=[DataRequired()], choices=[('', 'Choose event type...')] + get_all_event_types())
     schedule = FieldList(FormField(ScheduleForm))
     directions = TextAreaField(label='Directions', default='')
-    notes = TextAreaField(label='Notes', default='')
+    note = TextAreaField(label='Notes', default='')
     submit = SubmitField(label='Save')
 
     def populate_event(self, year, event_id):
@@ -44,7 +44,7 @@ class EventForm(FlaskForm):
         self.max.data = event['max']
         self.event_type.data = event['event_type']
         self.directions.data = event['directions']
-        self.notes.data = event['notes']
+        self.note.data = event['note']
         for item in event['schedule']:
             item_form = ScheduleForm()
             item_form.time = item['time']
@@ -68,7 +68,7 @@ class EventForm(FlaskForm):
             'max': self.max.data,
             'event_type': self.event_type.data,
             'directions': self.directions.data,
-            'notes': self.notes.data,
+            'note': self.note.data,
             'schedule': []
         }
         for item in self.schedule.data:
