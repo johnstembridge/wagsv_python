@@ -1,6 +1,4 @@
 from flask import Flask, render_template, redirect, url_for, flash
-from flask_wtf import CSRFProtect
-from flask_bootstrap import Bootstrap
 from event_list_form import EventListForm
 from event_form import EventForm
 from event_result_form import EventResultsForm
@@ -8,13 +6,8 @@ from event_handicap_form import EventHandicapsForm
 from event_card_form import EventCardForm
 from handicap_history_form import HandicapHistoryForm
 from utility import render_link
-import config
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = config.get('SECRET_KEY')
-csrf = CSRFProtect(app)
-
-bootstrap = Bootstrap(app)
 
 
 class MaintainEvents:
@@ -93,6 +86,3 @@ class MaintainEvents:
         form.populate_history(year, event_id, player_id)
         return render_template('handicap_history.html', form=form)
 
-
-if __name__ == '__main__':
-    app.run(debug=True)
