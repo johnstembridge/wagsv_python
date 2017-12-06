@@ -34,5 +34,3 @@ class EventListForm(FlaskForm):
 
     def get_next_event_id(self, year):
         return get_next_event_id(year)
-
-

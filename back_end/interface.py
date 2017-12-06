@@ -7,12 +7,13 @@ from data_utilities import encode_date, encode_price, decode_date, decode_price,
     sort_name_list, lookup, force_list, coerce
 from back_end.players import Player, Players
 from enumerations import EventType
+import config
 
 
 # region file_paths
 #
 #  data_location = r'D:\python\wagsv\data'
-data_location = r'C:\Users\jstembridge\PycharmProjects\wagsv\data'
+data_location = config.get('locations')['data']
 events_data = r'{}\events.tab'
 bookings_data = r'{}\event{}.csv'
 players_data = r'players.tab'

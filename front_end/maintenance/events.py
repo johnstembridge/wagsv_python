@@ -8,9 +8,10 @@ from event_handicap_form import EventHandicapsForm
 from event_card_form import EventCardForm
 from handicap_history_form import HandicapHistoryForm
 from utility import render_link
+import config
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret squirrel'
+app.config['SECRET_KEY'] = config.get('SECRET_KEY')
 csrf = CSRFProtect(app)
 
 bootstrap = Bootstrap(app)

@@ -1,7 +1,7 @@
 import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField, HiddenField
-from interface import get_event, lookup_course, get_course_data, get_results, save_event_card, get_player_handicap, \
+from interface import get_event, lookup_course, get_course_data, save_event_card, get_player_handicap, \
     get_event_card, get_player_name, update_event_scores, is_latest_event
 from data_utilities import fmt_date
 
