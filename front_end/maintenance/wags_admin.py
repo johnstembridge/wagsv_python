@@ -57,5 +57,11 @@ def handicap_history_player(year, event_id, player_id):
     return MaintainEvents.handicap_history_player(year, event_id, player_id)
 
 
+# @staticmethod
+# @app.errorhandler(404)
+# def page_not_found(e):
+#     return render_template('404.html'), 404
+
+
 if __name__ == '__main__':
     app.run(debug=True)

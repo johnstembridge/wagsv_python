@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash
+from flask import render_template, redirect, url_for, flash
 from event_list_form import EventListForm
 from event_form import EventForm
 from event_result_form import EventResultsForm
@@ -7,13 +7,10 @@ from event_card_form import EventCardForm
 from handicap_history_form import HandicapHistoryForm
 from utility import render_link
 
-app = Flask(__name__)
-
 
 class MaintainEvents:
 
     @staticmethod
-    @app.route('/events/<year>', methods=['GET', 'POST'])
     def list_events(year):
         form = EventListForm()
         if form.is_submitted():
@@ -25,7 +22,6 @@ class MaintainEvents:
         return render_template('event_list.html', form=form, year=year, render_link=render_link)
 
     @staticmethod
-    @app.route('/events/<year>/<event_id>', methods=['GET', 'POST'])
     def edit_event(year, event_id):
         form = EventForm()
         if form.is_submitted():
@@ -36,12 +32,6 @@ class MaintainEvents:
         return render_template('event.html', form=form, event_id=event_id, year=year)
 
     @staticmethod
-    @app.errorhandler(404)
-    def page_not_found(e):
-        return render_template('404.html'), 404
-
-    @staticmethod
-    @app.route('/events/<year>/<event_id>/results', methods=['GET', 'POST'])
     def results_event(year, event_id):
         form = EventResultsForm()
         if form.is_submitted():
@@ -54,7 +44,6 @@ class MaintainEvents:
         return render_template('event_result.html', form=form, event=year + event_id, render_link=render_link)
 
     @staticmethod
-    @app.route('/events/<year>/<event_id>/handicaps', methods=['GET', 'POST'])
     def handicaps_event(year, event_id):
         form = EventHandicapsForm()
         if form.is_submitted():
@@ -67,7 +56,6 @@ class MaintainEvents:
         return render_template('event_handicap.html', form=form, event=year + event_id, render_link=render_link)
 
     @staticmethod
-    @app.route('/events/<year>/<event_id>/<player_id>/card', methods=['GET', 'POST'])
     def card_event_player(year, event_id, player_id):
         form = EventCardForm()
         if form.is_submitted():
@@ -80,7 +68,6 @@ class MaintainEvents:
         return render_template('event_card.html', form=form, event=year + event_id, render_link=render_link)
 
     @staticmethod
-    @app.route('/events/<year>/<event_id>/<player_id>/handicap', methods=['GET', 'POST'])
     def handicap_history_player(year, event_id, player_id):
         form = HandicapHistoryForm()
         form.populate_history(year, event_id, player_id)
