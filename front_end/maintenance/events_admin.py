@@ -1,6 +1,6 @@
 from flask import render_template, redirect, url_for, flash
 from event_list_form import EventListForm
-from event_form import EventForm
+from event_details_form import EventForm
 from event_result_form import EventResultsForm
 from event_handicap_form import EventHandicapsForm
 from event_card_form import EventCardForm
@@ -30,7 +30,7 @@ class MaintainEvents:
         if not form.is_submitted():
             form.populate_event(int(year), event_id)
         event = event_id if event_id != "0" else "(new)"
-        return render_template('event.html', form=form, event_id=event, year=year)
+        return render_template('event_details.html', form=form, event_id=event, year=year)
 
     @staticmethod
     def results_event(year, event_id):

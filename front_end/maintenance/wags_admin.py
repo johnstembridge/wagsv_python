@@ -4,8 +4,8 @@ from flask_bootstrap import Bootstrap
 import datetime
 import config
 from home import home_main, page_not_found
-import accounts
-from events import MaintainEvents
+import accounts_admin
+from events_admin import MaintainEvents
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = config.get('SECRET_KEY')
@@ -21,12 +21,12 @@ def index():
 
 @app.route('/accounts', methods=['GET', 'POST'])
 def accounts_main():
-    return accounts.upload_file(current_year)
+    return accounts_admin.upload_file(current_year)
 
 
 @app.route('/accounts/<year>/upload', methods=['GET', 'POST'])
 def accounts_upload_file(year):
-    return accounts.upload_file(year)
+    return accounts_admin.upload_file(year)
 
 
 @app.route('/events', methods=['GET', 'POST'])
