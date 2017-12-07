@@ -1,20 +1,27 @@
 from flask import Flask
 from flask_wtf import CSRFProtect
 from flask_bootstrap import Bootstrap
+import datetime
 import config
+from home import home_main, page_not_found
 import accounts
 from events import MaintainEvents
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = config.get('SECRET_KEY')
 csrf = CSRFProtect(app)
-
 bootstrap = Bootstrap(app)
+current_year = datetime.date.today().year
 
 
 @app.route('/')
 def index():
-    return '<h1>Hi!</h1'
+    return home_main(current_year)
+
+
+@app.route('/accounts', methods=['GET', 'POST'])
+def accounts_main():
+    return accounts.upload_file(current_year)
 
 
 @app.route('/accounts/<year>/upload', methods=['GET', 'POST'])
@@ -24,7 +31,7 @@ def accounts_upload_file(year):
 
 @app.route('/events', methods=['GET', 'POST'])
 def events_main():
-    return MaintainEvents.list_events('2017')
+    return MaintainEvents.list_events(current_year)
 
 
 @app.route('/events/<year>', methods=['GET', 'POST'])
@@ -57,10 +64,9 @@ def handicap_history_player(year, event_id, player_id):
     return MaintainEvents.handicap_history_player(year, event_id, player_id)
 
 
-# @staticmethod
-# @app.errorhandler(404)
-# def page_not_found(e):
-#     return render_template('404.html'), 404
+@app.errorhandler(404)
+def not_found(e):
+    return page_not_found(e)
 
 
 if __name__ == '__main__':

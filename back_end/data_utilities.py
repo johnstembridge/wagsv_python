@@ -2,6 +2,7 @@ import datetime
 import calendar
 import re
 from decimal import Decimal
+from enumerations import EventType
 
 import math
 
@@ -42,6 +43,16 @@ def decode_time(time):
         return datetime.time(int(t[0]), int(t[1]))
     else:
         return datetime.time()
+
+
+def decode_event_type(event_type):
+    if not event_type:
+        event_type = EventType.wags_vl_event.value
+    return EventType(int(event_type)).name
+
+
+def encode_event_type(event_type):
+    return EventType[event_type].value
 
 
 def sort_name_list(names):

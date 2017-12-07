@@ -7,7 +7,7 @@ from interface import get_event_list, get_next_event_id
 
 
 class EventItemForm(FlaskForm):
-    num = IntegerField(label='id')
+    num = StringField(label='id')
     date = DateField(label='Date')
     event = StringField(label='Event')
     venue = StringField(label='Venue')
