@@ -32,7 +32,7 @@ class EventResultsForm(FlaskForm):
         self.year.data = year
         event = get_event(year, event_id)
         self.event_name.data = '{} {} {}'.format(event['event'], event['venue'], event['date'])
-        editable = datetime.date.today() > event['date'] and is_latest_event(int(event_id))
+        editable = datetime.date.today() > event['date'] and is_latest_event(event_id)
         self.editable.data = 'y' if editable else 'n'
         players = get_results(year, event_id)
         num = 0

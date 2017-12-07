@@ -91,8 +91,10 @@ class TestData:
         'max': '24',
         'end_booking': datetime.date(2017, 5, 18),
         'start_booking': datetime.date(2017, 5, 8),
-        'notes': 'If you are using Satellite Navigation, do not turn into Water Lane where there is no access to the club. The main entrance to the club is directly off Station Road.',
-        'type': '1'
+        'deadline': 'Thursday 18 May',
+        'note': 'If you are using Satellite Navigation, do not turn into Water Lane where there is no access to the club. The main entrance to the club is directly off Station Road.',
+        'type': '1',
+        'event_type': 'wags_vl_event'
     }
 
     example_event_field = ['Richard Trinick', 'Gerry Robinson', 'John Stembridge', 'Anthony Shutes', 'Richard Latham', 'Mike Dearden', 'Mike Wells', 'Steve Shaw', 'Bob Hill', 'Quintin Heaney', 'Martin Dilke-Wing', 'Richard Latham', 'Peter Berring', 'Gerry McGuffie', 'Rhod James']

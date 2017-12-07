@@ -42,7 +42,7 @@ class EventCardForm(FlaskForm):
         self.event_name.data = '{} {} {}'.format(event['event'], event['venue'], event['date'])
         self.player.data = get_player_name(player_id)
         self.handicap.data = hcap
-        editable = datetime.date.today() > event['date'] and is_latest_event(int(event_id))
+        editable = datetime.date.today() > event['date'] and is_latest_event(event_id)
         self.editable.data = 'y' if editable else 'n'
 
         holes = range(1, 19)

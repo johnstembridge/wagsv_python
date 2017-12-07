@@ -71,11 +71,14 @@ def get_all_event_types():
 
 
 def get_all_event_names():
-    return [(e, e) for e in get_field(events_file(2017), 'event')]
+    events = get_field(events_file(2017), 'event')
+    events = list(set(events))
+    return [(e, e) for e in sorted(events)]
 
 
 def get_all_venue_names():
-    return [(v, v) for v in get_field(events_file(2017), 'venue')]
+    courses = get_all_courses()
+    return [(v, v) for v in sorted(courses)]
 
 
 def get_all_courses():
@@ -356,7 +359,7 @@ def is_latest_event(event_id):
     today = datetime.date.today()
     year = today.year
     events = get_event_list(year)
-    nums = [int(e['num']) for e in events if e['date'] <= today]
+    nums = [e['num'] for e in events if e['date'] <= today]
     if len(nums) > 0:
         return nums[-1] == event_id
     return False
