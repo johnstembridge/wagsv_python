@@ -26,23 +26,23 @@
             <td>{{ item.date.data }}</td>
             <td>{{ item.event.data }}</td>
             <td>{{ item.venue.data }}</td>
-            {%if form.editable.data == 'y' %}
+            <td align="center">
+                {{ render_link(
+                    url=url_for('edit_event', year=year, event_id=item.num.data),
+                    image=url_for('static', filename='images/go.jpg'),
+                    text='View/Edit event'
+                )|safe }}
+            </td>
+            {%if item.event_type.data != 'non_event' %}
                 <td align="center">
                     {{ render_link(
-                        url=url_for('edit_event', year=year, event_id=item.num.data),
+                        url=url_for('results_event', year=year, event_id=item.num.data),
                         image=url_for('static', filename='images/go.jpg'),
-                        text='View/Edit event'
+                        text='View/Enter results'
                     )|safe }}
                 </td>
-                {%if item.event_type.data != 'non_event' %}
+                {%if item.event_type.data == 'wags_vl_event' %}
                     <td align="center">
-                        {{ render_link(
-                            url=url_for('results_event', year=year, event_id=item.num.data),
-                            image=url_for('static', filename='images/go.jpg'),
-                            text='View/Enter results'
-                        )|safe }}
-                    </td>
-                     <td align="center">
                         {{ render_link(
                             url=url_for('handicaps_event', year=year, event_id=item.num.data),
                             image=url_for('static', filename='images/go.jpg'),
@@ -57,8 +57,8 @@
     </table>
 
     <hr/>
-    {%if form.editable.data == 'y' %}
-    {{ form.add_event(class="btn btn-primary") }}
+    {%if form.editable.data %}
+        {{ form.add_event(class="btn btn-primary") }}
     {% endif %}
 </form>
 {% endblock %}

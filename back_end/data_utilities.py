@@ -15,11 +15,13 @@ def decode_date(wdm, y):
         m = calendar.month_name[0:13].index(a[-1])
         return datetime.date(y, m, d)
     except:
-        return datetime.date(2017, 1, 1)
+        return datetime.date.today()
 
 
 def encode_date(date):
     # result is in the form Friday 28 April
+    if date is None:
+        return None
     return date.strftime('%A %d %B')
 
 
@@ -40,6 +42,8 @@ def encode_price(amount):
 def decode_time(time):
     if time:
         t = time.split('.')
+        if len(t) < 2:
+            t = t + ['0', '0']
         return datetime.time(int(t[0]), int(t[1]))
     else:
         return datetime.time()

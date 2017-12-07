@@ -15,7 +15,7 @@ class MaintainEvents:
         form = EventListForm()
         if form.is_submitted():
             if form.add_event.data:
-                event_id = form.get_next_event_id(year)
+                event_id = 0  # form.get_next_event_id(year)
                 return redirect(url_for('edit_event', year=year, event_id=event_id))
         form.populate_event_list(int(year))
 
@@ -29,7 +29,8 @@ class MaintainEvents:
                 flash('Event saved', 'success')
         if not form.is_submitted():
             form.populate_event(int(year), event_id)
-        return render_template('event.html', form=form, event_id=event_id, year=year)
+        event = event_id if event_id != "0" else "(new)"
+        return render_template('event.html', form=form, event_id=event, year=year)
 
     @staticmethod
     def results_event(year, event_id):

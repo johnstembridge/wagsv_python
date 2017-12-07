@@ -1,11 +1,11 @@
-
+import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, DecimalField, TextAreaField, IntegerField, SubmitField, FieldList, \
-    FormField
+    FormField, HiddenField
 from wtforms_components import TimeField
-from wtforms.validators import DataRequired
 from wtforms.fields.html5 import DateField
-from interface import get_all_venue_names, get_all_event_types, get_all_event_names, get_event, save_event
+from interface import get_all_venue_names, get_all_event_types, get_all_event_names, get_event, save_event, \
+    get_new_event_id
 from back_end.players import Players
 
 
@@ -16,22 +16,24 @@ class ScheduleForm(FlaskForm):
 
 class EventForm(FlaskForm):
     members = Players().get_current_members()
-    event = SelectField(label='Event', validators=[DataRequired()], choices=[('', 'Choose event ...')] + get_all_event_names())
-    date = DateField(label='Date', validators=[DataRequired()])
-    venue = SelectField(label='Venue', validators=[DataRequired()], choices=[('', 'Choose venue ...')] + get_all_venue_names())
-    organiser = SelectField(label='Organiser', validators=[DataRequired()], choices=[('', 'Choose organiser ...')] + [(m, m) for m in members])
-    member_price = DecimalField(label='Member Price', validators=[DataRequired()])
-    guest_price = DecimalField(label='Guest Price', validators=[DataRequired()])
-    start_booking = DateField(label='Booking Starts', validators=[DataRequired()])
-    end_booking = DateField(label='Booking Ends', validators=[DataRequired()])
-    max = IntegerField(label='Maximum', validators=[DataRequired()])
-    event_type = SelectField(label='Event Type', validators=[DataRequired()], choices=[('', 'Choose event type...')] + get_all_event_types())
+    event = SelectField(label='Event', choices=[('', 'Choose event ...')] + get_all_event_names())
+    date = DateField(label='Date')
+    venue = SelectField(label='Venue', choices=[('', 'Choose venue ...')] + get_all_venue_names())
+    organiser = SelectField(label='Organiser', choices=[('', 'Choose organiser ...')] + [(m, m) for m in members])
+    member_price = DecimalField(label='Member Price')
+    guest_price = DecimalField(label='Guest Price')
+    start_booking = DateField(label='Booking Starts')
+    end_booking = DateField(label='Booking Ends')
+    max = IntegerField(label='Maximum')
+    event_type = SelectField(label='Event Type', choices=[('', 'Choose event type...')] + get_all_event_types())
     schedule = FieldList(FormField(ScheduleForm))
     directions = TextAreaField(label='Directions', default='')
     note = TextAreaField(label='Notes', default='')
     submit = SubmitField(label='Save')
+    editable = HiddenField(label='Editable')
 
     def populate_event(self, year, event_id):
+        self.editable.data = year >= datetime.date.today().year
         event = get_event(year, event_id)
         self.date.data = event['date']
         self.event.data = event['event']
@@ -74,5 +76,8 @@ class EventForm(FlaskForm):
         for item in self.schedule.data:
             event['schedule'].append(item)
 
+        if event_id == "0":
+            event_id = get_new_event_id(year, event)
+            pass
         save_event(year, event_id, event)
         return True

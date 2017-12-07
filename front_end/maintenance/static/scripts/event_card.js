@@ -1,5 +1,5 @@
 //Return the number of shots to deduct for calculating
-//stableford score for hole stroke index <inx> with a handicap of <hcap>
+//stableford score for hole stroke index <si> with a handicap of <hcap>
 function freeShots(si, hcap) {
     var s = 0;
     if (si <= hcap) {
@@ -14,15 +14,15 @@ function freeShots(si, hcap) {
 }
 
 function minShotsForNoScore(hole){
-        var par = getItemValueForHole(hole, "par");
-        var si = getItemValueForHole(hole, "si");
-        var hcap = Math.round(document.getElementById("handicap").innerHTML);
+        var par = getItemValueForHole(hole, 'par');
+        var si = getItemValueForHole(hole, 'si');
+        var hcap = Math.round(document.getElementById('handicap').innerHTML);
         var free = freeShots(si, hcap)
         return par + free + 2 // min required for no score
 }
 
 //Calculate stableford points for <shots> with a handicap of <hcap>
-//at a hole with stroke index <inx> and par <par>
+//at a hole with stroke index <si> and par <par>
 function stableford(shots, si, par, hcap){
     var free = freeShots(si, hcap);
     var net = shots - free;
@@ -38,18 +38,17 @@ function updatePoints(elm){
     var i = Number(id.match(/(?:\d*\.)?\d+/g));
     var hole = (inOut == 'Out') ? i + 1 : i + 10;
     updatePointsForHole(hole);
-    updateTotals();
 }
 
 function updatePointsForHole(hole){
-
-    var hcap = Math.round(document.getElementById("handicap").innerHTML);
+    normaliseShotsForHole(hole);
+    var hcap = Math.round(document.getElementById('handicap').innerHTML);
     var shots = getShotsForHole(hole);
-    var par = getItemValueForHole(hole, "par");
-    var si = getItemValueForHole(hole, "si");
+    var par = getItemValueForHole(hole, 'par');
+    var si = getItemValueForHole(hole, 'si');
 
     var points = stableford(shots, si, par, hcap);
-    setItemValueForHole(hole, "points", points);
+    setItemValueForHole(hole, 'points', points);
 }
 
 //Update all totals: shots and points
@@ -61,7 +60,7 @@ function updateTotals(){
     while (i < 9) {
         hole = i + 1;
         shots = getShotsForHole(hole);
-        points = getItemValueForHole(hole, "points");;
+        points = getItemValueForHole(hole, 'points');;
         totalOutShots += shots;
         totalOutPoints += points;
         totalShots += shots;
@@ -69,21 +68,21 @@ function updateTotals(){
 
         hole = i + 10;
         shots = getShotsForHole(hole);
-        points = getItemValueForHole(hole, "points");;
+        points = getItemValueForHole(hole, 'points');;
         totalInShots += shots;
         totalInPoints += points;
         totalShots += shots;
         totalPoints += points;
         i++;
         }
-    document.getElementById("scoresOut-totalShots").innerHTML = totalOutShots;
-    document.getElementById("scoresOut-totalPoints").innerHTML = totalOutPoints;
-    document.getElementById("scoresIn-totalShots").innerHTML = totalInShots;
-    document.getElementById("scoresIn-totalPoints").innerHTML = totalInPoints;
-    document.getElementById("totalShots").innerHTML = totalShots;
-    document.getElementById("totalPoints").innerHTML = totalPoints;
-    document.getElementById("totalShotsReturn").value = totalShots;
-    document.getElementById("totalPointsReturn").value = totalPoints;}
+    document.getElementById('scoresOut-totalShots').innerHTML = totalOutShots;
+    document.getElementById('scoresOut-totalPoints').innerHTML = totalOutPoints;
+    document.getElementById('scoresIn-totalShots').innerHTML = totalInShots;
+    document.getElementById('scoresIn-totalPoints').innerHTML = totalInPoints;
+    document.getElementById('totalShots').innerHTML = totalShots;
+    document.getElementById('totalPoints').innerHTML = totalPoints;
+    document.getElementById('totalShotsReturn').value = totalShots;
+    document.getElementById('totalPointsReturn').value = totalPoints;}
 
 //on load, update all automatic fields
 function updateAll(){
@@ -100,7 +99,7 @@ function updateAll(){
 function getItemIdForHole(hole, item){
     var inOut = (hole > 9) ? 'In' : 'Out';
     hole = (hole > 9) ? hole - 10 : hole - 1;
-    var id = "scores" + inOut + "-" + hole + "-" + item;
+    var id = 'scores' + inOut + '-' + hole + '-' + item;
     return id
 }
 
@@ -116,11 +115,17 @@ function getItemValueForHole(hole, item){
     return Number(value);
 }
 
+function normaliseShotsForHole(hole){
+    var shots = getItemValueForHole(hole, 'shots');
+    if (shots == 0 || isNaN(shots)){
+        setItemValueForHole(hole, 'shots', '-');
+        }
+}
+
 function getShotsForHole(hole){
-    var shots = getItemValueForHole(hole, "shots");
+    var shots = getItemValueForHole(hole, 'shots');
     if (shots == 0 || isNaN(shots)){
         shots = minShotsForNoScore(hole);
-        setItemValueForHole(hole, "shots", "-");
         }
     return shots;
 }

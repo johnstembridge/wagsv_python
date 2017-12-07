@@ -8,7 +8,7 @@
 
 <form method = "POST"  enctype = "multipart/form-data">
     {{ form.csrf_token }}
-    {{form.fileName(required='required')}}
+    {{ form.fileName(required='required') }}
     <p></p>
     {{ form.submit(class="btn btn-primary") }}
 </form>

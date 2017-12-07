@@ -1,9 +1,8 @@
 import datetime
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, SubmitField, FieldList, \
-    FormField, HiddenField
+from wtforms import StringField, SubmitField, FieldList, FormField, HiddenField
 from wtforms.fields.html5 import DateField
-from interface import get_event_list, get_next_event_id
+from interface import get_event_list
 
 
 class EventItemForm(FlaskForm):
@@ -22,7 +21,7 @@ class EventListForm(FlaskForm):
     editable = HiddenField(label='Editable')
 
     def populate_event_list(self, year):
-        self.editable.data = 'y' if year >= datetime.date.today().year - 1 else 'n'
+        self.editable.data = year >= datetime.date.today().year
         for item in get_event_list(year):
             item_form = EventItemForm()
             item_form.num = item['num']
@@ -32,5 +31,3 @@ class EventListForm(FlaskForm):
             item_form.event_type = item['type']
             self.event_list.append_entry(item_form)
 
-    def get_next_event_id(self, year):
-        return get_next_event_id(year)

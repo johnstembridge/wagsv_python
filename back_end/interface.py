@@ -179,21 +179,19 @@ def get_results(year, event_id):
     return sorted(results, key=lambda k: k['points'], reverse=True)
 
 
-def get_event_list(year=2017):
+def get_event_list(year):
     events = []
     for event_id in get_field(events_file(year), 'num'):
         event = get_event(year, event_id)
-        if 'venue' in event:
-            events.append(
-                {
-                    'num': event['num'],
-                    'date': event['date'],
-                    'venue': event['venue'],
-                    'event': event['event'],
-                    #'type': event['event_type'] if 'event_type' in event else EventType.wags_vl_event.name
-                    'type': event['event_type']
-                }
-            )
+        events.append(
+            {
+                'num': event['num'],
+                'date': event['date'],
+                'event': event['event'],
+                'venue': event['venue'],
+                'type': event['event_type']
+            }
+        )
     return events
 
 
@@ -267,14 +265,13 @@ def save_event_card(year, event_id, player_id, fields, shots):
 
 def save_event(year, event_id, data):
     data['num'] = event_id
-    data['schedule'] = encode_schedule(data['schedule'])
     data['date'] = encode_date(data['date'])
     data['deadline'] = encode_date(data['end_booking'])
     data['member_price'] = encode_price(data['member_price'])
     data['guest_price'] = encode_price(data['guest_price'])
     data['start_booking'] = encode_date(data['start_booking'])
     data['type'] = encode_event_type(data['event_type'])
-    data['directions'] = data.pop('directions')
+    data['schedule'] = encode_schedule(data['schedule'])
     update_record(events_file(year), 'num', data)
 
 
@@ -303,9 +300,10 @@ def empty_schedule_item(item):
     return (not item['text']) and item['time'].hour == 0 and item['time'].minute == 0
 
 
-def get_next_event_id(year):
-    ids = [int(m) for m in get_field(events_file(year), 'num')]
-    return 1 + max(ids)
+def get_new_event_id(year, event):
+    all = get_event_list(year)
+
+    return ''
 
 
 def get_booked_players(year, event_id):
