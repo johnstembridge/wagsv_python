@@ -6,6 +6,7 @@ from event_handicap_form import EventHandicapsForm
 from event_card_form import EventCardForm
 from handicap_history_form import HandicapHistoryForm
 from utility import render_link
+from enumerations import EventType
 
 
 class MaintainEvents:
@@ -15,20 +16,28 @@ class MaintainEvents:
         form = EventListForm()
         if form.is_submitted():
             if form.add_event.data:
-                event_id = 0  # form.get_next_event_id(year)
-                return redirect(url_for('edit_event', year=year, event_id=event_id))
+                event_type = EventType.wags_vl_event.name
+            if form.add_tour.data:
+                event_type = EventType.wags_tour.name
+            if form.add_non.data:
+                event_type = EventType.non_event.name
+            return redirect(url_for('edit_event', year=year, event_id=0, event_type=event_type))
         form.populate_event_list(int(year))
 
         return render_template('event_list.html', form=form, year=year, render_link=render_link)
 
     @staticmethod
-    def edit_event(year, event_id):
+    def edit_event(year, event_id, event_type=None):
+        if event_type:
+            event_type = EventType[event_type]
+        else:
+            event_type = EventType.wags_vl_event
         form = EventForm()
         if form.is_submitted():
             if form.save_event(int(year), event_id):
                 flash('Event saved', 'success')
         if not form.is_submitted():
-            form.populate_event(int(year), event_id)
+            form.populate_event(int(year), event_id, event_type)
         event = event_id if event_id != "0" else "(new)"
         return render_template('event_details.html', form=form, event_id=event, year=year)
 

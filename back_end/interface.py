@@ -87,6 +87,11 @@ def get_all_courses():
     return all_courses
 
 
+def get_all_years():
+    years = [i for i in range(2020, 1992, -1)]
+    return [(v, v) for v in years]
+
+
 def get_all_players():
     with open(players_file()) as f:
         all_players = f.read().splitlines()
@@ -199,21 +204,25 @@ def get_event(year, event_id):
     year = coerce(year, int)
     event_id = coerce(event_id, str)
     data = get_record(events_file(year), 'num', event_id)
-    data['schedule'] = decode_schedule(data['schedule'])
+    data['schedule'] = decode_schedule(data.get('schedule', None))
     data['date'] = decode_date(data['date'], year)
-    data['end_booking'] = data['deadline']
+    data['end_booking'] = data.get('deadline', None)
     data['end_booking'] = coerce_date(data['end_booking'], year, data['date'] - datetime.timedelta(days=2))
     data['start_booking'] = data['date'] - datetime.timedelta(days=14)
     data['member_price'] = decode_price(data['member_price'])
     data['guest_price'] = decode_price(data['guest_price'])
     data['event_type'] = decode_event_type(data.get('type', None))
+    data['max'] = data.get('max', None)
     return data
 
 
 def get_event_scores(year, event_id):
     date = event_date(year, event_id)
     course_id = str(event_course_id(year, event_id))
-    header, data = get_records(scores_file(), ['date', 'course'], [date, course_id])
+    if course_id == '0':
+        header, data = get_records(scores_file(), ['date'], [date])
+    else:
+        header, data = get_records(scores_file(), ['date', 'course'], [date, course_id])
     inx = lookup(header, ['player', 'position', 'points', 'strokes', 'handicap'])
     res = [itemgetter(*inx)(r) for r in data]
     return res

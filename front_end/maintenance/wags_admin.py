@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request, session
 from flask_wtf import CSRFProtect
 from flask_bootstrap import Bootstrap
 import datetime
@@ -11,16 +11,17 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = config.get('SECRET_KEY')
 csrf = CSRFProtect(app)
 bootstrap = Bootstrap(app)
-current_year = datetime.date.today().year
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
+    current_year = get_user_current_year()
     return home_main(current_year)
 
 
 @app.route('/accounts', methods=['GET', 'POST'])
 def accounts_main():
+    current_year = get_user_current_year()
     return accounts_admin.upload_file(current_year)
 
 
@@ -31,6 +32,7 @@ def accounts_upload_file(year):
 
 @app.route('/events', methods=['GET', 'POST'])
 def events_main():
+    current_year = get_user_current_year()
     return MaintainEvents.list_events(current_year)
 
 
@@ -41,7 +43,8 @@ def events_list_events(year):
 
 @app.route('/events/<year>/<event_id>', methods=['GET', 'POST'])
 def edit_event(year, event_id):
-    return MaintainEvents.edit_event(year, event_id)
+    event_type = request.args.get('event_type')
+    return MaintainEvents.edit_event(year, event_id, event_type)
 
 
 @app.route('/events/<year>/<event_id>/results', methods=['GET', 'POST'])
@@ -67,6 +70,15 @@ def handicap_history_player(year, event_id, player_id):
 @app.errorhandler(404)
 def not_found(e):
     return page_not_found(e)
+
+
+def get_user_current_year():
+    if 'current_year' in session:
+        current_year = session['current_year']
+    else:
+        current_year = datetime.date.today().year
+        session['current_year'] = current_year
+    return current_year
 
 
 if __name__ == '__main__':

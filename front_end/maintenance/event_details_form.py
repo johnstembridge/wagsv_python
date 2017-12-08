@@ -32,7 +32,7 @@ class EventForm(FlaskForm):
     submit = SubmitField(label='Save')
     editable = HiddenField(label='Editable')
 
-    def populate_event(self, year, event_id):
+    def populate_event(self, year, event_id, event_type):
         self.editable.data = year >= datetime.date.today().year
         event = get_event(year, event_id)
         self.date.data = event['date']
@@ -44,7 +44,7 @@ class EventForm(FlaskForm):
         self.start_booking.data = event['start_booking']
         self.end_booking.data = event['end_booking']
         self.max.data = event['max']
-        self.event_type.data = event['event_type']
+        self.event_type.data = event_type.name  # event['event_type']
         self.directions.data = event['directions']
         self.note.data = event['note']
         for item in event['schedule']:

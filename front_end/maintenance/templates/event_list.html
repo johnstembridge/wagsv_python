@@ -28,7 +28,7 @@
             <td>{{ item.venue.data }}</td>
             <td align="center">
                 {{ render_link(
-                    url=url_for('edit_event', year=year, event_id=item.num.data),
+                    url=url_for('edit_event', year=year, event_id=item.num.data, event_type=item.event_type.data),
                     image=url_for('static', filename='images/go.jpg'),
                     text='View/Edit event'
                 )|safe }}
@@ -59,6 +59,8 @@
     <hr/>
     {%if form.editable.data %}
         {{ form.add_event(class="btn btn-primary") }}
+        {{ form.add_tour(class="btn btn-primary") }}
+        {{ form.add_non(class="btn btn-primary") }}
     {% endif %}
 </form>
 {% endblock %}

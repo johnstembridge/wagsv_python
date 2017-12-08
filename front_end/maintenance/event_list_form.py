@@ -16,8 +16,8 @@ class EventItemForm(FlaskForm):
 class EventListForm(FlaskForm):
     event_list = FieldList(FormField(EventItemForm))
     add_event = SubmitField(label='Add Event')
-    edit_event = SubmitField(label='Edit Event')
-    results_event = SubmitField(label='Edit Results')
+    add_tour = SubmitField(label='Add Tour')
+    add_non = SubmitField(label='Add Non Event')
     editable = HiddenField(label='Editable')
 
     def populate_event_list(self, year):
