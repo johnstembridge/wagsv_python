@@ -8,6 +8,7 @@ from data_utilities import encode_date, encode_price, decode_date, decode_price,
 from back_end.players import Player, Players
 import config
 from enumerations import EventType
+import math
 
 # region file_paths
 #
@@ -200,6 +201,24 @@ def get_event_list(year):
     return events
 
 
+def get_tour_event_list(year, tour_event_id):
+    events = []
+    tour_event_id = int(tour_event_id)
+    for event_id in get_field(events_file(year), 'num'):
+        id = float(event_id)
+        if math.floor(id) == tour_event_id and id != tour_event_id:
+            event = get_event(year, event_id)
+            events.append(
+                {
+                    'num': event['num'],
+                    'date': event['date'],
+                    'event': event['event'],
+                    'venue': event['venue'],
+                }
+            )
+    return events
+
+
 def get_event(year, event_id):
     year = coerce(year, int)
     event_id = coerce(event_id, str)
@@ -273,7 +292,7 @@ def save_event_card(year, event_id, player_id, fields, shots):
 
 
 def save_event(year, event_id, data):
-    data['num'] = event_id
+    data['num'] = str(event_id)
     data['date'] = encode_date(data['date'])
     data['deadline'] = encode_date(data['end_booking'])
     data['member_price'] = encode_price(data['member_price'])
@@ -309,10 +328,16 @@ def empty_schedule_item(item):
     return (not item['text']) and item['time'].hour == 0 and item['time'].minute == 0
 
 
-def get_new_event_id(year, event):
-    all = get_event_list(year)
+def get_tour_events(year, tour_event_id):
+    events = get_tour_event_list(year, tour_event_id)
+    while len(events) < 6:
+        events.append({'num': None, 'date': None, 'event': None, 'venue': None})
+    return events
 
-    return ''
+
+def get_new_event_id(year, event):
+    ids = [float(m) for m in get_field(events_file(year), 'num')]
+    return math.floor(1 + max(ids))
 
 
 def get_booked_players(year, event_id):

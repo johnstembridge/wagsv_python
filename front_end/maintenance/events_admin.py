@@ -39,7 +39,12 @@ class MaintainEvents:
         if not form.is_submitted():
             form.populate_event(int(year), event_id, event_type)
         event = event_id if event_id != "0" else "(new)"
-        return render_template('event_details.html', form=form, event_id=event, year=year)
+        if event_type == EventType.wags_vl_event:
+            return render_template('event_details.html', form=form, event_id=event, year=year)
+        if event_type == EventType.wags_tour:
+            return render_template('tour_details.html', form=form, event_id=event, year=year)
+        if event_type == EventType.non_event:
+            return render_template('non_event_details.html', form=form, event_id=event, year=year)
 
     @staticmethod
     def results_event(year, event_id):

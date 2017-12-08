@@ -6,6 +6,7 @@ import config
 from home import home_main, page_not_found
 import accounts_admin
 from events_admin import MaintainEvents
+from venues_admin import MaintainVenues
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = config.get('SECRET_KEY')
@@ -23,6 +24,12 @@ def index():
 def accounts_main():
     current_year = get_user_current_year()
     return accounts_admin.upload_file(current_year)
+
+
+@app.route('/venues', methods=['GET', 'POST'])
+def venues_main():
+    current_year = get_user_current_year()
+    return MaintainVenues.list_venues(current_year)
 
 
 @app.route('/accounts/<year>/upload', methods=['GET', 'POST'])

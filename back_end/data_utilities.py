@@ -36,7 +36,10 @@ def decode_price(amount):
 
 
 def encode_price(amount):
-    return '{0:.2f}'.format(amount)
+    if amount:
+        return '{0:.2f}'.format(amount)
+    else:
+        return ''
 
 
 def decode_time(time):

@@ -21,14 +21,6 @@
             <td>{{ form.member_price.label }} £</td><td>{{ form.member_price(size = 6) }}</td>
             <td>{{ form.guest_price.label }} £</td><td>{{ form.guest_price(size = 6) }}</td>
         </tr>
-        <tr>
-            <td>{{ form.start_booking.label }}</td><td>{{ form.start_booking }}</td>
-            <td>{{ form.end_booking.label }}</td><td>{{ form.end_booking }}</td>
-        </tr>
-         <tr>
-            <td>{{ form.max.label }}</td><td>{{ form.max(size = 6) }}</td>
-            <td></td><td></td>
-        </tr>
     </table>
     <h3>Schedule</h3>
     <table>
@@ -52,8 +44,8 @@
     {{ form.note.label }}
     <br>
     {{ form.note(rows='5',cols='110') }}
-    {{ form.event_type }}
     <hr/>
+    {{ form.event_type }}
     {%if form.editable.data %}
         {{ form.submit(class="btn btn-primary") }}
     {% endif %}
