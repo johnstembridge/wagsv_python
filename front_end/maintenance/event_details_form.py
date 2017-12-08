@@ -107,7 +107,6 @@ class EventForm(FlaskForm):
                     item.update({
                         'num': id,
                         'event': self.event.data,
-                        'venue': '',
                         'event_type': EventType.wags_vl_event.name,
                         'start_booking': None,
                         'end_booking': None,

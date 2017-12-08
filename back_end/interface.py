@@ -198,7 +198,7 @@ def get_event_list(year):
                 'type': event['event_type']
             }
         )
-    return events
+    return sorted(events, key=lambda item: (item['date'], float(item['num'])))
 
 
 def get_tour_event_list(year, tour_event_id):
