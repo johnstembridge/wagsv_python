@@ -1,0 +1,115 @@
+name	id	address	post_code	phone	url	directions	notes
+Addington Court (old)	2						
+Addington Palace	30						
+Aldeburgh	83						
+Aldeburgh River Course	49						
+Ashdown Forest	15						
+Ballybunion	69						
+Beaufort	68						
+Betchworth Park	75	"Reigate Road, Dorking"	RH4 1NZ	01306 882052	www.betchworthparkgc.co.uk/		
+Broadstone	61						
+Burhill	53	"Burwood Road, Walton on Thames, Surrey"	KT12 4BL	01932 227345	www.burhillgolf-club.co.uk/		
+Burnham & Berrow	103						
+Bushey Hall	66	"Bushey Hall Drive, Bushey, Hertfordshire"	WD23 2EP	01923 222253	www.busheyhallgolfclub.co.uk/	"From M25 Junction 19 - at roundabout take A41 signposted Harrow, stay in the middle or right lane. Straight across first roundabout (A41) (Sainsbury supermarket on your left). Under M1 junction. At roundabout take third exit into Hartspring Lane (B462). Straight across traffic lights into Aldenham Road. Straight across roundabout at Leisure Centre. At next roundabout take the fourth exit. The is a further 150 yards on the left."	
+Button Gwinnett	81						
+Castleisland	70						
+Celtic Manor	52						
+Chartham Park	67	"Felcourt Road, East Grinstead, W. Sussex"	RH19 2JT	01342 870340	www.theclubcompany.com/clubs/Chartham-Park/	"From M25 Junction 6 take the A22 (Godstone) towards East Grinstead. Follow signs to Blindley Heath. At traffic lights turn left to Lingfield. Continue straight across the 1st mini roundabout and take 2nd exit off at 2nd mini roundabout, towards East Grinstead. Continue for 1.5 miles until national speed limit signs. Chartham Park is approximately 300 metres past these signs on the right hand side."	
+Clevedon	65						
+Coombe Wood	24						
+Crowborough Beacon	59	"Beacon Road, Crowborough"	TN6 1UJ	01892 661511	www.crowboroughbeacongolfclub.co.uk/	approx. 1 mile south of Crowborough town centre on the A26 between Tunbridge Wells and Uckfield. Travelling time from Central London is approximately 75 minutes	
+Deauville	21						
+Dewstone Park	33						
+Dewstow Valley	32						
+Dunham Forest	92						
+East Brighton	98	"Roedean Road, Brighton, East Sussex"	BN2 5RA	01273 603989	www.ebcg.co.uk	"Coming towards Brighton on the A23, look for signs to A27 Lewes and leave the A23 for this junction. Head towards Lewes (East) until the Rottingdean/Falmer junction. After leaving on the slip road, at the roundabout turn right heading towards Rottingdean. Keep on this road for about 2 miles (across the downs). When you begin coming downhill into Woodingdean prepare to turn right at the traffic lights (crossroads). Continue along this road heading towards Brighton for about a mile at which point you will see some further traffic light with a left lane that goes across the racecourse. Get into this left lane and turn left over the racecourse. You will then follow the road down the hill towards the sea. At the next lights turn left and then look out as about 100 yards up on the left is the slip road entrance into the golf club"	
+East Dorset Lakeland	63						
+East Sussex National West Course	96	"Little Horsted,Uckfield,East Sussex"	TN22 5ES	01825 880256	www.eastsussexnational.co.uk/golf/	"Postcode TN22 5ES leads to the back of East Sussex National Golf Course off the A26. To arrive at the main entrance from the A26 follow signs for A22 Eastbourne, at the Little Horsted roundabout turn right and at the next roundabout turn right"	
+El Chapparel	101						
+El Paraiso	73						
+Enmore Park	113						
+Flamingos	72						
+Foxhills	87	"Foxhills, Stonehill Road , Ottershaw, Surrey"	KT16 0EL	01932 704465	www.foxhills.co.uk/	"Exit M25 at Junction 11 (Chertsey), Follow signs towards Woking. Turn left at the end of a short dual carriageway into Guildford Road Take 3rd exit at next roundabout. Immediately turn right into Foxhills Road. At the end of the road turn left. The Entrance to Foxhills is 200yds on the right."	
+Gatton Manor	4	"Standon Lane,Ockley, Nr.Dorking,Surrey"	RH5 5PQ	01306 627555	www.gattonmanor.co.uk/golf.html	"From Dorking, south on the A24 in the direction of Horsham. Go past sign for Beare Green and continue to the large roundabout (Dukes Head Hotel on left) turn right onto the A29 (signposted Ockley, Bognor Regis). Continue through Ockley (approx 3 miles) and at the far end of Ockley village on the right hand side is a restaurant called ‘Bryces -The Old School House’, 200 yards past this turn right into Cat Hill Lane. Continue to follow the signs and you will turn left into Standon Lane. This is a narrow country lane, please travel at a slow pace and continue for approx 1 mile and you will find the main entrance to Gatton Manor on the right"	
+Golf de Poniente	88						
+Golf Do Estoril	109						
+Hawthorne Hill	10						
+Hever	13						
+Hoebridge	12						
+Horton Park	9						
+Ipswich	48						
+Isle of Purbeck	62						
+Kingswood	38	"Sandy Lane,Kingswood,Tadworth"	KT20 6NE	01737 832188	www.kingswood-golf.co.uk	"A217 past Banstead, turn left on B2032 for Kingswood, over the railway and turn right at signpost for the golf club"	
+La Foret	107						
+La Mer	105						
+La Quinta	100						
+Laleham	39	"Laleham Reach, Chertsey,Surrey"	KT16 8RP	01932 564211	www.laleham-golf.co.uk/	From Junction 11 of M25 take the A320 to Thorpe Park. At the Thorpe Park roundabout take exit to Penton Marina and follow signs to Laleham Golf Club	
+Lamerwood	79	"Codicote Road, Wheathampstead, Hertfordshire"	AL4 8GB	01582 833013	www.lamerwood.humaxuk.com/english/index.htm	From London take A1(M1) exit at Junction 4. After Hatfield Tunnel take B653 towards Wheathampstead	
+Lanhydrock	31						
+Launceston	25						
+Leatherhead	95	"Kingston Road, Leatherhead,Surrey"	KT22 0EE	01372 849413	www.lgc-golf.co.uk/	Exit A3 at junction for A243 Dorking/Chessington World of Adventures. Golf Club is five miles from junction 1 1/2 miles past Chessington World of Adventures on the right	
+Les Pins	106						
+Lingfield Park	23	"Lingfield Road,Racecourse Road,Lingfield,Surrey"	RH7 6PQ	01342 830920	www.lingfield-racecourse.co.uk/golf-club.html	M25 to jct 6 then A22 towards East Grinstead follow signs for Lingfield or M23 and take exit for A264 towards East Grinstead then A22 to Lingfield	
+Lisbon Sports Club	110						
+Looe	26						
+Los Naranjos	71						
+Malden	28	"Traps Lane, New Malden, Surrey"	KT3 4R	020 8942 0654	www.maldengolfclub.com/		
+Mannings Heath	86	"Hammerpond Road, Mannings Heath, Horsham, West Sussex"	RH13 6PG	01403 210228	www.manningsheath.com	"From the M23, Junction 11 At the end of the slip road, take the first sharp left turning. At the mini roundabout, turn right through the village of Pease Pottage, passing the James King public house and the Golf Driving Range on the right. Take the next turn left (a concealed country road), Grouse Road which is opposite the entrance to Cottesmore School. Follow Grouse Road for 4 miles, turn right at the T-Junction at the end and the Golf Club entrance is situated on the left on the brow of the hill."	
+Merrist Wood	47	"Coombe Lane,Worplesdon,Guildford,Surrey"	GU3 3PE	01483 884045	www.merristwood-golfclub.co.uk/	FROM GUILDFORD ~ Follow A323 (Aldershot) signs and about 3 miles out of Guildford you reach a roundabout with black and white chevrons on it. Turn right into Holly Lane and Merrist Wood is on the left 100 yards from the roundabout	
+Milford	41	"Station Lane, Milford, Guildford, Surrey"	GU8 5HS	01483 419200	www.milfordgolf.co.uk/	"Five minutes from Guildford on the A3, A3100 to Enton, follow signs to Milford train station"	
+Mill Ride	60	"Ascot,Berkshire"	SL5 8LT	01344 886777	www.mill-ride.com/	"M4 Exit 6. Take A355 to Windsor. At next roundabout take B3173. Continue until T junction. Turn right. 3 miles to roundabout past Legoland. Turn right into North Street. A mile later take the left slip road into Lovel Road. Turn right at the cross roads into Hatchet Lane, then right into Forest Road. The entrance is 600 yards on the left. (Entrance shuts at dusk, please access using entrance in Fernbank Road, see below). M3 Exit 3. Take A322 to Bagshot. After 2 miles take A332 to Ascot. Continue for 3 miles to Heatherwood Hospital roundabout. Take A329 to Bracknell. Turn right at first set of lights into Fernbank Road. Turn left after 400 yards into Mill Ride"	
+Monte Mayor	74						
+Moor Park	108	"Rickmansworth, Hertfordshire"	WD3 1QN	01923 773146	www.moorparkgc.co.uk/		
+Moretonhampstead	36						
+Mottram Hall	93						
+Oake Manor	104						
+Oakhampton	46						
+Oaks Park Carshalton	3						
+Penha Longa	111						
+Pine Ridge	29	"Old Bisley Rd, Frimley, Camberley, Surrey"	GU16 9NX	01276 675444	www.pineridgegolf.co.uk/	"M3 to jct 3 then A322 for about 1 mile towards Guildford take the B311 at roundabout  for 2 miles, then turn left at sign for Pine Ridge on B3015, travel for 1 mile and turn right into Old Bisley Road"	
+Porters Park	85	"Shenley Hill, Radlett, Hertfordshire"	WD7 7AZ	01923 854127	www.porterspark.com/		
+Redhill & Reigate	11						
+Reigate Hill	34						
+Richmond Park (Duke's)	7						
+Richmond Park (Prince's)	8						
+Rio Real	99						
+Rolls of Monmouth	55						
+Royal North Devon	58						
+Rusper	5						
+Seaford Head	57	"Southdown Road Seaford, East Sussex"	BN25 4JS	01323 890139	www.seafordheadgolfcourse.co.uk/		
+Selsdon Park Hotel	16						
+Silvermere	35	"Redhill Road,Cobham,Surrey"	KT11 1EF	01932 866894	www.silvermere-golf.co.uk	A3 to Cobham exit then A245 to Weybridge - turn left after traffic lights into Redhill Road	
+Son Muntaner	90						
+Son Quint	91						
+Son Vida	89						
+St.Julien	22						
+St.Mellion (Hybrid 1)	77						
+St.Mellion (Hybrid 2)	78						
+St.Mellion (Kernow course)	84						
+St.Mellion (Nicklaus course)	18						
+St.Mellion (Old Course)	17						
+Stockley Park	20	"Stockley Park, Uxbridge,Middlesex"	UB11 1AQ	020 8813 5700	www.stockleyparkgolf.co.uk/		
+Tandridge	80	"Oxted, Surrey"	RH8 9NQ	01883 712274	www.tandridgegolfclub.com/	"Leave the M25 at exit 6. Turn south on A22 (East Grinstead and Eastbourne) and then left at the first roundabout onto A25 signposted ""Oxted"". Keep straight on at the next roundabout. The entrance to the Club is 550 yards on the right hand side"	
+Taunton & Pickeridge	114						
+The Dyke	112	"Devils Dyke Road, Brighton"	BN1 8YJ	01273 857260	www.dykegolf.com/	"SAT NAV USERS PLEASE NOTE – Our BN1 8YJ postcode does not take you to the club, sorry! If travelling from the A23/27 Junction, you will need to travel ½ mile further, following the road round a sharp right hand bend (not straight ahead to Devil’s Dyke beauty spot). The Clubhouse and course will be on your right hand side, car park on the left hand side"	
+The Richmond	51	"Sudbrook Park,Petersham"	TW10 7AS	020 8940 4351	www.therichmondgolfclub.com/		
+Thorpeness	14						
+Timber Hill	76						
+Traditions	50	"Pyrford Road,Pyrford,Surrey"	GU22 8UE	01932 350355	traditionsgolfclub.com/	From the A3 follow signs to Royal Horticultral Society Wisley and turn left into Wisley lane at the start of the layby. Continue into Wisley Village passing the Anchor pub and crossing Pyrford Lock until you reach a T-junction. Turn right into Pyrford Road and you will see Traditions Golf Course about half a mile on the right hand side.	
+Vale of Glamorgan	82						
+Vilamoura Laguna	44						
+Vilamoura Millennium	45						
+Vilamoura Old Course	43						
+Vilamoura Pinhal	42						
+Vilamoura Victoria	97						
+Wentwood Hills	56						
+West Byfleet	19	"Sheerwater Road,West Byfleet,Surrey"	KT14 6AA	01932 346584	www.wbgc.co.uk/	"M25 to Junction 11 then follow A320 towards Woking. At third roundabout take A245 go along Woodham Lane and turn right into Sheerwater Road and West Byfleet Club is on the left before turning left into village. Alternatively take A3 then turn off for the  A245 (West Byfleet&Cobham exit). Follow A245 and go through West Byfleet village, turn right into Sheerwater Road and the Club is on the immediate left."	
+West Chiltington	1						
+West Surrey	102	"Enton Green,Godalming,Surrey"	GU8 5AF	01483 421275	www.wsgc.co.uk/	"Whether travelling from Guildford or Portsmouth, turn off the A3 at Milford Junction. At the roundabout take the exit onto the A283 (signposted Milford). At the traffic signals turn left onto Portsmouth Road - A3100 (signposted Godalming). At the mini roundabout, turn right onto Church Road - A286 (signposted Midhurst) then immediately turn left onto Station Lane (signposted Milford Station). At Milford Station, go over the rail crossing and carry on for about 800 yards. At Enton Green, proceed straight on and the entrance to the West Surrey Golf Club is immediately on your right.:If you are using Satellite Navigation, do not turn into Water Lane where there is no access to the club. The main entrance to the club is directly off Station Road."	
+Wildwood	37	"Horsham Road,Alford,Nr Cranleigh,Surrey"	GU6 8JE	01403 753255		A3 to Guildford then 9 miles along A281 in direction of Horsham. Club on left hand-side of village of Alfold	
+Wildwood BC	54						
+Wimbledon Common	6	"19 Camp Rd,Wimbledon Common"	SW19 4UW	020 8946 0294	www.wcgc.co.uk/		Pillar-box red top required on the course
+Wimbledon Park	27	Home Park Road	SW19 7HR	020 8946 1250	www.wpgc.co.uk/		
+Woodbury Park	40						
+Worplesdon	64	"Heath House Road, Woking"	GU22 0RA	01483 472277	www.worplesdongc.co.uk/	"Heath House Road can be accessed off the A322 Bagshot/Guildford Road, approximately 6 miles South of Bagshot (M3 - Junction 3) and 6 miles from Guildford (A3). The Club is also easily accessible by train from London (Waterloo). Fast train to Woking (25 minutes), short taxi drive to Worplesdon of about 2 miles"	
+Wychwood Park	94						

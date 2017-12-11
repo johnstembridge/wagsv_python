@@ -32,6 +32,7 @@ def coerce_date(wdm, y, date):
 
 def decode_price(amount):
     if not amount: amount = '0'
+    if not is_num(amount): amount = '0'
     return Decimal(amount)
 
 
@@ -43,7 +44,7 @@ def encode_price(amount):
 
 
 def decode_time(time):
-    if time:
+    if time and is_num(time):
         t = time.split('.')
         if len(t) < 2:
             t = t + ['0', '0']
@@ -113,3 +114,6 @@ def first_or_default(list, default):
 def fmt_date(date):
     return date.strftime("%Y/%m/%d")
 
+
+def is_num(s):
+    return s.replace('.','',1).isdigit()

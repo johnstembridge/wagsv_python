@@ -49,7 +49,12 @@
                             text='View/Enter handicaps'
                         )|safe }}
                     </td>
+                {% else %}
+                    <td></td>
                 {% endif %}
+            {% else %}
+                <td></td>
+                <td></td>
             {% endif %}
         </tr>
         {% endfor %}

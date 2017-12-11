@@ -168,7 +168,10 @@ def get_field(file, field):
 
 def file_delimiter(filename):
     file_type = (filename.split('.'))[1]
-    delimiter = ',' if file_type == 'csv' else ':'
+    if file_type == 'csv': delimiter = ','
+    elif file_type == 'tab': delimiter = ':'
+    elif file_type == 'txt': delimiter = '\t'
+    else: delimiter = ' '
     return delimiter
 
 

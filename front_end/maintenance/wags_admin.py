@@ -26,17 +26,18 @@ def accounts_main():
     return accounts_admin.upload_file(current_year)
 
 
+@app.route('/accounts/<year>/upload', methods=['GET', 'POST'])
+def accounts_upload_file(year):
+    return accounts_admin.upload_file(year)
+
+
 @app.route('/venues', methods=['GET', 'POST'])
 def venues_main():
     current_year = get_user_current_year()
     return MaintainVenues.list_venues(current_year)
 
 
-@app.route('/accounts/<year>/upload', methods=['GET', 'POST'])
-def accounts_upload_file(year):
-    return accounts_admin.upload_file(year)
-
-
+# region Events
 @app.route('/events', methods=['GET', 'POST'])
 def events_main():
     current_year = get_user_current_year()
@@ -72,6 +73,7 @@ def card_event_player(year, event_id, player_id):
 @app.route('/events/<year>/<event_id>/<player_id>/handicap', methods=['GET', 'POST'])
 def handicap_history_player(year, event_id, player_id):
     return MaintainEvents.handicap_history_player(year, event_id, player_id)
+# endregion
 
 
 @app.errorhandler(404)

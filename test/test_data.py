@@ -4,12 +4,13 @@ from decimal import Decimal
 
 
 class TestData:
-    data_location = r'C:\Users\jstembridge\PycharmProjects\wagsv\data'
+    data_location = r'D:\python\wagsv_python\data'
     events_data = r'2017\events.tab'
     shots_data = r'shots.tab'
     events_file = os.path.join(data_location, events_data)
     shots_file = os.path.join(data_location, shots_data)
     handicaps_file = os.path.join(data_location, 'hcaps.tab')
+    trophies_file = os.path.join(data_location, 'trophies.txt')
 
     example_event_record = {
         'num': '4',
@@ -97,7 +98,7 @@ class TestData:
         'event_type': 'wags_vl_event'
     }
 
-    example_event_field = ['Richard Trinick', 'Gerry Robinson', 'John Stembridge', 'Anthony Shutes', 'Richard Latham', 'Mike Dearden', 'Mike Wells', 'Steve Shaw', 'Bob Hill', 'Quintin Heaney', 'Martin Dilke-Wing', 'Richard Latham', 'Peter Berring', 'Gerry McGuffie', 'Rhod James']
+    example_event_field = ['Richard Trinick', 'Gerry Robinson', 'John Stembridge', 'Anthony Shutes', 'Richard Latham', 'Mike Dearden', 'Mike Wells', 'Steve Shaw', 'Bob Hill', 'Quintin Heaney', 'Martin Dilke-Wing', 'Richard Latham', 'Peter Berring', 'Gerry McGuffie', 'Rhod James', 'Richard Latham']
 
     example_course_data_1 = {
          'course': '4', 'year': '3000', 'sss': '70', 'si1': '9', 'si2': '15', 'si3': '3', 'si4': '7', 'si5': '17',

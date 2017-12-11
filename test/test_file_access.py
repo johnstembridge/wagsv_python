@@ -79,10 +79,17 @@ class TestInterface(unittest.TestCase):
         d = file_delimiter(r'c:\abc\xyz.tab')
         expected = ':'
         self.assertEqual(d, expected)
+        d = file_delimiter(r'c:\abc\xyz.txt')
+        expected = '\t'
+        self.assertEqual(d, expected)
 
     def test_get_records(self):
         header, recs = get_records(TestData.handicaps_file, 'status', '1')
         self.assertTrue(len(recs) > 0)
+
+    def test_get_record_trophy(self):
+        rec = get_record(TestData.trophies_file, 'name', 'Dearden Decanter')
+        self.assertTrue(rec['sponsor'] == 'Mike Dearden')
 
     def test_get_records_multi_value(self):
         header, recs = get_records(TestData.handicaps_file, 'player', ['1', '2', '3'])

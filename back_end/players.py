@@ -2,10 +2,10 @@ import os
 from data_utilities import lookup, sort_name_list
 from operator import itemgetter
 from file_access import get_file, get_field
-
+import config
 
 # data_location = r'D:\python\wagsv\data'
-_data_location = r'C:\Users\jstembridge\PycharmProjects\wagsv\data'
+_data_location = config.get('locations')['data']
 _players_data = r'players.tab'
 _members_data = r'members.csv'
 _vl_data = r'victor.tab'
