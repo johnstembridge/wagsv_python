@@ -4,7 +4,7 @@ from itertools import groupby
 from operator import itemgetter
 from file_access import get_field, get_record, update_record, get_records, get_file, update_records
 from data_utilities import encode_date, encode_price, decode_date, decode_price, decode_time, coerce_date, \
-    sort_name_list, lookup, force_list, coerce, decode_event_type, encode_event_type
+    sort_name_list, lookup, force_list, coerce, decode_event_type, encode_event_type, dequote, enquote
 from back_end.players import Player, Players
 import config
 from enumerations import EventType
@@ -208,10 +208,10 @@ def get_venue(venue_id):
     data = get_record(venues_file(), 'id', venue_id)
     data['id'] = data['id']
     data['name'] = data['name']
-    data['address'] = data['address']
+    data['address'] = decode_address(data['address'])
     data['post_code'] = data['post_code']
     data['url'] = data['url']
-    data['directions'] = data['directions']
+    data['directions'] = dequote(data['directions'])
     return data
 
 
@@ -220,8 +220,8 @@ def save_venue(venue_id, data):
     data['name'] = data['name']
     data['url'] = data['url']
     data['phone'] = data['phone']
-    data['address'] = data['address']
-    data['directions'] = data['directions']
+    data['address'] = encode_address(data['address'])
+    data['directions'] = enquote(data['directions'])
     update_record(venues_file(), 'id', data)
 
 
@@ -440,3 +440,18 @@ def is_latest_event(event_id):
     if len(nums) > 0:
         return nums[-1] == event_id
     return False
+
+
+def decode_address(address):
+    if address:
+        address = dequote(address)
+        address = address.split(",")
+        address = '\n'.join(address)
+    return address
+
+
+def encode_address(address):
+    address = address.replace('\r', '')
+    address = address.split('\n')
+    address = ",".join(address)
+    return enquote(address)

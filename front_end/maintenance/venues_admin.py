@@ -10,7 +10,7 @@ class MaintainVenues:
         form = VenueListForm()
         if form.is_submitted():
             if form.add_venue.data:
-                return redirect(url_for('edit_venue', venue_id=0))
+                return redirect(url_for('edit_venue', venue_id="0"))
         form.populate_venue_list()
 
         return render_template('venue_list.html', form=form, render_link=render_link)
@@ -23,5 +23,6 @@ class MaintainVenues:
                 flash('Venue saved', 'success')
         if not form.is_submitted():
             form.populate_venue(venue_id)
-        return render_template('venue_details.html', form=form, render_link=render_link)
+        venue = venue_id if venue_id != "0" else "(new)"
+        return render_template('venue_details.html', venue_id=venue, form=form, render_link=render_link)
 

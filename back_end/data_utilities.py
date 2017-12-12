@@ -116,4 +116,15 @@ def fmt_date(date):
 
 
 def is_num(s):
-    return s.replace('.','',1).isdigit()
+    return s.replace('.', '', 1).isdigit()
+
+
+def dequote(string):
+    if string:
+        if string.startswith('"') and string.endswith('"'):
+            string = string[1:-1]
+    return string
+
+
+def enquote(string):
+    return '"' + string + '"'

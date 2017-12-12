@@ -19,13 +19,13 @@
             <td>{{ form.phone.label }}</td><td>{{ form.phone }}</td>
         </tr>
         <tr>
+            <td valign="top">{{ form.address.label }}</td><td>{{ form.address(rows='6',cols='110') }}</td>
+        </tr>
+        <tr>
             <td>{{ form.post_code.label }}</td><td>{{ form.post_code }}</td>
         </tr>
         <tr>
-            <td>{{ form.address.label }}</td><td>{{ form.address(rows='5',cols='110') }}</td>
-        </tr>
-        <tr>
-            <td>{{ form.directions.label }}</td><td>{{ form.directions(rows='5',cols='110') }}</td>
+            <td valign="top">{{ form.directions.label }}</td><td>{{ form.directions(rows='6',cols='110') }}</td>
         </tr>
     </table>
         <hr/>

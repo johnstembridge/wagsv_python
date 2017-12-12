@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, FieldList, FormField, HiddenField, TextAreaField
-from interface import get_all_venues, get_venue, save_venue
+from interface import get_all_venues, get_venue, save_venue, get_new_venue_id
 
 
 class VenueItemForm(FlaskForm):

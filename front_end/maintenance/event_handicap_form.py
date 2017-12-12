@@ -59,7 +59,7 @@ class EventHandicapsForm(FlaskForm):
             item_form.old_handicap = hcap
             self.scores.append_entry(item_form)
 
-    def save_event_handicaps(self, year, event_id):
+    def save_event_handicaps(self):
         errors = self.errors
         if len(errors) > 0:
             return False
