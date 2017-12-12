@@ -33,8 +33,12 @@ def accounts_upload_file(year):
 
 @app.route('/venues', methods=['GET', 'POST'])
 def venues_main():
-    current_year = get_user_current_year()
-    return MaintainVenues.list_venues(current_year)
+    return MaintainVenues.list_venues()
+
+
+@app.route('/venues/<venue_id>', methods=['GET', 'POST'])
+def edit_venue(venue_id):
+    return MaintainVenues.edit_venue(venue_id)
 
 
 # region Events

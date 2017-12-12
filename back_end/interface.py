@@ -15,6 +15,7 @@ import math
 #  data_location = r'D:\python\wagsv\data'
 data_location = config.get('locations')['data']
 events_data = r'{}\events.tab'
+venues_data = r'venue_info.txt'
 bookings_data = r'{}\event{}.csv'
 players_data = r'players.tab'
 members_data = r'members.csv'
@@ -28,6 +29,10 @@ shots_data = r'shots.tab'
 
 def events_file(year):
     return os.path.join(data_location, events_data.format(year))
+
+
+def venues_file():
+    return os.path.join(data_location, venues_data)
 
 
 def bookings_file(year, event_id):
@@ -185,6 +190,46 @@ def get_results(year, event_id):
     return sorted(results, key=lambda k: k['points'], reverse=True)
 
 
+def get_all_venues():
+    venues = []
+    for venue_id in get_field(venues_file(), 'id'):
+        venue = get_venue(venue_id)
+        venues.append(
+            {
+                'id': venue['id'],
+                'name': venue['name']
+            }
+        )
+    return sorted(venues, key=lambda item: (item['name']))
+
+
+def get_venue(venue_id):
+    venue_id = coerce(venue_id, str)
+    data = get_record(venues_file(), 'id', venue_id)
+    data['id'] = data['id']
+    data['name'] = data['name']
+    data['address'] = data['address']
+    data['post_code'] = data['post_code']
+    data['url'] = data['url']
+    data['directions'] = data['directions']
+    return data
+
+
+def save_venue(venue_id, data):
+    data['id'] = str(venue_id)
+    data['name'] = data['name']
+    data['url'] = data['url']
+    data['phone'] = data['phone']
+    data['address'] = data['address']
+    data['directions'] = data['directions']
+    update_record(venues_file(), 'id', data)
+
+
+def get_new_venue_id():
+    ids = [int(m) for m in get_field(venues_file(), 'id')]
+    return max(ids) + 1
+
+
 def get_event_list(year):
     events = []
     for event_id in get_field(events_file(year), 'num'):
@@ -335,7 +380,7 @@ def get_tour_events(year, tour_event_id):
     return events
 
 
-def get_new_event_id(year, event):
+def get_new_event_id(year):
     ids = [float(m) for m in get_field(events_file(year), 'num')]
     return math.floor(1 + max(ids))
 
