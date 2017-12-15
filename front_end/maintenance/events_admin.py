@@ -64,7 +64,7 @@ class MaintainEvents:
         form = EventHandicapsForm()
         if form.is_submitted():
             if form.save_handicaps.data:
-                if form.save_event_handicaps(year, event_id):
+                if form.save_event_handicaps():
                     flash('Handicaps saved', 'success')
                     return redirect(url_for('handicaps_event', year=year, event_id=event_id))
         else:
