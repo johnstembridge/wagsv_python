@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, HiddenField, TextAreaField, SelectField
-from interface import get_all_venue_names, get_venue, save_venue, get_new_venue_id
+from interface import get_all_venue_names, get_venue_by_name, save_venue, get_new_venue_id
 from data_utilities import decode_address, encode_address
 from form_helpers import set_select_field
 
@@ -32,9 +32,9 @@ class VenueDetailsForm(FlaskForm):
     editable = HiddenField(label='Editable')
     submit = SubmitField(label='Save')
 
-    def populate_venue(self, venue_id):
+    def populate_venue(self, venue_name):
         self.editable.data = True
-        venue = get_venue(venue_id)
+        venue = get_venue_by_name(venue_name)
         self.name.data = venue['name']
         self.url.data = venue['url']
         self.phone.data = venue['phone']

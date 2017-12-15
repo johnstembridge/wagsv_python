@@ -36,7 +36,7 @@
         <tbody>
         {% for item in form.tour_schedule %}
         <tr>
-            <td>{{ item.date }}</td><td>{{ item.course }}</td>
+            <td>{{ item.form.date }}</td><td>{{ item.form.course }}</td>
         </tr>
         {% endfor %}
         </tbody>

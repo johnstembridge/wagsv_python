@@ -35,7 +35,7 @@ class EventForm(FlaskForm):
     max = IntegerField(label='Maximum')
     event_type = HiddenField(label='Event Type')
     schedule = FieldList(FormField(ScheduleForm))
-    tour_schedule = FieldList(FormField(TourScheduleForm))
+    tour_schedule = FieldList(FormField(TourScheduleForm)) #, min_entries=6)
     note = TextAreaField(label='Notes', default='')
     submit = SubmitField(label='Save')
     editable = HiddenField(label='Editable')
@@ -65,11 +65,11 @@ class EventForm(FlaskForm):
             all_course_names = get_all_course_names()
             for item in get_tour_events(year, event_id):
                 item_form = TourScheduleForm()
+                #item_form = self.tour_schedule[i]
                 item_form.date = item['date']
                 item_form.course = item['course']
                 #set_select_field(item_form.course, 'course', all_course_names, item['course'])
                 self.tour_schedule.append_entry(item_form)
-        #assert self.validate()
         return event_id
 
     def save_event(self, year, event_id):

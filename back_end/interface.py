@@ -190,13 +190,9 @@ def get_all_venues():
     return sorted(venues, key=lambda item: (item['name']))
 
 
-def get_venue(venue_name):
-    data = get_record(venues_file(), 'name', venue_name)
-    data['id'] = data['id']
-    data['name'] = data['name']
+def get_venue(venue_id):
+    data = get_record(venues_file(), 'id', venue_id)
     data['address'] = decode_address(data['address'])
-    data['post_code'] = data['post_code']
-    data['url'] = data['url']
     data['directions'] = dequote(data['directions'])
     return data
 
@@ -383,8 +379,6 @@ def empty_schedule_item(item):
 
 def get_tour_events(year, tour_event_id):
     events = get_tour_event_list(year, tour_event_id)
-    while len(events) < 6:
-        events.append({'num': None, 'date': None, 'course': None, 'venue': None})
     return events
 
 

@@ -36,7 +36,7 @@ class MaintainEvents:
         if form.is_submitted():
             if form.save_event(int(year), event_id):
                 flash('Event saved', 'success')
-        if not form.is_submitted():
+        else:
             form.populate_event(int(year), event_id, event_type)
         event = event_id if event_id != "0" else "(new)"
         if event_type == EventType.wags_vl_event:
