@@ -4,10 +4,11 @@ from wtforms import StringField, SelectField, DecimalField, TextAreaField, Integ
     FormField, HiddenField
 from wtforms_components import TimeField
 from wtforms.fields.html5 import DateField
-from interface import get_all_venue_names, get_all_event_types, get_all_event_names, get_event, save_event, \
-    get_new_event_id, get_tour_events
+from interface import get_all_venue_names, get_all_course_names, get_event, save_event, \
+    get_new_event_id, get_tour_events, get_all_trophy_names
 from back_end.players import Players
 from enumerations import EventType
+from form_helpers import set_select_field
 
 
 class ScheduleForm(FlaskForm):
@@ -16,16 +17,17 @@ class ScheduleForm(FlaskForm):
 
 
 class TourScheduleForm(FlaskForm):
-    date = DateField('Time')
-    venue = SelectField(label='Course', choices=[('', 'Choose course ...')] + get_all_venue_names())
+    date = DateField('Date')
+    course = StringField(label='Course')
+    #course = SelectField(label='Course')
 
 
 class EventForm(FlaskForm):
-    members = Players().get_current_members()
-    event = StringField(label='Event')
     date = DateField(label='Date')
-    venue = SelectField(label='Venue', choices=[('', 'Choose venue ...')] + get_all_venue_names())
-    organiser = SelectField(label='Organiser', choices=[('', 'Choose organiser ...')] + [(m, m) for m in members])
+    trophy = SelectField(label='Trophy')
+    venue = SelectField(label='Venue')
+    course = SelectField(label='Course')
+    organiser = SelectField(label='Organiser')
     member_price = DecimalField(label='Member Price')
     guest_price = DecimalField(label='Guest Price')
     start_booking = DateField(label='Booking Starts')
@@ -34,7 +36,6 @@ class EventForm(FlaskForm):
     event_type = HiddenField(label='Event Type')
     schedule = FieldList(FormField(ScheduleForm))
     tour_schedule = FieldList(FormField(TourScheduleForm))
-    directions = TextAreaField(label='Directions', default='')
     note = TextAreaField(label='Notes', default='')
     submit = SubmitField(label='Save')
     editable = HiddenField(label='Editable')
@@ -43,8 +44,7 @@ class EventForm(FlaskForm):
         self.editable.data = year >= datetime.date.today().year
         event = get_event(year, event_id)
         self.date.data = event['date']
-        self.event.data = event['event']
-        self.organiser.data = event['organiser']
+        set_select_field(self.organiser, 'organiser', Players().get_current_members(), event['organiser'])
         self.member_price.data = event['member_price']
         self.guest_price.data = event['guest_price']
         self.start_booking.data = event['start_booking']
@@ -52,21 +52,24 @@ class EventForm(FlaskForm):
         self.max.data = event['max']
         self.event_type.data = event_type.name
         self.note.data = event['note']
+        set_select_field(self.trophy, 'trophy', get_all_trophy_names(), event['event'])
+        set_select_field(self.venue, 'venue', get_all_venue_names(), event['venue'])
         if event_type in [EventType.wags_vl_event, EventType.non_event]:
-            self.venue.data = event['venue']
-            self.directions.data = event['directions']
+            set_select_field(self.course, 'course', get_all_course_names(), event['course'])
             for item in event['schedule']:
                 item_form = ScheduleForm()
                 item_form.time = item['time']
                 item_form.text = item['text']
                 self.schedule.append_entry(item_form)
         if event_type == EventType.wags_tour:
-            self.venue.data = ''
+            all_course_names = get_all_course_names()
             for item in get_tour_events(year, event_id):
                 item_form = TourScheduleForm()
                 item_form.date = item['date']
-                item_form.course = item['venue']
+                item_form.course = item['course']
+                #set_select_field(item_form.course, 'course', all_course_names, item['course'])
                 self.tour_schedule.append_entry(item_form)
+        #assert self.validate()
         return event_id
 
     def save_event(self, year, event_id):
@@ -74,8 +77,10 @@ class EventForm(FlaskForm):
         if len(errors) > 0:
             return False
         event = {
+            'venue': self.venue.data,
             'date': self.date.data,
-            'event': self.event.data,
+            'event': self.trophy.data,
+            'course': self.course.data,
             'organiser': self.organiser.data,
             'member_price': self.member_price.data,
             'guest_price': self.guest_price.data,
@@ -84,13 +89,11 @@ class EventForm(FlaskForm):
             'max': self.max.data or '0',
             'event_type': self.event_type.data,
             'note': self.note.data,
-            'venue': self.venue.data,
-            'directions': self.directions.data,
             'schedule': [],
             'tour_schedule': []
         }
         if event_id == "0":
-            event_id = str(get_new_event_id(year, event))
+            event_id = str(get_new_event_id(year))
 
         if EventType[self.event_type.data] == EventType.wags_vl_event:
             for item in self.schedule.data:

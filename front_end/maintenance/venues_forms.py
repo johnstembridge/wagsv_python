@@ -1,6 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, FieldList, FormField, HiddenField, TextAreaField
-from interface import get_all_venues, get_venue, save_venue, get_new_venue_id
+from wtforms import StringField, SubmitField, HiddenField, TextAreaField, SelectField
+from interface import get_all_venue_names, get_venue, save_venue, get_new_venue_id
+from data_utilities import decode_address, encode_address
+from form_helpers import set_select_field
 
 
 class VenueItemForm(FlaskForm):
@@ -9,17 +11,15 @@ class VenueItemForm(FlaskForm):
 
 
 class VenueListForm(FlaskForm):
-    venue_list = FieldList(FormField(VenueItemForm))
+    all_venues = get_all_venue_names()
+    venue = SelectField(label='Venue')
+    edit_venue = SubmitField(label='Edit Venue')
     add_venue = SubmitField(label='Add Venue')
     editable = HiddenField(label='Editable')
 
     def populate_venue_list(self):
+        set_select_field(self.venue, 'venue', get_all_venue_names(), '')
         self.editable = True
-        for item in get_all_venues():
-            item_form = VenueItemForm()
-            item_form.id = item['id']
-            item_form.name = item['name']
-            self.venue_list.append_entry(item_form)
 
 
 class VenueDetailsForm(FlaskForm):
@@ -39,7 +39,7 @@ class VenueDetailsForm(FlaskForm):
         self.url.data = venue['url']
         self.phone.data = venue['phone']
         self.post_code.data = venue['post_code']
-        self.address.data = venue['address']
+        self.address.data = decode_address(venue['address'])
         self.directions.data = venue['directions']
 
     def save_venue(self, venue_id):
@@ -51,7 +51,7 @@ class VenueDetailsForm(FlaskForm):
             'url': self.url.data,
             'phone': self.phone.data,
             'post_code': self.post_code.data,
-            'address': self.address.data,
+            'address': encode_address(self.address.data),
             'directions': self.directions.data
         }
         if venue_id == "0":

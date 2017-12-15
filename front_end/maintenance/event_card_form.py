@@ -34,7 +34,7 @@ class EventCardForm(FlaskForm):
     def populate_card(self, year, event_id, player_id):
         event = get_event(year, event_id)
         date = fmt_date(event['date'])
-        course_id = lookup_course(event['venue']) + 1
+        course_id = lookup_course(event['venue'])
         course_data = get_course_data(course_id, year)
         hcap = get_player_handicap(player_id, date)
         card = get_event_card(year, event_id, player_id)

@@ -11,7 +11,7 @@ Peoples Trophy	peoples_trophy	Bob Hill
 Phillips Pholly	phillips_pholly	Andy Phillips
 Robinson Ryder	robinson_ryder	Gerry Robinson
 Shaw Shield	shaw_shield	Steve Shaw
-Shutes  Shotglass	shutes_shotglass	Anthony Shutes
+Shutes Shot-Glass	shutes_shotglass	Anthony Shutes
 Stembridge Sandwedge	stembridge_sandwedge	John Stembridge
 Thomson Trophy	thomson_trophy	Steve Thomson
 Tourist Trophy	tourist_trophy	WAGS

@@ -128,3 +128,25 @@ def dequote(string):
 
 def enquote(string):
     return '"' + string + '"'
+
+
+def decode_address(address):
+    if address:
+        address = dequote(address)
+        address = address.split(",")
+        address = '\n'.join(address)
+    return address
+
+
+def encode_address(address):
+    address = address.replace('\r', '')
+    address = address.split('\n')
+    address = ",".join(address)
+    return enquote(address)
+
+
+def de_the(string):
+    if string:
+        if string.startswith('The '):
+            string = string[4:]
+    return string

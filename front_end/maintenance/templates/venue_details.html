@@ -5,27 +5,26 @@
 <div class="page-header">
     <h1>Venue {{ venue_id }}</h1>
 </div>
-
 <form method="POST">
     {{ form.csrf_token }}
     <table width="100%">
         <tr>
-            <td>{{ form.name.label }}</td><td>{{ form.name }}</td>
+            <td>{{ form.name.label }}</td><td>{{ form.name(size='100') }}</td>
         </tr>
         <tr>
-            <td>{{ form.url.label }}</td><td>{{ form.url }}</td>
+            <td>{{ form.url.label }}</td><td>{{ form.url(size='100') }}</td>
         </tr>
         <tr>
-            <td>{{ form.phone.label }}</td><td>{{ form.phone }}</td>
+            <td>{{ form.phone.label }}</td><td>{{ form.phone(size='100') }}</td>
         </tr>
         <tr>
-            <td valign="top">{{ form.address.label }}</td><td>{{ form.address(rows='6',cols='110') }}</td>
+            <td valign="top">{{ form.address.label }}</td><td>{{ form.address(rows='6',cols='101') }}</td>
         </tr>
         <tr>
-            <td>{{ form.post_code.label }}</td><td>{{ form.post_code }}</td>
+            <td>{{ form.post_code.label }}</td><td>{{ form.post_code(size='100') }}</td>
         </tr>
         <tr>
-            <td valign="top">{{ form.directions.label }}</td><td>{{ form.directions(rows='6',cols='110') }}</td>
+            <td valign="top">{{ form.directions.label }}</td><td>{{ form.directions(rows='6',cols='101') }}</td>
         </tr>
     </table>
         <hr/>

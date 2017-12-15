@@ -2,29 +2,30 @@ import datetime
 import os
 from itertools import groupby
 from operator import itemgetter
-from file_access import get_field, get_record, update_record, get_records, get_file, update_records
+from file_access import get_field, get_record, update_record, get_records, get_file, update_records, get_fields
 from data_utilities import encode_date, encode_price, decode_date, decode_price, decode_time, coerce_date, \
-    sort_name_list, lookup, force_list, coerce, decode_event_type, encode_event_type, dequote, enquote
+    sort_name_list, lookup, force_list, coerce, decode_event_type, encode_event_type, dequote, enquote, \
+    encode_address, decode_address, de_the
 from back_end.players import Player, Players
 import config
 from enumerations import EventType
 import math
 
 # region file_paths
-#
-#  data_location = r'D:\python\wagsv\data'
+
 data_location = config.get('locations')['data']
-events_data = r'{}\events.tab'
+events_data = r'{}/events.tab'
 venues_data = r'venue_info.txt'
-bookings_data = r'{}\event{}.csv'
+bookings_data = r'{}/event{}.csv'
 players_data = r'players.tab'
 members_data = r'members.csv'
 course_data = r'course_data.tab'
-courses_data = r'courses.tab'
+courses_data = r'courses.txt'
 handicaps_data = r'hcaps.tab'
 vl_data = r'victor.tab'
 scores_data = r'scores.tab'
 shots_data = r'shots.tab'
+trophies_data = r'trophies.txt'
 
 
 def events_file(year):
@@ -69,28 +70,11 @@ def scores_file():
 
 def shots_file():
     return os.path.join(data_location, shots_data)
+
+
+def trophies_file():
+    return os.path.join(data_location, trophies_data)
 # endregion
-
-
-def get_all_event_types():
-    return [(e.name, e.name) for e in EventType]
-
-
-def get_all_event_names():
-    events = get_field(events_file(2017), 'event')
-    events = list(set(events))
-    return [(e, e) for e in sorted(events)]
-
-
-def get_all_venue_names():
-    courses = get_all_courses()
-    return [(v, v) for v in sorted(courses)]
-
-
-def get_all_courses():
-    with open(courses_file()) as f:
-        all_courses = f.read().splitlines()
-    return all_courses
 
 
 def get_all_years():
@@ -190,22 +174,24 @@ def get_results(year, event_id):
     return sorted(results, key=lambda k: k['points'], reverse=True)
 
 
+def get_all_trophy_names():
+    trophies = get_field(trophies_file(), 'name')
+    return sorted(trophies)
+
+
+# region venues
+def get_all_venue_names():
+    venues = get_field(venues_file(), 'name')
+    return sorted(venues)
+
+
 def get_all_venues():
-    venues = []
-    for venue_id in get_field(venues_file(), 'id'):
-        venue = get_venue(venue_id)
-        venues.append(
-            {
-                'id': venue['id'],
-                'name': venue['name']
-            }
-        )
+    venues = get_fields(venues_file(), [])
     return sorted(venues, key=lambda item: (item['name']))
 
 
-def get_venue(venue_id):
-    venue_id = coerce(venue_id, str)
-    data = get_record(venues_file(), 'id', venue_id)
+def get_venue(venue_name):
+    data = get_record(venues_file(), 'name', venue_name)
     data['id'] = data['id']
     data['name'] = data['name']
     data['address'] = decode_address(data['address'])
@@ -213,6 +199,13 @@ def get_venue(venue_id):
     data['url'] = data['url']
     data['directions'] = dequote(data['directions'])
     return data
+
+
+def get_venue_by_name(name):
+    res = get_record(venues_file(), 'name', name)
+    res['address'] = dequote(res['address'])
+    res['directions'] = dequote(res['directions'])
+    return res
 
 
 def save_venue(venue_id, data):
@@ -228,6 +221,17 @@ def save_venue(venue_id, data):
 def get_new_venue_id():
     ids = [int(m) for m in get_field(venues_file(), 'id')]
     return max(ids) + 1
+# endregion
+
+
+# region events
+def get_all_event_types():
+    return [(e.name, e.name) for e in EventType]
+
+
+def get_all_event_names():
+    events = get_field(events_file(2017), 'event')
+    return sorted(events)
 
 
 def get_event_list(year):
@@ -257,7 +261,7 @@ def get_tour_event_list(year, tour_event_id):
                 {
                     'num': event['num'],
                     'date': event['date'],
-                    'event': event['event'],
+                    'course': event['course'],
                     'venue': event['venue'],
                 }
             )
@@ -268,15 +272,24 @@ def get_event(year, event_id):
     year = coerce(year, int)
     event_id = coerce(event_id, str)
     data = get_record(events_file(year), 'num', event_id)
-    data['schedule'] = decode_schedule(data.get('schedule', None))
     data['date'] = decode_date(data['date'], year)
     data['end_booking'] = data.get('deadline', None)
     data['end_booking'] = coerce_date(data['end_booking'], year, data['date'] - datetime.timedelta(days=2))
-    data['start_booking'] = data['date'] - datetime.timedelta(days=14)
+    data['start_booking'] = data.get('booking_start', None)
+    data['start_booking'] = coerce_date(data['start_booking'], year, data['date'] - datetime.timedelta(days=14))
     data['member_price'] = decode_price(data['member_price'])
     data['guest_price'] = decode_price(data['guest_price'])
     data['event_type'] = decode_event_type(data.get('type', None))
     data['max'] = data.get('max', None)
+    data['schedule'] = decode_schedule(data.get('schedule', None))
+    data['note'] = dequote(data['note'])
+    venue = get_venue_by_name(data.get('venue', None))
+    data['address'] = venue['address']
+    data['post_code'] = venue['post_code']
+    data['phone'] = venue['phone']
+    data['url'] = venue['url']
+    data['directions'] = venue['directions']
+    data['event'] = de_the(data['event'])
     return data
 
 
@@ -320,12 +333,7 @@ def get_course_data(course_id, year):
 def get_event_card(year, event_id, player_id):
     player_id = coerce(player_id, str)
     date = event_date(year, event_id)
-    header, recs = get_records(shots_file(), 'date', date)
-    inx = lookup(header, 'player')
-    recs = [x for x in recs if x[inx] == player_id]
-    if len(recs) == 0:
-        recs.append([None] * len(header))
-    return dict(zip(header, recs[0]))
+    return get_record(shots_file(), ['date', 'player'], [date, player_id])
 
 
 def save_event_card(year, event_id, player_id, fields, shots):
@@ -376,7 +384,7 @@ def empty_schedule_item(item):
 def get_tour_events(year, tour_event_id):
     events = get_tour_event_list(year, tour_event_id)
     while len(events) < 6:
-        events.append({'num': None, 'date': None, 'event': None, 'venue': None})
+        events.append({'num': None, 'date': None, 'course': None, 'venue': None})
     return events
 
 
@@ -406,13 +414,9 @@ def get_booked_players(year, event_id):
     return {v[0]: v[1] for v in res}
 
 
-def lookup_course(course):
-    return lookup(get_all_courses(), course)
-
-
 def event_course_id(year, event_id):
     event = get_event(year, event_id)
-    course_id = lookup_course(event['venue']) + 1
+    course_id = lookup_course(event['venue'])
     return course_id
 
 
@@ -424,12 +428,8 @@ def event_date(year, event_id):
 
 def event_type(year, event_id):
     event = get_event(year, event_id)
-    event_type = event['event_type']
-    return event_type
-
-
-def save_hcaps(date, header, data):
-    update_records(handicaps_file(), ['date', 'player'], [date], header, data)
+    type = event['event_type']
+    return type
 
 
 def is_latest_event(event_id):
@@ -440,18 +440,31 @@ def is_latest_event(event_id):
     if len(nums) > 0:
         return nums[-1] == event_id
     return False
+# endregion
 
 
-def decode_address(address):
-    if address:
-        address = dequote(address)
-        address = address.split(",")
-        address = '\n'.join(address)
-    return address
+# region courses
+def get_all_course_names():
+    courses = get_field(courses_file(), 'name')
+    return sorted(courses)
 
 
-def encode_address(address):
-    address = address.replace('\r', '')
-    address = address.split('\n')
-    address = ",".join(address)
-    return enquote(address)
+def get_course(course_id):
+    course_id = coerce(course_id, str)
+    data = get_record(courses_file(), 'id', course_id)
+    return data
+
+
+def get_courses_for_venue(venue_id):
+    return get_records(courses_file(), 'venue_id', venue_id)
+
+
+def lookup_course(course):
+    rec = get_record(venues_file(), 'name', course)
+    return rec['id'] if len(rec) > 0 else '0'
+
+# endregion
+
+
+def save_hcaps(date, header, data):
+    update_records(handicaps_file(), ['date', 'player'], [date], header, data)

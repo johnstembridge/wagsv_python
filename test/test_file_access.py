@@ -2,7 +2,8 @@ import copy
 import unittest
 import datetime
 from interface import encode_schedule, decode_schedule, get_event_card
-from file_access import get_record, get_field, update_record, file_delimiter, get_records, get_file, keys_match
+from file_access import get_record, get_field, get_fields, update_record, file_delimiter, get_records, get_file, \
+    keys_match
 from data_utilities import decode_date
 from test_data import TestData
 
@@ -18,6 +19,11 @@ class TestInterface(unittest.TestCase):
     def test_get_field(self):
         res = get_field(TestData.events_file, 'organiser')
         expected = TestData.example_event_field
+        self.assertEqual(res, expected)
+
+    def test_get_fields(self):
+        res = get_fields(TestData.venues_file, ['id', 'name'])
+        expected = TestData.example_venues_fields
         self.assertEqual(res, expected)
 
     def test_update_record_event(self):

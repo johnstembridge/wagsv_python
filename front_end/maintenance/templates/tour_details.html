@@ -10,7 +10,7 @@
     {{ form.csrf_token }}
     <table width="100%">
         <tr>
-            <td>{{ form.event.label }}</td><td>{{ form.event }}</td>
+            <td>{{ form.venue.label }}</td><td>{{ form.venue }}</td>
             <td>{{ form.organiser.label }}</td><td>{{ form.organiser }}</td>
         </tr>
         <tr>
@@ -36,7 +36,7 @@
         <tbody>
         {% for item in form.tour_schedule %}
         <tr>
-            <td>{{ item.date }}</td><td>{{ item.venue }}</td>
+            <td>{{ item.date }}</td><td>{{ item.course }}</td>
         </tr>
         {% endfor %}
         </tbody>

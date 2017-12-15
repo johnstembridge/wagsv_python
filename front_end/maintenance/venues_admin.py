@@ -11,6 +11,8 @@ class MaintainVenues:
         if form.is_submitted():
             if form.add_venue.data:
                 return redirect(url_for('edit_venue', venue_id="0"))
+            if form.edit_venue.data:
+                return redirect(url_for('edit_venue', venue_id=form.venue.data))
         form.populate_venue_list()
 
         return render_template('venue_list.html', form=form, render_link=render_link)

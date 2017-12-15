@@ -10,23 +10,24 @@
     {{ form.csrf_token }}
     <table width="100%">
         <tr>
-            <td>{{ form.event.label }}</td><td>{{ form.event }}</td>
-            <td>{{ form.organiser.label }}</td><td>{{ form.organiser }}</td>
-        </tr>
-        <tr>
-            <td>{{ form.date.label }}</td><td>{{ form.date(required='required') }}</td>
             <td>{{ form.venue.label }}</td><td>{{ form.venue }}</td>
+            <td>{{ form.course.label }}</td><td>{{ form.course }}</td>
         </tr>
         <tr>
+            <td>{{ form.trophy.label }}</td><td>{{ form.trophy }}</td>
+            <td>{{ form.date.label }}</td><td>{{ form.date(required='required') }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.organiser.label }}</td><td>{{ form.organiser }}</td>
+            <td>{{ form.max.label }}</td><td>{{ form.max(size = 6) }}</td>
+        </tr>
+        </tr>
             <td>{{ form.member_price.label }} £</td><td>{{ form.member_price(size = 6) }}</td>
             <td>{{ form.guest_price.label }} £</td><td>{{ form.guest_price(size = 6) }}</td>
-        </tr>
+        <tr>
         <tr>
             <td>{{ form.start_booking.label }}</td><td>{{ form.start_booking }}</td>
             <td>{{ form.end_booking.label }}</td><td>{{ form.end_booking }}</td>
-        </tr>
-         <tr>
-            <td>{{ form.max.label }}</td><td>{{ form.max(size = 6) }}</td>
             <td></td><td></td>
         </tr>
     </table>
@@ -45,9 +46,6 @@
         {% endfor %}
         </tbody>
     </table>
-    {{ form.directions.label }}
-    <br>
-    {{ form.directions(rows='5',cols='110') }}
     <br>
     {{ form.note.label }}
     <br>

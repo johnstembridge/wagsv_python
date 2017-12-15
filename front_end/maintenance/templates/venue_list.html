@@ -7,34 +7,11 @@
 </div>
 <form method="POST">
     {{ form.csrf_token }}
-    <table width="100%" class="table table-striped">
-        <thead>
-        <tr>
-            <th>Name</th>
-            <th class="text-center">Details</th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for item in form.venue_list %}
-            <tr>
-                <td>{{ item.form.name.data }}</td>
-                <td align="center">
-                    {{ render_link(
-                        url=url_for('edit_venue', venue_id=item.form.id.data),
-                        image=url_for('static', filename='images/go.jpg'),
-                        text='View/Edit venue'
-                    )|safe }}
-                </td>
-                <td>{{ item.form.id }}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
 
-    <hr/>
+    {{ form.venue.label}} {{ form.venue}}
     {%if form.editable %}
-        {{ form.add_venue(class="btn btn-primary") }}
+        <hr/>
+        {{ form.edit_venue(class="btn btn-primary") }} {{ form.add_venue(class="btn btn-primary") }}
     {% endif %}
 </form>
 {% endblock %}

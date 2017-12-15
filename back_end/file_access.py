@@ -9,15 +9,22 @@ from operator import itemgetter
 def get_record(file, key, value):
     delimiter = file_delimiter(file)
     keys = None
-    with open(file, 'r') as f:
+    with my_open(file, 'r') as f:
         for line in f:
             values = line.rstrip('\n').split(delimiter)
             if keys is None:
                 keys = [k.lower() for k in values]
             else:
                 rec = dict(zip(keys, values))
-                if rec[key] == value:
-                    return rec
+                if type(value) is list and type(key) is not list:
+                    if rec[key] in value:
+                        return rec
+                else:
+                    if keys_match(rec, key, value):
+                        return rec
+                # rec = dict(zip(keys, values))
+                # if rec[key] == value:
+                #     return rec
     return dict(zip(keys, [None] * len(keys)))
 
 
@@ -45,7 +52,7 @@ def get_file(file):
     delimiter = file_delimiter(file)
     keys = None
     res = []
-    with open(file, 'r') as f:
+    with my_open(file, 'r') as f:
         for line in f:
             values = line.rstrip('\n').split(delimiter)
             if keys is None:
@@ -61,8 +68,8 @@ def update_record(file, key, new_rec):
     ft, target_file_path = mkstemp()
     os.close(ft)
     rec_updated = False
-    with open(target_file_path, 'w') as target_file:
-        with open(file, 'r') as source_file:
+    with my_open(target_file_path, 'w') as target_file:
+        with my_open(file, 'r') as source_file:
             for line in source_file:
                 values = line.rstrip('\n').split(delimiter)
                 if keys is None:
@@ -96,8 +103,8 @@ def update_records(file, key, key_value, header, new_values):
     key = force_list(key)
     key_value = force_list(key_value)
     rec_key = (dict(zip(key[: len(key_value)], key_value)))
-    with open(target_file_path, 'w') as target_file:
-        with open(file, 'r') as source_file:
+    with my_open(target_file_path, 'w') as target_file:
+        with my_open(file, 'r') as source_file:
             for line in source_file:
                 values = line.rstrip('\n').split(delimiter)
                 if keys is None:
@@ -151,7 +158,7 @@ def get_field(file, field):
     delimiter = file_delimiter(file)
     keys = None
     res = []
-    with open(file, 'r') as f:
+    with my_open(file, 'r') as f:
         for line in f:
             values = line.rstrip('\n').split(delimiter)
             if keys is None:
@@ -161,6 +168,28 @@ def get_field(file, field):
             else:
                 rec = dict(zip(keys, values))
                 res.append(rec[field])
+    if '' in res:
+        res.remove('')
+    return res
+
+
+def get_fields(file, fields):
+    delimiter = file_delimiter(file)
+    keys = None
+    res = []
+    with my_open(file, 'r') as f:
+        for line in f:
+            values = line.rstrip('\n').split(delimiter)
+            if keys is None:
+                keys = [k.lower() for k in values]
+                for field in fields:
+                    if field not in keys:
+                        raise ValueError('Field not found: ' + field)
+                if len(fields) == 0: fields = keys
+            else:
+                rec = dict(zip(keys, values))
+                v = {field: rec[field] for field in fields}
+                res.append(v)
     if '' in res:
         res.remove('')
     return res
@@ -210,6 +239,10 @@ def extract_new_record(header, new_values, kv):
             new_values.remove(values)
             break
     return extracted
+
+
+def my_open(filename, mode):
+    return open(filename, mode, encoding="latin-1")
 
 
 
