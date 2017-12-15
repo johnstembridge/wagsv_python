@@ -14,8 +14,8 @@
             <td>{{ form.organiser.label }}</td><td>{{ form.organiser }}</td>
         </tr>
         <tr>
+            <td>{{ form.trophy.label }}</td><td>{{ form.trophy }}</td>
             <td>{{ form.date.label }}</td><td>{{ form.date(required='required') }}</td>
-            <td>{{ form.max.label }}</td><td>{{ form.max(size = 6) }}</td>
         </tr>
         <tr>
             <td>{{ form.member_price.label }} £</td><td>{{ form.member_price(size = 6) }}</td>
@@ -24,6 +24,9 @@
         <tr>
             <td>{{ form.start_booking.label }}</td><td>{{ form.start_booking }}</td>
             <td>{{ form.end_booking.label }}</td><td>{{ form.end_booking }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.max.label }}</td><td>{{ form.max(size = 6) }}</td>
         </tr>
     </table>
     <h3>Schedule</h3>

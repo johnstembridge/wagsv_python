@@ -101,3 +101,4 @@ id	name	address	post_code	phone	url	directions
 112	The Dyke	"Devils Dyke Road,Brighton"	BN1 8YJ	01273 857260	www.dykegolf.com/	"SAT NAV USERS PLEASE NOTE – Our BN1 8YJ postcode does not take you to the club, sorry! If travelling from the A23/27 Junction, you will need to travel ½ mile further, following the road round a sharp right hand bend (not straight ahead to Devil’s Dyke beauty spot). The Clubhouse and course will be on your right hand side, car park on the left hand side"
 113	Enmore Park					
 114	Taunton & Pickeridge					
+115	Portugal					

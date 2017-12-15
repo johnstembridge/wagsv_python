@@ -109,7 +109,7 @@ class EventForm(FlaskForm):
                     id = '{0:.1f}'.format(tour_event_id)
                     item.update({
                         'num': id,
-                        'event': self.event.data,
+                        'event': self.trophy.data,
                         'event_type': EventType.wags_vl_event.name,
                         'start_booking': None,
                         'end_booking': None,
