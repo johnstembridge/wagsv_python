@@ -41,6 +41,11 @@ def edit_venue(venue_id):
     return MaintainVenues.edit_venue(venue_id)
 
 
+@app.route('/venues/<venue_id>/courses/<course_id>', methods=['GET', 'POST'])
+def edit_course(venue_id, course_id):
+    return MaintainVenues.edit_course(venue_id, course_id)
+
+
 # region Events
 @app.route('/events', methods=['GET', 'POST'])
 def events_main():

@@ -313,19 +313,6 @@ def update_event_scores(year, event_id, player_id, keys, values):
     update_records(scores_file(), ['date', 'course', 'player'], [date, course_id, player_id], keys, [values])
 
 
-def get_course_data(course_id, year):
-    course_id = coerce(course_id, str)
-    year = coerce(year, int)
-    keys, recs = get_records(course_data_file(), 'course', course_id)
-    ret = None
-    for rec in recs:
-        test = dict(zip(keys, rec))
-        if int(test['year']) >= int(year):
-            ret = test
-            break
-    return ret
-
-
 def get_event_card(year, event_id, player_id):
     player_id = coerce(player_id, str)
     date = event_date(year, event_id)
@@ -456,6 +443,19 @@ def get_courses_for_venue(venue_id):
 def lookup_course(course):
     rec = get_record(venues_file(), 'name', course)
     return rec['id'] if len(rec) > 0 else '0'
+
+
+def get_course_data(course_id, year):
+    course_id = coerce(course_id, str)
+    year = coerce(year, int)
+    keys, recs = get_records(course_data_file(), 'course', course_id)
+    ret = None
+    for rec in recs:
+        test = dict(zip(keys, rec))
+        if int(test['year']) >= int(year):
+            ret = test
+            break
+    return ret
 
 # endregion
 

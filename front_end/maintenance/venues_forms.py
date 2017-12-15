@@ -1,13 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, HiddenField, TextAreaField, SelectField
-from interface import get_all_venue_names, get_venue_by_name, save_venue, get_new_venue_id
+from wtforms import StringField, SubmitField, HiddenField, TextAreaField, SelectField, FieldList, FormField
+from interface import get_all_venue_names, get_venue_by_name, save_venue, get_new_venue_id, get_courses_for_venue
 from data_utilities import decode_address, encode_address
 from form_helpers import set_select_field
-
-
-class VenueItemForm(FlaskForm):
-    id = HiddenField(label='Id')
-    name = StringField(label='Name')
 
 
 class VenueListForm(FlaskForm):
@@ -22,25 +17,41 @@ class VenueListForm(FlaskForm):
         self.editable = True
 
 
+class VenueCourseForm(FlaskForm):
+    id = HiddenField(label='Id')
+    name = StringField(label='Name')
+
+
 class VenueDetailsForm(FlaskForm):
     name = StringField(label='Name')
+    venue_id = HiddenField(label='Venue Id')
     url = StringField(label='url')
     phone = StringField(label='Phone')
     post_code = StringField(label='Post Code')
     address = TextAreaField(label='Address', default='')
     directions = TextAreaField(label='Directions', default='')
     editable = HiddenField(label='Editable')
+    courses = FieldList(FormField(VenueCourseForm))
+    add_course = SubmitField(label='Add Course')
     submit = SubmitField(label='Save')
 
-    def populate_venue(self, venue_name):
+    def populate_venue(self, venue_id):
         self.editable.data = True
-        venue = get_venue_by_name(venue_name)
+        venue = get_venue_by_name(venue_id)
+        self.venue_id = venue['id']
         self.name.data = venue['name']
         self.url.data = venue['url']
         self.phone.data = venue['phone']
         self.post_code.data = venue['post_code']
         self.address.data = decode_address(venue['address'])
         self.directions.data = venue['directions']
+        keys, courses = get_courses_for_venue(venue['id'])
+        for course in courses:
+            c = dict(zip(keys, course))
+            item_form = VenueCourseForm()
+            item_form.id = c['id']
+            item_form.name = c['name']
+            self.courses.append_entry(item_form)
 
     def save_venue(self, venue_id):
         errors = self.errors

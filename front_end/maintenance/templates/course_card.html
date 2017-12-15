@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block body %}
+    <body onLoad = "updateAll()">
+    {{ super() }}
+{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>{{ form.course_name.data }}</h1>
+</div>
+<form method="POST">
+    {{ form.csrf_token }}
+    <div class="table-responsive col-md-6">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Hole</th>
+                <th>Par</th>
+                <th>Index</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in form.holesOut %}
+            <tr>
+                <td>{{ item.hole.data }}</td>
+                <td>{{ item.par }}</td>
+                <td>{{ item.si }}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td><b>Out</b></td>
+                <td></td>
+                <td><b id="scoresOut-totalShots">{{ form.totalShotsOut.data }}</b></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="table-responsive col-md-6">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Hole</th>
+                <th>Par</th>
+                <th>Index</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in form.holesIn %}
+            <tr>
+                <td>{{ item.hole.data }}</td>
+                <td>{{ item.par }}</td>
+                <td>{{ item.si }}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td><b>In</b></td>
+                <td></td>
+                <td><b id="scoresIn-totalShots">{{ form.totalShotsIn.data }}</b></td>
+            </tr>
+             <tr>
+                <td><b>Total</b></td>
+                <td></td>
+                <td><b id="totalShots">{{ form.totalShots.data }}</b></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    {{ form.totalShotsReturn }}
+    {{ form.totalPointsReturn }}
+    <hr/>
+    {%if form.editable.data == 'y' %}
+        {{ form.save_card(class="btn btn-primary") }}
+    {% endif %}
+    <span>{{ form.editable }}</span>
+</form>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{url_for('.static', filename='scripts/event_card.js')}}"></script>
+{{super()}}
+{% endblock %}

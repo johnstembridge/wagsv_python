@@ -1,5 +1,6 @@
 from flask import render_template, redirect, url_for, flash
 from venues_forms import VenueListForm, VenueDetailsForm
+from course_details_form import CourseCardForm
 from utility import render_link
 
 
@@ -23,8 +24,20 @@ class MaintainVenues:
         if form.is_submitted():
             if form.save_venue(venue_id):
                 flash('Venue saved', 'success')
+                return redirect(url_for('venues_main'))
+            if form.add_course.data:
+                return redirect(url_for('edit_course', venue_id=venue_id, course_id=0))
         if not form.is_submitted():
             form.populate_venue(venue_id)
         venue = venue_id if venue_id != "0" else "(new)"
         return render_template('venue_details.html', venue_id=venue, form=form, render_link=render_link)
 
+    @staticmethod
+    def edit_course(venue_id, course_id):
+        form = CourseCardForm()
+        if form.is_submitted():
+            if form.save_venue(venue_id):
+                flash('Venue saved', 'success')
+        if not form.is_submitted():
+            form.populate_card(course_id)
+        return render_template('course_card.html', form=form, render_link=render_link)
