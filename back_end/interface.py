@@ -77,112 +77,15 @@ def trophies_file():
 # endregion
 
 
-def get_all_years():
-    years = [i for i in range(2020, 1992, -1)]
-    return [(v, v) for v in years]
-
-
-def get_all_players():
-    with open(players_file()) as f:
-        all_players = f.read().splitlines()
-    return all_players
-
-
-def get_player_name(player_id):
-    return get_all_players()[coerce(player_id, int) - 1]
-
-
-def get_players(as_of, status=None):
-    header, recs = get_handicap_records(as_of, status)
-    inx = [1]
-    pi = [int(itemgetter(*inx)(r)) - 1 for r in recs]
-    players = Players().get_all_players()
-    current = itemgetter(*pi)(players)
-    return sort_name_list(current)
-
-
-def get_latest_handicaps():
-    players = get_field(vl_file(), 'player')
-    header, recs = get_records(handicaps_file(), 'player', players)
-    recs.sort(key=lambda tup: (tup[1], tup[0]), reverse=True)
-    get_item = itemgetter(1)
-    res = [list(value)[0] for key, value in groupby(recs, get_item)]
-    inx = [1, 2]
-    return [itemgetter(*inx)(r) for r in res]
-
-
-def get_handicaps(as_of, status=None):
-    header, recs = get_handicap_records(as_of, status)
-    inx = [1, 2]
-    return [itemgetter(*inx)(r) for r in recs]
-
-
-def get_player_handicap(player_id, as_of):
-    player_id = coerce(player_id, str)
-    header, recs = get_records(handicaps_file(), 'player', player_id)
-    recs = [x for x in recs if x[0] <= as_of]
-    recs.sort(key=lambda tup: (tup[1], tup[0]), reverse=True)
-    return float(dict(zip(header, recs[0]))['handicap'])
-
-
-def get_handicap_records(as_of, status=None):
-    header, recs = get_file(handicaps_file())
-    recs = [x for x in recs if x[0] <= as_of]
-    recs.sort(key=lambda tup: (tup[1], tup[0]), reverse=True)  # order by date within player
-    get_item = itemgetter(1)
-    res = [list(value)[0] for key, value in groupby(recs, get_item)]  # get latest for each player
-    if status:
-        status = [str(s) for s in force_list(status)]
-        res = [x for x in res if x[3] in status]  # select members/guests/ex-members
-    return header, res
-
-
-def get_handicap_history(player_id, as_of):
-    player_id = coerce(player_id, str)
-    header, recs = get_records(handicaps_file(), 'player', player_id)
-    recs = [x for x in recs if x[0] <= as_of]
-    recs.sort(key=lambda tup: (tup[1], tup[0]), reverse=True)
-    inx = lookup(header, ['date', 'handicap', 'status'])
-    res = [itemgetter(*inx)(r) for r in recs]
-    return res
-
-
-def get_results(year, event_id):
-    date = event_date(year, event_id)
-    all_hcaps = dict(get_handicaps(date))
-    all_scores = {v[0]: v[1:] for v in get_event_scores(year, event_id)}  # player: position, points, strokes, handicap
-    booked = get_booked_players(year, event_id)  # player: handicap
-    event_players = list(set(Players().id_to_name(list(all_scores.keys()))) | set(booked.keys()))
-    results = []
-    for player in sort_name_list(event_players):
-        player_id = str(Players().name_to_id(player))
-        guest = player in booked and float(booked[player]) > 0
-        if player_id not in all_scores:
-            hcap = booked[player] if guest else all_hcaps[player_id]
-            all_scores[player_id] = [0, '0', 0, hcap]
-        det = all_scores[player_id]
-        x = {
-                'id': player_id,
-                'name': player,
-                'handicap': det[3],
-                'strokes': int(det[2]),
-                'points': int(det[1]),
-                'position': det[0],
-                'guest': 'guest' if guest else ''
-            }
-        results.append(x)
-    return sorted(results, key=lambda k: k['points'], reverse=True)
-
-
-def get_all_trophy_names():
-    trophies = get_field(trophies_file(), 'name')
-    return sorted(trophies)
-
-
 # region venues
 def get_all_venue_names():
     venues = get_field(venues_file(), 'name')
     return sorted(venues)
+
+
+def get_venue_select_list():
+    venues = get_fields(venues_file(), ['id', 'name'])
+    return sorted(venues, key=lambda tup: tup[1])
 
 
 def get_all_venues():
@@ -199,7 +102,7 @@ def get_venue(venue_id):
 
 def get_venue_by_name(name):
     res = get_record(venues_file(), 'name', name)
-    res['address'] = dequote(res['address'])
+    res['address'] = decode_address(res['address'])
     res['directions'] = dequote(res['directions'])
     return res
 
@@ -458,6 +361,108 @@ def get_course_data(course_id, year):
     return ret
 
 # endregion
+
+
+def get_all_years():
+    years = [i for i in range(2020, 1992, -1)]
+    return [(v, v) for v in years]
+
+
+def get_all_players():
+    with open(players_file()) as f:
+        all_players = f.read().splitlines()
+    return all_players
+
+
+def get_player_name(player_id):
+    return get_all_players()[coerce(player_id, int) - 1]
+
+
+def get_players(as_of, status=None):
+    header, recs = get_handicap_records(as_of, status)
+    inx = [1]
+    pi = [int(itemgetter(*inx)(r)) - 1 for r in recs]
+    players = Players().get_all_players()
+    current = itemgetter(*pi)(players)
+    return sort_name_list(current)
+
+
+def get_latest_handicaps():
+    players = get_field(vl_file(), 'player')
+    header, recs = get_records(handicaps_file(), 'player', players)
+    recs.sort(key=lambda tup: (tup[1], tup[0]), reverse=True)
+    get_item = itemgetter(1)
+    res = [list(value)[0] for key, value in groupby(recs, get_item)]
+    inx = [1, 2]
+    return [itemgetter(*inx)(r) for r in res]
+
+
+def get_handicaps(as_of, status=None):
+    header, recs = get_handicap_records(as_of, status)
+    inx = [1, 2]
+    return [itemgetter(*inx)(r) for r in recs]
+
+
+def get_player_handicap(player_id, as_of):
+    player_id = coerce(player_id, str)
+    header, recs = get_records(handicaps_file(), 'player', player_id)
+    recs = [x for x in recs if x[0] <= as_of]
+    recs.sort(key=lambda tup: (tup[1], tup[0]), reverse=True)
+    return float(dict(zip(header, recs[0]))['handicap'])
+
+
+def get_handicap_records(as_of, status=None):
+    header, recs = get_file(handicaps_file())
+    recs = [x for x in recs if x[0] <= as_of]
+    recs.sort(key=lambda tup: (tup[1], tup[0]), reverse=True)  # order by date within player
+    get_item = itemgetter(1)
+    res = [list(value)[0] for key, value in groupby(recs, get_item)]  # get latest for each player
+    if status:
+        status = [str(s) for s in force_list(status)]
+        res = [x for x in res if x[3] in status]  # select members/guests/ex-members
+    return header, res
+
+
+def get_handicap_history(player_id, as_of):
+    player_id = coerce(player_id, str)
+    header, recs = get_records(handicaps_file(), 'player', player_id)
+    recs = [x for x in recs if x[0] <= as_of]
+    recs.sort(key=lambda tup: (tup[1], tup[0]), reverse=True)
+    inx = lookup(header, ['date', 'handicap', 'status'])
+    res = [itemgetter(*inx)(r) for r in recs]
+    return res
+
+
+def get_results(year, event_id):
+    date = event_date(year, event_id)
+    all_hcaps = dict(get_handicaps(date))
+    all_scores = {v[0]: v[1:] for v in get_event_scores(year, event_id)}  # player: position, points, strokes, handicap
+    booked = get_booked_players(year, event_id)  # player: handicap
+    event_players = list(set(Players().id_to_name(list(all_scores.keys()))) | set(booked.keys()))
+    results = []
+    for player in sort_name_list(event_players):
+        player_id = str(Players().name_to_id(player))
+        guest = player in booked and float(booked[player]) > 0
+        if player_id not in all_scores:
+            hcap = booked[player] if guest else all_hcaps[player_id]
+            all_scores[player_id] = [0, '0', 0, hcap]
+        det = all_scores[player_id]
+        x = {
+                'id': player_id,
+                'name': player,
+                'handicap': det[3],
+                'strokes': int(det[2]),
+                'points': int(det[1]),
+                'position': det[0],
+                'guest': 'guest' if guest else ''
+            }
+        results.append(x)
+    return sorted(results, key=lambda k: k['points'], reverse=True)
+
+
+def get_all_trophy_names():
+    trophies = get_field(trophies_file(), 'name')
+    return sorted(trophies)
 
 
 def save_hcaps(date, header, data):

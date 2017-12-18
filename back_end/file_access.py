@@ -71,6 +71,7 @@ def update_record(file, key, new_rec):
     with my_open(target_file_path, 'w') as target_file:
         with my_open(file, 'r') as source_file:
             for line in source_file:
+                last_line = line[-1] != '\n'
                 values = line.rstrip('\n').split(delimiter)
                 if keys is None:
                     keys = [k.lower() for k in values]
@@ -80,7 +81,7 @@ def update_record(file, key, new_rec):
                     if type(new_rec) is not dict:
                         new_rec = dict(zip(keys, new_rec))
                     if keys_match(rec, key, new_rec):
-                        new_line = insert_rec_values(rec, new_rec, delimiter)
+                        new_line = insert_rec_values(rec, new_rec, delimiter, last_line)
                         rec_updated = True
                     else:
                         new_line = line
@@ -106,6 +107,7 @@ def update_records(file, key, key_value, header, new_values):
     with my_open(target_file_path, 'w') as target_file:
         with my_open(file, 'r') as source_file:
             for line in source_file:
+                last_line = line[-1] != '\n'
                 values = line.rstrip('\n').split(delimiter)
                 if keys is None:
                     keys = [k.lower() for k in values]
@@ -116,16 +118,18 @@ def update_records(file, key, key_value, header, new_values):
                     if keys_match(rec, list(rec_key), rec_key):
                         update_rec = get_matching_update_rec(rec, key, key_value, header, new_values, found)
                         if update_rec:
-                            new_line = insert_rec_values(rec, update_rec, delimiter)
+                            new_line = insert_rec_values(rec, update_rec, delimiter, last_line)
                 target_file.write(new_line)
             # add new records
-            for i in range(len(new_values)):
-                if not found[i]:
-                    values = new_values[i]
-                    rec = OrderedDict(zip(keys, [''] * len(keys)))
-                    rec.update(dict(zip(key, key_value)))
-                    new_line = insert_rec_values(rec, dict(zip(header, values)), delimiter, True)
-                    target_file.write(new_line)
+            not_found = [i for i, f in enumerate(found) if not f]
+            if len(not_found) > 0: target_file.write('\n')
+            for i in not_found:
+                last_line = i == not_found[-1]
+                values = new_values[i]
+                rec = OrderedDict(zip(keys, [''] * len(keys)))
+                rec.update(dict(zip(key, key_value)))
+                new_line = insert_rec_values(rec, dict(zip(header, values)), delimiter, last_line)
+                target_file.write(new_line)
     os.remove(file)
     move(target_file_path, file)
 
@@ -147,9 +151,9 @@ def insert_rec_values(rec, new_values, delimiter, last_line=False):
         if k in rec:
             rec[k] = str(new_values[item]).replace(delimiter, ' ')
     res = (delimiter.join(rec.values()))
-    if last_line:
-        res = '\n' + res
-    else:
+    if not last_line:
+    #     res = '\n' + res
+    # else:
         res = res + '\n'
     return res
 
@@ -188,7 +192,7 @@ def get_fields(file, fields):
                 if len(fields) == 0: fields = keys
             else:
                 rec = dict(zip(keys, values))
-                v = {field: rec[field] for field in fields}
+                v = tuple([rec[field] for field in fields])
                 res.append(v)
     if '' in res:
         res.remove('')

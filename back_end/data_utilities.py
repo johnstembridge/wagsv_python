@@ -127,11 +127,11 @@ def dequote(string):
 
 
 def enquote(string):
-    return '"' + string + '"'
+    return string if len(string) == 0 else '"' + string + '"'
 
 
 def decode_address(address):
-    if address:
+    if address and len(address) > 0:
         address = dequote(address)
         address = address.split(",")
         address = '\n'.join(address)
