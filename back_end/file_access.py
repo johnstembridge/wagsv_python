@@ -87,6 +87,7 @@ def update_record(file, key, new_rec):
                         new_line = line
                 target_file.write(new_line)
         if not rec_updated:  # add new record
+            target_file.write('\n')
             rec = OrderedDict(zip(keys, [''] * len(keys)))
             new_line = insert_rec_values(rec, new_rec, delimiter, True)
             target_file.write(new_line)

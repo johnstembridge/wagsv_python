@@ -145,6 +145,18 @@ def encode_address(address):
     return enquote(address)
 
 
+def decode_directions(dir):
+    if dir and len(dir) > 0:
+        dir = dequote(dir)
+        dir = dir.replace('\a', '\r\n')
+    return dir
+
+
+def encode_directions(dir):
+    dir = dir.replace('\r\n', '\a')
+    return enquote(dir)
+
+
 def de_the(string):
     if string:
         if string.startswith('The '):

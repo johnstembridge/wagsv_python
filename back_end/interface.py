@@ -4,8 +4,8 @@ from itertools import groupby
 from operator import itemgetter
 from file_access import get_field, get_record, update_record, get_records, get_file, update_records, get_fields
 from data_utilities import encode_date, encode_price, decode_date, decode_price, decode_time, coerce_date, \
-    sort_name_list, lookup, force_list, coerce, decode_event_type, encode_event_type, dequote, enquote, \
-    encode_address, decode_address, de_the
+    sort_name_list, lookup, force_list, coerce, decode_event_type, encode_event_type, dequote, \
+    encode_address, decode_address, de_the, encode_directions, decode_directions
 from back_end.players import Player, Players
 import config
 from enumerations import EventType
@@ -96,14 +96,14 @@ def get_all_venues():
 def get_venue(venue_id):
     data = get_record(venues_file(), 'id', venue_id)
     data['address'] = decode_address(data['address'])
-    data['directions'] = dequote(data['directions'])
+    data['directions'] = decode_directions(data['directions'])
     return data
 
 
 def get_venue_by_name(name):
     res = get_record(venues_file(), 'name', name)
     res['address'] = decode_address(res['address'])
-    res['directions'] = dequote(res['directions'])
+    res['directions'] = decode_directions(res['directions'])
     return res
 
 
@@ -113,7 +113,7 @@ def save_venue(venue_id, data):
     data['url'] = data['url']
     data['phone'] = data['phone']
     data['address'] = encode_address(data['address'])
-    data['directions'] = enquote(data['directions'])
+    data['directions'] = encode_directions(data['directions'])
     update_record(venues_file(), 'id', data)
 
 
