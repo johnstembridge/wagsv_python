@@ -152,8 +152,6 @@ def insert_rec_values(rec, new_values, delimiter, last_line=False):
             rec[k] = str(new_values[item]).replace(delimiter, ' ')
     res = (delimiter.join(rec.values()))
     if not last_line:
-    #     res = '\n' + res
-    # else:
         res = res + '\n'
     return res
 
