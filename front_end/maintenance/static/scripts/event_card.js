@@ -84,7 +84,28 @@ function updateTotals(){
     document.getElementById('totalShotsReturn').value = totalShots;
     document.getElementById('totalPointsReturn').value = totalPoints;}
 
-//on load, update all automatic fields
+function updateParTotals(){
+    var totalInPar, totalOutPar, totalPar;
+    totalInPar = totalOutPar = totalPar = 0;
+    var i = 0;
+    var hole, par;
+    while (i < 9) {
+        hole = i + 1;
+        var par = getParForHole(hole);
+        totalOutPar += par;
+        totalPar += par;
+        hole = i + 10;
+        var par = getParForHole(hole);
+        totalInPar += par;
+        totalPar += par;
+        i++;
+        }
+    document.getElementById('holesOut-totalPar').innerHTML = totalOutPar;
+    document.getElementById('holesIn-totalPar').innerHTML = totalInPar;
+    document.getElementById('totalPar').innerHTML = totalPar;
+}
+
+//on loading event card, update all automatic fields
 function updateAll(){
     var i = 0;
     while (i < 9) {
@@ -101,6 +122,17 @@ function getItemIdForHole(hole, item){
     hole = (hole > 9) ? hole - 10 : hole - 1;
     var id = 'scores' + inOut + '-' + hole + '-' + item;
     return id
+}
+
+//get the id for <item> (shots/par/si/points) for hole <hole>
+function getParForHole(hole, item){
+    var inOut = (hole > 9) ? 'In' : 'Out';
+    hole = (hole > 9) ? hole - 10 : hole - 1;
+    var id = 'holes' + inOut + '-' + hole + '-par';
+    var elm = document.getElementById(id);
+    var value;
+        value = elm.value;
+    return Number(value);
 }
 
 //get the value for <item> (shots/par/si/points) for hole <hole>
@@ -142,5 +174,5 @@ function setItemValueForHole(hole, item, value){
 
 function formIsEditable(){
     var editable = document.getElementById('editable');
-    return editable.value == 'y';
+    return editable;
 }

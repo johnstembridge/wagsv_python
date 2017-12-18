@@ -15,9 +15,9 @@ class CourseCardForm(FlaskForm):
     holesIn = FieldList(FormField(CourseCardItemForm))
     course_name = StringField(label='Course Name')
     editable = HiddenField(label='Editable')
-    totalShotsOut = StringField(label='TotalShotsOut')
-    totalShotsIn = StringField(label='TotalShotsIn')
-    totalShots = StringField(label='TotalShots')
+    totalParOut = StringField(label='TotalParOut')
+    totalParIn = StringField(label='TotalParIn')
+    totalPar = StringField(label='TotalPar')
     save_card = SubmitField(label='Save')
 
     def populate_card(self, course_id):
@@ -26,9 +26,9 @@ class CourseCardForm(FlaskForm):
         course_card = get_course_data(course_id, year)
 
         self.course_name = 'new' if course_id == 0 else course_data['name']
-        self.editable = True  # datetime.date.today() > event['date'] and is_latest_event(event_id)
-        shots_out = 0
-        shots_in = 0
+        self.editable.data = True  # datetime.date.today() > event['date'] and is_latest_event(event_id)
+        par_out = 0
+        par_in = 0
         holes = range(1, 19)
         for hole in holes:
             i = str(hole)
@@ -37,13 +37,14 @@ class CourseCardForm(FlaskForm):
             item_form.par = int(course_card['par' + i])
             item_form.si = int(course_card['si' + i])
             if hole <= 9:
-                shots_out += int(course_card['par' + i])
+                par_out += int(course_card['par' + i])
                 self.holesOut.append_entry(item_form)
             else:
-                shots_in += int(course_card['par' + i])
+                par_in += int(course_card['par' + i])
                 self.holesIn.append_entry(item_form)
-        self.totalShotsOut = shots_out
-        self.totalShotsIn = shots_in
+        self.totalParOut = par_out
+        self.totalParIn = par_in
+        self.totalPar = par_out + par_in
 
     def save_event_card(self, year, event_id, player_id, form):
         errors = self.errors

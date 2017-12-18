@@ -20,7 +20,7 @@ class EventCardForm(FlaskForm):
     event_name = StringField(label='event_name')
     player = StringField(label='Player')
     handicap = StringField(label='Handicap')
-    editable = HiddenField(label='Editable')
+    editable = HiddenField(label=None, id='editable')
     totalShotsOut = StringField(label='TotalShotsOut')
     totalPointsOut = StringField(label='TotalPointsOut')
     totalShotsIn = StringField(label='TotalShotsIn')
@@ -42,8 +42,7 @@ class EventCardForm(FlaskForm):
         self.event_name.data = '{} {} {}'.format(event['event'], event['venue'], event['date'])
         self.player.data = get_player_name(player_id)
         self.handicap.data = hcap
-        editable = datetime.date.today() > event['date'] and is_latest_event(event_id)
-        self.editable.data = 'y' if editable else 'n'
+        self.editable.data = True  # datetime.date.today() > event['date'] and is_latest_event(event_id)
 
         holes = range(1, 19)
         for hole in holes:
