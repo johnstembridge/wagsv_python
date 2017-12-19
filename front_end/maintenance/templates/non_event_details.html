@@ -10,7 +10,7 @@
     {{ form.csrf_token }}
     <table width="100%">
         <tr>
-            <td>{{ form.event.label }}</td><td>{{ form.event }}</td>
+            <td>{{ form.venue.label }}</td><td>{{ form.venue }}</td>
             <td>{{ form.organiser.label }}</td><td>{{ form.organiser }}</td>
         </tr>
         <tr>
@@ -37,10 +37,6 @@
         {% endfor %}
         </tbody>
     </table>
-    {{ form.directions.label }}
-    <br>
-    {{ form.directions(rows='5',cols='110') }}
-    <br>
     {{ form.note.label }}
     <br>
     {{ form.note(rows='5',cols='110') }}

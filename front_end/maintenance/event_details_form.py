@@ -62,13 +62,10 @@ class EventForm(FlaskForm):
                 item_form.text = item['text']
                 self.schedule.append_entry(item_form)
         if event_type == EventType.wags_tour:
-            all_course_names = get_all_course_names()
             for item in get_tour_events(year, event_id):
                 item_form = TourScheduleForm()
-                #item_form = self.tour_schedule[i]
                 item_form.date = item['date']
                 item_form.course = item['course']
-                #set_select_field(item_form.course, 'course', all_course_names, item['course'])
                 self.tour_schedule.append_entry(item_form)
         return event_id
 
