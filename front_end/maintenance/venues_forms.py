@@ -31,7 +31,7 @@ class VenueDetailsForm(FlaskForm):
     editable = HiddenField(label='Editable')
     courses = FieldList(FormField(VenueCourseForm))
     add_course = SubmitField(label='Add Course')
-    submit = SubmitField(label='Save')
+    save = SubmitField(label='Save')
 
     def populate_venue(self, venue_id):
         self.editable.data = True

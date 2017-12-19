@@ -360,6 +360,24 @@ def get_course_data(course_id, year):
             break
     return ret
 
+
+def get_new_course_id():
+    ids = [int(m) for m in get_field(courses_file(), 'id')]
+    return 1 + max(ids)
+
+
+def save_course(course_id, data):
+    data['id'] = str(course_id)
+    data['venue_id'] = data['venue_id']
+    data['name'] = data['name']
+    update_record(courses_file(), 'id', data)
+
+
+def save_course_card(course_id, year, fields, data):
+    course_id = coerce(course_id, str)
+    new = dict(zip(['course', 'year'] + fields, [course_id, year] + data))
+    update_record(course_data_file(), ['course', 'year'], new)
+
 # endregion
 
 

@@ -1,7 +1,7 @@
-import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField, HiddenField
-from interface import get_course, get_course_data, save_event_card, update_event_scores
+from wtforms.validators import ValidationError, StopValidation
+from interface import get_course, get_course_data, get_new_course_id, save_course_card, save_course
 
 
 class CourseCardItemForm(FlaskForm):
@@ -11,21 +11,26 @@ class CourseCardItemForm(FlaskForm):
 
 
 class CourseCardForm(FlaskForm):
+    course_name = StringField(label='Course Name')
+    sss = IntegerField(label='SSS')
     holesOut = FieldList(FormField(CourseCardItemForm))
     holesIn = FieldList(FormField(CourseCardItemForm))
-    course_name = StringField(label='Course Name')
+    new_course = HiddenField(label='New Course')
     editable = HiddenField(label='Editable')
     totalParOut = StringField(label='TotalParOut')
     totalParIn = StringField(label='TotalParIn')
     totalPar = StringField(label='TotalPar')
     save_card = SubmitField(label='Save')
+    whole_form = HiddenField(label='Whole Form Validation')
 
     def populate_card(self, course_id):
+        new = course_id == '0'
+        self.new_course.data = new
         year = 2100
         course_data = get_course(course_id)
         course_card = get_course_data(course_id, year)
-
-        self.course_name = 'new' if course_id == 0 else course_data['name']
+        self.course_name.data = '' if new else course_data['name']
+        self.sss.data = '' if new else course_card['sss']
         self.editable.data = True  # datetime.date.today() > event['date'] and is_latest_event(event_id)
         par_out = 0
         par_in = 0
@@ -34,30 +39,54 @@ class CourseCardForm(FlaskForm):
             i = str(hole)
             item_form = CourseCardItemForm()
             item_form.hole = hole
-            item_form.par = int(course_card['par' + i])
-            item_form.si = int(course_card['si' + i])
+            if new:
+                item_form.par = ''
+                item_form.si = ''
+            else:
+                item_form.par = int(course_card['par' + i])
+                item_form.si = int(course_card['si' + i])
             if hole <= 9:
-                par_out += int(course_card['par' + i])
                 self.holesOut.append_entry(item_form)
             else:
-                par_in += int(course_card['par' + i])
                 self.holesIn.append_entry(item_form)
         self.totalParOut = par_out
         self.totalParIn = par_in
         self.totalPar = par_out + par_in
 
-    def save_event_card(self, year, event_id, player_id, form):
+    def validate_whole_form(self, field):
+        errors = []
+        count = [0]*18
+        for si in [d['si'] for d in self.holesOut.data] + [d['si'] for d in self.holesIn.data]:
+            if si in range(1, 19):
+                count[si-1] += 1
+            else:
+                errors.append('Stroke index {} out of range'.format(si))
+        for hole in range(1, 19):
+            if count[hole - 1] == 0:
+                errors.append('Stroke index {} missing'.format(hole))
+            if count[hole-1] > 1:
+                errors.append('Duplicate stroke index {}'.format(hole))
+        if errors:
+            raise ValidationError('; '.join(errors))
+
+    def save_course_card(self, venue_id, course_id):
         errors = self.errors
         if len(errors) > 0:
             return False
-
-        total_shots = form.totalShotsReturn.data
-        total_points = form.totalPointsReturn.data
-        update_event_scores(year, event_id, player_id, ["points", "strokes"], [total_points, total_shots])
-
-        shots = [d['shots'] for d in form.scoresOut.data] + [d['shots'] for d in form.scoresIn.data]
-        shots = ['99' if v is None else str(v) for v in shots]
-        fields = [str(i) for i in range(1, 19)]
-        save_event_card(year, event_id, player_id, fields, shots)
+        sss = self.sss.data
+        si = [d['si'] for d in self.holesOut.data] + [d['si'] for d in self.holesIn.data]
+        par = [d['par'] for d in self.holesOut.data] + [d['par'] for d in self.holesIn.data]
+        new = self.new_course.data
+        if new:
+            course_id = get_new_course_id()
+            course = {
+                'name': self.course_name.data,
+                'venue_id': venue_id
+            }
+            save_course(course_id, course)
+        fields = ['sss', 'par'] + ['si' + str(i) for i in range(1, 19)] + ['par' + str(i) for i in range(1, 19)]
+        data = [sss, sum(par)] + si + par
+        year = '3000'
+        save_course_card(course_id, year, fields, data)
 
         return True

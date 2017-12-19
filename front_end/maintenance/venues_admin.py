@@ -4,6 +4,15 @@ from course_details_form import CourseCardForm
 from utility import render_link
 
 
+def flash_errors(form):
+    for field, errors in form.errors.items():
+        for error in errors:
+            flash(u"Error in the %s field - %s" % (
+                getattr(form, field).label.text,
+                error
+            ), 'danger')
+
+
 class MaintainVenues:
 
     @staticmethod
@@ -22,9 +31,10 @@ class MaintainVenues:
     def edit_venue(venue_id):
         form = VenueDetailsForm()
         if form.is_submitted():
-            if form.save_venue(venue_id):
-                flash('Venue saved', 'success')
-                return redirect(url_for('venues_main'))
+            if form.save.data:
+                if form.save_venue(venue_id):
+                    flash('Venue saved', 'success')
+                    return redirect(url_for('venues_main'))
             if form.add_course.data:
                 return redirect(url_for('edit_course', venue_id=venue_id, course_id=0))
         if not form.is_submitted():
@@ -35,9 +45,11 @@ class MaintainVenues:
     @staticmethod
     def edit_course(venue_id, course_id):
         form = CourseCardForm()
-        if form.is_submitted():
-            if form.save_venue(venue_id):
-                flash('Venue saved', 'success')
+        if form.validate_on_submit():
+            if form.save_course_card(venue_id, course_id):
+                flash('card saved', 'success')
+        elif form.errors:
+            flash_errors(form)
         if not form.is_submitted():
             form.populate_card(course_id)
         return render_template('course_card.html', form=form, render_link=render_link)

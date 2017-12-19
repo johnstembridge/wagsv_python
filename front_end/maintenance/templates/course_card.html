@@ -8,10 +8,30 @@
 
 {% block page_content %}
 <div class="page-header">
-    <h1>{{ form.course_name }}</h1>
+    <h1>Course Card</h1>
 </div>
 <form method="POST">
     {{ form.csrf_token }}
+    <table style="width:100%"><tbody>
+        <td>
+            {{ form.course_name.label }}
+            {% if form.new_course.data %}
+                {{ form.course_name(size=40, required='required') }}
+            {% else %}
+                {{form.course_name.data }}
+            {% endif %}
+        </td>
+        <td> </td>
+        <td>
+            {{ form.sss.label }}
+            {% if form.new_course.data %}
+                {{ form.sss(size=6, required='required') }}
+            {% else %}
+                {{ form.sss.data }}
+            {% endif %}
+        </td>
+    </tbody></table>
+    <hr/>
     <div class="table-responsive col-md-6">
         <table class="table table-striped">
             <thead>
@@ -26,8 +46,8 @@
             {% for item in form.holesOut %}
             <tr>
                 <td>{{ item.hole.data }}</td>
-                <td onchange="updateParTotals()">{{ item.par }}</td>
-                <td>{{ item.si }}</td>
+                <td onchange="updateParTotals()">{{ item.par(required='required') }}</td>
+                <td>{{ item.si(required='required') }}</td>
             </tr>
             {% endfor %}
             <tr>
@@ -52,8 +72,8 @@
             {% for item in form.holesIn %}
             <tr>
                 <td>{{ item.hole.data }}</td>
-                <td onchange="updateParTotals()">{{ item.par }}</td>
-                <td>{{ item.si }}</td>
+                <td onchange="updateParTotals()">{{ item.par(required='required') }}</td>
+                <td>{{ item.si(required='required') }}</td>
             </tr>
             {% endfor %}
             <tr>
@@ -75,7 +95,7 @@
     {%if form.editable %}
         {{ form.save_card(class="btn btn-primary") }}
     {% endif %}
-    <span>{{ form.editable }}</span>
+    <span>{{ form.editable }} {{ form.new_course }}</span>
 </form>
 {% endblock %}
 
