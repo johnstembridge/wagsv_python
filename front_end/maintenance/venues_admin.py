@@ -48,6 +48,7 @@ class MaintainVenues:
         if form.validate_on_submit():
             if form.save_course_card(venue_id, course_id):
                 flash('card saved', 'success')
+                return redirect(url_for('edit_venue', venue_id=venue_id))
         elif form.errors:
             flash_errors(form)
         if not form.is_submitted():

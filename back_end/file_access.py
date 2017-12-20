@@ -62,6 +62,13 @@ def get_file(file):
     return keys, res
 
 
+def create_data_file(file, fields):
+    delimiter = file_delimiter(file)
+    fields = delimiter.join(fields)
+    with my_open(file, 'w') as f:
+        f.write(fields)
+
+
 def update_record(file, key, new_rec):
     delimiter = file_delimiter(file)
     keys = None

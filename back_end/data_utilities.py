@@ -9,19 +9,22 @@ import math
 
 def decode_date(wdm, y):
     # wdm is in the form Friday 28 April, y is year
-    try:
-        a = wdm.split(' ')
-        d = int(re.findall(r'\d+', a[1])[0])
-        m = calendar.month_name[0:13].index(a[-1])
-        return datetime.date(y, m, d)
-    except:
-        return datetime.date.today()
+    if wdm:
+        try:
+            a = wdm.split(' ')
+            d = int(re.findall(r'\d+', a[1])[0])
+            m = calendar.month_name[0:13].index(a[-1])
+            return datetime.date(y, m, d)
+        except:
+            return datetime.date.today()
+    else:
+        return None
 
 
 def encode_date(date):
     # result is in the form Friday 28 April
     if date is None:
-        return None
+        return ''
     return date.strftime('%A %d %B')
 
 

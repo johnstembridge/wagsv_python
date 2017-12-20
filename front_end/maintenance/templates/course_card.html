@@ -14,21 +14,11 @@
     {{ form.csrf_token }}
     <table style="width:100%"><tbody>
         <td>
-            {{ form.course_name.label }}
-            {% if form.new_course.data %}
-                {{ form.course_name(size=40, required='required') }}
-            {% else %}
-                {{form.course_name.data }}
-            {% endif %}
+            {{ form.course_name.label }} {{ form.course_name(size=40, required='required') }}
         </td>
         <td> </td>
         <td>
-            {{ form.sss.label }}
-            {% if form.new_course.data %}
-                {{ form.sss(size=6, required='required') }}
-            {% else %}
-                {{ form.sss.data }}
-            {% endif %}
+            {{ form.sss.label }} {{ form.sss(size=6, required='required') }}
         </td>
     </tbody></table>
     <hr/>

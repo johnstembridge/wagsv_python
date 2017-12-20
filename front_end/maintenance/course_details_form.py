@@ -28,8 +28,9 @@ class CourseCardForm(FlaskForm):
         self.new_course.data = new
         year = 2100
         course_data = get_course(course_id)
-        course_card = get_course_data(course_id, year)
         self.course_name.data = '' if new else course_data['name']
+        course_card = get_course_data(course_id, year)
+        new = not course_card
         self.sss.data = '' if new else course_card['sss']
         self.editable.data = True  # datetime.date.today() > event['date'] and is_latest_event(event_id)
         par_out = 0
@@ -76,7 +77,7 @@ class CourseCardForm(FlaskForm):
         sss = self.sss.data
         si = [d['si'] for d in self.holesOut.data] + [d['si'] for d in self.holesIn.data]
         par = [d['par'] for d in self.holesOut.data] + [d['par'] for d in self.holesIn.data]
-        new = self.new_course.data
+        new = course_id == '0'
         if new:
             course_id = get_new_course_id()
             course = {

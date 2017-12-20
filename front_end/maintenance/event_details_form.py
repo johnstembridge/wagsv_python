@@ -5,7 +5,7 @@ from wtforms import StringField, SelectField, DecimalField, TextAreaField, Integ
 from wtforms_components import TimeField
 from wtforms.fields.html5 import DateField
 from interface import get_all_venue_names, get_all_course_names, get_event, save_event, \
-    get_new_event_id, get_tour_events, get_all_trophy_names
+    get_new_event_id, get_tour_events, get_all_trophy_names, create_bookings_file
 from back_end.players import Players
 from enumerations import EventType
 from form_helpers import set_select_field
@@ -19,7 +19,6 @@ class ScheduleForm(FlaskForm):
 class TourScheduleForm(FlaskForm):
     date = DateField('Date')
     course = StringField(label='Course')
-    #course = SelectField(label='Course')
 
 
 class EventForm(FlaskForm):
@@ -62,7 +61,7 @@ class EventForm(FlaskForm):
                 item_form.text = item['text']
                 self.schedule.append_entry(item_form)
         if event_type == EventType.wags_tour:
-            for item in get_tour_events(year, event_id):
+            for item in get_tour_events(year, event_id, 6):
                 item_form = TourScheduleForm()
                 item_form.date = item['date']
                 item_form.course = item['course']
@@ -95,24 +94,30 @@ class EventForm(FlaskForm):
         if EventType[self.event_type.data] == EventType.wags_vl_event:
             for item in self.schedule.data:
                 event['schedule'].append(item)
+            if self.start_booking.data <= datetime.date.today():
+                create_bookings_file(year, event_id)
 
         save_event(year, event_id, event)
 
         if EventType[self.event_type.data] == EventType.wags_tour:
             tour_event_id = int(event_id)
             for item in self.tour_schedule.data:
-                if item['date']:
+                if item['date'] and item['course']:
                     tour_event_id += 0.1
                     id = '{0:.1f}'.format(tour_event_id)
                     item.update({
                         'num': id,
+                        'date': item['date'],
+                        'venue': item['course'],
                         'event': self.trophy.data,
+                        'course': item['course'],
                         'event_type': EventType.wags_vl_event.name,
                         'start_booking': None,
                         'end_booking': None,
                         'member_price': None,
                         'guest_price': None,
                         'schedule': [],
+                        'organiser': self.organiser.data
                     })
                     event['tour_schedule'].append(item)
                     save_event(year, id, item)

@@ -1,8 +1,10 @@
 import datetime
 import os
+import sys
 from itertools import groupby
 from operator import itemgetter
-from file_access import get_field, get_record, update_record, get_records, get_file, update_records, get_fields
+from file_access import get_field, get_record, update_record, get_records, get_file, update_records, get_fields,\
+    create_data_file
 from data_utilities import encode_date, encode_price, decode_date, decode_price, decode_time, coerce_date, \
     sort_name_list, lookup, force_list, coerce, decode_event_type, encode_event_type, dequote, \
     encode_address, decode_address, de_the, encode_directions, decode_directions
@@ -32,12 +34,23 @@ def events_file(year):
     return os.path.join(data_location, events_data.format(year))
 
 
+def events_file_fields():
+    return ['num', 'date', 'venue', 'event', 'course', 'address', 'post_code', 'phone', 'member_price', 'guest_price',\
+            'schedule', 'organiser', 'directions', 'note', 'dinner_price', 'dinner_incl', 'jacket', 'url', 'deadline',\
+            'booking_start', 'max', 'type']
+
+
 def venues_file():
     return os.path.join(data_location, venues_data)
 
 
 def bookings_file(year, event_id):
     return os.path.join(data_location, bookings_data.format(year, event_id))
+
+
+def bookings_file_fields():
+    return ['date', 'name', 'playing', 'number', 'cost', 'paid', 'guest1', 'guest1_hcap', 'guest2', 'guest2_hcap',\
+            'guest3', 'guest3_hcap', 'comment']
 
 
 def handicaps_file():
@@ -124,6 +137,14 @@ def get_new_venue_id():
 
 
 # region events
+
+def create_events_file(year):
+    directory = os.path.join(data_location, year)
+    filename = events_file(year)
+    fields = events_file_fields()
+    return create_data_file(directory, filename, fields)
+
+
 def get_all_event_types():
     return [(e.name, e.name) for e in EventType]
 
@@ -172,14 +193,13 @@ def get_event(year, event_id):
     event_id = coerce(event_id, str)
     data = get_record(events_file(year), 'num', event_id)
     data['date'] = decode_date(data['date'], year)
-    data['end_booking'] = data.get('deadline', None)
-    data['end_booking'] = coerce_date(data['end_booking'], year, data['date'] - datetime.timedelta(days=2))
-    data['start_booking'] = data.get('booking_start', None)
-    data['start_booking'] = coerce_date(data['start_booking'], year, data['date'] - datetime.timedelta(days=14))
+    data['end_booking'] = decode_date(data.get('deadline', None), year)
+    data['start_booking'] = decode_date(data.get('booking_start', None), year)
     data['member_price'] = decode_price(data['member_price'])
     data['guest_price'] = decode_price(data['guest_price'])
     data['event_type'] = decode_event_type(data.get('type', None))
     data['max'] = data.get('max', None)
+    data['course'] = data.get('course', None)
     data['schedule'] = decode_schedule(data.get('schedule', None))
     data['note'] = dequote(data['note'])
     venue = get_venue_by_name(data.get('venue', None))
@@ -239,7 +259,17 @@ def save_event(year, event_id, data):
     data['start_booking'] = encode_date(data['start_booking'])
     data['type'] = encode_event_type(data['event_type'])
     data['schedule'] = encode_schedule(data['schedule'])
+    insert_venue_info(data)
     update_record(events_file(year), 'num', data)
+
+
+def insert_venue_info(event):
+    venue = get_venue_by_name(event['venue'])
+    event['address'] = dequote(encode_address(venue['address']))
+    event['post_code'] = venue['post_code']
+    event['phone'] = venue['phone']
+    event['url'] = venue['url']
+    event['directions'] = dequote(encode_directions(venue['directions']))
 
 
 def decode_schedule(sched):
@@ -284,7 +314,7 @@ def get_tour_events(year, tour_event_id, max):
 
 def get_new_event_id(year):
     ids = [float(m) for m in get_field(events_file(year), 'num')]
-    return math.floor(1 + max(ids))
+    return math.floor(1 + max(ids + [0]))
 
 
 def get_booked_players(year, event_id):
@@ -306,6 +336,33 @@ def get_booked_players(year, event_id):
                 res.append([guest_name, guest_handicap])
                 count += 1
     return {v[0]: v[1] for v in res}
+
+
+def get_results(year, event_id):
+    date = event_date(year, event_id)
+    all_hcaps = dict(get_handicaps(date))
+    all_scores = {v[0]: v[1:] for v in get_event_scores(year, event_id)}  # player: position, points, strokes, handicap
+    booked = get_booked_players(year, event_id)  # player: handicap
+    event_players = list(set(Players().id_to_name(list(all_scores.keys()))) | set(booked.keys()))
+    results = []
+    for player in sort_name_list(event_players):
+        player_id = str(Players().name_to_id(player))
+        guest = player in booked and float(booked[player]) > 0
+        if player_id not in all_scores:
+            hcap = booked[player] if guest else all_hcaps[player_id]
+            all_scores[player_id] = [0, '0', 0, hcap]
+        det = all_scores[player_id]
+        x = {
+                'id': player_id,
+                'name': player,
+                'handicap': det[3],
+                'strokes': int(det[2]),
+                'points': int(det[1]),
+                'position': det[0],
+                'guest': 'guest' if guest else ''
+            }
+        results.append(x)
+    return sorted(results, key=lambda k: k['points'], reverse=True)
 
 
 def event_course_id(year, event_id):
@@ -391,10 +448,7 @@ def save_course_card(course_id, year, fields, data):
 # endregion
 
 
-def get_all_years():
-    years = [i for i in range(2020, 1992, -1)]
-    return [(v, v) for v in years]
-
+# region players
 
 def get_all_players():
     with open(players_file()) as f:
@@ -461,31 +515,16 @@ def get_handicap_history(player_id, as_of):
     return res
 
 
-def get_results(year, event_id):
-    date = event_date(year, event_id)
-    all_hcaps = dict(get_handicaps(date))
-    all_scores = {v[0]: v[1:] for v in get_event_scores(year, event_id)}  # player: position, points, strokes, handicap
-    booked = get_booked_players(year, event_id)  # player: handicap
-    event_players = list(set(Players().id_to_name(list(all_scores.keys()))) | set(booked.keys()))
-    results = []
-    for player in sort_name_list(event_players):
-        player_id = str(Players().name_to_id(player))
-        guest = player in booked and float(booked[player]) > 0
-        if player_id not in all_scores:
-            hcap = booked[player] if guest else all_hcaps[player_id]
-            all_scores[player_id] = [0, '0', 0, hcap]
-        det = all_scores[player_id]
-        x = {
-                'id': player_id,
-                'name': player,
-                'handicap': det[3],
-                'strokes': int(det[2]),
-                'points': int(det[1]),
-                'position': det[0],
-                'guest': 'guest' if guest else ''
-            }
-        results.append(x)
-    return sorted(results, key=lambda k: k['points'], reverse=True)
+def save_hcaps(date, header, data):
+    update_records(handicaps_file(), ['date', 'player'], [date], header, data)
+
+# endregion
+
+
+def get_all_years():
+    current_year = datetime.datetime.now().year
+    years = [i for i in range(current_year + 2, 1992, -1)]
+    return [(v, v) for v in years]
 
 
 def get_all_trophy_names():
@@ -493,5 +532,21 @@ def get_all_trophy_names():
     return sorted(trophies)
 
 
-def save_hcaps(date, header, data):
-    update_records(handicaps_file(), ['date', 'player'], [date], header, data)
+def create_bookings_file(year, event_id):
+    directory = os.path.join(data_location, year)
+    filename = bookings_file(year, event_id)
+    fields = bookings_file_fields()
+    return create_data_file(directory, filename, fields)
+
+
+def create_data_file(directory, filename, fields):
+    result = True
+    try:
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        if not os.path.exists(filename):
+            create_data_file(filename, fields)
+    except:
+        e = sys.exc_info()[0]
+        result = False
+    return result

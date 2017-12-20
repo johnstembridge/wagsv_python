@@ -11,6 +11,7 @@ class EventItemForm(FlaskForm):
     event = StringField(label='Event')
     venue = StringField(label='Venue')
     event_type = HiddenField(label='Event type')
+    result = HiddenField(label='Result available')
 
 
 class EventListForm(FlaskForm):
@@ -29,5 +30,6 @@ class EventListForm(FlaskForm):
             item_form.event = item['event']
             item_form.venue = item['venue']
             item_form.event_type = item['type']
+            item_form.result = item['date'] < datetime.date.today()
             self.event_list.append_entry(item_form)
 
