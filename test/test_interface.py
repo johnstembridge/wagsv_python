@@ -1,7 +1,8 @@
 import unittest
 from enumerations import PlayerStatus
 from interface import get_event, get_latest_handicaps, get_handicaps, get_players, get_event_scores, \
-    get_booked_players, save_event_scores, get_course_data, get_player_handicap, get_event_card, get_venue_by_name
+    get_booked_players, save_event_scores, get_course_data, get_player_handicap, get_event_card, get_venue_by_name, \
+    get_tour_events
 from file_access import get_record
 from test_data import TestData
 
@@ -101,3 +102,8 @@ class TestInterface(unittest.TestCase):
         rec = get_venue_by_name('Gatton Manor')
         expected = TestData.example_venue
         self.assertDictEqual(rec, expected)
+
+    def test_get_tour_events(self):
+        rec = get_tour_events(2017, 5, 6)
+        expected = TestData.example_tour_events
+        self.assertEqual(rec, expected)

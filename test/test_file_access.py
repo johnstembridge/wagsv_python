@@ -22,7 +22,7 @@ class TestInterface(unittest.TestCase):
         self.assertEqual(res, expected)
 
     def test_get_fields(self):
-        res = get_fields(TestData.venues_file, ['id', 'name'])
+        res = get_fields(TestData.events_file, ['num', 'venue'])
         expected = TestData.example_venues_fields
         self.assertEqual(res, expected)
 

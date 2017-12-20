@@ -3,6 +3,7 @@ import datetime
 from decimal import Decimal
 import config
 
+
 class TestData:
     data_location = config.get('locations')['data']
     events_data = r'2017\events.tab'
@@ -74,7 +75,7 @@ class TestData:
         'venue': 'West Surrey',
         'event': 'Shutes Shot-Glass',
         'course': 'West Surrey',
-        'address': 'Enton Green,Godalming,Surrey',
+        'address': 'Enton Green\nGodalming\nSurrey',
         'post_code': 'GU8 5AF',
         'phone': '01483 421275',
         'member_price': Decimal("60"),
@@ -105,7 +106,14 @@ class TestData:
 
     example_event_field = ['Richard Trinick', 'Gerry Robinson', 'John Stembridge', 'Anthony Shutes', 'Richard Latham', 'Richard Latham', 'Richard Latham', 'Richard Latham', 'Mike Dearden', 'Mike Wells', 'Steve Shaw', 'Bob Hill', 'Quintin Heaney', 'Martin Dilke-Wing', 'Andy Burn', 'Peter Berring', 'Gerry McGuffie', 'Rhod James', '', '', 'Andy Burn']
 
-    example_venues_fields = [('1', 'West Chiltington'), ('2', 'Addington Court'), ('3', 'Oaks Park Carshalton'), ('4', 'Gatton Manor'), ('5', 'Rusper'), ('6', 'Wimbledon Common'), ('7', 'Richmond Park'), ('9', 'Horton Park'), ('10', 'Hawthorne Hill'), ('11', 'Redhill & Reigate'), ('12', 'Hoebridge'), ('13', 'Hever'), ('14', 'Thorpeness'), ('15', 'Ashdown Forest'), ('16', 'Selsdon Park Hotel'), ('17', 'St.Mellion'), ('19', 'West Byfleet'), ('20', 'Stockley Park'), ('21', 'Deauville'), ('22', 'St.Julien'), ('23', 'Lingfield Park'), ('24', 'Coombe Wood'), ('25', 'Launceston'), ('26', 'Looe'), ('27', 'Wimbledon Park'), ('28', 'Malden'), ('29', 'Pine Ridge'), ('30', 'Addington Palace'), ('31', 'Lanhydrock'), ('32', 'Dewstow'), ('34', 'Reigate Hill'), ('35', 'Silvermere'), ('36', 'Moretonhampstead'), ('37', 'Wildwood'), ('38', 'Kingswood'), ('39', 'Laleham'), ('40', 'Woodbury Park'), ('41', 'Milford'), ('42', 'Vilamoura'), ('46', 'Oakhampton'), ('47', 'Merrist Wood'), ('48', 'Ipswich'), ('49', 'Aldeburgh'), ('50', 'Traditions'), ('51', 'The Richmond'), ('52', 'Celtic Manor'), ('53', 'Burhill'), ('55', 'Rolls of Monmouth'), ('56', 'Wentwood Hills'), ('57', 'Seaford Head'), ('58', 'Royal North Devon'), ('59', 'Crowborough Beacon'), ('60', 'Mill Ride'), ('61', 'Broadstone'), ('62', 'Isle of Purbeck'), ('63', 'East Dorset'), ('64', 'Worplesdon'), ('65', 'Clevedon'), ('66', 'Bushey Hall'), ('67', 'Chartham Park'), ('68', 'Beaufort'), ('69', 'Ballybunion'), ('70', 'Castleisland'), ('71', 'Los Naranjos'), ('72', 'Flamingos'), ('73', 'El Paraiso'), ('74', 'Monte Mayor'), ('75', 'Betchworth Park'), ('76', 'Timber Hill'), ('79', 'Lamerwood'), ('80', 'Tandridge'), ('81', 'Button Gwinnett'), ('82', 'Vale of Glamorgan'), ('85', 'Porters Park'), ('86', 'Mannings Heath'), ('87', 'Foxhills'), ('88', 'Golf de Poniente'), ('89', 'Son Vida'), ('90', 'Son Muntaner'), ('91', 'Son Quint'), ('92', 'Dunham Forest'), ('93', 'Mottram Hall'), ('94', 'Wychwood Park'), ('95', 'Leatherhead'), ('96', 'East Sussex National'), ('98', 'East Brighton'), ('99', 'Rio Real'), ('100', 'La Quinta'), ('101', 'El Chapparel'), ('102', 'West Surrey'), ('103', 'Burnham & Berrow'), ('104', 'Oake Manor'), ('105', 'La Mer'), ('106', 'Les Pins'), ('107', 'La Foret'), ('108', 'Moor Park'), ('109', 'Golf Do Estoril'), ('110', 'Lisbon Sports Club'), ('111', 'Penha Longa'), ('112', 'The Dyke'), ('113', 'Enmore Park'), ('114', 'Taunton & Pickeridge'), ('115', 'Portugal'), ('116', 'North Foreland')]
+    example_venues_fields = [('1', 'West Byfleet'), ('2', 'Wimbledon Common'), ('3', 'Chartham Park'),
+                             ('4', 'West Surrey'), ('5', 'Portugal'), ('5.1', 'Lisbon Sports Club'),
+                             ('5.2', 'Golf Do Estoril'), ('5.3', 'Penha Longa'), ('6', 'Mill Ride'),
+                             ('7', 'Betchworth'), ('8', 'The Dyke'), ('9', 'Seaford Head'), ('10', 'The Richmond'),
+                             ('11', 'Moor Park'), ('12', ''), ('13', 'Malden'), ('14', 'Worplesdon'),
+                             ('15', 'Pine Ridge'), ('16', 'Burhill'), ('12.1', 'Enmore Park'), ('12.2', 'Oake Manor'),
+                             ('12.3', 'Taunton & Pickeridge')]
+
     example_course_data_1 = {
          'course': '4', 'year': '3000', 'sss': '70', 'si1': '9', 'si2': '15', 'si3': '3', 'si4': '7', 'si5': '17',
          'si6': '1', 'si7': '13', 'si8': '5', 'si9': '11', 'si10': '12', 'si11': '18', 'si12': '2', 'si13': '16',
@@ -130,4 +138,9 @@ class TestData:
          'par11': '4', 'par12': '4', 'par13': '4', 'par14': '4', 'par15': '3', 'par16': '5', 'par17': '3', 'par18': '4'
     }
 
-    example_venue = {'id': '4', 'name': 'Gatton Manor', 'address': 'Standon Lane,Ockley,Nr.Dorking,Surrey', 'post_code': 'RH5 5PQ', 'phone': '01306 627555', 'url': 'www.gattonmanor.co.uk/golf.html', 'directions': 'From Dorking, south on the A24 in the direction of Horsham. Go past sign for Beare Green and continue to the large roundabout (Dukes Head Hotel on left) turn right onto the A29 (signposted Ockley, Bognor Regis). Continue through Ockley (approx 3 miles) and at the far end of Ockley village on the right hand side is a restaurant called \x91Bryces -The Old School House\x92, 200 yards past this turn right into Cat Hill Lane. Continue to follow the signs and you will turn left into Standon Lane. This is a narrow country lane, please travel at a slow pace and continue for approx 1 mile and you will find the main entrance to Gatton Manor on the right.'}
+    example_venue = {
+        'id': '4', 'name': 'Gatton Manor', 'address': 'Standon Lane\nOckley\nNr.Dorking\nSurrey',
+        'post_code': 'RH5 5PQ', 'phone': '01306 627555', 'url': 'www.gattonmanor.co.uk/golf.html',
+        'directions': "From Dorking, south on the A24 in the direction of Horsham. Go past sign for Beare Green and continue to the large roundabout (Dukes Head Hotel on left) turn right onto the A29 (signposted Ockley, Bognor Regis). Continue through Ockley (approx 3 miles) and at the far end of Ockley village on the right hand side is a restaurant called 'Bryces -The Old School House', 200 yards past this turn right into Cat Hill Lane. Continue to follow the signs and you will turn left into Standon Lane. This is a narrow country lane, please travel at a slow pace and continue for approx 1 mile and you will find the main entrance to Gatton Manor on the right."}
+
+    example_tour_events = [{'num': '5.1', 'date': datetime.date(2017, 6, 9), 'course': 'Lisbon Sports Club', 'venue': 'Lisbon Sports Club'}, {'num': '5.2', 'date': datetime.date(2017, 6, 10), 'course': 'Golf Do Estoril', 'venue': 'Golf Do Estoril'}, {'num': '5.3', 'date': datetime.date(2017, 6, 11), 'course': 'Penha Longa', 'venue': 'Penha Longa'}, {'num': None, 'date': None, 'course': None, 'venue': None}, {'num': None, 'date': None, 'course': None, 'venue': None}, {'num': None, 'date': None, 'course': None, 'venue': None}]

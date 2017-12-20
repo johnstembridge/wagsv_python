@@ -151,7 +151,7 @@ def get_event_list(year):
 
 def get_tour_event_list(year, tour_event_id):
     events = []
-    tour_event_id = int(tour_event_id)
+    tour_event_id = coerce(tour_event_id, int)
     for event_id in get_field(events_file(year), 'num'):
         id = float(event_id)
         if math.floor(id) == tour_event_id and id != tour_event_id:
@@ -161,7 +161,7 @@ def get_tour_event_list(year, tour_event_id):
                     'num': event['num'],
                     'date': event['date'],
                     'course': event['course'],
-                    'venue': event['venue'],
+                    'venue': event['venue']
                 }
             )
     return events
@@ -267,8 +267,18 @@ def empty_schedule_item(item):
     return (not item['text']) and item['time'].hour == 0 and item['time'].minute == 0
 
 
-def get_tour_events(year, tour_event_id):
+def get_tour_events(year, tour_event_id, max):
     events = get_tour_event_list(year, tour_event_id)
+    count = len(events)
+    while count < max:
+        e = {
+            'num': None,
+            'date': None,
+            'course': None,
+            'venue': None
+            }
+        events.append(e)
+        count += 1
     return events
 
 
