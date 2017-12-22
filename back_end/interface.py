@@ -3,9 +3,9 @@ import os
 import sys
 from itertools import groupby
 from operator import itemgetter
-from file_access import get_field, get_record, update_record, get_records, get_file, update_records, get_fields,\
+from file_access import get_field, get_record, update_record, get_records, get_file, update_records, get_fields, \
     create_data_file
-from data_utilities import encode_date, encode_price, decode_date, decode_price, decode_time, coerce_date, \
+from data_utilities import encode_date, encode_price, decode_date, decode_price, decode_time, \
     sort_name_list, lookup, force_list, coerce, decode_event_type, encode_event_type, dequote, \
     encode_address, decode_address, de_the, encode_directions, decode_directions
 from back_end.players import Player, Players
@@ -142,7 +142,7 @@ def create_events_file(year):
     directory = os.path.join(data_location, year)
     filename = events_file(year)
     fields = events_file_fields()
-    return create_data_file(directory, filename, fields)
+    return create_wags_data_file(directory, filename, fields)
 
 
 def get_all_event_types():
@@ -163,7 +163,7 @@ def get_event_list(year):
                 'num': event['num'],
                 'date': event['date'],
                 'event': event['event'],
-                'venue': event['venue'],
+                'venue': event['course'] if is_tour_event(event) else event['venue'],
                 'type': event['event_type']
             }
         )
@@ -391,6 +391,11 @@ def is_latest_event(event_id):
     if len(nums) > 0:
         return nums[-1] == event_id
     return False
+
+
+def is_tour_event(event):
+    return float(event['num']) > math.floor(float(event['num']))
+
 # endregion
 
 
@@ -524,7 +529,7 @@ def save_hcaps(date, header, data):
 def get_all_years():
     current_year = datetime.datetime.now().year
     years = [i for i in range(current_year + 2, 1992, -1)]
-    return [(v, v) for v in years]
+    return years
 
 
 def get_all_trophy_names():
@@ -536,10 +541,10 @@ def create_bookings_file(year, event_id):
     directory = os.path.join(data_location, year)
     filename = bookings_file(year, event_id)
     fields = bookings_file_fields()
-    return create_data_file(directory, filename, fields)
+    return create_wags_data_file(directory, filename, fields)
 
 
-def create_data_file(directory, filename, fields):
+def create_wags_data_file(directory, filename, fields):
     result = True
     try:
         if not os.path.exists(directory):

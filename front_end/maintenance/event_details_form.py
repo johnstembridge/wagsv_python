@@ -94,12 +94,11 @@ class EventForm(FlaskForm):
         if EventType[self.event_type.data] == EventType.wags_vl_event:
             for item in self.schedule.data:
                 event['schedule'].append(item)
-            if self.start_booking.data <= datetime.date.today():
+            if self.start_booking.data and self.start_booking.data <= datetime.date.today():
                 create_bookings_file(year, event_id)
 
-        save_event(year, event_id, event)
-
         if EventType[self.event_type.data] == EventType.wags_tour:
+            event['course'] = ''
             tour_event_id = int(event_id)
             for item in self.tour_schedule.data:
                 if item['date'] and item['course']:
@@ -121,5 +120,7 @@ class EventForm(FlaskForm):
                     })
                     event['tour_schedule'].append(item)
                     save_event(year, id, item)
+
+        save_event(year, event_id, event)
 
         return True

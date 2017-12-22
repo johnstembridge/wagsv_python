@@ -142,6 +142,7 @@ def decode_address(address):
 
 
 def encode_address(address):
+    if not address: address = ''
     address = address.replace('\r', '')
     address = address.split('\n')
     address = ",".join(address)
@@ -156,6 +157,7 @@ def decode_directions(dir):
 
 
 def encode_directions(dir):
+    if not dir: dir = ''
     dir = dir.replace('\r\n', '\a')
     return enquote(dir)
 

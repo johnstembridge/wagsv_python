@@ -11,11 +11,11 @@
     <table width="100%">
         <tr>
             <td>{{ form.venue.label }}</td><td>{{ form.venue }}</td>
-            <td>{{ form.organiser.label }}</td><td>{{ form.organiser }}</td>
+            <td>{{ form.course.label }}</td><td>{{ form.course }}</td>
         </tr>
         <tr>
+            <td>{{ form.organiser.label }}</td><td>{{ form.organiser }}</td>
             <td>{{ form.date.label }}</td><td>{{ form.date(required='required') }}</td>
-            <td>{{ form.venue.label }}</td><td>{{ form.venue }}</td>
         </tr>
         <tr>
             <td>{{ form.member_price.label }} £</td><td>{{ form.member_price(size = 6) }}</td>
