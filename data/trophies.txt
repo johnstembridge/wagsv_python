@@ -19,3 +19,4 @@ Trinick Trinket	trinick_trinket	Richard Trinick
 Victor_Ludorum	victor_ludorum	WAGS
 Wags Waistcoat	wags_waistcoat	Mike Beament
 Wells Wineglass	wells_wineglass	Mike Wells
+Big	Swing	big_swing	Mike Beament
