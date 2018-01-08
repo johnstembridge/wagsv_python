@@ -34,13 +34,13 @@ class EventForm(FlaskForm):
     max = IntegerField(label='Maximum')
     event_type = HiddenField(label='Event Type')
     schedule = FieldList(FormField(ScheduleForm))
-    tour_schedule = FieldList(FormField(TourScheduleForm)) #, min_entries=6)
+    tour_schedule = FieldList(FormField(TourScheduleForm))
     note = TextAreaField(label='Notes', default='')
     submit = SubmitField(label='Save')
     editable = HiddenField(label='Editable')
 
     def populate_event(self, year, event_id, event_type):
-        self.editable.data = year >= datetime.date.today().year
+        self.editable = year >= datetime.date.today().year
         event = get_event(year, event_id)
         self.date.data = event['date']
         set_select_field(self.organiser, 'organiser', Players().get_current_members(), event['organiser'])

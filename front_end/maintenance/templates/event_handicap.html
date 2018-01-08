@@ -27,7 +27,7 @@
             <td>{{ item.player.data }}</td>
             <td>{{ item.strokes.data }}</td>
             <td>{{ item.points.data }}</td>
-            {%if form.editable.data == 'y' %}
+            {%if form.editable %}
                 <td>{{ item.handicap(size=10) }}</td>
             {% else %}
                 <td>{{ item.handicap.data }}</td>
@@ -39,7 +39,7 @@
                     text='Show handicap history'
                 )|safe }}
             </td>
-            {%if form.editable.data == 'y' %}
+            {%if form.editable %}
                 <td>{{ item.player_id }}</td>
                 <td>{{ item.guest_return }}</td>
                 <td>{{ item.old_handicap }}</td>

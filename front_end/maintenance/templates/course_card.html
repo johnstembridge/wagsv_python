@@ -18,7 +18,7 @@
         </td>
         <td> </td>
         <td>
-            {{ form.sss.label }} {{ form.sss(size=6, required='required') }}
+            {{ form.sss.label }} {{ form.sss(size=2, required='required') }}
         </td>
     </tbody></table>
     <hr/>
@@ -36,8 +36,8 @@
             {% for item in form.holesOut %}
             <tr>
                 <td>{{ item.hole.data }}</td>
-                <td onchange="updateParTotals()">{{ item.par(required='required') }}</td>
-                <td>{{ item.si(required='required') }}</td>
+                <td onchange="updateParTotals()">{{ item.par(size=2, required='required') }}</td>
+                <td>{{ item.si(size=2, required='required') }}</td>
             </tr>
             {% endfor %}
             <tr>
@@ -62,8 +62,8 @@
             {% for item in form.holesIn %}
             <tr>
                 <td>{{ item.hole.data }}</td>
-                <td onchange="updateParTotals()">{{ item.par(required='required') }}</td>
-                <td>{{ item.si(required='required') }}</td>
+                <td onchange="updateParTotals()">{{ item.par(size=2, required='required') }}</td>
+                <td>{{ item.si(size=2, required='required') }}</td>
             </tr>
             {% endfor %}
             <tr>

@@ -2,7 +2,7 @@ import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField, HiddenField
 from interface import get_event, lookup_course, get_course_data, save_event_card, get_player_handicap, \
-    get_event_card, get_player_name, update_event_scores, is_latest_event
+    get_event_card, get_player_name, update_event_scores, is_event_result_editable
 from data_utilities import fmt_date
 
 
@@ -42,7 +42,7 @@ class EventCardForm(FlaskForm):
         self.event_name.data = '{} {} {}'.format(event['event'], event['venue'], event['date'])
         self.player.data = get_player_name(player_id)
         self.handicap.data = hcap
-        self.editable.data = datetime.date.today() > event['date'] and is_latest_event(event_id)
+        self.editable = is_event_result_editable(year, event_id)
 
         holes = range(1, 19)
         for hole in holes:

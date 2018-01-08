@@ -36,7 +36,7 @@
             {%if item.event_type.data != 'non_event' and item.result.data %}
                 <td align="center">
                     {{ render_link(
-                        url=url_for('results_event', year=year, event_id=item.num.data),
+                        url=url_for('results_event', year=year, event_id=item.num.data, event_type=item.event_type.data),
                         image=url_for('static', filename='images/go.jpg'),
                         text='View/Enter results'
                     )|safe }}

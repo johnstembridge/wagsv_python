@@ -1,7 +1,6 @@
-import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField, HiddenField
-from interface import get_event, get_results, save_event_scores, is_latest_event
+from interface import get_event, get_results, save_event_scores, is_event_result_editable
 
 
 class EventResultItemForm(FlaskForm):
@@ -32,8 +31,7 @@ class EventResultsForm(FlaskForm):
         self.year.data = year
         event = get_event(year, event_id)
         self.event_name.data = '{} {} {}'.format(event['event'], event['venue'], event['date'])
-        editable = datetime.date.today() > event['date'] and is_latest_event(event_id)
-        self.editable.data = 'y' if editable else 'n'
+        self.editable = is_event_result_editable(year, event_id)
         players = get_results(year, event_id)
         num = 0
         for player in players:

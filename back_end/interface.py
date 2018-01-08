@@ -393,6 +393,11 @@ def is_latest_event(event_id):
     return False
 
 
+def is_event_result_editable(year, event_id):
+    event = get_event(year, event_id)
+    return datetime.date.today() > event['date'] and is_latest_event(event_id)
+
+
 def is_tour_event(event):
     return float(event['num']) > math.floor(float(event['num']))
 
