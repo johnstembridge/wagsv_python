@@ -1,8 +1,7 @@
 import datetime
 import os
 from decimal import Decimal
-
-import config
+from globals import config
 
 
 class TestData:
