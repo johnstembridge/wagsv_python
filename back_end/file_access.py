@@ -2,7 +2,7 @@ import os
 from tempfile import mkstemp
 from shutil import move
 from collections import OrderedDict
-from data_utilities import force_list, lookup
+from .data_utilities import force_list, lookup
 from operator import itemgetter
 
 

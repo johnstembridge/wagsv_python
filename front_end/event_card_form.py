@@ -1,9 +1,8 @@
-import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField, HiddenField
-from interface import get_event, lookup_course, get_course_data, save_event_card, get_player_handicap, \
+from back_end.interface import get_event, lookup_course, get_course_data, save_event_card, get_player_handicap, \
     get_event_card, get_player_name, update_event_scores, is_event_result_editable
-from data_utilities import fmt_date
+from back_end.data_utilities import fmt_date
 
 
 class EventCardItemForm(FlaskForm):

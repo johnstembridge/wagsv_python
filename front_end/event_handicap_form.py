@@ -1,8 +1,8 @@
 import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField, HiddenField
-from data_utilities import first_or_default, fmt_date
-from interface import get_event, get_results, save_hcaps, get_handicaps, is_event_result_editable
+from back_end.data_utilities import first_or_default, fmt_date
+from back_end.interface import get_event, get_results, save_hcaps, get_handicaps, is_event_result_editable
 
 
 class EventHandicapItemForm(FlaskForm):

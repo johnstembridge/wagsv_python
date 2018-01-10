@@ -1,5 +1,5 @@
 from flask import render_template, flash
-from accounts_upload_form import AccountsUploadForm
+from .accounts_upload_form import AccountsUploadForm
 
 
 def upload_file(year):

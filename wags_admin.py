@@ -5,10 +5,10 @@ from flask_bootstrap import Bootstrap
 from flask_wtf import CSRFProtect
 
 from front_end import accounts_admin
-from events_admin import MaintainEvents
+from front_end.events_admin import MaintainEvents
 from globals import config
-from home import home_main, page_not_found
-from venues_admin import MaintainVenues
+from front_end.home import home_main, page_not_found
+from front_end.venues_admin import MaintainVenues
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = config.get('SECRET_KEY')

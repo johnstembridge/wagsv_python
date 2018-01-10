@@ -2,7 +2,7 @@ import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, FieldList, FormField, HiddenField
 from wtforms.fields.html5 import DateField
-from interface import get_event_list
+from back_end.interface import get_event_list
 
 
 class EventItemForm(FlaskForm):

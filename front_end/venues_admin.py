@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for, flash
-from venues_forms import VenueListForm, VenueDetailsForm
-from course_details_form import CourseCardForm
-from utility import render_link
+from .venues_forms import VenueListForm, VenueDetailsForm
+from .course_details_form import CourseCardForm
+from .utility import render_link
 
 
 def flash_errors(form):

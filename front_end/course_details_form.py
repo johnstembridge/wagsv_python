@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField, HiddenField
 from wtforms.validators import ValidationError, StopValidation
-from interface import get_course, get_course_data, get_new_course_id, save_course_card, save_course
+from back_end.interface import get_course, get_course_data, get_new_course_id, save_course_card, save_course
 
 
 class CourseCardItemForm(FlaskForm):

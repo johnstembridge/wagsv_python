@@ -6,10 +6,10 @@ from itertools import groupby
 from operator import itemgetter
 
 from back_end.players import Player, Players
-from data_utilities import encode_date, encode_price, decode_date, decode_price, decode_time, \
+from .data_utilities import encode_date, encode_price, decode_date, decode_price, decode_time, \
     sort_name_list, lookup, force_list, coerce, decode_event_type, encode_event_type, dequote, \
     encode_address, decode_address, de_the, encode_directions, decode_directions
-from file_access import get_field, get_record, update_record, get_records, get_file, update_records, get_fields, \
+from .file_access import get_field, get_record, update_record, get_records, get_file, update_records, get_fields, \
     create_data_file
 from globals import config
 from globals.enumerations import EventType
