@@ -1,8 +1,9 @@
+import os
+
+from globals import config
 from flask_wtf import FlaskForm
 from werkzeug.utils import secure_filename
 from wtforms import FileField, SubmitField
-import config
-import os
 
 
 class AccountsUploadForm(FlaskForm):

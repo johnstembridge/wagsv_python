@@ -1,14 +1,16 @@
 import datetime
+
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, DecimalField, TextAreaField, IntegerField, SubmitField, FieldList, \
     FormField, HiddenField
-from wtforms_components import TimeField
 from wtforms.fields.html5 import DateField
+from wtforms_components import TimeField
+
+from back_end.players import Players
+from form_helpers import set_select_field
+from globals.enumerations import EventType
 from interface import get_all_venue_names, get_all_course_names, get_event, save_event, \
     get_new_event_id, get_tour_events, get_all_trophy_names, create_bookings_file
-from back_end.players import Players
-from enumerations import EventType
-from form_helpers import set_select_field
 
 
 class ScheduleForm(FlaskForm):

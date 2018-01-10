@@ -1,11 +1,13 @@
-from flask import Flask, request, session
-from flask_wtf import CSRFProtect
-from flask_bootstrap import Bootstrap
 import datetime
-import config
-from home import home_main, page_not_found
+
+from flask import Flask, request, session
+from flask_bootstrap import Bootstrap
+from flask_wtf import CSRFProtect
+
+from globals import config
 import accounts_admin
 from events_admin import MaintainEvents
+from home import home_main, page_not_found
 from venues_admin import MaintainVenues
 
 app = Flask(__name__)

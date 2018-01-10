@@ -1,13 +1,14 @@
 from flask import render_template, redirect, url_for, flash
-from event_list_form import EventListForm
-from event_details_form import EventForm
-from event_result_form import EventResultsForm
-from tour_result_form import TourResultsForm
-from event_handicap_form import EventHandicapsForm
+
 from event_card_form import EventCardForm
+from event_details_form import EventForm
+from event_handicap_form import EventHandicapsForm
+from event_list_form import EventListForm
+from event_result_form import EventResultsForm
+from globals.enumerations import EventType
 from handicap_history_form import HandicapHistoryForm
+from tour_result_form import TourResultsForm
 from utility import render_link
-from enumerations import EventType
 
 
 class MaintainEvents:
