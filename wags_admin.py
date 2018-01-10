@@ -4,7 +4,7 @@ from flask import Flask, request, session
 from flask_bootstrap import Bootstrap
 from flask_wtf import CSRFProtect
 
-from accounts_admin import upload_file
+from front_end import accounts_admin
 from events_admin import MaintainEvents
 from globals import config
 from home import home_main, page_not_found
@@ -25,12 +25,12 @@ def index():
 @app.route('/accounts', methods=['GET', 'POST'])
 def accounts_main():
     current_year = get_user_current_year()
-    return upload_file(current_year)
+    return accounts_admin.upload_file(current_year)
 
 
 @app.route('/accounts/<year>/upload', methods=['GET', 'POST'])
 def accounts_upload_file(year):
-    return upload_file(year)
+    return accounts_admin.upload_file(year)
 
 
 @app.route('/venues', methods=['GET', 'POST'])
