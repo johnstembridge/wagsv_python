@@ -1,5 +1,6 @@
 import os
 import json
+from flask import url_for as flask_url_for
 
 
 def read():
@@ -13,3 +14,11 @@ def read():
 
 def get(key):
     return read()[key]
+
+
+def url_for(endpoint, **values):
+    url = flask_url_for(endpoint, **values)
+    prefix = get('url_prefix')
+    if prefix:
+        url = prefix + url
+    return url

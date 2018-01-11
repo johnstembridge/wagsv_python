@@ -1,0 +1,7 @@
+{
+  "SECRET_KEY": "secret squirrel",
+  "locations": {
+    "data": "/home/admin/wagsv_python/data"
+  },
+  "url_prefix": "/wagsadmin"
+}
