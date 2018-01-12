@@ -93,6 +93,11 @@ def not_found(e):
     return page_not_found(e)
 
 
+@app.context_processor
+def override_url_for():
+    return dict(url_for=config.url_for)
+
+
 def get_user_current_year():
     if 'current_year' in session:
         current_year = session['current_year']
