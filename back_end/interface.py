@@ -8,7 +8,7 @@ from operator import itemgetter
 from back_end.players import Player, Players
 from .data_utilities import encode_date, encode_price, decode_date, decode_price, decode_time, \
     sort_name_list, lookup, force_list, coerce, decode_event_type, encode_event_type, dequote, \
-    encode_address, decode_address, de_the, encode_directions, decode_directions
+    encode_address, decode_address, de_the, encode_directions, decode_directions, coerce_date
 from .file_access import get_field, get_record, update_record, get_records, get_file, update_records, get_fields, \
     create_data_file
 from globals import config
@@ -165,7 +165,10 @@ def get_event_list(year):
                 'date': event['date'],
                 'event': event['event'],
                 'venue': event['course'] if is_tour_event(event) else event['venue'],
-                'type': event['event_type']
+                'type': event['event_type'],
+                'start_booking': event['start_booking'],
+                'end_booking': event['end_booking'],
+                'venue_url': event['url']
             }
         )
     return sorted(events, key=lambda item: (item['date'], float(item['num'])))
@@ -195,7 +198,7 @@ def get_event(year, event_id):
     data = get_record(events_file(year), 'num', event_id)
     data['date'] = decode_date(data['date'], year)
     data['end_booking'] = decode_date(data.get('deadline', None), year)
-    data['start_booking'] = decode_date(data.get('booking_start', None), year)
+    data['start_booking'] = coerce_date(data.get('booking_start', None), year, data['date'])
     data['member_price'] = decode_price(data['member_price'])
     data['guest_price'] = decode_price(data['guest_price'])
     data['event_type'] = decode_event_type(data.get('type', None))
@@ -541,6 +544,12 @@ def get_all_years():
 def get_all_trophy_names():
     trophies = get_field(trophies_file(), 'name')
     return sorted(trophies)
+
+
+def get_trophy_url(event):
+    trophy = event.lower().replace(" ", "_").replace("-", "")
+    url = "http://wags.org/html/history/trophies/"
+    return url + trophy + '.htm'
 
 
 def create_bookings_file(year, event_id):

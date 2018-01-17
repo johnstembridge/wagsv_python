@@ -1,0 +1,77 @@
+{% extends "user/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Fixtures {{ year }}</h1>
+</div>
+<table width="100%" class="list">
+    <thead>
+    <tr>
+        <th align="left">Date</th>
+        <th align="left">Event</th>
+        <th align="left">Venue</th>
+        <th align="center">Book</th>
+        <th align="center">Result</th>
+        <th align="center">Report</th>
+    </tr>
+    <tr><td colspan=6><hr class="bold"/></td>
+    </thead>
+    <tbody>
+    {% for item in form.event_list %}
+        {%if item.new_section.data %}
+            <tr><td colspan=6><hr></td>
+        {% endif %}
+        <tr>
+            <td>{{ item.date.data }}</td>
+            <td><a href={{ item.trophy_url.data }}>{{ item.event.data }}</a></td>
+            <td><a href=//{{ item.venue_url.data }} target="_blank">{{ item.venue.data }}</a></td>
+            {%if item.event_type.data != 'non_event' %}
+                {%if item.bookable.data == 1 %}
+                    <td align="center">
+                        {{ render_link(
+                        url=url_for('book_event', year=year, event_id=item.num.data, event_type=item.event_type.data),
+                        image=url_for('static', filename='images/go.jpg'),
+                        text='Book event'
+                        )|safe }}
+                    </td>
+                {%elif item.bookable.data == 0%}
+                    <td align="center">
+                        {{ render_link(
+                        url=url_for('show_event', year=year, event_id=item.num.data, event_type=item.event_type.data),
+                        image=url_for('static', filename='images/go.jpg'),
+                        text='View event'
+                        )|safe }}
+                    </td>
+                {% else %}
+                    <td></td>
+                {% endif %}
+                {%if item.result.data %}
+                    <td align="center">
+                        {{ render_link(
+                        url=url_for('results_event', year=year, event_id=item.num.data, event_type=item.event_type.data),
+                        image=url_for('static', filename='images/go.jpg'),
+                        text='View results'
+                        )|safe }}
+                    </td>
+                {% else %}
+                    <td></td>
+                {% endif %}
+                {%if item.result.data %}
+                    <td align="center">
+                        {{ render_link(
+                        url=url_for('report_event', year=year, event_id=item.num.data, event_type=item.event_type.data),
+                        image=url_for('static', filename='images/go.jpg'),
+                        text='View event report'
+                        )|safe }}
+                    </td>
+                {% else %}
+                    <td></td>
+                {% endif %}
+            {% endif %}
+        </tr>
+    {% endfor %}
+    <tr><td colspan=6><hr class="bold"/></td>
+    </tbody>
+</table>
+{% endblock %}

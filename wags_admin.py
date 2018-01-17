@@ -3,12 +3,12 @@ import datetime
 from flask import Flask, request, session
 from flask_bootstrap import Bootstrap
 from flask_wtf import CSRFProtect
+from front_end.admin.events_admin import MaintainEvents
+from front_end.admin.venues_admin import MaintainVenues
 
-from front_end import accounts_admin
-from front_end.events_admin import MaintainEvents
+from front_end.admin import accounts_admin
+from front_end.admin.home import home_main, page_not_found
 from globals import config
-from front_end.home import home_main, page_not_found
-from front_end.venues_admin import MaintainVenues
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = config.get('SECRET_KEY')
@@ -22,6 +22,7 @@ def index():
     return home_main(current_year)
 
 
+# region accounts
 @app.route('/accounts', methods=['GET', 'POST'])
 def accounts_main():
     current_year = get_user_current_year()
@@ -31,8 +32,10 @@ def accounts_main():
 @app.route('/accounts/<year>/upload', methods=['GET', 'POST'])
 def accounts_upload_file(year):
     return accounts_admin.upload_file(year)
+# endregion
 
 
+# region venues
 @app.route('/venues', methods=['GET', 'POST'])
 def venues_main():
     return MaintainVenues.list_venues()
@@ -46,9 +49,10 @@ def edit_venue(venue_id):
 @app.route('/venues/<venue_id>/courses/<course_id>', methods=['GET', 'POST'])
 def edit_course(venue_id, course_id):
     return MaintainVenues.edit_course(venue_id, course_id)
+# endregion
 
 
-# region Events
+# region events
 @app.route('/events', methods=['GET', 'POST'])
 def events_main():
     current_year = get_user_current_year()

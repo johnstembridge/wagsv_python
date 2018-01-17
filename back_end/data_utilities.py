@@ -28,6 +28,13 @@ def encode_date(date):
     return date.strftime('%A %d %B')
 
 
+def encode_date_short(date):
+    # result is in the form Fri 28 Apr
+    if date is None:
+        return ''
+    return date.strftime('%a %d %b')
+
+
 def coerce_date(wdm, y, date):
     if not wdm: return date
     return decode_date(wdm, y)
@@ -167,3 +174,10 @@ def de_the(string):
         if string.startswith('The '):
             string = string[4:]
     return string
+
+
+def in_date_range(date, date_from, date_to):
+    if date and date_from and date_to:
+        return date_from <= date <= date_to
+    else:
+        return False

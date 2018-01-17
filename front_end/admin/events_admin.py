@@ -9,7 +9,7 @@ from globals.enumerations import EventType
 from globals.config import url_for
 from .handicap_history_form import HandicapHistoryForm
 from .tour_result_form import TourResultsForm
-from .utility import render_link
+from front_end.utility import render_link
 
 
 class MaintainEvents:
@@ -27,7 +27,7 @@ class MaintainEvents:
             return redirect(url_for('edit_event', year=year, event_id=0, event_type=event_type))
         form.populate_event_list(int(year))
 
-        return render_template('event_list.html', form=form, year=year, render_link=render_link)
+        return render_template('admin/event_list.html', form=form, year=year, render_link=render_link)
 
     @staticmethod
     def edit_event(year, event_id, event_type=None):
@@ -44,11 +44,11 @@ class MaintainEvents:
             form.populate_event(int(year), event_id, event_type)
         event = event_id if event_id != "0" else "(new)"
         if event_type == EventType.wags_vl_event:
-            return render_template('event_details.html', form=form, event_id=event, year=year)
+            return render_template('admin/event_details.html', form=form, event_id=event, year=year)
         if event_type == EventType.wags_tour:
-            return render_template('tour_details.html', form=form, event_id=event, year=year)
+            return render_template('admin/tour_details.html', form=form, event_id=event, year=year)
         if event_type == EventType.non_event:
-            return render_template('non_event_details.html', form=form, event_id=event, year=year)
+            return render_template('admin/non_event_details.html', form=form, event_id=event, year=year)
 
     @staticmethod
     def results_event(year, event_id, event_type=None):
@@ -71,13 +71,13 @@ class MaintainEvents:
                     return redirect(url_for('results_event', year=year, event_id=event_id))
         else:
             form.populate_event_results(int(year), event_id)
-        return render_template('event_result.html', form=form, event=year + event_id, render_link=render_link)
+        return render_template('admin/event_result.html', form=form, event=year + event_id, render_link=render_link)
 
     @staticmethod
     def results_tour_event(year, event_id):
         form = TourResultsForm()
         form.populate_event_results(int(year), event_id)
-        return render_template('tour_result.html', form=form, event=year + event_id, render_link=render_link)
+        return render_template('admin/tour_result.html', form=form, event=year + event_id, render_link=render_link)
 
     @staticmethod
     def handicaps_event(year, event_id):
@@ -89,7 +89,7 @@ class MaintainEvents:
                     return redirect(url_for('handicaps_event', year=year, event_id=event_id))
         else:
             form.populate_event_handicaps(int(year), event_id)
-        return render_template('event_handicap.html', form=form, event=year + event_id, render_link=render_link)
+        return render_template('admin/event_handicap.html', form=form, event=year + event_id, render_link=render_link)
 
     @staticmethod
     def card_event_player(year, event_id, player_id):
@@ -101,11 +101,11 @@ class MaintainEvents:
                     return redirect(url_for('results_event', year=year, event_id=event_id))
         else:
             form.populate_card(year, event_id, player_id)
-        return render_template('event_card.html', form=form, event=year + event_id, render_link=render_link)
+        return render_template('admin/event_card.html', form=form, event=year + event_id, render_link=render_link)
 
     @staticmethod
     def handicap_history_player(year, event_id, player_id):
         form = HandicapHistoryForm()
         form.populate_history(year, event_id, player_id)
-        return render_template('handicap_history.html', form=form)
+        return render_template('admin/handicap_history.html', form=form)
 

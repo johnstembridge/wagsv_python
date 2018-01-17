@@ -11,4 +11,4 @@ def upload_file(year):
     else:
         form.populate(int(year))
 
-    return render_template('accounts_upload.html', form=form, year=year)
+    return render_template('admin/accounts_upload.html', form=form, year=year)

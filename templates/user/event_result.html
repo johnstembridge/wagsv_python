@@ -1,0 +1,43 @@
+{% extends "user/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block page_content %}
+<div class="page-header">
+    <h2>{{ form.event_name.data }}</h2>
+</div>
+<table class="list result">
+    <thead>
+    <tr>
+        <th align="right">Position</th>
+        <th align="left">Name</th>
+        <th>Score</th>
+        <th>Strokes</th>
+        <th>Handicap</th>
+        <th class="text-center">Card</th>
+    </tr>
+    <tr><td colspan=6><hr/></td>
+    </thead>
+    <tbody>
+
+    </tr>
+    {% for item in form.scores %}
+    <tr>
+        <td align="right">{{ item.num.data }}</td>
+        <td>{{ item.player.data }}</td>
+        <td align="center">{{ item.points.data }}</td>
+        <td align="center">{{ item.strokes.data }}</td>
+        <td align="center">{{ item.handicap.data }}</td>
+        <td align="center">
+            {{ render_link(
+            url=url_for('card_event_player', year=form.year.data, event_id=form.event_id.data,
+            player_id=item.player_id.data),
+            image=url_for('static', filename='images/go.jpg'),
+            text='View card'
+            )|safe }}
+        </td>
+    </tr>
+    {% endfor %}
+    <tr><td colspan=6><hr/></td>
+    </tbody>
+</table>
+{% endblock %}

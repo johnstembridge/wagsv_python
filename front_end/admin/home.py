@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from flask import render_template, session
 from wtforms import SubmitField, SelectField
 from back_end.interface import get_all_years, create_events_file
-from .form_helpers import set_select_field
+from front_end.form_helpers import set_select_field
 
 
 def home_main(year):
@@ -12,7 +12,7 @@ def home_main(year):
         if form.save(year):
             session['current_year'] = year
     form.populate(year)
-    return render_template('home.html', form=form, year=year)
+    return render_template('admin/home.html', form=form, year=year)
 
 
 def page_not_found(e):

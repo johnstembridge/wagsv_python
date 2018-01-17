@@ -1,9 +1,9 @@
-{% extends "base.html" %}
+{% extends "admin/base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block page_content %}
 <div class="page-header">
-    <h1>{{ year }} Tour {{ event_id }}</h1>
+    <h1>{{ year }} Event {{ event_id }}</h1>
 </div>
 
 <form method="POST">
@@ -11,45 +11,48 @@
     <table width="100%">
         <tr>
             <td>{{ form.venue.label }}</td><td>{{ form.venue }}</td>
-            <td>{{ form.organiser.label }}</td><td>{{ form.organiser }}</td>
+            <td>{{ form.course.label }}</td><td>{{ form.course }}</td>
         </tr>
         <tr>
             <td>{{ form.trophy.label }}</td><td>{{ form.trophy }}</td>
             <td>{{ form.date.label }}</td><td>{{ form.date(required='required') }}</td>
         </tr>
         <tr>
+            <td>{{ form.organiser.label }}</td><td>{{ form.organiser }}</td>
+            <td>{{ form.max.label }}</td><td>{{ form.max(size = 6) }}</td>
+        </tr>
+        </tr>
             <td>{{ form.member_price.label }} £</td><td>{{ form.member_price(size = 6) }}</td>
             <td>{{ form.guest_price.label }} £</td><td>{{ form.guest_price(size = 6) }}</td>
-        </tr>
+        <tr>
         <tr>
             <td>{{ form.start_booking.label }}</td><td>{{ form.start_booking }}</td>
             <td>{{ form.end_booking.label }}</td><td>{{ form.end_booking }}</td>
-        </tr>
-        <tr>
-            <td>{{ form.max.label }}</td><td>{{ form.max(size = 6) }}</td>
+            <td></td><td></td>
         </tr>
     </table>
     <h3>Schedule</h3>
     <table>
         <thead>
         <tr>
-            <th>Date</th><th>Course</th>
+            <th>Time</th><th>Item</th>
         </tr>
         </thead>
         <tbody>
-        {% for item in form.tour_schedule %}
+        {% for item in form.schedule %}
         <tr>
-            <td>{{ item.form.date }}</td><td>{{ item.form.course }}</td>
+            <td>{{ item.time }}</td><td>{{ item.text(size=100) }}</td>
         </tr>
         {% endfor %}
         </tbody>
     </table>
+    <br>
     {{ form.note.label }}
     <br>
     {{ form.note(rows='5',cols='110') }}
     {{ form.event_type }}
     <hr/>
-    {%if form.editable.data %}
+    {%if form.editable %}
         {{ form.submit(class="btn btn-primary") }}
     {% endif %}
 </form>

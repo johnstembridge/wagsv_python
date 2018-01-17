@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, HiddenField, TextAreaField, SelectField, FieldList, FormField
 from back_end.interface import get_venue_select_list, get_venue, save_venue, get_new_venue_id, get_courses_for_venue
-from .form_helpers import set_select_field
+from front_end.form_helpers import set_select_field
 
 
 class VenueListForm(FlaskForm):
