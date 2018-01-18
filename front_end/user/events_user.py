@@ -1,12 +1,14 @@
-from flask import render_template
+from flask import render_template, redirect
 
 from .event_card_form import EventCardForm
 from .event_list_form import EventListForm
 from .event_result_form import EventResultsForm
 from globals.enumerations import EventType
+from globals.config import url_for_old_site, url_for_old_service
 from .handicap_history_form import HandicapHistoryForm
 from .tour_result_form import TourResultsForm
 from front_end.utility import render_link
+from back_end.interface import get_event
 
 
 class ReportEvents:
@@ -19,11 +21,11 @@ class ReportEvents:
 
     @staticmethod
     def book_event(year, event_id, event_type=None):
-        pass
+        return redirect(url_for_old_service('services.pl?show_event={}&year={}&book=1'.format(event_id, year)))
 
     @staticmethod
     def show_event(year, event_id, event_type=None):
-        pass
+        return redirect(url_for_old_service('services.pl?show_event={}&year={}&book=3'.format(event_id, year)))
 
     @staticmethod
     def results_event(year, event_id, event_type=None):
@@ -38,7 +40,9 @@ class ReportEvents:
 
     @staticmethod
     def report_event(year, event_id, event_type=None):
-        pass
+        date = get_event(year, event_id)['date']
+        file = 'rp{}.htm'.format(date.strftime('%y%m%d'))
+        return redirect(url_for_old_site('{}/{}'.format(year, file)))
 
     @staticmethod
     def results_vl_event(year, event_id):

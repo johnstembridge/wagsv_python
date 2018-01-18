@@ -11,10 +11,10 @@ app.config['SECRET_KEY'] = config.get('SECRET_KEY')
 bootstrap = Bootstrap(app)
 
 
-# @app.route('/', methods=['GET', 'POST'])
-# def index():
-#     current_year = get_user_current_year()
-#     return home_main(current_year)
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    current_year = get_user_current_year()
+    return events_list_events(current_year)
 
 
 # region events
