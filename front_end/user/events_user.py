@@ -1,11 +1,9 @@
 from flask import render_template
 
 from .event_card_form import EventCardForm
-from .event_details_form import EventForm
 from .event_list_form import EventListForm
 from .event_result_form import EventResultsForm
 from globals.enumerations import EventType
-from globals.config import url_for
 from .handicap_history_form import HandicapHistoryForm
 from .tour_result_form import TourResultsForm
 from front_end.utility import render_link

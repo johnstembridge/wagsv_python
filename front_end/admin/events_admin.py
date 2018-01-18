@@ -6,7 +6,7 @@ from .event_handicap_form import EventHandicapsForm
 from .event_list_form import EventListForm
 from .event_result_form import EventResultsForm
 from globals.enumerations import EventType
-from globals.config import url_for
+from globals.config import url_for_admin
 from .handicap_history_form import HandicapHistoryForm
 from .tour_result_form import TourResultsForm
 from front_end.utility import render_link
@@ -24,7 +24,7 @@ class MaintainEvents:
                 event_type = EventType.wags_tour.name
             if form.add_non.data:
                 event_type = EventType.non_event.name
-            return redirect(url_for('edit_event', year=year, event_id=0, event_type=event_type))
+            return redirect(url_for_admin('edit_event', year=year, event_id=0, event_type=event_type))
         form.populate_event_list(int(year))
 
         return render_template('admin/event_list.html', form=form, year=year, render_link=render_link)
@@ -39,7 +39,7 @@ class MaintainEvents:
         if form.is_submitted():
             if form.save_event(int(year), event_id):
                 flash('Event saved', 'success')
-                return redirect(url_for('events_main'))
+                return redirect(url_for_admin('events_main'))
         else:
             form.populate_event(int(year), event_id, event_type)
         event = event_id if event_id != "0" else "(new)"
@@ -68,7 +68,7 @@ class MaintainEvents:
             if form.save_results.data:
                 if form.save_event_results(year, event_id):
                     flash('results saved', 'success')
-                    return redirect(url_for('results_event', year=year, event_id=event_id))
+                    return redirect(url_for_admin('results_event', year=year, event_id=event_id))
         else:
             form.populate_event_results(int(year), event_id)
         return render_template('admin/event_result.html', form=form, event=year + event_id, render_link=render_link)
@@ -86,7 +86,7 @@ class MaintainEvents:
             if form.save_handicaps.data:
                 if form.save_event_handicaps():
                     flash('Handicaps saved', 'success')
-                    return redirect(url_for('handicaps_event', year=year, event_id=event_id))
+                    return redirect(url_for_admin('handicaps_event', year=year, event_id=event_id))
         else:
             form.populate_event_handicaps(int(year), event_id)
         return render_template('admin/event_handicap.html', form=form, event=year + event_id, render_link=render_link)
@@ -98,7 +98,7 @@ class MaintainEvents:
             if form.save_card.data:
                 if form.save_event_card(year, event_id, player_id, form):
                     flash('Card saved', 'success')
-                    return redirect(url_for('results_event', year=year, event_id=event_id))
+                    return redirect(url_for_admin('results_event', year=year, event_id=event_id))
         else:
             form.populate_card(year, event_id, player_id)
         return render_template('admin/event_card.html', form=form, event=year + event_id, render_link=render_link)

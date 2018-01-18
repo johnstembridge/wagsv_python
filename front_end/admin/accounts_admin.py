@@ -7,7 +7,7 @@ def upload_file(year):
     if form.is_submitted():
         if form.upload(year):
             flash('file uploaded successfully')
-            # return redirect(url_for('upload_file', year=year))
+            # return redirect(url_for_admin('upload_file', year=year))
     else:
         form.populate(int(year))
 
