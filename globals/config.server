@@ -3,5 +3,8 @@
   "locations": {
     "data": "/home/admin/wagsv_python/data"
   },
-  "url_prefix": "/wagsadmin"
+    "url_prefix": {
+    "admin": "/wagsadmin",
+    "user": "/wagsuser"
+  }
 }

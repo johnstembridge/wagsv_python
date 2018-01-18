@@ -37,6 +37,7 @@ class EventListForm(FlaskForm):
             first = False
             if is_tour_event(item):
                 item_form.event = ''
+            # bookable:  1 - booking open, 0 - booking closed, -1 - booking not applicable
             item_form.bookable = \
                 1 if in_date_range(datetime.date.today(), item['start_booking'], item['end_booking']) \
                 else -1 if (is_tour_event(item) or (True if not item['start_booking'] else datetime.date.today() < item['start_booking'])) \

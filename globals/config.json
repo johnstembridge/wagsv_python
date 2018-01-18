@@ -3,5 +3,8 @@
   "locations": {
     "data": "C:\\Users\\jstembridge\\PycharmProjects\\wagsv\\data"
   },
-  "url_prefix": null
+  "url_prefix": {
+    "admin": null,
+    "user": null
+  }
 }

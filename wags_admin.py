@@ -99,7 +99,7 @@ def not_found(e):
 
 @app.context_processor
 def override_url_for():
-    return dict(url_for=config.url_for)
+    return dict(url_for=config.url_for_admin)
 
 
 def get_user_current_year():

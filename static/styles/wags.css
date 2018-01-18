@@ -40,8 +40,8 @@ TD.button3	{text-align: center; background: #006233}
 }
 .page-header {margin: 0}
 table.list {border:0; bgcolor:white; cellpadding:2; border-spacing: 1px; border-collapse: separate}
-table.list th {color: #6E1285; font-weight: bold; text-align:left; padding: 0px 3px 0px 3px}
-table.list td {padding: 0px 3px 0px 3px}
+table.list th {color: #6E1285; font-weight: bold; text-align:left; padding: 0px 2px 0px 2px}
+table.list td {padding: 0px 2px 0px 2px}
 table.list.result tr:nth-child(-n+3){color: #6E1285}
 
 table.striped {border-collapse: collapse}
