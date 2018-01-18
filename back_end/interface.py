@@ -260,7 +260,7 @@ def save_event(year, event_id, data):
     data['deadline'] = encode_date(data['end_booking'])
     data['member_price'] = encode_price(data['member_price'])
     data['guest_price'] = encode_price(data['guest_price'])
-    data['start_booking'] = encode_date(data['start_booking'])
+    data['booking_start'] = encode_date(data['start_booking'])
     data['type'] = encode_event_type(data['event_type'])
     data['schedule'] = encode_schedule(data['schedule'])
     insert_venue_info(data)
@@ -553,7 +553,7 @@ def get_trophy_url(event):
 
 
 def create_bookings_file(year, event_id):
-    directory = os.path.join(data_location, year)
+    directory = os.path.join(data_location, str(year))
     filename = bookings_file(year, event_id)
     fields = bookings_file_fields()
     return create_wags_data_file(directory, filename, fields)

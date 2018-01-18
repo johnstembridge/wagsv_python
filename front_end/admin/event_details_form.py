@@ -96,7 +96,7 @@ class EventForm(FlaskForm):
         if EventType[self.event_type.data] == EventType.wags_vl_event:
             for item in self.schedule.data:
                 event['schedule'].append(item)
-            if self.start_booking.data and self.start_booking.data <= datetime.date.today():
+            if self.start_booking.data is not None and self.start_booking.data <= datetime.date.today():
                 create_bookings_file(year, event_id)
 
         if EventType[self.event_type.data] == EventType.wags_tour:
