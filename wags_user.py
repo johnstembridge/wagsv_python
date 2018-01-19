@@ -4,7 +4,7 @@ from flask import Flask, request, session
 from flask_bootstrap import Bootstrap
 from front_end.user.events_user import ReportEvents
 
-from globals import config
+from globals import config, logging
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = config.get('SECRET_KEY')
@@ -63,6 +63,12 @@ def not_found(e):
     return ReportEvents.page_not_found(e)
 
 
+@app.errorhandler(500)
+def catch_internal_error(e):
+    app.logger.error(e)
+    return ReportEvents.internal_error(e)
+
+
 @app.context_processor
 def override_url_for():
     return dict(url_for=config.url_for_user)
@@ -78,4 +84,6 @@ def get_user_current_year():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    log_handler = logging.log_init()
+    app.logger.addHandler(log_handler)
+    app.run(debug=False)

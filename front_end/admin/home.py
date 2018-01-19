@@ -16,7 +16,11 @@ def home_main(year):
 
 
 def page_not_found(e):
-    return render_template('404.html'), 404
+    return render_template('admin/404.html'), 404
+
+
+def internal_error(e):
+    return render_template('admin/500.html'), 500
 
 
 class HomeForm(FlaskForm):

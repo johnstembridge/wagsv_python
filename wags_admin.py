@@ -3,12 +3,12 @@ import datetime
 from flask import Flask, request, session
 from flask_bootstrap import Bootstrap
 from flask_wtf import CSRFProtect
+
 from front_end.admin.events_admin import MaintainEvents
 from front_end.admin.venues_admin import MaintainVenues
-
 from front_end.admin import accounts_admin
-from front_end.admin.home import home_main, page_not_found
-from globals import config
+from front_end.admin.home import home_main, page_not_found, internal_error
+from globals import config, logging
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = config.get('SECRET_KEY')
@@ -97,6 +97,12 @@ def not_found(e):
     return page_not_found(e)
 
 
+@app.errorhandler(500)
+def catch_internal_error(e):
+    app.logger.error(e)
+    return internal_error(e)
+
+
 @app.context_processor
 def override_url_for():
     return dict(url_for=config.url_for_admin)
@@ -112,4 +118,6 @@ def get_user_current_year():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    log_handler = logging.log_init()
+    app.logger.addHandler(log_handler)
+    app.run(debug=False)
