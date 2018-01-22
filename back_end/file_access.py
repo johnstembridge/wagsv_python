@@ -254,6 +254,7 @@ def extract_new_record(header, new_values, kv):
 def my_open(filename, mode):
     if mode == 'w':
         os.umask(0o022)  # remove write for group and all
+        mode = 'w+'
     return open(filename, mode, encoding="latin-1")
 
 
