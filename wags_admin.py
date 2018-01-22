@@ -14,6 +14,8 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = config.get('SECRET_KEY')
 csrf = CSRFProtect(app)
 bootstrap = Bootstrap(app)
+log_handler = logging.log_init()
+app.logger.addHandler(log_handler)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -118,6 +120,4 @@ def get_user_current_year():
 
 
 if __name__ == '__main__':
-    log_handler = logging.log_init()
-    app.logger.addHandler(log_handler)
     app.run(debug=False)

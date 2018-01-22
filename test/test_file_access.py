@@ -1,10 +1,10 @@
 import copy
 import unittest
 import datetime
-from interface import encode_schedule, decode_schedule, get_event_card
-from file_access import get_record, get_field, get_fields, update_record, file_delimiter, get_records, get_file, \
+from back_end.interface import encode_schedule, decode_schedule, get_event_card
+from back_end.file_access import get_record, get_field, get_fields, update_record, file_delimiter, get_records, get_file, \
     keys_match
-from data_utilities import decode_date
+from back_end.data_utilities import decode_date
 from test_data import TestData
 
 
