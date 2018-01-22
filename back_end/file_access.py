@@ -252,10 +252,10 @@ def extract_new_record(header, new_values, kv):
 
 
 def my_open(filename, mode):
+    fh = open(filename, mode, encoding="latin-1")
     if mode == 'w':
-        os.umask(0o022)  # remove write for group and all
-        mode = 'w+'
-    return open(filename, mode, encoding="latin-1")
+        os.chmod(filename, 0o644)
+    return fh
 
 
 
