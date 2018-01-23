@@ -24,7 +24,7 @@ A.button:visited	{color: black; text-decoration: none}
 A.button:active	{color: white; text-decoration: none}
 A.button:hover	{color: white; text-decoration: none}
 IMG		{border-style: none}
-TD.h2		{color: #6E1285; font-family: arial, helvetica, sans-serif; font-size: 20pt; font-weight: bold; padding-bottom: 10px}
+TD.h2		{color: #6E1285; font-family: arial, helvetica, sans-serif; font-size: 20pt; font-weight: bold; padding-bottom: 20px}
 TD.h3		{color: #6E1285; font-family: arial, helvetica, sans-serif; font-size: 16pt; font-weight: bold}
 TD.h4		{color: #6E1285; font-family: arial, helvetica, sans-serif; font-size: 12pt; font-weight: bold}
 TD.head		{color: #6E1285; font-weight: bold}

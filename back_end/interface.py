@@ -556,16 +556,16 @@ def create_bookings_file(year, event_id):
     directory = os.path.join(data_location, str(year))
     filename = bookings_file(year, event_id)
     fields = bookings_file_fields()
-    return create_wags_data_file(directory, filename, fields)
+    return create_wags_data_file(directory, filename, fields, access_all=True)
 
 
-def create_wags_data_file(directory, filename, fields):
+def create_wags_data_file(directory, filename, fields, access_all=False):
     result = True
     try:
         if not os.path.exists(directory):
             os.makedirs(directory)
         if not os.path.exists(filename):
-            create_data_file(filename, fields)
+            create_data_file(filename, fields, access_all)
     except:
         e = sys.exc_info()[0]
         result = False

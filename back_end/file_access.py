@@ -63,10 +63,10 @@ def get_file(file):
     return keys, res
 
 
-def create_data_file(file, fields):
+def create_data_file(file, fields, access_all=False):
     delimiter = file_delimiter(file)
     fields = delimiter.join(fields)
-    with my_open(file, 'w') as f:
+    with my_open(file, 'w', access_all) as f:
         f.write(fields)
 
 
@@ -252,14 +252,13 @@ def extract_new_record(header, new_values, kv):
     return extracted
 
 
-def my_open(filename, mode):
+def my_open(filename, mode, access_all=False):
     fh = open(filename, mode, encoding="latin-1")
     op_sys = config.get("OS")
-    if op_sys == 'Unix' and mode == 'w':
-        apache_group_name = config.get("apache_group_name")
-        # gid = os.popen("id -g %s" % apache_group_name).read().strip()
-        import pwd
-        gid = pwd.getpwnam(apache_group_name).pw_uid
-        os.chown(filename, -1, gid)
-        os.chmod(filename, 0o664)
+    if op_sys == 'Unix':
+        if mode == 'w':
+            if access_all:
+                os.chmod(filename, 0o777)
+            else:
+                os.chmod(filename, 0o664)
     return fh
