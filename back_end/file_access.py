@@ -258,7 +258,7 @@ def my_open(filename, mode, access_all=False):
     if op_sys == 'Unix':
         if mode == 'w':
             if access_all:
-                os.chmod(filename, 0o777)
+                os.chmod(filename, 0o666)
             else:
                 os.chmod(filename, 0o664)
     return fh
