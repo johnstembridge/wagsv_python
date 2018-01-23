@@ -255,7 +255,7 @@ def extract_new_record(header, new_values, kv):
 def my_open(filename, mode):
     fh = open(filename, mode, encoding="latin-1")
     op_sys = config.get("OS")
-    if op_sys == 'UNIX' and mode == 'w':
+    if op_sys == 'Unix' and mode == 'w':
         apache_group_name = config.get("apache_group_name")
         gid = os.popen("id -g %s" % apache_group_name).read().strip()
         #  gid = pwd.getpwnam('www-data').pw_uid
