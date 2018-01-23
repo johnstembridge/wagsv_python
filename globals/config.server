@@ -1,4 +1,6 @@
 {
+  "OS": "Unix",
+  "apache_group_name": "www-data",
   "SECRET_KEY": "secret squirrel",
   "locations": {
     "data": "/var/www/html/data",

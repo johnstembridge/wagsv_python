@@ -1,4 +1,5 @@
 {
+  "OS": "windows",
   "SECRET_KEY": "secret squirrel",
   "locations": {
     "data": "C:\\Users\\jstembridge\\PycharmProjects\\wagsv\\data",
