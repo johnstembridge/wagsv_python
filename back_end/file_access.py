@@ -257,8 +257,9 @@ def my_open(filename, mode):
     op_sys = config.get("OS")
     if op_sys == 'Unix' and mode == 'w':
         apache_group_name = config.get("apache_group_name")
-        gid = os.popen("id -g %s" % apache_group_name).read().strip()
-        #  gid = pwd.getpwnam('www-data').pw_uid
+        # gid = os.popen("id -g %s" % apache_group_name).read().strip()
+        import pwd
+        gid = pwd.getpwnam(apache_group_name).pw_uid
         os.chown(filename, -1, gid)
         os.chmod(filename, 0o664)
     return fh
