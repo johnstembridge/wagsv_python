@@ -2,8 +2,8 @@ from enum import Enum
 
 
 class PlayerStatus:
-    member = 0
-    guest = 1
+    guest = 0
+    member = 1
     ex_member = 2
 
 

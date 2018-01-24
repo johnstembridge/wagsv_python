@@ -3,6 +3,7 @@ import datetime
 from flask import Flask, request, session
 from flask_bootstrap import Bootstrap
 from front_end.user.events_user import ReportEvents
+from front_end.user.handicaps import Handicaps
 
 from globals import config, logging
 
@@ -55,9 +56,19 @@ def card_event_player(year, event_id, player_id):
 
 
 @app.route('/events/<year>/<event_id>/<player_id>/handicap', methods=['GET', 'POST'])
-def handicap_history_player(year, event_id, player_id):
+def event_handicap_history_player(year, event_id, player_id):
     return ReportEvents.handicap_history_player(year, event_id, player_id)
 # endregion
+
+
+@app.route('/handicaps', methods=['GET', 'POST'])
+def handicaps():
+    return Handicaps.list_handicaps()
+
+
+@app.route('/handicaps/<player_id>', methods=['GET', 'POST'])
+def handicap_history_player(player_id):
+    return Handicaps.handicap_history_player(player_id)
 
 
 @app.errorhandler(404)

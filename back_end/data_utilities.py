@@ -74,7 +74,7 @@ def encode_event_type(event_type):
 
 
 def sort_name_list(names):
-    fl = [v.split(' ') for v in names]
+    fl = [v.split(' ', 2) for v in names]
     fl.sort(key=lambda tup: (tup[1], tup[0]))
     return [n[0] + ' ' + n[1] for n in fl]
 
@@ -83,11 +83,11 @@ def normalise_name(name):
     return name.title()
 
 
-def lookup(item_list, items):
+def lookup(item_list, items, index_origin=0):
     res = []
     for item in force_list(items):
         if item in item_list:
-            i = item_list.index(item)
+            i = index_origin + item_list.index(item)
         else:
             i = -1
         res.append(i)

@@ -2,7 +2,7 @@ import unittest
 
 from back_end.file_access import get_record
 from globals.enumerations import PlayerStatus
-from back_end.interface import get_event, get_latest_handicaps, get_handicaps, get_players, get_event_scores, \
+from back_end.interface import get_event, get_latest_handicaps, get_handicaps, get_players_sorted, get_event_scores, \
     get_booked_players, save_event_scores, get_course_data, get_player_handicap, get_event_card, get_venue_by_name, \
     get_tour_events, get_last_event
 from test_data import TestData
@@ -57,15 +57,15 @@ class TestInterface(unittest.TestCase):
         self.assertTrue(len(card) > 0)
 
     def test_get_members(self):
-        res = get_players('2016/08/07', 1)
+        res = get_players_sorted('2016/08/07', 1)
         self.assertTrue(len(res) > 0)
 
     def test_get_players(self):
-        res = get_players('2016/08/07', [PlayerStatus.member, PlayerStatus.guest])
+        res = get_players_sorted('2016/08/07', [PlayerStatus.member, PlayerStatus.guest])
         self.assertTrue(len(res) > 0)
 
     def test_get_ex_members(self):
-        res = get_players('2016/08/07', PlayerStatus.ex_member)
+        res = get_players_sorted('2016/08/07', PlayerStatus.ex_member)
         self.assertTrue(len(res) > 0)
 
     def test_get_event_scores(self):

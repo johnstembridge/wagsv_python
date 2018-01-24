@@ -4,6 +4,7 @@ import os
 import sys
 from itertools import groupby
 from operator import itemgetter
+from collections import OrderedDict
 
 from back_end.players import Player, Players
 from .data_utilities import encode_date, encode_price, decode_date, decode_price, decode_time, \
@@ -12,7 +13,7 @@ from .data_utilities import encode_date, encode_price, decode_date, decode_price
 from .file_access import get_field, get_record, update_record, get_records, get_file, update_records, get_fields, \
     create_data_file
 from globals import config
-from globals.enumerations import EventType
+from globals.enumerations import EventType, PlayerStatus
 
 # region file_paths
 
@@ -485,13 +486,20 @@ def get_player_name(player_id):
     return get_all_players()[coerce(player_id, int) - 1]
 
 
-def get_players(as_of, status=None):
+def get_players_sorted(as_of, status=None):
     header, recs = get_handicap_records(as_of, status)
     inx = [1]
     pi = [int(itemgetter(*inx)(r)) - 1 for r in recs]
     players = Players().get_all_players()
     current = itemgetter(*pi)(players)
     return sort_name_list(current)
+
+
+def get_players_sorted_as_dict(as_of, status=None):
+    players = get_players_sorted(as_of, status)
+    all_players = get_all_players()
+    pid = lookup(all_players, players, index_origin=1)
+    return OrderedDict(zip(pid, all_players))
 
 
 def get_latest_handicaps():
@@ -524,7 +532,7 @@ def get_handicap_records(as_of, status=None):
     recs.sort(key=lambda tup: (tup[1], tup[0]), reverse=True)  # order by date within player
     get_item = itemgetter(1)
     res = [list(value)[0] for key, value in groupby(recs, get_item)]  # get latest for each player
-    if status:
+    if status is not None:
         status = [str(s) for s in force_list(status)]
         res = [x for x in res if x[3] in status]  # select members/guests/ex-members
     return header, res
@@ -544,6 +552,15 @@ def save_hcaps(date, header, data):
     update_records(handicaps_file(), ['date', 'player'], [date], header, data)
 
 # endregion
+
+
+def get_current_members():
+    header, data = get_records(members_file(), ['status'], [str(PlayerStatus.member)])
+    i = lookup(header, ['salutation', 'surname'])
+    member_names = sort_name_list([' '.join(itemgetter(*i)(m)) for m in data])
+    all_players = get_all_players()
+    pid = lookup(all_players, member_names, index_origin=1)
+    return OrderedDict(zip(pid, member_names))
 
 
 def get_all_years():

@@ -34,7 +34,7 @@
             {% endif %}
             <td align="center">
                 {{ render_link(
-                    url=url_for('handicap_history_player', year=form.year.data, event_id=form.event_id.data, player_id=item.player_id.data),
+                    url=url_for('event_handicap_history_player', year=form.year.data, event_id=form.event_id.data, player_id=item.player_id.data),
                     image=url_for('static', filename='images/go.jpg'),
                     text='Show handicap history'
                 )|safe }}

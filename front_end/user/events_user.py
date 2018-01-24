@@ -8,7 +8,7 @@ from globals.config import url_for_old_site, url_for_old_service
 from .handicap_history_form import HandicapHistoryForm
 from .tour_result_form import TourResultsForm
 from front_end.utility import render_link
-from back_end.interface import get_event
+from back_end.interface import get_event, event_date
 
 
 class ReportEvents:
@@ -65,7 +65,8 @@ class ReportEvents:
     @staticmethod
     def handicap_history_player(year, event_id, player_id):
         form = HandicapHistoryForm()
-        form.populate_history(year, event_id, player_id)
+        date = event_date(year, event_id)
+        form.populate_history(player_id, date)
         return render_template('user/handicap_history.html', form=form)
 
     @staticmethod

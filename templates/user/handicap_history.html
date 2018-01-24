@@ -1,0 +1,30 @@
+{% extends "user/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>{{ form.player.data }}</h1>
+    <h2>Handicap history</h2>
+</div>
+<form method="POST">
+    {{ form.csrf_token }}
+    <table width="100%" class="table table-striped">
+        <thead>
+        <tr>
+            <th>Date</th>
+            <th>Handicap</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in form.history %}
+        <tr>
+            <td>{{ item.date.data }}</td>
+            <td>{{ item.handicap.data }}</td>
+            <td>{{ item.status.data }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</form>
+{% endblock %}

@@ -89,7 +89,7 @@ def card_event_player(year, event_id, player_id):
 
 
 @app.route('/events/<year>/<event_id>/<player_id>/handicap', methods=['GET', 'POST'])
-def handicap_history_player(year, event_id, player_id):
+def event_handicap_history_player(year, event_id, player_id):
     return MaintainEvents.handicap_history_player(year, event_id, player_id)
 # endregion
 

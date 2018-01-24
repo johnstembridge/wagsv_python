@@ -1,0 +1,36 @@
+{% extends "user/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Handicaps</h1>
+    <h2></h2>
+</div>
+<table width="100%" class="table table-striped">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Handicap</th>
+        <th class="text-center">History</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in form.handicaps %}
+    <tr>
+        <td>{{ item.player.data }}</td>
+        <td>{{ item.handicap.data }}</td>
+        <td align="center">
+            {{ render_link(
+                url=url_for('handicap_history_player', player_id=item.player_id.data),
+                image=url_for('static', filename='images/go.jpg'),
+                text='Show handicap history'
+            )|safe }}
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<hr/>
+{% endblock %}
