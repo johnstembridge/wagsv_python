@@ -1,10 +1,10 @@
 import unittest
 
-from file_access import get_record
+from back_end.file_access import get_record
 from globals.enumerations import PlayerStatus
-from interface import get_event, get_latest_handicaps, get_handicaps, get_players, get_event_scores, \
+from back_end.interface import get_event, get_latest_handicaps, get_handicaps, get_players, get_event_scores, \
     get_booked_players, save_event_scores, get_course_data, get_player_handicap, get_event_card, get_venue_by_name, \
-    get_tour_events
+    get_tour_events, get_last_event
 from test_data import TestData
 
 
@@ -108,3 +108,6 @@ class TestInterface(unittest.TestCase):
         rec = get_tour_events(2017, 5, 6)
         expected = TestData.example_tour_events
         self.assertEqual(rec, expected)
+
+    def test_get_last_event(self):
+        last = get_last_event()

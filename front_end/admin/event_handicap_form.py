@@ -2,7 +2,7 @@ import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField, HiddenField
 from back_end.data_utilities import first_or_default, fmt_date
-from back_end.interface import get_event, get_results, save_hcaps, get_handicaps, is_event_result_editable
+from back_end.interface import get_event, get_results, save_hcaps, get_handicaps, is_last_event
 
 
 class EventHandicapItemForm(FlaskForm):
@@ -31,7 +31,7 @@ class EventHandicapsForm(FlaskForm):
         self.year.data = year
         event = get_event(year, event_id)
         self.event_name.data = '{} {} {}'.format(event['event'], event['venue'], event['date'])
-        self.editable = is_event_result_editable(year, event_id)
+        self.editable = is_last_event(year, event_id)
         players = get_results(year, event_id)
         if self.editable:
             hcaps = get_handicaps(fmt_date(datetime.date.today()))

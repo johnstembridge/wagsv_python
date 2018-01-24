@@ -150,11 +150,6 @@ def get_all_event_types():
     return [(e.name, e.name) for e in EventType]
 
 
-def get_all_event_names():
-    events = get_field(events_file(2017), 'event')
-    return sorted(events)
-
-
 def get_event_list(year):
     events = []
     for event_id in get_field(events_file(year), 'num'):
@@ -402,6 +397,22 @@ def is_event_result_editable(year, event_id):
     return datetime.date.today() > event['date'] and is_latest_event(event_id)
 
 
+def is_last_event(year, event_id):
+    last = get_last_event()
+    return last == (year, event_id)
+
+
+def get_last_event(year=None):
+    today = datetime.date.today()
+    if not year:
+        year = today.year
+    events = get_event_list(year)
+    nums = [e['num'] for e in events if e['type'] == 'wags_vl_event' and e['date'] <= today]
+    if len(nums) > 0:
+        return year, nums[-1]
+    return get_last_event(year-1)
+
+
 def is_tour_event(event):
     return float(event['num']) > math.floor(float(event['num']))
 
@@ -537,7 +548,8 @@ def save_hcaps(date, header, data):
 
 def get_all_years():
     current_year = datetime.datetime.now().year
-    years = [i for i in range(current_year + 2, 1992, -1)]
+    inc = 1 if datetime.datetime.now().month > 10 else 0
+    years = [i for i in range(current_year + inc, 1992, -1)]
     return years
 
 

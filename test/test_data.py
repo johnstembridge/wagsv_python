@@ -97,7 +97,7 @@ class TestData:
         'booking_start': '',
         'max': '24',
         'end_booking': datetime.date(2017, 5, 18),
-        'start_booking': None,
+        'start_booking': datetime.date(2017, 5, 22),
         'deadline': 'Thursday 18 May',
         'note': '',
         'type': '1',
