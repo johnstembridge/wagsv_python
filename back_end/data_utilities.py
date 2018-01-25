@@ -104,9 +104,15 @@ def force_list(x):
     return x
 
 
-def coerce(x, type):
-    if type(x) != type:
-        x = type(x)
+def coerce(x, required_type):
+    if type(x) != required_type:
+        x = required_type(x)
+    return x
+
+
+def coerce_fmt_date(x):
+    if type(x) == datetime.date:
+        x = fmt_date(x)
     return x
 
 

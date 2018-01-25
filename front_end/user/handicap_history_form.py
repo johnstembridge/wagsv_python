@@ -2,7 +2,6 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, FormField, FieldList
 from wtforms.fields.html5 import DateField
 from back_end.interface import get_player_name, get_handicap_history
-from back_end.data_utilities import fmt_date
 
 
 class HandicapItemForm(FlaskForm):
@@ -17,7 +16,7 @@ class HandicapHistoryForm(FlaskForm):
 
     def populate_history(self, player_id, date):
         self.player.data = get_player_name(player_id)
-        for item in get_handicap_history(player_id, fmt_date(date)):
+        for item in get_handicap_history(player_id, date):
             item_form = HandicapItemForm()
             item_form.date = item[0]
             item_form.handicap = item[1]

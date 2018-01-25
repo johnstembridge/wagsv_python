@@ -2,7 +2,6 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField, HiddenField
 from back_end.interface import get_event, lookup_course, get_course_data, save_event_card, get_player_handicap, \
     get_event_card, get_player_name, update_event_scores, is_event_result_editable
-from back_end.data_utilities import fmt_date
 
 
 class EventCardItemForm(FlaskForm):
@@ -32,10 +31,9 @@ class EventCardForm(FlaskForm):
 
     def populate_card(self, year, event_id, player_id):
         event = get_event(year, event_id)
-        date = fmt_date(event['date'])
         course_id = lookup_course(event['venue'])
         course_data = get_course_data(course_id, year)
-        hcap = get_player_handicap(player_id, date)
+        hcap = get_player_handicap(player_id, event['date'])
         card = get_event_card(year, event_id, player_id)
 
         self.event_name.data = '{} {} {}'.format(event['event'], event['venue'], event['date'])

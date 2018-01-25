@@ -9,7 +9,7 @@ from collections import OrderedDict
 from back_end.players import Player, Players
 from .data_utilities import encode_date, encode_price, decode_date, decode_price, decode_time, \
     sort_name_list, lookup, force_list, coerce, decode_event_type, encode_event_type, dequote, \
-    encode_address, decode_address, de_the, encode_directions, decode_directions, coerce_date
+    encode_address, decode_address, de_the, encode_directions, decode_directions, coerce_date, coerce_fmt_date
 from .file_access import get_field, get_record, update_record, get_records, get_file, update_records, get_fields, \
     create_data_file
 from globals import config
@@ -520,6 +520,7 @@ def get_handicaps(as_of, status=None):
 
 def get_player_handicap(player_id, as_of):
     player_id = coerce(player_id, str)
+    as_of = coerce_fmt_date(as_of)
     header, recs = get_records(handicaps_file(), 'player', player_id)
     recs = [x for x in recs if x[0] <= as_of]
     recs.sort(key=lambda tup: (tup[1], tup[0]), reverse=True)
@@ -527,6 +528,7 @@ def get_player_handicap(player_id, as_of):
 
 
 def get_handicap_records(as_of, status=None):
+    as_of = coerce_fmt_date(as_of)
     header, recs = get_file(handicaps_file())
     recs = [x for x in recs if x[0] <= as_of]
     recs.sort(key=lambda tup: (tup[1], tup[0]), reverse=True)  # order by date within player
@@ -540,6 +542,7 @@ def get_handicap_records(as_of, status=None):
 
 def get_handicap_history(player_id, as_of):
     player_id = coerce(player_id, str)
+    as_of = coerce_fmt_date(as_of)
     header, recs = get_records(handicaps_file(), 'player', player_id)
     recs = [x for x in recs if x[0] <= as_of]
     recs.sort(key=lambda tup: (tup[1], tup[0]), reverse=True)
@@ -548,7 +551,7 @@ def get_handicap_history(player_id, as_of):
     return res
 
 
-def save_hcaps(date, header, data):
+def save_handicaps(date, header, data):
     update_records(handicaps_file(), ['date', 'player'], [date], header, data)
 
 # endregion
