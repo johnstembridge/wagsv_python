@@ -10,7 +10,8 @@ from back_end.players import Players
 from front_end.form_helpers import set_select_field
 from globals.enumerations import EventType
 from back_end.interface import get_all_venue_names, get_all_course_names, get_event, save_event, \
-    get_new_event_id, get_tour_events, get_all_trophy_names, create_bookings_file, is_event_editable
+    get_new_event_id, get_tour_events, get_all_trophy_names, create_bookings_file, is_event_editable, \
+    get_current_members
 
 
 class ScheduleForm(FlaskForm):
@@ -45,7 +46,7 @@ class EventForm(FlaskForm):
         self.editable = is_event_editable(year)
         event = get_event(year, event_id)
         self.date.data = event['date']
-        set_select_field(self.organiser, 'organiser', Players().get_current_members(), event['organiser'])
+        set_select_field(self.organiser, 'organiser', list(get_current_members().values()), event['organiser'])
         self.member_price.data = event['member_price']
         self.guest_price.data = event['guest_price']
         self.start_booking.data = event['start_booking']
