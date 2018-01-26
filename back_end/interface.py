@@ -344,7 +344,7 @@ def get_results(year, event_id):
     all_scores = {v[0]: v[1:] for v in get_event_scores(year, event_id)}  # player: position, points, strokes, handicap
     all_players = get_all_player_names()
     booked = get_booked_players(year, event_id)  # player: handicap
-    event_players = list(set(Players().id_to_name(list(all_scores.keys()))) | set(booked.keys()))
+    event_players = list(set(get_player_names(list(all_scores.keys()))) | set(booked.keys()))
     results = []
     for player in sort_name_list(event_players):
         player_id = str(lookup(all_players, player) + 1)
@@ -491,6 +491,12 @@ def get_all_player_names():
 def get_player_name(player_id):
     rec = get_record(players_file(), 'id', player_id)
     return rec['name']
+
+
+def get_player_names(player_ids):
+    head, recs = get_records(players_file(), 'id', player_ids)
+    i = lookup(head, 'name')
+    return [r[i] for r in recs]
 
 
 def get_players_sorted(as_of, status=None):

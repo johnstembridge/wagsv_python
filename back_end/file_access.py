@@ -23,9 +23,6 @@ def get_record(file, key, value):
                 else:
                     if keys_match(rec, key, value):
                         return rec
-                # rec = dict(zip(keys, values))
-                # if rec[key] == value:
-                #     return rec
     return dict(zip(keys, [None] * len(keys)))
 
 
