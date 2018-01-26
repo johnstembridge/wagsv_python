@@ -33,7 +33,7 @@ class User(UserMixin):
         return {'id': self.id, 'username': self.username, 'email': self.email, 'password_hash': self.password_hash}
 
     @staticmethod
-    def get(id = None, username=None, email=None):
+    def get(id=None, username=None, email=None):
         u = User()
         if id:
             u = get_admin_user('id', id)

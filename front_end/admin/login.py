@@ -32,6 +32,8 @@ def admin_login(next_page):
             login_user(user, remember=form.remember_me.data)
             if not next_page or url_parse(next_page).netloc != '':
                 next_page = url_for_admin('index')
+            else:
+                next_page = (url_for_admin('index') + next_page).replace("//", "/")
             return redirect(next_page)
     else:
         form.populate()
