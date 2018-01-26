@@ -1,6 +1,7 @@
 {
   "OS": "windows",
   "SECRET_KEY": "secret squirrel",
+  "override": true,
   "locations": {
     "data": "C:\\Users\\jstembridge\\PycharmProjects\\wagsv\\data",
     "base_url": "http://80.82.113.181/",

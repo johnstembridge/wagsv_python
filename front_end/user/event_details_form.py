@@ -10,7 +10,7 @@ from back_end.players import Players
 from front_end.form_helpers import set_select_field
 from globals.enumerations import EventType
 from back_end.interface import get_all_venue_names, get_all_course_names, get_event, save_event, \
-    get_new_event_id, get_tour_events, get_all_trophy_names, create_bookings_file
+    get_new_event_id, get_tour_events, get_all_trophy_names, create_bookings_file, is_event_editable
 
 
 class ScheduleForm(FlaskForm):
@@ -42,7 +42,7 @@ class EventForm(FlaskForm):
     editable = HiddenField(label='Editable')
 
     def populate_event(self, year, event_id, event_type):
-        self.editable = year >= datetime.date.today().year
+        self.editable = is_event_editable(year)
         event = get_event(year, event_id)
         self.date.data = event['date']
         set_select_field(self.organiser, 'organiser', Players().get_current_members(), event['organiser'])

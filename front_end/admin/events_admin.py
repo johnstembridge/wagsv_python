@@ -69,6 +69,8 @@ class MaintainEvents:
                 if form.save_event_results(year, event_id):
                     flash('results saved', 'success')
                     return redirect(url_for_admin('results_event', year=year, event_id=event_id))
+            if form.add_player.data:
+                return redirect(url_for_admin('results_event', year=year, event_id=event_id))
         else:
             form.populate_event_results(int(year), event_id)
         return render_template('admin/event_result.html', form=form, event=year + event_id, render_link=render_link)

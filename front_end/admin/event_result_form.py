@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField, HiddenField
-from back_end.interface import get_event, get_results, save_event_scores, is_event_result_editable
+from back_end.interface import get_event, get_results, save_event_scores, is_event_result_editable, add_player
+from globals.enumerations import PlayerStatus
 
 
 class EventResultItemForm(FlaskForm):
@@ -35,6 +36,8 @@ class EventResultsForm(FlaskForm):
         players = get_results(year, event_id)
         num = 0
         for player in players:
+            if player['id'] == '0':
+                player['id'] = add_player(player['name'], player['handicap'], PlayerStatus.guest, event['date'])
             num += 1
             item_form = EventResultItemForm()
             item_form.num = str(num)

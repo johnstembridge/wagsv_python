@@ -342,11 +342,12 @@ def get_results(year, event_id):
     date = event_date(year, event_id)
     all_hcaps = dict(get_handicaps(date))
     all_scores = {v[0]: v[1:] for v in get_event_scores(year, event_id)}  # player: position, points, strokes, handicap
+    all_players = get_all_player_names()
     booked = get_booked_players(year, event_id)  # player: handicap
     event_players = list(set(Players().id_to_name(list(all_scores.keys()))) | set(booked.keys()))
     results = []
     for player in sort_name_list(event_players):
-        player_id = str(Players().name_to_id(player))
+        player_id = str(lookup(all_players, player) + 1)
         guest = player in booked and float(booked[player]) > 0
         if player_id not in all_scores:
             hcap = booked[player] if guest else all_hcaps[player_id]
@@ -395,12 +396,18 @@ def is_latest_event(event_id):
 
 def is_event_result_editable(year, event_id):
     event = get_event(year, event_id)
-    return datetime.date.today() > event['date'] and is_latest_event(event_id)
+    override = config.get('override')
+    return override or datetime.date.today() > event['date'] and is_latest_event(event_id)
 
 
 def is_last_event(year, event_id):
     last = get_last_event()
     return last == (year, event_id)
+
+
+def is_event_editable(year):
+    override = config.get('override')
+    return override or year >= datetime.date.today().year
 
 
 def get_last_event(year=None):
@@ -476,30 +483,23 @@ def save_course_card(course_id, year, fields, data):
 
 # region players
 
-def get_all_players():
-    with open(players_file()) as f:
-        all_players = f.read().splitlines()
-    return all_players
+def get_all_player_names():
+    data = get_field(players_file(), 'name')
+    return data
 
 
 def get_player_name(player_id):
-    return get_all_players()[coerce(player_id, int) - 1]
+    rec = get_record(players_file(), 'id', player_id)
+    return rec['name']
 
 
 def get_players_sorted(as_of, status=None):
     header, recs = get_handicap_records(as_of, status)
     inx = [1]
     pi = [int(itemgetter(*inx)(r)) - 1 for r in recs]
-    players = Players().get_all_players()
+    players = get_all_player_names()
     current = itemgetter(*pi)(players)
     return sort_name_list(current)
-
-
-def get_players_sorted_as_dict(as_of, status=None):
-    players = get_players_sorted(as_of, status)
-    all_players = get_all_players()
-    pid = lookup(all_players, players, index_origin=1)
-    return OrderedDict(zip(pid, all_players))
 
 
 def get_latest_handicaps():
@@ -551,6 +551,18 @@ def get_handicap_history(player_id, as_of):
     return res
 
 
+def add_player(name, hcap, status, date):
+    all_players = get_all_player_names()
+    if lookup(all_players, name) != -1:
+        raise Exception("Player {} already exists, can't add.".format(name))
+    id = str(len(all_players) + 1)
+    update_record(players_file(), 'id', [id, name])
+    date = coerce_fmt_date(date)
+    update_record(handicaps_file(), ['date', 'player'], [date, id, hcap, status])
+
+    return id
+
+
 def save_handicaps(date, header, data):
     update_records(handicaps_file(), ['date', 'player'], [date], header, data)
 
@@ -561,7 +573,7 @@ def get_current_members():
     header, data = get_records(members_file(), ['status'], [str(PlayerStatus.member)])
     i = lookup(header, ['salutation', 'surname'])
     member_names = sort_name_list([' '.join(itemgetter(*i)(m)) for m in data])
-    all_players = get_all_players()
+    all_players = get_all_player_names()
     pid = lookup(all_players, member_names, index_origin=1)
     return OrderedDict(zip(pid, member_names))
 
