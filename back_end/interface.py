@@ -30,6 +30,7 @@ vl_data = r'victor.tab'
 scores_data = r'scores.tab'
 shots_data = r'shots.tab'
 trophies_data = r'trophies.txt'
+admin_users = r'admin_users.txt'
 
 
 def events_file(year):
@@ -89,6 +90,10 @@ def shots_file():
 
 def trophies_file():
     return os.path.join(data_location, trophies_data)
+
+
+def admin_users_file():
+    return os.path.join(data_location, admin_users)
 # endregion
 
 
@@ -573,6 +578,16 @@ def save_handicaps(date, header, data):
     update_records(handicaps_file(), ['date', 'player'], [date], header, data)
 
 # endregion
+
+
+def get_admin_user(key, value):
+    return get_record(admin_users_file(), key, str(value))
+
+
+def add_admin_user(user):
+    all = get_field(admin_users_file(), 'id')
+    user.set_id(len(all) + 1)
+    update_record(admin_users_file(), 'id', user.record())
 
 
 def get_current_members():

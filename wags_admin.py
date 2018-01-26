@@ -3,19 +3,45 @@ import datetime
 from flask import Flask, request, session
 from flask_bootstrap import Bootstrap
 from flask_wtf import CSRFProtect
+from flask_login import LoginManager, login_required
 
 from front_end.admin.events_admin import MaintainEvents
 from front_end.admin.venues_admin import MaintainVenues
 from front_end.admin import accounts_admin
+from front_end.admin import login
 from front_end.admin.home import home_main, page_not_found, internal_error
 from globals import config, logging
+from models.user import User
+
 
 app = Flask(__name__)
+
+login_manager = LoginManager(app)
+login_manager.login_view = 'admin_login'
+
 app.config['SECRET_KEY'] = config.get('SECRET_KEY')
 csrf = CSRFProtect(app)
 bootstrap = Bootstrap(app)
 log_handler = logging.log_init()
 app.logger.addHandler(log_handler)
+
+
+# region Access
+@login_manager.user_loader
+def load_user(id):
+    return User.get(id=int(id))
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def admin_login():
+    next_page = request.args.get('next')
+    return login.admin_login(next_page)
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def admin_register():
+    return login.admin_register()
+# endregion
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -56,6 +82,7 @@ def edit_course(venue_id, course_id):
 
 # region events
 @app.route('/events', methods=['GET', 'POST'])
+@login_required
 def events_main():
     current_year = get_user_current_year()
     return MaintainEvents.list_events(current_year)
