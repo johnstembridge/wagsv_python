@@ -7,6 +7,7 @@ from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 
 from globals.config import url_for_admin
 from models.user import User
+from back_end.interface import get_member
 
 
 class LoginForm(FlaskForm):
@@ -66,11 +67,15 @@ def admin_register():
     form = RegistrationForm()
     if form.is_submitted():
         if form.validate_on_submit():
-            user = User(username=form.username.data, email=form.email.data)
-            user.set_password(form.password.data)
-            User.add(user)
-            flash('Congratulations, you are now a registered user!')
-            return redirect(url_for_admin('admin_login'))
+            member = get_member('home_email', form.email.data)
+            if member['membcode'] is not None:
+                user = User(username=form.username.data, email=form.email.data)
+                user.set_password(form.password.data)
+                User.add(user)
+                flash('Congratulations, you are now a registered user!')
+                return redirect(url_for_admin('admin_login'))
+            else:
+                flash('Unknown member - please give your WAGS contact email address')
     return render_template('admin/register.html', title='Register', form=form)
 
 

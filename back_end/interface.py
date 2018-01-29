@@ -599,6 +599,10 @@ def get_current_members():
     return OrderedDict(zip(pid, member_names))
 
 
+def get_member(key, value):
+    return get_record(members_file(), key, value)
+
+
 def get_all_years():
     current_year = datetime.datetime.now().year
     inc = 1 if datetime.datetime.now().month > 10 else 0
