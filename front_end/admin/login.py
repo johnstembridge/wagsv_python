@@ -70,7 +70,7 @@ def admin_register():
             user.set_password(form.password.data)
             User.add(user)
             flash('Congratulations, you are now a registered user!')
-            return redirect(url_for_admin('admin/admin_login'))
+            return redirect(url_for_admin('admin_login'))
     return render_template('admin/register.html', title='Register', form=form)
 
 
