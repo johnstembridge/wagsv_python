@@ -75,7 +75,7 @@ def admin_register():
                 flash('Congratulations, you are now a registered user!')
                 return redirect(url_for_admin('admin_login'))
             else:
-                flash('Unknown member - please give your WAGS contact email address')
+                flash('Unknown member - please give your WAGS home contact email address')
     return render_template('admin/register.html', title='Register', form=form)
 
 

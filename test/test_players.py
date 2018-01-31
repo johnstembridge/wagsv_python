@@ -32,5 +32,6 @@ class TestPlayers(unittest.TestCase):
         x = Players().id_to_name([12, 2])
         self.assertEqual(x, ['John Stembridge', 'Peter Berring'])
 
+
 if __name__ == '__main__':
     unittest.main()

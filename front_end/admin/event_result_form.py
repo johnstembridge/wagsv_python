@@ -32,7 +32,7 @@ class EventResultsForm(FlaskForm):
         self.year.data = year
         event = get_event(year, event_id)
         self.event_name.data = '{} {} {}'.format(event['event'], event['venue'], event['date'])
-        self.editable = is_event_result_editable(year, event_id)
+        self.editable.data = is_event_result_editable(year, event_id)
         players = get_results(year, event_id)
         num = 0
         for player in players:

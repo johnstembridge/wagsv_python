@@ -232,23 +232,6 @@ def add_keys(keys, key_values, new_data):
             new_data[keys[i]] = key_values[i]
 
 
-def extract_new_record(header, new_values, kv):
-    key_index = lookup(header, list(kv.keys()))
-    extracted = None
-    for values in new_values:
-        match = True
-        count = 0
-        for k in key_index:
-            if k != -1:
-                match = match and values[k] == kv[header[k]]
-            count += 1
-        if match:
-            extracted = list(values)
-            new_values.remove(values)
-            break
-    return extracted
-
-
 def my_open(filename, mode, access_all=False):
     fh = open(filename, mode, encoding="latin-1")
     op_sys = config.get("OS")
@@ -259,3 +242,18 @@ def my_open(filename, mode, access_all=False):
             else:
                 os.chmod(filename, 0o664)
     return fh
+
+
+def get_news_file(news_file):
+    with my_open(news_file, 'r') as fh:
+        res = []
+        section = []
+        for line in fh:
+            if line.startswith('<hr'):
+                if len(section) != 0:
+                    res.append(section)
+                section = [line]
+            else:
+                section.append(line)
+    res.append(section)
+    return res

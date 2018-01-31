@@ -174,5 +174,5 @@ function setItemValueForHole(hole, item, value){
 
 function formIsEditable(){
     var editable = document.getElementById('editable');
-    return editable;
+    return editable.value == 'True';
 }

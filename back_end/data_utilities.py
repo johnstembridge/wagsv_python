@@ -1,5 +1,6 @@
 import calendar
 import datetime
+import time
 import math
 import re
 from decimal import Decimal
@@ -7,6 +8,7 @@ from decimal import Decimal
 from globals.enumerations import EventType
 
 
+# region dates
 def decode_date(wdm, y):
     # wdm is in the form Friday 28 April, y is year
     if wdm:
@@ -35,9 +37,57 @@ def encode_date_short(date):
     return date.strftime('%a %d %b')
 
 
+def decode_date_formal(dmy):
+    # wdm is in the form 8th September 2013
+    if dmy is not None:
+        try:
+            a = dmy.split(' ')
+            d = int(re.findall(r'\d+', a[0])[0])
+            m = calendar.month_name[0:13].index(a[1])
+            y = int(a[2])
+            return datetime.date(y, m, d)
+        except:
+            return datetime.date.today()
+    else:
+        return None
+
+
+def encode_date_formal(date):
+    # result is in the form 8th September 2013
+    if date is None:
+        return ''
+    de = {1: 'st', 2: 'nd', 3: 'rd', 21: 'st', 22: 'nd', 23: 'rd', 31: 'st'}
+
+    def custom_strftime(format, t):
+        return time.strftime(format, t).replace('{TH}', str(t[2]) + de.get(t[2], 'th'))
+
+    if isinstance(date, str):
+        date = datetime.datetime.strptime(date, '%Y/%m/%d')
+
+    return custom_strftime('{TH} %B %Y', date.timetuple())
+
+
 def coerce_date(wdm, y, date):
     if not wdm: return date
     return decode_date(wdm, y)
+
+
+def coerce_fmt_date(x):
+    if type(x) == datetime.date:
+        x = fmt_date(x)
+    return x
+
+
+def fmt_date(date):
+    return date.strftime("%Y/%m/%d")
+
+
+def in_date_range(date, date_from, date_to):
+    if date and date_from and date_to:
+        return date_from <= date <= date_to
+    else:
+        return False
+# endregion
 
 
 def decode_price(amount):
@@ -110,12 +160,6 @@ def coerce(x, required_type):
     return x
 
 
-def coerce_fmt_date(x):
-    if type(x) == datetime.date:
-        x = fmt_date(x)
-    return x
-
-
 def fmt_num(num):
     return str(int(num) if num == math.floor(num) else num)
 
@@ -125,10 +169,6 @@ def first_or_default(list, default):
         return list[0]
     else:
         return default
-
-
-def fmt_date(date):
-    return date.strftime("%Y/%m/%d")
 
 
 def is_num(s):
@@ -181,9 +221,3 @@ def de_the(string):
             string = string[4:]
     return string
 
-
-def in_date_range(date, date_from, date_to):
-    if date and date_from and date_to:
-        return date_from <= date <= date_to
-    else:
-        return False

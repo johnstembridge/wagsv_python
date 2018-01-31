@@ -11,7 +11,7 @@ from .data_utilities import encode_date, encode_price, decode_date, decode_price
     sort_name_list, lookup, force_list, coerce, decode_event_type, encode_event_type, dequote, \
     encode_address, decode_address, de_the, encode_directions, decode_directions, coerce_date, coerce_fmt_date
 from .file_access import get_field, get_record, update_record, get_records, get_file, update_records, get_fields, \
-    create_data_file
+    create_data_file, get_news_file
 from globals import config
 from globals.enumerations import EventType, PlayerStatus
 
@@ -31,6 +31,7 @@ scores_data = r'scores.tab'
 shots_data = r'shots.tab'
 trophies_data = r'trophies.txt'
 admin_users = r'admin_users.txt'
+news_file = r'../../html/news.html'
 
 
 def events_file(year):
@@ -402,7 +403,7 @@ def is_latest_event(event_id):
 def is_event_result_editable(year, event_id):
     event = get_event(year, event_id)
     override = config.get('override')
-    return override or datetime.date.today() > event['date'] and is_latest_event(event_id)
+    return override or datetime.date.today() > event['date'] and is_last_event(year, event_id)
 
 
 def is_last_event(year, event_id):
@@ -580,6 +581,7 @@ def save_handicaps(date, header, data):
 # endregion
 
 
+# region admin
 def get_admin_user(key, value):
     return get_record(admin_users_file(), key, str(value))
 
@@ -601,6 +603,7 @@ def get_current_members():
 
 def get_member(key, value):
     return get_record(members_file(), key, value)
+# endregion
 
 
 def get_all_years():
@@ -639,3 +642,8 @@ def create_wags_data_file(directory, filename, fields, access_all=False):
         e = sys.exc_info()[0]
         result = False
     return result
+
+
+def get_all_news():
+    res = get_news_file(news_file)
+    return res
