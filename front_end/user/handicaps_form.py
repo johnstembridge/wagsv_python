@@ -26,7 +26,7 @@ class HandicapsForm(FlaskForm):
             hcap = dict(zip(head, first_or_default([h for h in handicaps if h[1] == str(pid)], [None]*4)))
             # if hcap['status'] == str(PlayerStatus.member):
             item_form = HandicapItemForm()
-            item_form.item_pos = 1 if count <= rows_per_table else 2
+            item_form.item_pos = 1 + count % 2
             item_form.player_id = str(pid)
             item_form.player = name
             item_form.handicap = hcap['handicap']

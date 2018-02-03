@@ -2,8 +2,8 @@
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block body %}
-<body onLoad="updateAll()">
-{{ super() }}
+    <body onLoad="updateAll()">
+    {{ super() }}
 {% endblock %}
 
 {% block page_content %}
@@ -74,16 +74,17 @@
             <td><b>Total</b></td>
             <td></td>
             <td></td>
-            <td><b id="totalShots">{{ form.totalShots }}</b></td>
-            <td><b id="totalPoints">{{ form.totalPoints }}</b></td>
+            <td><b id="totalShots">{{ form.totalShots.data }}</b></td>
+            <td><b id="totalPoints">{{ form.totalPoints.data }}</b></td>
         </tr>
         </tbody>
     </table>
+    {{ form.editable }}
 </div>
 <hr/>
 {% endblock %}
 
 {% block scripts %}
-<script src="{{url_for('.static', filename='scripts/event_card.js')}}"></script>
+    <script src="{{url_for('.static', filename='scripts/event_card.js')}}"></script>
 {{super()}}
 {% endblock %}

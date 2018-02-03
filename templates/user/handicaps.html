@@ -10,26 +10,38 @@
     <thead>
     <tr>
         <th>Name</th>
-        <th>Handicap</th>
+        <th class="text-center">Handicap</th>
         <th class="text-center">History</th>
         <th>Name</th>
-        <th>Handicap</th>
+        <th class="text-center">Handicap</th>
         <th class="text-center">History</th>
     </tr>
     </thead>
     <tbody>
     {% for item in form.handicaps %}
-    <tr>
-        <td>{{ item.player.data }}</td>
-        <td>{{ item.handicap.data }}</td>
-        <td align="center">
-            {{ render_link(
-                url=url_for('handicap_history_player', player_id=item.player_id.data),
-                image=url_for('static', filename='images/go.jpg'),
-                text='Show handicap history'
-            )|safe }}
-        </td>
-    </tr>
+    {% if item.item_pos.data == 2 %}
+        <tr>
+            <td>{{ item.player.data }}</td>
+            <td align="center">{{ item.handicap.data }}</td>
+            <td align="center">
+                {{ render_link(
+                    url=url_for('handicap_history_player', player_id=item.player_id.data),
+                    image=url_for('static', filename='images/go.jpg'),
+                    text='Show handicap history'
+                )|safe }}
+            </td>
+    {% else %}
+            <td>{{ item.player.data }}</td>
+            <td align="center">{{ item.handicap.data }}</td>
+            <td align="center">
+                {{ render_link(
+                    url=url_for('handicap_history_player', player_id=item.player_id.data),
+                    image=url_for('static', filename='images/go.jpg'),
+                    text='Show handicap history'
+                )|safe }}
+            </td>
+        </tr>
+    {% endif %}
     {% endfor %}
     </tbody>
 </table>

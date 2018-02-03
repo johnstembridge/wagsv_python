@@ -18,6 +18,7 @@ from globals.enumerations import EventType, PlayerStatus
 # region file_paths
 
 data_location = config.get('locations')['data']
+html_location = config.get('locations')['html']
 events_data = r'{}/events.tab'
 venues_data = r'venue_info.txt'
 bookings_data = r'{}/event{}.csv'
@@ -31,7 +32,7 @@ scores_data = r'scores.tab'
 shots_data = r'shots.tab'
 trophies_data = r'trophies.txt'
 admin_users = r'admin_users.txt'
-news_file = r'../../html/news.html'
+news_data = r'news/news.htm'
 
 
 def events_file(year):
@@ -91,6 +92,10 @@ def shots_file():
 
 def trophies_file():
     return os.path.join(data_location, trophies_data)
+
+
+def news_file():
+    return os.path.join(html_location, news_data)
 
 
 def admin_users_file():
@@ -645,5 +650,5 @@ def create_wags_data_file(directory, filename, fields, access_all=False):
 
 
 def get_all_news():
-    res = get_news_file(news_file)
+    res = get_news_file(news_file())
     return res

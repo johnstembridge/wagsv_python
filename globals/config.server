@@ -5,6 +5,7 @@
     "override": false,
   "locations": {
     "data": "/var/www/html/data",
+    "html": "/var/www/html",
     "base_url": "http://80.82.113.181/",
     "logs": "/var/log/wags"
   },

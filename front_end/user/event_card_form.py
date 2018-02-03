@@ -39,7 +39,7 @@ class EventCardForm(FlaskForm):
         self.event_name.data = '{} {} {}'.format(event['event'], event['venue'], event['date'])
         self.player.data = get_player_name(player_id)
         self.handicap.data = hcap
-        self.editable = is_event_result_editable(year, event_id)
+        self.editable.data = False
 
         holes = range(1, 19)
         for hole in holes:
