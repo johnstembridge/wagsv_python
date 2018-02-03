@@ -2,7 +2,7 @@
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block page_content %}
-<h2><b>Handicaps</b></h2>
+<H2 class="table-title">Handicaps</H2>
 <table width="100%" class="list">
     <thead>
     <tr>
@@ -13,6 +13,7 @@
         <th class="text-center">Handicap</th>
         <th class="text-center">History</th>
     </tr>
+    <tr><td colspan=6><hr class="bold"/></td>
     </thead>
     <tbody>
     {% for item in form.handicaps %}
