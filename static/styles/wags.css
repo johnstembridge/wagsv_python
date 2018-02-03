@@ -40,7 +40,7 @@ TD.button3	{text-align: center; background: #006233}
 	color: #000000;
 }
 .page-header {margin: 0}
-H2.table-title {color: #6E1285; font-family: arial, helvetica, sans-serif; font-size: 20pt; font-weight: bold; margin-top: 10px}
+H2.table-title {color: #6E1285; font-family: arial, helvetica, sans-serif; font-size: 20pt; font-weight: bold; margin-top: 0px}
 
 table.list {border:0; bgcolor:white; cellpadding:2; border-spacing: 1px; border-collapse: separate}
 table.list th {color: #6E1285; font-weight: bold; padding: 0px 2px 0px 2px}

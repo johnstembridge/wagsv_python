@@ -27,6 +27,13 @@ class ReportEvents:
     def show_event(year, event_id, event_type=None):
         return redirect(url_for_old_service('services.pl?show_event={}&year={}&book=3'.format(event_id, year)))
 
+    @classmethod
+    def show_from_name(cls, args):
+        year = None
+        event_id = None
+        event_type = None
+        return cls.results_event(year, event_id, event_type)
+
     @staticmethod
     def results_event(year, event_id, event_type=None):
         if event_type:

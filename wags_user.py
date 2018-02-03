@@ -21,6 +21,15 @@ def index():
 
 
 # region events
+@app.route('/events', methods=['GET', 'POST'])
+def events():
+    #http://80.82.113.181/wagsuser/events?date=2017/11/18&event=Pine%20Ridge
+    if request.args is not None:
+        return ReportEvents.show_from_name(request.args)
+    else:
+        current_year = get_user_current_year()
+        return events_list_events(current_year)
+
 @app.route('/events/<year>', methods=['GET', 'POST'])
 def events_list_events(year):
     return ReportEvents.list_events(year)
