@@ -37,11 +37,11 @@ def encode_date_short(date):
     return date.strftime('%a %d %b')
 
 
-def decode_date_formal(dmy):
+def decode_date_formal(wdm):
     # wdm is in the form 8th September 2013
-    if dmy is not None:
+    if wdm is not None:
         try:
-            a = dmy.split(' ')
+            a = wdm.split(' ')
             d = int(re.findall(r'\d+', a[0])[0])
             m = calendar.month_name[0:13].index(a[1])
             y = int(a[2])
@@ -80,6 +80,11 @@ def coerce_fmt_date(x):
 
 def fmt_date(date):
     return date.strftime("%Y/%m/%d")
+
+
+def parse_date(ymd):
+    date = ymd.split('/')
+    return datetime.date(int(date[0]), int(date[1]), int(date[2]))
 
 
 def in_date_range(date, date_from, date_to):

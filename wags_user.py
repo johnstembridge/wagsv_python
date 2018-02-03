@@ -25,7 +25,7 @@ def index():
 def events():
     #http://80.82.113.181/wagsuser/events?date=2017/11/18&event=Pine%20Ridge
     if request.args is not None:
-        return ReportEvents.show_from_name(request.args)
+        return ReportEvents.show_from_date_and_name(request.args['date'], request.args['event'])
     else:
         current_year = get_user_current_year()
         return events_list_events(current_year)

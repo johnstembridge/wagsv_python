@@ -1,10 +1,11 @@
 import unittest
-
+import datetime
 from back_end.file_access import get_record
 from globals.enumerations import PlayerStatus
 from back_end.interface import get_event, get_latest_handicaps, get_handicaps, get_players_sorted, get_event_scores, \
     get_booked_players, save_event_scores, get_course_data, get_player_handicap, get_event_card, get_venue_by_name, \
-    get_tour_events, get_last_event, get_player_name, get_player_names, get_member, get_all_news
+    get_tour_events, get_last_event, get_player_name, get_player_names, get_member, get_all_news, \
+    get_results_by_year_and_name
 from test_data import TestData
 
 
@@ -30,6 +31,11 @@ class TestInterface(unittest.TestCase):
         rec = get_record(TestData.events_file, 'num', '999')
         expected = TestData.example_event_record_empty
         self.assertEqual(rec, expected)
+
+    def test_get_event_result_by_year_and_name(self):
+        res = get_results_by_year_and_name(2017, 'Pine Ridge')
+        expected = TestData.example_event
+        self.assertDictEqual(res, expected)
 
     def test_get_event(self):
         rec = get_event(2017, '4')

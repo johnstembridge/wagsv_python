@@ -377,6 +377,16 @@ def get_results(year, event_id):
     return sorted(results, key=lambda k: k['points'], reverse=True)
 
 
+def get_event_by_year_and_name(year, event_name):
+    event = get_record(events_file(year), 'course', event_name)
+    return event
+
+
+def get_results_by_year_and_name(year, event_name):
+    event = get_event_by_year_and_name(year, event_name)
+    return get_results(year, event['num'])
+
+
 def event_course_id(year, event_id):
     event = get_event(year, event_id)
     course_id = lookup_course(event['venue'])
