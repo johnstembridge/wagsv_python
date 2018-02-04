@@ -64,7 +64,7 @@ class EventResultsForm(FlaskForm):
              d['points'],
              d['strokes_return'],
              d['handicap_return'],
-             1 if d['guest_return'] == 'guest' else 0
+             0 if d['guest_return'] == 'guest' else 1
              ]
             for d in self.data['scores'] if d['points'] > 0]
         save_event_scores(year, event_id, fields, data)
