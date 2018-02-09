@@ -5,10 +5,10 @@ from .event_details_form import EventForm
 from .event_handicap_form import EventHandicapsForm
 from .event_list_form import EventListForm
 from .event_result_form import EventResultsForm
-from globals.enumerations import EventType
-from globals.config import url_for_admin
 from .handicap_history_form import HandicapHistoryForm
 from .tour_result_form import TourResultsForm
+from globals.enumerations import EventType
+from globals.config import url_for_admin
 from front_end.utility import render_link
 
 

@@ -104,6 +104,28 @@ class TestData:
         'event_type': 'wags_vl_event'
     }
 
+    example_event_result =[
+        {'id': '287', 'name': 'Mike Gardner', 'handicap': '18.2', 'strokes': 89, 'points': 36, 'position': '1',
+         'guest': ''},
+        {'id': '129', 'name': 'Graham Hansen', 'handicap': '12.9', 'strokes': 90, 'points': 30, 'position': '2',
+         'guest': ''},
+        {'id': '3', 'name': 'Mike Dearden', 'handicap': '20.3', 'strokes': 99, 'points': 28, 'position': '4',
+         'guest': ''},
+        {'id': '385', 'name': 'David Dunn', 'handicap': '10', 'strokes': 89, 'points': 28, 'position': '3',
+         'guest': ''},
+        {'id': '2', 'name': 'Peter Berring', 'handicap': '19.9', 'strokes': 102, 'points': 27, 'position': '5',
+         'guest': ''},
+        {'id': '1', 'name': 'Fred Berring', 'handicap': '10.6', 'strokes': 94, 'points': 24, 'position': '8',
+         'guest': ''},
+        {'id': '222', 'name': 'Bob Hill', 'handicap': '14.2', 'strokes': 98, 'points': 24, 'position': '6',
+         'guest': ''},
+        {'id': '269', 'name': 'John Quilter', 'handicap': '21.1', 'strokes': 104, 'points': 24, 'position': '7',
+         'guest': ''},
+        {'id': '225', 'name': 'Anthony Shutes', 'handicap': '11.9', 'strokes': 98, 'points': 21, 'position': '9',
+         'guest': ''},
+        {'id': '319', 'name': 'Richard Poole', 'handicap': '26.2', 'strokes': 113, 'points': 20, 'position': '10',
+         'guest': ''}]
+
     example_event_field = ['Richard Trinick', 'Gerry Robinson', 'John Stembridge', 'Anthony Shutes', 'Richard Latham', 'Richard Latham', 'Richard Latham', 'Richard Latham', 'Mike Dearden', 'Mike Wells', 'Steve Shaw', 'Bob Hill', 'Quintin Heaney', 'Martin Dilke-Wing', 'Andy Burn', 'Peter Berring', 'Gerry McGuffie', 'Rhod James', '', '', 'Andy Burn']
 
     example_venues_fields = [('1', 'West Byfleet'), ('2', 'Wimbledon Common'), ('3', 'Chartham Park'),
@@ -144,3 +166,24 @@ class TestData:
         'directions': "From Dorking, south on the A24 in the direction of Horsham. Go past sign for Beare Green and continue to the large roundabout (Dukes Head Hotel on left) turn right onto the A29 (signposted Ockley, Bognor Regis). Continue through Ockley (approx 3 miles) and at the far end of Ockley village on the right hand side is a restaurant called 'Bryces -The Old School House', 200 yards past this turn right into Cat Hill Lane. Continue to follow the signs and you will turn left into Standon Lane. This is a narrow country lane, please travel at a slow pace and continue for approx 1 mile and you will find the main entrance to Gatton Manor on the right."}
 
     example_tour_events = [{'num': '5.1', 'date': datetime.date(2017, 6, 9), 'course': 'Lisbon Sports Club', 'venue': 'Lisbon Sports Club'}, {'num': '5.2', 'date': datetime.date(2017, 6, 10), 'course': 'Golf Do Estoril', 'venue': 'Golf Do Estoril'}, {'num': '5.3', 'date': datetime.date(2017, 6, 11), 'course': 'Penha Longa', 'venue': 'Penha Longa'}, {'num': None, 'date': None, 'course': None, 'venue': None}, {'num': None, 'date': None, 'course': None, 'venue': None}, {'num': None, 'date': None, 'course': None, 'venue': None}]
+
+    event_result_return = \
+[
+ {'num': None, 'position': None, 'player': '', 'handicap': None, 'strokes': None, 'points': 38, 'guest': '', 'player_id': '3', 'strokes_return': '92', 'guest_return': '', 'handicap_return': '21.8', 'csrf_token': ''},
+ {'num': None, 'position': None, 'player': '', 'handicap': None, 'strokes': None, 'points': 34, 'guest': '', 'player_id': '222', 'strokes_return': '88', 'guest_return': '', 'handicap_return': '14.3', 'csrf_token': ''},
+ {'num': None, 'position': None, 'player': '', 'handicap': None, 'strokes': None, 'points': 32, 'guest': '', 'player_id': '28', 'strokes_return': '92', 'guest_return': '', 'handicap_return': '16', 'csrf_token': ''},
+ {'num': None, 'position': None, 'player': '', 'handicap': None, 'strokes': None, 'points': 31, 'guest': '', 'player_id': '384', 'strokes_return': '93', 'guest_return': 'guest', 'handicap_return': '16', 'csrf_token': ''},
+ {'num': None, 'position': None, 'player': '', 'handicap': None, 'strokes': None, 'points': 29, 'guest': '', 'player_id': '93', 'strokes_return': '96', 'guest_return': '', 'handicap_return': '16.3', 'csrf_token': ''},
+ {'num': None, 'position': None, 'player': '', 'handicap': None, 'strokes': None, 'points': 29, 'guest': '', 'player_id': '160', 'strokes_return': '91', 'guest_return': '', 'handicap_return': '11.8', 'csrf_token': ''},
+ {'num': None, 'position': None, 'player': '', 'handicap': None, 'strokes': None, 'points': 29, 'guest': '', 'player_id': '260', 'strokes_return': '103', 'guest_return': '', 'handicap_return': '23.1', 'csrf_token': ''},
+ {'num': None, 'position': None, 'player': '', 'handicap': None, 'strokes': None, 'points': 29, 'guest': '', 'player_id': '225', 'strokes_return': '92', 'guest_return': '', 'handicap_return': '12.4', 'csrf_token': ''},
+ {'num': None, 'position': None, 'player': '', 'handicap': None, 'strokes': None, 'points': 28, 'guest': '', 'player_id': '316', 'strokes_return': '89', 'guest_return': '', 'handicap_return': '8.1', 'csrf_token': ''},
+ {'num': None, 'position': None, 'player': '', 'handicap': None, 'strokes': None, 'points': 28, 'guest': '', 'player_id': '162', 'strokes_return': '104', 'guest_return': '', 'handicap_return': '23.5', 'csrf_token': ''},
+ {'num': None, 'position': None, 'player': '', 'handicap': None, 'strokes': None, 'points': 28, 'guest': '', 'player_id': '294', 'strokes_return': '92', 'guest_return': '', 'handicap_return': '11.9', 'csrf_token': ''},
+ {'num': None, 'position': None, 'player': '', 'handicap': None, 'strokes': None, 'points': 28, 'guest': '', 'player_id': '290', 'strokes_return': '104', 'guest_return': 'guest', 'handicap_return': '24', 'csrf_token': ''},
+ {'num': None, 'position': None, 'player': '', 'handicap': None, 'strokes': None, 'points': 27, 'guest': '', 'player_id': '129', 'strokes_return': '94', 'guest_return': '', 'handicap_return': '12.5', 'csrf_token': ''},
+ {'num': None, 'position': None, 'player': '', 'handicap': None, 'strokes': None, 'points': 23, 'guest': '', 'player_id': '178', 'strokes_return': '103', 'guest_return': '', 'handicap_return': '18.1', 'csrf_token': ''},
+ {'num': None, 'position': None, 'player': '', 'handicap': None, 'strokes': None, 'points': 20, 'guest': '', 'player_id': '24', 'strokes_return': '116', 'guest_return': '', 'handicap_return': '28', 'csrf_token': ''},
+ {'num': None, 'position': None, 'player': '', 'handicap': None, 'strokes': None, 'points': 16, 'guest': '', 'player_id': '12', 'strokes_return': '121', 'guest_return': '', 'handicap_return': '28', 'csrf_token': ''},
+ {'num': None, 'position': None, 'player': '', 'handicap': None, 'strokes': None, 'points': 0, 'guest': '', 'player_id': '2', 'strokes_return': '0', 'guest_return': '', 'handicap_return': '19.7', 'csrf_token': ''}
+]

@@ -230,7 +230,19 @@ def get_event_scores(year, event_id):
         header, data = get_records(scores_file(), ['date'], [date])
     else:
         header, data = get_records(scores_file(), ['date', 'course'], [date, course_id])
-    inx = lookup(header, ['player', 'position', 'points', 'strokes', 'handicap'])
+    inx = lookup(header, ['player', 'position', 'points', 'strokes', 'handicap', 'status'])
+    res = [itemgetter(*inx)(r) for r in data]
+    return res
+
+
+def get_event_shots(year, event_id):
+    date = event_date(year, event_id)
+    course_id = str(event_course_id(year, event_id))
+    if course_id == '0':
+        header, data = get_records(shots_file(), ['date'], [date])
+    else:
+        header, data = get_records(shots_file(), ['date', 'course'], [date, course_id])
+    inx = lookup(header, ['player'] + [str(x) for x in range(1, 19)])
     res = [itemgetter(*inx)(r) for r in data]
     return res
 
@@ -352,7 +364,7 @@ def get_booked_players(year, event_id):
 def get_results(year, event_id):
     date = event_date(year, event_id)
     all_hcaps = dict(get_handicaps(date))
-    all_scores = {v[0]: v[1:] for v in get_event_scores(year, event_id)}  # player: position, points, strokes, handicap
+    all_scores = {v[0]: v[1:] for v in get_event_scores(year, event_id)}  # player: position, points, strokes, handicap, status
     all_players = get_all_player_names()
     booked = get_booked_players(year, event_id)  # player: handicap
     event_players = list(set(get_player_names(list(all_scores.keys()))) | set(booked.keys()))
@@ -423,7 +435,8 @@ def is_event_result_editable(year, event_id):
 
 def is_last_event(year, event_id):
     last = get_last_event()
-    return last == (year, event_id)
+    override = config.get('override')
+    return override or last == (year, event_id)
 
 
 def is_event_editable(year):
