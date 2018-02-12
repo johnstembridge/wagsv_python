@@ -1,5 +1,5 @@
 
-from back_end.interface import get_event, lookup_course, get_course_data, get_event_shots
+from back_end.interface import get_event, lookup_course, get_course_data, get_event_cards
 
 
 def calc_event_positions(year, event_id, data):
@@ -9,7 +9,7 @@ def calc_event_positions(year, event_id, data):
     holes = [str(i) for i in range(1, 19)]
     si = [int(course_data['si'+h]) for h in holes]
     par = [int(course_data['par'+h]) for h in holes]
-    cards = get_event_shots(year, event_id)
+    cards = get_event_cards(year, event_id)
     for player in data:
         player_id = player['player_id']
         player_hcap = round(float(player['handicap_return']))

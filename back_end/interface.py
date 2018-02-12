@@ -235,7 +235,7 @@ def get_event_scores(year, event_id):
     return res
 
 
-def get_event_shots(year, event_id):
+def get_event_cards(year, event_id):
     date = event_date(year, event_id)
     course_id = str(event_course_id(year, event_id))
     if course_id == '0':
@@ -243,8 +243,7 @@ def get_event_shots(year, event_id):
     else:
         header, data = get_records(shots_file(), ['date', 'course'], [date, course_id])
     inx = lookup(header, ['player'] + [str(x) for x in range(1, 19)])
-    res = [itemgetter(*inx)(r) for r in data]
-    return {r[0]:r[1:19] for r in res}
+    return {r[inx[0]]: itemgetter(*inx[1:19])(r) for r in data}
 
 
 def save_event_scores(year, event_id, header, data):
