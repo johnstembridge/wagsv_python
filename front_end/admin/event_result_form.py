@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField, HiddenField
 from back_end.interface import get_event, get_results, save_event_scores, is_event_result_editable, add_player
+from back_end.calc import calc_event_positions
 from globals.enumerations import PlayerStatus
 
 
@@ -58,14 +59,16 @@ class EventResultsForm(FlaskForm):
         errors = self.errors
         if len(errors) > 0:
             return False
-        fields = ['player', 'points', 'strokes', 'handicap', 'status']
+        fields = ['player', 'position', 'points', 'strokes', 'handicap', 'status']
+        result = calc_event_positions(year, event_id, self.data['scores'])
         data = [
             [d['player_id'],
+             d['position'],
              d['points'],
              d['strokes_return'],
              d['handicap_return'],
              0 if d['guest_return'] == 'guest' else 1
              ]
-            for d in self.data['scores'] if d['points'] > 0]
+            for d in result if d['points'] > 0]
         save_event_scores(year, event_id, fields, data)
         return True

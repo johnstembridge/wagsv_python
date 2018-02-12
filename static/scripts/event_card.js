@@ -6,9 +6,9 @@ function freeShots(si, hcap) {
         s += 1;
     }
     if (hcap > 18) {
-    if (si <= hcap-18) {
-        s += 1;
-        }
+        if (si <= hcap-18) {
+            s += 1;
+            }
     }
     return s;
 }

@@ -382,11 +382,11 @@ def get_results(year, event_id):
                 'handicap': det[3],
                 'strokes': int(det[2]),
                 'points': int(det[1]),
-                'position': det[0],
+                'position': int(det[0]),
                 'guest': 'guest' if guest else ''
             }
         results.append(x)
-    return sorted(results, key=lambda k: k['points'], reverse=True)
+    return sorted(results, key=lambda k: k['position'])
 
 
 def get_event_by_year_and_name(year, event_name):

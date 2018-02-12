@@ -43,7 +43,7 @@ class TestInterface(unittest.TestCase):
         self.assertEqual(res, expected)
 
     def test_get_event_result(self):
-        res = get_results(2017, 3)
+        res = get_results(2017, 6)
         expected = TestData.example_event_result
         self.assertEqual(res, expected)
 
@@ -149,3 +149,5 @@ class TestInterface(unittest.TestCase):
         event_id = '3'
         data = TestData.event_result_return
         result = calc_event_positions(year, event_id, data)
+        expected = TestData.event_result_sorted
+        self.assertEqual(result, expected)
