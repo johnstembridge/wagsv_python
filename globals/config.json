@@ -3,12 +3,13 @@
   "SECRET_KEY": "secret squirrel",
   "override": true,
   "locations": {
-//    "data": "C:\\Users\\jstembridge\\PycharmProjects\\wagsv\\data",
-    "data": "D:\\wagsite_new\\html\\data",
-    "html": "D:\\wagsite_new\\html",
+    "data": "C:\\Users\\jstembridge\\PycharmProjects\\wagsv\\data",
+//    "data": "D:\\wagsite_new\\html\\data",
+    "html": "C:\\Users\\jstembridge\\PycharmProjects\\wagsv\\html",
+//    "html": "D:\\wagsite_new\\html",
     "base_url": "http://80.82.113.181/",
-//    "logs": "C:\\Users\\jstembridge\\PycharmProjects\\wagsv\\logs"
-    "logs": "D:\\python\\wagsv_python\\logs"
+    "logs": "C:\\Users\\jstembridge\\PycharmProjects\\wagsv\\logs"
+//    "logs": "D:\\python\\wagsv_python\\logs"
   },
   "url_prefix": {
     "admin": "",

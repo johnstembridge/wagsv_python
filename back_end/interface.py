@@ -244,7 +244,7 @@ def get_event_shots(year, event_id):
         header, data = get_records(shots_file(), ['date', 'course'], [date, course_id])
     inx = lookup(header, ['player'] + [str(x) for x in range(1, 19)])
     res = [itemgetter(*inx)(r) for r in data]
-    return res
+    return {r[0]:r[1:19] for r in res}
 
 
 def save_event_scores(year, event_id, header, data):
