@@ -177,8 +177,14 @@ def first_or_default(list, default):
 
 
 def is_num(s):
-    return s.replace('.', '', 1).isdigit()
+    return isinstance(s, str) and s.replace('.', '', 1).isdigit()
 
+
+def to_float(s):
+    if is_num(s):
+        return float(s)
+    else:
+        return 0
 
 def dequote(string):
     if string:

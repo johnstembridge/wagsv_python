@@ -2,7 +2,7 @@ import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, FieldList, FormField, HiddenField
 from wtforms.fields.html5 import DateField
-from back_end.interface import get_event_list, get_trophy_url, is_tour_event
+from back_end.interface import get_event_list, get_trophy_url, is_tour_event, get_venue_url
 from back_end.data_utilities import encode_date_short, in_date_range
 
 
@@ -31,7 +31,7 @@ class EventListForm(FlaskForm):
             item_form.date = encode_date_short(item['date'])
             item_form.event = item['event']
             item_form.venue = item['venue']
-            item_form.venue_url = item['venue_url']
+            item_form.venue_url = get_venue_url(year, item['venue_url'])
             item_form.trophy_url = get_trophy_url(item['event'])
             item_form.event_type = item['type']
             if item['type'] == 'wags_tour':

@@ -16,6 +16,8 @@ def get_record(file, key, value):
             if keys is None:
                 keys = [k.lower() for k in values]
             else:
+                if len(values) < len(keys):
+                    values = values + [None] * (len(keys) - len(values))
                 rec = dict(zip(keys, values))
                 if type(value) is list and type(key) is not list:
                     if rec[key] in value:

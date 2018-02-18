@@ -5,11 +5,13 @@ import sys
 from itertools import groupby
 from operator import itemgetter
 from collections import OrderedDict
+from globals.config import url_for_old_site
 
 from back_end.players import Player, Players
 from .data_utilities import encode_date, encode_price, decode_date, decode_price, decode_time, \
     sort_name_list, lookup, force_list, coerce, decode_event_type, encode_event_type, dequote, \
-    encode_address, decode_address, de_the, encode_directions, decode_directions, coerce_date, coerce_fmt_date
+    encode_address, decode_address, de_the, encode_directions, decode_directions, coerce_date, coerce_fmt_date, \
+    is_num, to_float
 from .file_access import get_field, get_record, update_record, get_records, get_file, update_records, get_fields, \
     create_data_file, get_news_file
 from globals import config
@@ -166,26 +168,27 @@ def get_event_list(year):
     events = []
     for event_id in get_field(events_file(year), 'num'):
         event = get_event(year, event_id)
-        events.append(
-            {
-                'num': event['num'],
-                'date': event['date'],
-                'event': event['event'],
-                'venue': event['course'] if is_tour_event(event) else event['venue'],
-                'type': event['event_type'],
-                'start_booking': event['start_booking'],
-                'end_booking': event['end_booking'],
-                'venue_url': event['url']
-            }
-        )
-    return sorted(events, key=lambda item: (item['date'], float(item['num'])))
+        if event:
+            events.append(
+                {
+                    'num': event['num'],
+                    'date': event['date'],
+                    'event': event['event'],
+                    'venue': event['course'] if is_tour_event(event) else event['venue'],
+                    'type': event['event_type'],
+                    'start_booking': event['start_booking'],
+                    'end_booking': event['end_booking'],
+                    'venue_url': event['url']
+                }
+            )
+    return sorted(events, key=lambda item: (item['date'], to_float(item['num'])))
 
 
 def get_tour_event_list(year, tour_event_id):
     events = []
     tour_event_id = coerce(tour_event_id, int)
     for event_id in get_field(events_file(year), 'num'):
-        id = float(event_id)
+        id = to_float(event_id)
         if math.floor(id) == tour_event_id and id != tour_event_id:
             event = get_event(year, event_id)
             events.append(
@@ -203,30 +206,33 @@ def get_event(year, event_id):
     year = coerce(year, int)
     event_id = coerce(event_id, str)
     data = get_record(events_file(year), 'num', event_id)
-    data['date'] = decode_date(data['date'], year)
-    data['end_booking'] = decode_date(data.get('deadline', None), year)
-    data['start_booking'] = coerce_date(data.get('booking_start', None), year, data['date'])
-    data['member_price'] = decode_price(data['member_price'])
-    data['guest_price'] = decode_price(data['guest_price'])
-    data['event_type'] = decode_event_type(data.get('type', None))
-    data['max'] = data.get('max', None)
-    data['course'] = data.get('course', None)
-    data['schedule'] = decode_schedule(data.get('schedule', None))
-    data['note'] = dequote(data['note'])
-    venue = get_venue_by_name(data.get('venue', None))
-    data['address'] = venue['address']
-    data['post_code'] = venue['post_code']
-    data['phone'] = venue['phone']
-    data['url'] = venue['url']
-    data['directions'] = venue['directions']
-    data['event'] = de_the(data['event'])
+    if data['date']:
+        data['date'] = decode_date(data['date'], year)
+        data['end_booking'] = decode_date(data.get('deadline', None), year)
+        data['start_booking'] = coerce_date(data.get('booking_start', None), year, data['date'])
+        data['member_price'] = decode_price(data['member_price'])
+        data['guest_price'] = decode_price(data['guest_price'])
+        data['event_type'] = decode_event_type(data.get('type', None))
+        data['max'] = data.get('max', None)
+        data['course'] = data.get('course', None)
+        data['schedule'] = decode_schedule(data.get('schedule', None))
+        data['note'] = dequote(data['note'])
+        venue = get_venue_by_name(data.get('venue', None))
+        data['address'] = venue['address']
+        data['post_code'] = venue['post_code']
+        data['phone'] = venue['phone']
+        data['url'] = venue['url']
+        data['directions'] = venue['directions']
+        data['event'] = de_the(data['event'])
+    else:
+        data = None
     return data
 
 
 def get_event_scores(year, event_id):
     date = event_date(year, event_id)
     course_id = str(event_course_id(year, event_id))
-    if course_id == '0':
+    if course_id in ['None', '0']:
         header, data = get_records(scores_file(), ['date'], [date])
     else:
         header, data = get_records(scores_file(), ['date', 'course'], [date, course_id])
@@ -355,12 +361,15 @@ def get_booked_players(year, event_id):
             while count < number:
                 guest_name = Player.normalise_name(booking['guest' + str(count)])
                 guest_handicap = booking['guest' + str(count) + '_hcap']
+                if guest_handicap == '':
+                    guest_handicap = '28'
                 res.append([guest_name, guest_handicap])
                 count += 1
     return {v[0]: v[1] for v in res}
 
 
 def get_results(year, event_id):
+    editable = is_event_editable(year)
     date = event_date(year, event_id)
     all_hcaps = dict(get_handicaps(date))
     all_scores = {v[0]: v[1:] for v in get_event_scores(year, event_id)}  # player: position, points, strokes, handicap, status
@@ -370,9 +379,14 @@ def get_results(year, event_id):
     results = []
     for player in sort_name_list(event_players):
         player_id = str(lookup(all_players, player) + 1)
-        guest = player in booked and float(booked[player]) > 0
+        guest = player in booked and to_float(booked[player]) > 0
         if player_id not in all_scores:
-            hcap = booked[player] if guest else all_hcaps[player_id]
+            if not editable:
+                continue
+            if guest:
+                hcap = booked[player]
+            else:
+                hcap = all_hcaps[player_id]
             all_scores[player_id] = [0, '0', 0, hcap]
         det = all_scores[player_id]
         x = {
@@ -455,7 +469,7 @@ def get_last_event(year=None):
 
 
 def is_tour_event(event):
-    return float(event['num']) > math.floor(float(event['num']))
+    return (not is_num(event['num'])) or float() > math.floor(float(event['num']))
 
 # endregion
 
@@ -647,8 +661,19 @@ def get_all_trophy_names():
 
 def get_trophy_url(event):
     trophy = event.lower().replace(" ", "_").replace("-", "")
-    url = "http://wags.org/html/history/trophies/"
+    url = url_for_old_site("history/trophies/")
     return url + trophy + '.htm'
+
+
+def get_venue_url(year, url):
+    if url:
+        if url.startswith("/"):
+            url = url_for_old_site('{}/{}'.format(year, url[1:]))
+        else:
+            url = '//' + url
+    else:
+        url = '/not_found'
+    return url
 
 
 def create_bookings_file(year, event_id):
