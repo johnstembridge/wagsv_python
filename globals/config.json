@@ -3,14 +3,14 @@
   "SECRET_KEY": "secret squirrel",
   "override": false,
   "locations": {
-    //  "data": "C:\\Users\\jstembridge\\PycharmProjects\\wagsv\\data",
-    //  "html": "C:\\Users\\jstembridge\\PycharmProjects\\wagsv\\html",
-    //  "logs": "C:\\Users\\jstembridge\\PycharmProjects\\wagsv\\logs"
-    "data": "D:\\wagsite_new\\html\\data",
-    "html": "D:\\wagsite_new\\html",
-    "base_url": "http://80.82.113.181/",
-    "logs": "D:\\python\\wagsv_python\\logs"
-  },
+    "data": "C:\\Users\\jstembridge\\PycharmProjects\\wagsv\\data",
+    "html": "C:\\Users\\jstembridge\\PycharmProjects\\wagsv\\html",
+    "logs": "C:\\Users\\jstembridge\\PycharmProjects\\wagsv\\logs",
+    //  "data": "D:\\wagsite_new\\html\\data",
+    //  "html": "D:\\wagsite_new\\html",
+    //  "logs": "D:\\python\\wagsv_python\\logs",
+    "base_url": "http://80.82.113.181/"
+ },
   "url_prefix": {
     "admin": "",
     "user": ""

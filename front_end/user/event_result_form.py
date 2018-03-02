@@ -50,19 +50,3 @@ class EventResultsForm(FlaskForm):
             item_form.handicap_return = player['handicap']
             item_form.strokes_return = player['strokes']
             self.scores.append_entry(item_form)
-
-    def save_event_results(self, year, event_id):
-        errors = self.errors
-        if len(errors) > 0:
-            return False
-        fields = ['player', 'points', 'strokes', 'handicap', 'status']
-        data = [
-            [d['player_id'],
-             d['points'],
-             d['strokes_return'],
-             d['handicap_return'],
-             1 if d['guest_return'] == 'guest' else 0
-             ]
-            for d in self.data['scores'] if d['points'] > 0]
-        save_event_scores(year, event_id, fields, data)
-        return True

@@ -10,7 +10,7 @@ def log_init():
 
     # set the log handler level
     log_handler.setLevel(logging.ERROR)
-    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(message)s")
 
     log_handler.setFormatter(formatter)
     return log_handler

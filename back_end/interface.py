@@ -202,6 +202,16 @@ def get_tour_event_list(year, tour_event_id):
     return events
 
 
+def get_tour_event_ids(year, tour_event_id):
+    event_ids = []
+    tour_event_id = coerce(tour_event_id, int)
+    for event_id in get_field(events_file(year), 'num'):
+        id = to_float(event_id)
+        if math.floor(id) == tour_event_id and id != tour_event_id:
+            event_ids.append(id)
+    return event_ids
+
+
 def get_event(year, event_id):
     year = coerce(year, int)
     event_id = coerce(event_id, str)
