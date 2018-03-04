@@ -2,7 +2,6 @@ from flask_wtf import FlaskForm
 from flask import render_template
 from wtforms import StringField, FormField, FieldList, HiddenField
 
-from back_end.interface import get_player_name, get_current_members
 from back_end.calc import get_vl
 from front_end.utility import render_link
 
@@ -13,7 +12,7 @@ class Vl:
     def vl_show(year):
         form = VlForm()
         form.populate_vl(year)
-        return render_template('user/vl.html', form=form, render_link=render_link)
+        return render_template('user/vl.html', form=form, year=int(year), render_link=render_link)
 
 
 class VlItemForm(FlaskForm):
@@ -27,13 +26,17 @@ class VlItemForm(FlaskForm):
 
 class VlForm(FlaskForm):
     vl = FieldList(FormField(VlItemForm))
+    year = StringField(label='year')
 
     def populate_vl(self, year):
-        players = get_current_members()
+        self.year.data = year
         vl = get_vl(year)
-        for pid, name in players.items():
+        for item in vl.data:
             item_form = VlItemForm()
-            item_form.date = item[0]
-            item_form.handicap = item[1]
-            item_form.status = '' if item[2] == '1' else 'guest'
-            self.history.append_entry(item_form)
+            item_form.position = item[vl.column_index('position')]
+            item_form.player = item[vl.column_index('name')]
+            item_form.points = item[vl.column_index('points')]
+            item_form.matches = item[vl.column_index('events')]
+            item_form.lowest = item[vl.column_index('lowest')]
+            item_form.player_id = item[vl.column_index('player')]
+            self.vl.append_entry(item_form)
