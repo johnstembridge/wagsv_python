@@ -1,0 +1,58 @@
+{% extends "user/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block page_content %}
+<table width="100%">
+    <tr>
+        <td class="h2">Victor Ludorum {{ year }}</td>
+        <td/>
+        <td/>
+        <td class="h4" colspan=3 align="right">
+            {{ render_link(
+            url=url_for('vl', year=year-1),
+            text='&#x25C4;'
+            )|safe }}
+            &nbsp;
+            year
+            &nbsp;
+            {{ render_link(
+            url=url_for('vl', year=year+1),
+            text='&#x25BA;'
+            )|safe }}
+        </td>
+    </tr>
+</table>
+<table class="list result">
+    <thead>
+    <tr>
+        <th align="right">Position</th>
+        <th align="left">Name</th>
+        <th>Points</th>
+        <th>Matches</th>
+        <th>Lowest</th>
+        <th class="text-center">Matches</th>
+    </tr>
+    <tr><td colspan=6><hr class="bold"/></td>
+    </thead>
+    <tbody>
+    </tr>
+    {% for item in form.vl %}
+    <tr>
+        <td align="right">{{ item.position.data }}</td>
+        <td>{{ item.player.data }}</td>
+        <td align="center">{{ item.points.data }}</td>
+        <td align="center">{{ item.matches.data }}</td>
+        <td align="center">{{ item.lowest.data }}</td>
+        <td align="center">
+            {{ render_link(
+            url=url_for('show_player_events', year=form.year.data, player_id=item.player_id.data),
+            image=url_for('static', filename='images/go.jpg'),
+            text='View matches'
+            )|safe }}
+        </td>
+    </tr>
+    {% endfor %}
+    <tr><td colspan=6><hr class="bold"/></td>
+    </tbody>
+</table>
+{% endblock %}

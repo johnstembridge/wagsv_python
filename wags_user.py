@@ -90,6 +90,11 @@ def vl(year):
     return Vl.vl_show(year)
 
 
+@app.route('/players/<year>/<player_id>', methods=['GET', 'POST'])
+def show_player_events(year, player_id):
+    return ReportEvents.show_playing_history(year, player_id)
+
+
 @app.errorhandler(404)
 def not_found(e):
     return ReportEvents.page_not_found(e)
