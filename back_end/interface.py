@@ -11,7 +11,7 @@ from back_end.players import Player, Players
 from .data_utilities import encode_date, encode_price, decode_date, decode_price, decode_time, \
     sort_name_list, lookup, force_list, coerce, decode_event_type, encode_event_type, dequote, \
     encode_address, decode_address, de_the, encode_directions, decode_directions, coerce_date, coerce_fmt_date, \
-    is_num, to_float
+    is_num, to_float, parse_date
 from .file_access import get_field, get_record, update_record, get_records, get_file, update_records, get_fields, \
     create_data_file, get_news_file
 from globals import config
@@ -29,7 +29,6 @@ members_data = r'members.csv'
 course_data = r'course_data.tab'
 courses_data = r'courses.txt'
 handicaps_data = r'hcaps.tab'
-vl_data = r'victor.tab'
 scores_data = r'scores.tab'
 shots_data = r'shots.tab'
 trophies_data = r'trophies.txt'
@@ -62,10 +61,6 @@ def bookings_file_fields():
 
 def handicaps_file():
     return os.path.join(data_location, handicaps_data)
-
-
-def vl_file():
-    return os.path.join(data_location, vl_data)
 
 
 def members_file():
@@ -443,7 +438,7 @@ def is_latest_event(event_id):
 def is_event_result_editable(year, event_id):
     event = get_event(year, event_id)
     override = config.get('override')
-    return override or datetime.date.today() > event['date'] and is_last_event(year, event_id)
+    return override or (datetime.date.today() > event['date'] and is_last_event(year, event_id))
 
 
 def is_last_event(year, event_id):
@@ -542,11 +537,11 @@ def get_player_name(player_id):
 
 def get_player_names(player_ids):
     head, recs = get_records(players_file(), 'id', player_ids)
-    i = lookup(head, 'name')
-    return [r[i] for r in recs]
+    recs = {r[0]: r[1] for r in recs}
+    return [recs[p] for p in player_ids]
 
 
-def get_players_sorted(as_of, status=None):
+def get_players(as_of, status=None):
     header, recs = get_handicap_records(as_of, status)
     inx = [1]
     pi = [int(itemgetter(*inx)(r)) - 1 for r in recs]
@@ -555,19 +550,9 @@ def get_players_sorted(as_of, status=None):
     return sort_name_list(current)
 
 
-def get_latest_handicaps():
-    players = get_field(vl_file(), 'player')
-    header, recs = get_records(handicaps_file(), 'player', players)
-    recs.sort(key=lambda tup: (tup[1], tup[0]), reverse=True)
-    get_item = itemgetter(1)
-    res = [list(value)[0] for key, value in groupby(recs, get_item)]
-    inx = [1, 2]
-    return [itemgetter(*inx)(r) for r in res]
-
-
 def get_handicaps(as_of, status=None):
     header, recs = get_handicap_records(as_of, status)
-    inx = [1, 2]
+    inx = lookup(header, ['player', 'handicap'])
     return [itemgetter(*inx)(r) for r in recs]
 
 
@@ -582,14 +567,21 @@ def get_player_handicap(player_id, as_of):
 
 def get_handicap_records(as_of, status=None):
     as_of = coerce_fmt_date(as_of)
-    header, recs = get_file(handicaps_file())
-    recs = [x for x in recs if x[0] <= as_of]
-    recs.sort(key=lambda tup: (tup[1], tup[0]), reverse=True)  # order by date within player
-    get_item = itemgetter(1)
-    res = [list(value)[0] for key, value in groupby(recs, get_item)]  # get latest for each player
     if status is not None:
-        status = [str(s) for s in force_list(status)]
-        res = [x for x in res if x[3] in status]  # select members/guests/ex-members
+        status = force_list(status)
+
+    def lu_fn(rec, keys, values):
+        date, status = values
+        res = rec[keys[0]] <= date
+        if status is not None:
+            status = [str(s) for s in status]
+            res = res and rec[keys[1]] in status
+        return res
+
+    header, recs = get_records(handicaps_file(), ['date', 'status'], [as_of, status], lu_fn)
+    recs.sort(key=lambda tup: (tup[1], tup[0]), reverse=True)  # order by date within player
+    get_item = itemgetter(lookup(header, 'player'))
+    res = [list(value)[0] for key, value in groupby(recs, get_item)]  # get latest for each player
     return header, res
 
 
@@ -622,6 +614,21 @@ def save_handicaps(date, header, data):
 # endregion
 
 
+def get_scores(year, status=None):
+    if status is not None:
+        status = force_list(status)
+
+    def lu_fn(rec, keys, values):
+        year, status = values
+        res = year == parse_date(rec[keys[0]]).year
+        if status is not None:
+            status = [str(s) for s in status]
+            res = res and rec[keys[1]] in status
+        return res
+    scores = get_records(scores_file(), ['date', 'status'], [coerce(year, int), status], lu_fn)
+    return scores
+
+
 # region admin
 def get_admin_user(key, value):
     return get_record(admin_users_file(), key, str(value))
@@ -635,6 +642,18 @@ def add_admin_user(user):
 
 def get_current_members():
     header, data = get_records(members_file(), ['status'], [str(PlayerStatus.member)])
+    i = lookup(header, ['salutation', 'surname'])
+    member_names = sort_name_list([' '.join(itemgetter(*i)(m)) for m in data])
+    all_players = get_all_player_names()
+    pid = lookup(all_players, member_names, index_origin=1)
+    return OrderedDict(zip(pid, member_names))
+
+
+def get_members(as_of):
+    def lu_fn(rec, key, value):
+        date = rec[key]
+        return parse_date(date) > value
+    header, data = get_records(members_file(), 'resigned', parse_date(as_of), lu_fn)
     i = lookup(header, ['salutation', 'surname'])
     member_names = sort_name_list([' '.join(itemgetter(*i)(m)) for m in data])
     all_players = get_all_player_names()

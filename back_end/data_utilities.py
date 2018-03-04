@@ -83,8 +83,14 @@ def fmt_date(date):
 
 
 def parse_date(ymd):
-    date = ymd.split('/')
-    return datetime.date(int(date[0]), int(date[1]), int(date[2]))
+    if type(ymd) is datetime.date:
+        return ymd
+    else:
+        if len(ymd) > 0:
+            date = ymd.split('/')
+            return datetime.date(int(date[0]), int(date[1]), int(date[2]))
+        else:
+            return datetime.datetime.now().date()
 
 
 def in_date_range(date, date_from, date_to):
@@ -185,6 +191,7 @@ def to_float(s):
         return float(s)
     else:
         return 0
+
 
 def dequote(string):
     if string:
