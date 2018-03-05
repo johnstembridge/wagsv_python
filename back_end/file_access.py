@@ -28,7 +28,7 @@ def get_record(file, key, value):
     return dict(zip(keys, [None] * len(keys)))
 
 
-def get_records(file, key, value):
+def get_records(file, key, value, lu_fn=None):
     delimiter = file_delimiter(file)
     keys = None
     res = []
@@ -39,11 +39,15 @@ def get_records(file, key, value):
                 keys = [k.lower() for k in values]
             else:
                 rec = dict(zip(keys, values))
-                if type(value) is list and type(key) is not list:
-                    if rec[key] in value:
-                        res.append(values)
+                if lu_fn is None:
+                    if type(value) is list and type(key) is not list:
+                        if rec[key] in value:
+                            res.append(values)
+                    else:
+                        if keys_match(rec, key, value):
+                            res.append(values)
                 else:
-                    if keys_match(rec, key, value):
+                    if lu_fn(rec, key, value):
                         res.append(values)
     return keys, res
 
@@ -207,10 +211,14 @@ def get_fields(file, fields):
 
 def file_delimiter(filename):
     file_type = (filename.split('.'))[1]
-    if file_type == 'csv': delimiter = ','
-    elif file_type == 'tab': delimiter = ':'
-    elif file_type == 'txt': delimiter = '\t'
-    else: delimiter = ' '
+    if file_type == 'csv':
+        delimiter = ','
+    elif file_type == 'tab':
+        delimiter = ':'
+    elif file_type == 'txt':
+        delimiter = '\t'
+    else:
+        delimiter = ' '
     return delimiter
 
 

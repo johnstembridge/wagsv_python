@@ -4,6 +4,7 @@ from flask import Flask, request, session
 from flask_bootstrap import Bootstrap
 from front_end.user.events_user import ReportEvents
 from front_end.user.handicaps import Handicaps
+from front_end.user.vl import Vl
 
 from globals import config, logging
 
@@ -25,7 +26,7 @@ def index():
 def events():
     # replacement end point for old-style non-restful service event calls
     # e.g. http://wags.org/wagsuser/events?date=2017/11/18&event=Pine%20Ridge
-    if request.args is not None:
+    if request.args is not None and len(request.args) > 0:
         return ReportEvents.show_from_date_and_name(request.args['date'], request.args['event'])
     else:
         current_year = get_user_current_year()
@@ -72,6 +73,7 @@ def event_handicap_history_player(year, event_id, player_id):
 # endregion
 
 
+# region handicaps
 @app.route('/handicaps', methods=['GET', 'POST'])
 def handicaps():
     return Handicaps.list_handicaps()
@@ -80,6 +82,17 @@ def handicaps():
 @app.route('/handicaps/<player_id>', methods=['GET', 'POST'])
 def handicap_history_player(player_id):
     return Handicaps.handicap_history_player(player_id)
+# endregion
+
+
+@app.route('/vl/<year>', methods=['GET', 'POST'])
+def vl(year):
+    return Vl.vl_show(year)
+
+
+@app.route('/players/<year>/<player_id>', methods=['GET', 'POST'])
+def show_player_events(year, player_id):
+    return ReportEvents.show_playing_history(year, player_id)
 
 
 @app.errorhandler(404)

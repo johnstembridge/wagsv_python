@@ -18,9 +18,9 @@ class HandicapsForm(FlaskForm):
 
     def populate_handicaps(self):
         today = datetime.date.today()
+        status = PlayerStatus.member
+        head, handicaps = get_handicap_records(today, status)
         players = get_current_members()
-        head, handicaps = get_handicap_records(today)
-        rows_per_table = len(players) // 2
         count = 1
         for pid, name in players.items():
             hcap = dict(zip(head, first_or_default([h for h in handicaps if h[1] == str(pid)], [None]*4)))

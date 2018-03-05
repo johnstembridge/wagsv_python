@@ -1,16 +1,20 @@
 import unittest
 from back_end.file_access import get_record
 from globals.enumerations import PlayerStatus
-from back_end.interface import get_event, get_latest_handicaps, get_handicaps, get_players_sorted, get_event_scores, \
+from back_end.interface import get_event, get_handicaps, get_players, get_event_scores, \
     get_booked_players, save_event_scores, get_course_data, get_player_handicap, get_event_card, get_venue_by_name, \
     get_tour_events, get_last_event, get_player_name, get_player_names, get_member, get_all_news, \
-    get_event_cards, get_results, get_results_by_year_and_name, get_tour_event_ids
+    get_event_cards, get_results, get_results_by_year_and_name, get_scores, get_members
 from back_end.calc import calc_event_positions
 from test_data import TestData
 
 
 class TestInterface(unittest.TestCase):
     maxDiff = None
+
+    def test_get_vl_scores(self):
+        scores = get_scores(2016, PlayerStatus.member)
+        pass
 
     def test_get_course_data_record_1(self):
         rec = get_course_data('4', 2017)
@@ -52,10 +56,6 @@ class TestInterface(unittest.TestCase):
         expected = TestData.example_event
         self.assertDictEqual(rec, expected)
 
-    def test_get_latest_handicaps(self):
-        res = get_latest_handicaps()
-        self.assertTrue(len(res) > 0)
-
     def test_get_handicaps(self):
         res = get_handicaps('2016/08/07')
         self.assertTrue(len(res) > 0)
@@ -81,7 +81,11 @@ class TestInterface(unittest.TestCase):
         self.assertTrue(len(card) > 0)
 
     def test_get_members(self):
-        res = get_players_sorted('2016/08/07', 1)
+        res = get_players('2018/01/01', 1)
+        self.assertTrue(len(res) > 0)
+
+    def test_get_members(self):
+        res = get_members('2012/12/31')
         self.assertTrue(len(res) > 0)
 
     def test_get_member(self):
@@ -89,11 +93,11 @@ class TestInterface(unittest.TestCase):
         self.assertEqual('john.stembridge@gmail.com', res['home_email'])
 
     def test_get_players(self):
-        res = get_players_sorted('2016/08/07', [PlayerStatus.member, PlayerStatus.guest])
+        res = get_players('2016/08/07', [PlayerStatus.member, PlayerStatus.guest])
         self.assertTrue(len(res) > 0)
 
     def test_get_ex_members(self):
-        res = get_players_sorted('2016/08/07', PlayerStatus.ex_member)
+        res = get_players('2016/08/07', PlayerStatus.ex_member)
         self.assertTrue(len(res) > 0)
 
     def test_get_event_scores(self):
@@ -135,11 +139,6 @@ class TestInterface(unittest.TestCase):
     def test_get_tour_events(self):
         rec = get_tour_events(2017, 5, 6)
         expected = TestData.example_tour_events
-        self.assertEqual(rec, expected)
-
-    def test_get_tour_event_ids(self):
-        rec = get_tour_event_ids(2017, 5)
-        expected = [5.1, 5.2, 5.3]
         self.assertEqual(rec, expected)
 
     def test_get_last_event(self):

@@ -3,7 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, FieldList, FormField, HiddenField
 from wtforms.fields.html5 import DateField
 from back_end.interface import get_event_list, is_event_editable
-
+from globals import config
 
 class EventItemForm(FlaskForm):
     num = StringField(label='id')
@@ -23,6 +23,7 @@ class EventListForm(FlaskForm):
 
     def populate_event_list(self, year):
         self.editable.data = is_event_editable(year)
+        override = config.get('override')
         for item in get_event_list(year):
             item_form = EventItemForm()
             item_form.num = item['num']
@@ -30,6 +31,6 @@ class EventListForm(FlaskForm):
             item_form.event = item['event']
             item_form.venue = item['venue']
             item_form.event_type = item['type']
-            item_form.result = item['date'] < datetime.date.today()
+            item_form.result = override or item['date'] < datetime.date.today()
             self.event_list.append_entry(item_form)
 

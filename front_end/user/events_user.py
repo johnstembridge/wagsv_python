@@ -84,3 +84,8 @@ class ReportEvents:
     @staticmethod
     def internal_error(e):
         return render_template('user/500.html'), 500
+
+    @staticmethod
+    def show_playing_history(year, player_id):
+        return redirect(url_for_old_service('services.pl?playhist=show'))
+
