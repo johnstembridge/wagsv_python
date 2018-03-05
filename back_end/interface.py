@@ -485,6 +485,12 @@ def get_all_course_names():
     return sorted(courses)
 
 
+def get_course_names(course_ids):
+    head, recs = get_records(courses_file(), 'id', course_ids)
+    recs = {r[lookup(head, 'id')]: r[lookup(head, 'name')] for r in recs}
+    return [recs[p] for p in course_ids]
+
+
 def get_course(course_id):
     course_id = coerce(course_id, str)
     data = get_record(courses_file(), 'id', course_id)
@@ -604,6 +610,18 @@ def get_handicap_history(player_id, as_of):
     inx = lookup(header, ['date', 'handicap', 'status'])
     res = [itemgetter(*inx)(r) for r in recs]
     return res
+
+
+def get_player_scores(player_id, year=None):
+    def lu_fn(rec, keys, values):
+        player_id, year = values
+        res = player_id == rec[keys[0]]
+        if year is not None:
+            res = res and year == parse_date(rec[keys[1]]).year
+        return res
+
+    scores = get_records(scores_file(), ['player', 'date'], [player_id, coerce(year, int)], lu_fn)
+    return scores
 
 
 def add_player(name, hcap, status, date):

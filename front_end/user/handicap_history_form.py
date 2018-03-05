@@ -20,6 +20,6 @@ class HandicapHistoryForm(FlaskForm):
             item_form = HandicapItemForm()
             item_form.date = item[0]
             item_form.handicap = item[1]
-            item_form.status = '' if item[2] == '1' else 'guest'
+            item_form.status = 'member' if item[2] == '1' else 'guest'
             self.history.append_entry(item_form)
 
