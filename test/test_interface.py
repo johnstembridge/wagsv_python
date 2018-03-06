@@ -4,7 +4,7 @@ from globals.enumerations import PlayerStatus
 from back_end.interface import get_event, get_handicaps, get_players, get_event_scores, \
     get_booked_players, save_event_scores, get_course_data, get_player_handicap, get_event_card, get_venue_by_name, \
     get_tour_events, get_last_event, get_player_name, get_player_names, get_member, get_all_news, \
-    get_event_cards, get_results, get_results_by_year_and_name, get_scores, get_members
+    get_event_cards, get_results, get_results_by_year_and_name, get_scores, get_members, get_tour_scores
 from back_end.calc import calc_event_positions
 from test_data import TestData
 
@@ -140,6 +140,10 @@ class TestInterface(unittest.TestCase):
         rec = get_tour_events(2017, 5, 6)
         expected = TestData.example_tour_events
         self.assertEqual(rec, expected)
+
+    def test_get_tour_scores(self):
+        res = get_tour_scores(2017, 5)
+        self.assertTrue(len(res) > 0)
 
     def test_get_last_event(self):
         last = get_last_event()

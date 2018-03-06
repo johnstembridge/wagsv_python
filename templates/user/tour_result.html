@@ -6,32 +6,26 @@
     <h1>{{ form.event_name.data }}</h1>
     <h2>Result</h2>
 </div>
-    <table width="100%" class="table table-striped">
+    <table width="100%" class="list result">
         <thead>
         <tr>
             <th>Position</th>
             <th>Name</th>
             <th>Points</th>
-            <th>Strokes</th>
-            <th>Handicap</th>
-            <th class="text-center">Card</th>
+            {% for venue in form.venues %}
+                <th>{{ venue.name.data }}</th>
+            {% endfor %}
         </tr>
         </thead>
         <tbody>
         {% for item in form.scores %}
         <tr>
-            <td>{{ item.num.data }}</td>
+            <td>{{ item.position.data }}</td>
             <td>{{ item.player.data }}</td>
-            <td>{{ item.points.data }}</td>
-            <td>{{ item.strokes.data }}</td>
-            <td>{{ item.handicap.data }}</td>
-            <td align="center">
-                {{ render_link(
-                    url=url_for('card_event_player', year=form.year.data, event_id=form.event_id.data, player_id=item.player_id.data),
-                    image=url_for('static', filename='images/go.jpg'),
-                    text='Edit/show card'
-                )|safe }}
-            </td>
+            <td>{{ item.total.data }}</td>
+            {% for scores in item.venue_scores %}
+                <td>{{ scores.points.data }}</td>
+            {% endfor %}
         </tr>
         {% endfor %}
         </tbody>

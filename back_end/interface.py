@@ -179,34 +179,6 @@ def get_event_list(year):
     return sorted(events, key=lambda item: (item['date'], to_float(item['num'])))
 
 
-def get_tour_event_list(year, tour_event_id):
-    events = []
-    tour_event_id = coerce(tour_event_id, int)
-    for event_id in get_field(events_file(year), 'num'):
-        id = to_float(event_id)
-        if math.floor(id) == tour_event_id and id != tour_event_id:
-            event = get_event(year, event_id)
-            events.append(
-                {
-                    'num': event['num'],
-                    'date': event['date'],
-                    'course': event['course'],
-                    'venue': event['venue']
-                }
-            )
-    return events
-
-
-def get_tour_event_ids(year, tour_event_id):
-    event_ids = []
-    tour_event_id = coerce(tour_event_id, int)
-    for event_id in get_field(events_file(year), 'num'):
-        id = to_float(event_id)
-        if math.floor(id) == tour_event_id and id != tour_event_id:
-            event_ids.append(id)
-    return event_ids
-
-
 def get_event(year, event_id):
     year = coerce(year, int)
     event_id = coerce(event_id, str)
@@ -328,21 +300,6 @@ def encode_schedule(sched):
 
 def empty_schedule_item(item):
     return (not item['text']) and item['time'].hour == 0 and item['time'].minute == 0
-
-
-def get_tour_events(year, tour_event_id, max):
-    events = get_tour_event_list(year, tour_event_id)
-    count = len(events)
-    while count < max:
-        e = {
-            'num': None,
-            'date': None,
-            'course': None,
-            'venue': None
-            }
-        events.append(e)
-        count += 1
-    return events
 
 
 def get_new_event_id(year):
@@ -473,8 +430,72 @@ def get_last_event(year=None):
     return get_last_event(year-1)
 
 
+# endregion
+
+
+# region tours
 def is_tour_event(event):
-    return (not is_num(event['num'])) or float() > math.floor(float(event['num']))
+    return (not is_num(event['num'])) or float(event['num']) > math.floor(float(event['num']))
+
+
+def get_tour_event_list(year, tour_event_id):
+    events = []
+    tour_event_id = coerce(tour_event_id, int)
+    for event_id in get_field(events_file(year), 'num'):
+        id = to_float(event_id)
+        if math.floor(id) == tour_event_id and id != tour_event_id:
+            event = get_event(year, event_id)
+            events.append(
+                {
+                    'num': event['num'],
+                    'date': event['date'],
+                    'course': event['course'],
+                    'venue': event['venue']
+                }
+            )
+    return events
+
+
+def get_tour_event_ids(year, tour_event_id):
+    event_ids = []
+    tour_event_id = coerce(tour_event_id, int)
+    for event_id in get_field(events_file(year), 'num'):
+        id = to_float(event_id)
+        if math.floor(id) == tour_event_id and id != tour_event_id:
+            event_ids.append(id)
+    return event_ids
+
+
+def get_tour_events(year, tour_event_id, max):
+    events = get_tour_event_list(year, tour_event_id)
+    count = len(events)
+    while count < max:
+        e = {
+            'num': None,
+            'date': None,
+            'course': None,
+            'venue': None
+            }
+        events.append(e)
+        count += 1
+    return events
+
+
+def get_tour_scores(year, event_id):
+    events = get_tour_event_list(year, event_id)
+    dates = []
+    course_ids = []
+    for event in events:
+        dates.append(event['date'].strftime('%Y/%m/%d'))
+        course_ids.append(str(lookup_course(event['course'])))
+
+    def lu_fn(rec, keys, values):
+        dates, courses = values
+        res = rec[keys[0]] in dates and rec[keys[1]] in courses
+        return res
+
+    res = get_records(scores_file(), ['date', 'course'], [dates, course_ids], lu_fn)
+    return res
 
 # endregion
 

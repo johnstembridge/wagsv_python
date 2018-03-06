@@ -1,52 +1,70 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField, HiddenField
-from back_end.interface import get_event, get_results, get_tour_event_ids, is_event_result_editable
+from wtforms import StringField, FieldList, FormField
+from back_end.interface import get_event, get_tour_scores, get_tour_event_list, get_player_name
+from back_end.table import Table
+from back_end.data_utilities import fmt_date
+
+
+class TourEventScoreItemForm(FlaskForm):
+    points = StringField(label='Points')
+
+
+class TourEventVenueItemForm(FlaskForm):
+    name = StringField(label='Name')
 
 
 class TourResultItemForm(FlaskForm):
-    num = IntegerField(label='id')
-    position = IntegerField(label='Position')
+    position = StringField(label='Position')
     player = StringField(label='Player')
-    handicap = IntegerField(label='Handicap')
-    strokes = IntegerField(label='Strokes')
-    points = IntegerField(label='Points')
-    guest = StringField(label='Guest')
-    player_id = HiddenField(label='Player_id')
-    strokes_return = HiddenField(label='Strokes')
-    guest_return = HiddenField(label='Guest')
-    handicap_return = HiddenField(label='Handicap')
+    total = StringField(label='Total')
+    venue_scores = FieldList(FormField(TourEventScoreItemForm))
 
 
 class TourResultsForm(FlaskForm):
-    scores = FieldList(FormField(TourResultItemForm))
     event_name = StringField(label='event_name')
-    add_player = SubmitField(label='Add Player')
-    save_results = SubmitField(label='Save')
-    editable = HiddenField(label='Editable')
-    event_id = HiddenField(label='Event_id')
-    year = HiddenField(label='Year')
+    venues = FieldList(FormField(TourEventVenueItemForm))
+    scores = FieldList(FormField(TourResultItemForm))
 
     def populate_tour_results(self, year, event_id):
-        self.event_id.data = event_id
-        self.year.data = year
         event = get_event(year, event_id)
         self.event_name.data = '{} {} {}'.format(event['event'], event['venue'], event['date'])
-        self.editable = is_event_result_editable(year, event_id)
-        players = get_results(year, event_id)
-        num = 0
-        for player in players:
-            num += 1
+
+        venues = get_tour_event_list(year, event_id)
+        for venue in venues:
+            venue_form = TourEventVenueItemForm()
+            venue_form.name = venue['course']
+            self.venues.append_entry(venue_form)
+
+        dates = [fmt_date(v['date']) for v in venues]
+        results = self.get_tour_results(year, event_id, dates)
+
+        for res in results.data:
             item_form = TourResultItemForm()
-            item_form.num = str(num)
-            guest = "" if (player['guest'] == "") else " (" + player['guest'] + ")"
-            item_form.player = player['name'] + guest
-            item_form.handicap = player['handicap']
-            item_form.points = player['points']
-            item_form.strokes = player['strokes']
-            item_form.position = player['position']
-            item_form.guest = player['guest']
-            item_form.player_id = str(player['id'])
-            item_form.guest_return = player['guest']
-            item_form.handicap_return = player['handicap']
-            item_form.strokes_return = player['strokes']
+            guest = "" if (res[results.column_index('status')] != "0") else " (guest)"
+            item_form.position = ''# res[results.column_index('position')]
+            item_form.player = get_player_name(res[results.column_index('player_id')]) + guest
+            item_form.total = res[results.column_index('total')]
+            for score in res[results.column_index('scores')]:
+                score_form = TourEventScoreItemForm()
+                score_form.points = score
+                item_form.venue_scores.append_entry(score_form)
             self.scores.append_entry(item_form)
+
+    @staticmethod
+    def get_tour_results(year, event_id, dates):
+        scores = Table(*get_tour_scores(year, event_id))
+        scores.sort(['player', 'date'])
+        res = []
+        for player_id, event_scores in scores.groupby('player'):
+            s = [s for s in event_scores]
+            missing = list(set(dates).difference(set([x[0] for x in s])))
+            status = s[0][7]
+            for m in missing:
+                s.append([m] + 7*['0'])
+            s.sort()
+            s = [int(x[4]) for x in s]
+            r = (player_id, status, s, sum(s))
+            res.append(r)
+        head = ['player_id', 'status', 'scores', 'total']
+        return Table(head, res)
+

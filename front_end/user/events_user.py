@@ -83,7 +83,6 @@ class ReportEvents:
         form = PlayerHistoryForm()
         form.populate_history(player_id, year)
         return render_template('user/player_history.html', form=form)
-        #return redirect(url_for_old_service('services.pl?playhist=show'))
 
     @staticmethod
     def page_not_found(e):

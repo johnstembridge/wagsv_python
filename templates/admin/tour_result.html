@@ -11,49 +11,27 @@
     <table width="100%" class="table table-striped">
         <thead>
         <tr>
-            <th>#</th>
+            <th>Position</th>
             <th>Name</th>
-            <th>Handicap</th>
-            <th>Strokes</th>
-            <th>Score</th>
-            <th class="text-center">Card</th>
-            <th></th>
+            <th>Total</th>
+            {% for venue_name in form.venues %}
+                <th>{{ venue_name.data }}</th>
+            {% endfor %}
         </tr>
         </thead>
         <tbody>
         {% for item in form.scores %}
         <tr>
-            <td>{{ item.num.data }}</td>
+            <td>{{ item.position.data }}</td>
             <td>{{ item.player.data }}</td>
-            <td>{{ item.handicap.data }}</td>
-            <td>{{ item.strokes.data }}</td>
-            {%if form.editable %}
-                <td>{{ item.points(size=10) }}</td>
-            {% else %}
-                <td>{{ item.points.data }}</td>
-            {% endif %}
-            <td align="center">
-                {{ render_link(
-                    url=url_for('card_event_player', year=form.year.data, event_id=form.event_id.data, player_id=item.player_id.data),
-                    image=url_for('static', filename='images/go.jpg'),
-                    text='Edit/show card'
-                )|safe }}
-            </td>
-            {%if form.editable %}
-                <td>{{ item.player_id }}</td>
-                <td>{{ item.guest_return }}</td>
-                <td>{{ item.strokes_return }}</td>
-                <td>{{ item.handicap_return }}</td>
-            {% endif %}
+            <td>{{ item.total.data }}</td>
+            {% for venue_score in item.venue_scores %}
+                <td align="center">{{ venue_score.data }}</td>
+            {% endfor %}
         </tr>
         {% endfor %}
         </tbody>
     </table>
-
     <hr/>
-    {%if form.editable %}
-    {{ form.add_player(class="btn btn-primary") }}
-    {{ form.save_results(class="btn btn-primary") }}
-    {% endif %}
 </form>
 {% endblock %}
