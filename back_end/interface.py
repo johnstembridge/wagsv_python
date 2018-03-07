@@ -445,14 +445,15 @@ def get_tour_event_list(year, tour_event_id):
         id = to_float(event_id)
         if math.floor(id) == tour_event_id and id != tour_event_id:
             event = get_event(year, event_id)
-            events.append(
-                {
-                    'num': event['num'],
-                    'date': event['date'],
-                    'course': event['course'],
-                    'venue': event['venue']
-                }
-            )
+            if event['event_type'] == EventType.wags_vl_event:
+                events.append(
+                    {
+                        'num': event['num'],
+                        'date': event['date'],
+                        'course': event['course'],
+                        'venue': event['venue']
+                    }
+                )
     return events
 
 

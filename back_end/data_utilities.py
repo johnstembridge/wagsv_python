@@ -126,8 +126,8 @@ def decode_time(time):
 
 def decode_event_type(event_type):
     if not event_type:
-        event_type = EventType.wags_vl_event.value
-    return EventType(int(event_type)).name
+        event_type = EventType.wags_vl_event
+    return EventType(int(event_type))
 
 
 def encode_event_type(event_type):

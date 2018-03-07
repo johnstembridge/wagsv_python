@@ -3,6 +3,7 @@ from wtforms import StringField, FieldList, FormField
 from back_end.interface import get_event, get_tour_scores, get_tour_event_list, get_player_name
 from back_end.table import Table
 from back_end.data_utilities import fmt_date
+from back_end.calc import get_positions
 
 
 class TourEventScoreItemForm(FlaskForm):
@@ -41,7 +42,7 @@ class TourResultsForm(FlaskForm):
         for res in results.data:
             item_form = TourResultItemForm()
             guest = "" if (res[results.column_index('status')] != "0") else " (guest)"
-            item_form.position = ''# res[results.column_index('position')]
+            item_form.position = res[results.column_index('position')]
             item_form.player = get_player_name(res[results.column_index('player_id')]) + guest
             item_form.total = res[results.column_index('total')]
             for score in res[results.column_index('scores')]:
@@ -66,5 +67,8 @@ class TourResultsForm(FlaskForm):
             r = (player_id, status, s, sum(s))
             res.append(r)
         head = ['player_id', 'status', 'scores', 'total']
-        return Table(head, res)
+        res = Table(head, res)
+        res.sort(['total'], reverse=True)
+        res.add_column('position', get_positions(res.get_column('total')))
+        return res
 

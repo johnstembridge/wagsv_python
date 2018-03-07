@@ -7,24 +7,24 @@
     <h2>Result</h2>
 </div>
     <table width="100%" class="list result">
-        <thead>
+        <thead valign="bottom">
         <tr>
-            <th>Position</th>
-            <th>Name</th>
-            <th>Points</th>
+            <th style="text-align:right">Position</th>
+            <th align="left">Name</th>
+            <th style="text-align:center">Points</th>
             {% for venue in form.venues %}
-                <th>{{ venue.name.data }}</th>
+                <th style="text-align:center">{{ venue.data.name }}</th>
             {% endfor %}
         </tr>
         </thead>
         <tbody>
         {% for item in form.scores %}
         <tr>
-            <td>{{ item.position.data }}</td>
-            <td>{{ item.player.data }}</td>
-            <td>{{ item.total.data }}</td>
+            <td align="right">{{ item.position.data }}</td>
+            <td align="left">{{ item.player.data }}</td>
+            <td align="center">{{ item.total.data }}</td>
             {% for scores in item.venue_scores %}
-                <td>{{ scores.points.data }}</td>
+                <td align="center">{{ scores.points.data.data }}</td>
             {% endfor %}
         </tr>
         {% endfor %}

@@ -5,6 +5,7 @@ from wtforms.fields.html5 import DateField
 from back_end.interface import get_event_list, is_event_editable
 from globals import config
 
+
 class EventItemForm(FlaskForm):
     num = StringField(label='id')
     date = DateField(label='Date')
