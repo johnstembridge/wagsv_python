@@ -2,6 +2,7 @@ import datetime
 import os
 from decimal import Decimal
 from globals import config
+from globals.enumerations import EventType
 
 
 class TestData:
@@ -101,7 +102,7 @@ class TestData:
         'deadline': 'Thursday 18 May',
         'note': '',
         'type': '1',
-        'event_type': 'wags_vl_event'
+        'event_type': EventType.wags_vl_event
     }
 
     example_event_cards = {

@@ -13,7 +13,7 @@ def decode_date(wdm, y):
     # wdm is in the form Friday 28 April, y is year
     if wdm:
         try:
-            a = wdm.split(' ')
+            a = wdm.strip().split(' ')
             d = int(re.findall(r'\d+', a[1])[0])
             m = calendar.month_name[0:13].index(a[-1])
             return datetime.date(y, m, d)
@@ -65,6 +65,14 @@ def encode_date_formal(date):
         date = datetime.datetime.strptime(date, '%Y/%m/%d')
 
     return custom_strftime('{TH} %B %Y', date.timetuple())
+
+
+def decode_date_range(dr, year):
+    # dr is in the form Friday 22 - Sunday 24 April, y is year
+    dr = dr.split('-')
+    month = (dr[1].split(' '))[-1]
+    dr[0] = dr[0] + ' ' + month
+    return [decode_date(d, year) for d in dr]
 
 
 def coerce_date(wdm, y, date):
@@ -126,7 +134,7 @@ def decode_time(time):
 
 def decode_event_type(event_type):
     if not event_type:
-        event_type = EventType.wags_vl_event
+        return EventType.wags_vl_event
     return EventType(int(event_type))
 
 

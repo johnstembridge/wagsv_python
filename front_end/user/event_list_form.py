@@ -4,6 +4,7 @@ from wtforms import StringField, FieldList, FormField, HiddenField
 from wtforms.fields.html5 import DateField
 from back_end.interface import get_event_list, get_trophy_url, is_tour_event, get_venue_url
 from back_end.data_utilities import encode_date_short, in_date_range
+from globals.enumerations import EventType
 
 
 class EventItemForm(FlaskForm):
@@ -26,6 +27,7 @@ class EventListForm(FlaskForm):
         first = True
         tour_event = ''
         for item in get_event_list(year):
+            event_type = item['type']
             item_form = EventItemForm()
             item_form.num = item['num']
             item_form.date = encode_date_short(item['date'])
@@ -33,8 +35,8 @@ class EventListForm(FlaskForm):
             item_form.venue = item['venue']
             item_form.venue_url = get_venue_url(year, item['venue_url'])
             item_form.trophy_url = get_trophy_url(item['event'])
-            item_form.event_type = item['type']
-            if item['type'] == 'wags_tour':
+            item_form.event_type = event_type.name
+            if event_type == EventType.wags_tour:
                 tour_event = item['event']
             item_form.new_section = not (first or is_tour_event(item))
             first = False

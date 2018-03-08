@@ -5,13 +5,15 @@ import sys
 from itertools import groupby
 from operator import itemgetter
 from collections import OrderedDict
+
+from back_end.table import Table
 from globals.config import url_for_old_site
 
 from back_end.players import Player, Players
 from .data_utilities import encode_date, encode_price, decode_date, decode_price, decode_time, \
     sort_name_list, lookup, force_list, coerce, decode_event_type, encode_event_type, dequote, \
     encode_address, decode_address, de_the, encode_directions, decode_directions, coerce_date, coerce_fmt_date, \
-    is_num, to_float, parse_date
+    is_num, to_float, parse_date, decode_date_range
 from .file_access import get_field, get_record, update_record, get_records, get_file, update_records, get_fields, \
     create_data_file, get_news_file
 from globals import config
@@ -189,7 +191,10 @@ def get_event(year, event_id):
         data['start_booking'] = coerce_date(data.get('booking_start', None), year, data['date'])
         data['member_price'] = decode_price(data['member_price'])
         data['guest_price'] = decode_price(data['guest_price'])
-        data['event_type'] = decode_event_type(data.get('type', None))
+        if (not data.get('type', None)) and 'tour' in data.get('event').lower():
+            data['event_type'] = EventType.wags_tour
+        else:
+            data['event_type'] = decode_event_type(data.get('type', None))
         data['max'] = data.get('max', None)
         data['course'] = data.get('course', None)
         data['schedule'] = decode_schedule(data.get('schedule', None))
@@ -424,7 +429,7 @@ def get_last_event(year=None):
     if not year:
         year = today.year
     events = get_event_list(year)
-    nums = [e['num'] for e in events if e['type'] == 'wags_vl_event' and e['date'] <= today]
+    nums = [e['num'] for e in events if e['type'] == EventType.wags_vl_event and e['date'] <= today]
     if len(nums) > 0:
         return year, nums[-1]
     return get_last_event(year-1)
@@ -439,14 +444,14 @@ def is_tour_event(event):
 
 
 def get_tour_event_list(year, tour_event_id):
-    events = []
+    tour_events = []
     tour_event_id = coerce(tour_event_id, int)
     for event_id in get_field(events_file(year), 'num'):
         id = to_float(event_id)
         if math.floor(id) == tour_event_id and id != tour_event_id:
             event = get_event(year, event_id)
             if event['event_type'] == EventType.wags_vl_event:
-                events.append(
+                tour_events.append(
                     {
                         'num': event['num'],
                         'date': event['date'],
@@ -454,7 +459,34 @@ def get_tour_event_list(year, tour_event_id):
                         'venue': event['venue']
                     }
                 )
-    return events
+    if len(tour_events) > 0:
+        return tour_events
+    return get_tour_event_list_from_scores(year, tour_event_id)
+
+
+def get_tour_event_list_from_scores(year, tour_event_id):
+    tour_events = []
+    tour_event = get_record(events_file(year), 'num', str(tour_event_id))
+    date_range = decode_date_range(tour_event['date'], year)
+
+    def lu_fn(rec, key, date_range):
+        date = parse_date(rec[key])
+        res = date_range[0] <= date <= date_range[1]
+        return res
+    scores = Table(*get_records(scores_file(), 'date', date_range, lu_fn))
+    date_course = sorted([s[0] for s in scores.groupby(['date', 'course'])])
+    id = tour_event_id
+    for event in date_course:
+        id += 0.1
+        tour_events.append(
+            {
+                'num': str(round(id, 1)),
+                'date': parse_date(event[0]),
+                'course': get_course(event[1])['name'],
+                'venue': get_course(event[1])['name']
+            }
+        )
+    return tour_events
 
 
 def get_tour_event_ids(year, tour_event_id):

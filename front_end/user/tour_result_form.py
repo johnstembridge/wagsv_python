@@ -47,7 +47,7 @@ class TourResultsForm(FlaskForm):
             item_form.total = res[results.column_index('total')]
             for score in res[results.column_index('scores')]:
                 score_form = TourEventScoreItemForm()
-                score_form.points = score
+                score_form.points = score if score > 0 else ''
                 item_form.venue_scores.append_entry(score_form)
             self.scores.append_entry(item_form)
 
