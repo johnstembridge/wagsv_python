@@ -16,7 +16,7 @@ class AccountsUploadForm(FlaskForm):
     def upload(self, year):
         filename = secure_filename(self.fileName.data.filename)
         if filename != '':
-            file_path = os.path.join(config.get('locations')['data'], year, filename)
+            file_path = os.path.join(config.get('locations')['data'], str(year), filename)
             self.fileName.data.save(file_path)
             return True
         else:

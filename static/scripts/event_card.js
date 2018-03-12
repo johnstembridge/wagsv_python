@@ -114,6 +114,7 @@ function updateAll(){
         i++;
     }
     updateTotals();
+    document.getElementById('scoresOut-0-shots').focus();
 }
 
 //get the id for <item> (shots/par/si/points) for hole <hole>

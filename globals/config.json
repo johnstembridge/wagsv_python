@@ -4,12 +4,12 @@
   "override": false,
   "locations": {
     "base_url": "http://80.82.113.181/",
-    "data": "C:\\Users\\jstembridge\\wagsite\\html\\data",
-    "html": "C:\\Users\\jstembridge\\wagsite\\html",
-    "logs": "C:\\Users\\jstembridge\\PycharmProjects\\wagsv\\logs"
-//    "data": "D:\\wagsite_new\\html\\data",
-//    "html": "D:\\wagsite_new\\html",
-//    "logs": "D:\\python\\wagsv_python\\logs"
+//    "data": "C:\\Users\\jstembridge\\wagsite\\html\\data",
+//    "html": "C:\\Users\\jstembridge\\wagsite\\html",
+//    "logs": "C:\\Users\\jstembridge\\PycharmProjects\\wagsv\\logs"
+    "data": "D:\\wagsite_new\\html\\data",
+    "html": "D:\\wagsite_new\\html",
+    "logs": "D:\\python\\wagsv_python\\logs"
   },
   "url_prefix": {
     "admin": "",

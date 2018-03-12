@@ -366,7 +366,7 @@ def get_results(year, event_id):
                 'guest': 'guest' if guest else ''
             }
         results.append(x)
-    return sorted(results, key=lambda k: k['position'])
+    return sorted(results, key=lambda k: k['position'] if k['position'] > 0 else 99)
 
 
 def get_event_by_year_and_name(year, event_name):
@@ -414,9 +414,9 @@ def is_event_result_editable(year, event_id):
 
 
 def is_last_event(year, event_id):
-    last = get_last_event()
+    last = [str(x) for x in get_last_event()]
     override = config.get('override')
-    return override or last == (year, event_id)
+    return override or last == [str(year), str(event_id)]
 
 
 def is_event_editable(year):

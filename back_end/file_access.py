@@ -153,7 +153,7 @@ def get_matching_update_rec(rec, key, key_value, header, new_values, found):
         add_keys(key, key_value, new_dict)
         if keys_match(rec, key, new_dict):
             found[i] = True
-            return new_dict
+            return {k: new_dict[k] if k in header else rec[k] for k in rec.keys()}
     return None
 
 
