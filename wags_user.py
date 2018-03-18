@@ -91,8 +91,13 @@ def vl(year):
 
 
 @app.route('/players/<player_id>/<year>', methods=['GET', 'POST'])
-def show_player_events(player_id, year):
+def show_player_events_for_year(player_id, year):
     return ReportEvents.show_playing_history(player_id, year)
+
+
+@app.route('/players/<player_id>', methods=['GET', 'POST'])
+def show_player_events(player_id):
+    return ReportEvents.show_playing_history(player_id)
 
 
 @app.errorhandler(404)

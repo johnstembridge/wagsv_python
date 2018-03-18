@@ -13,7 +13,7 @@ from back_end.players import Player, Players
 from .data_utilities import encode_date, encode_price, decode_date, decode_price, decode_time, \
     sort_name_list, lookup, force_list, coerce, decode_event_type, encode_event_type, dequote, \
     encode_address, decode_address, de_the, encode_directions, decode_directions, coerce_date, coerce_fmt_date, \
-    is_num, to_float, parse_date, decode_date_range
+    is_num, to_float, parse_date, decode_date_range, fmt_date
 from .file_access import get_field, get_record, update_record, get_records, get_file, update_records, get_fields, \
     create_data_file, get_news_file
 from globals import config
@@ -387,7 +387,7 @@ def event_course_id(year, event_id):
 
 def event_date(year, event_id):
     event = get_event(year, event_id)
-    date = event['date'].strftime('%Y/%m/%d')
+    date = fmt_date(event['date'])
     return date
 
 
@@ -603,6 +603,11 @@ def get_all_player_names():
 def get_player_name(player_id):
     rec = get_record(players_file(), 'id', player_id)
     return rec['name']
+
+
+def get_player_id(player_name):
+    rec = get_record(players_file(), 'name', player_name)
+    return rec['id']
 
 
 def get_player_names(player_ids):

@@ -149,7 +149,7 @@ def sort_name_list(names):
 
 
 def normalise_name(name):
-    return name.title()
+    return name.replace('+', ' ').title()
 
 
 def lookup(item_list, items, index_origin=0):
@@ -174,7 +174,7 @@ def force_list(x):
 
 
 def coerce(x, required_type):
-    if type(x) != required_type:
+    if x is not None and type(x) != required_type:
         x = required_type(x)
     return x
 

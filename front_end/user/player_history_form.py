@@ -1,7 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, FormField, FieldList
 from wtforms.fields.html5 import DateField
-from back_end.interface import get_player_name, get_player_scores, get_course_names
+from back_end.interface import get_player_name, get_player_id, get_player_scores, get_course_names
+from back_end.data_utilities import is_num, normalise_name
 from back_end.table import Table
 
 
@@ -20,9 +21,11 @@ class PlayerHistoryForm(FlaskForm):
     year = StringField(label='Year')
     history = FieldList(FormField(PlayerEventForm))
 
-    def populate_history(self, player_id, year):
+    def populate_history(self, player_id, year=None):
+        if not is_num(player_id):
+            player_id = get_player_id(normalise_name(player_id))
         self.player.data = get_player_name(player_id)
-        self.year.data = year
+        self.year.data = year or ''
         events = self.get_player_history(player_id, year)
         for item in events.data:
             item_form = PlayerEventForm()
@@ -36,8 +39,8 @@ class PlayerHistoryForm(FlaskForm):
             self.history.append_entry(item_form)
 
     @staticmethod
-    def get_player_history(player_id, year):
+    def get_player_history(player_id, year=None):
         hist = Table(*get_player_scores(player_id, year))
         hist.add_column('course_name', get_course_names(hist.get_column('course')))
-        hist.sort('date')
+        hist.sort('date', reverse=year is None)
         return hist

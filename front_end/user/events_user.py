@@ -10,7 +10,7 @@ from .player_history_form import PlayerHistoryForm
 from .tour_result_form import TourResultsForm
 from front_end.utility import render_link
 from back_end.interface import get_event, event_date, get_event_by_year_and_name
-from back_end.data_utilities import parse_date
+from back_end.data_utilities import parse_date, is_num
 
 
 class ReportEvents:
@@ -79,7 +79,7 @@ class ReportEvents:
         return render_template('user/handicap_history.html', form=form)
 
     @staticmethod
-    def show_playing_history(player_id, year):
+    def show_playing_history(player_id, year=None):
         form = PlayerHistoryForm()
         form.populate_history(player_id, year)
         return render_template('user/player_history.html', form=form)
