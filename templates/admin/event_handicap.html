@@ -50,7 +50,7 @@
     </table>
 
     <hr/>
-    {%if form.editable.data == 'y' %}
+    {%if form.editable.data %}
     {{ form.save_handicaps(class="btn btn-primary") }}
     {% endif %}
 </form>

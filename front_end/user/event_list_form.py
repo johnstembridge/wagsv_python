@@ -35,7 +35,7 @@ class EventListForm(FlaskForm):
             item_form.venue = item['venue']
             item_form.venue_url = get_venue_url(year, item['venue_url'])
             item_form.trophy_url = get_trophy_url(item['event'])
-            item_form.event_type = event_type.name
+            item_form.event_type = event_type.value
             if event_type == EventType.wags_tour:
                 tour_event = item['event']
             item_form.new_section = not (first or is_tour_event(item))

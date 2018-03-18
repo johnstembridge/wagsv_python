@@ -27,7 +27,7 @@ class MaintainEvents:
             return redirect(url_for_admin('edit_event', year=year, event_id=0, event_type=event_type))
         form.populate_event_list(int(year))
 
-        return render_template('admin/event_list.html', form=form, year=year, render_link=render_link)
+        return render_template('admin/event_list.html', form=form, year=year, render_link=render_link, EventType=EventType)
 
     @staticmethod
     def edit_event(year, event_id, event_type=None):
