@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, FormField, FieldList
 from wtforms.fields.html5 import DateField
 from back_end.interface import get_player_name, get_player_id, get_handicap_history
-from data_utilities import is_num, normalise_name
+from back_end.data_utilities import is_num, normalise_name
 
 
 class HandicapItemForm(FlaskForm):
