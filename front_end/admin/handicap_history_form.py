@@ -3,7 +3,7 @@ from wtforms import StringField, FormField, FieldList
 from wtforms.fields.html5 import DateField
 import datetime
 from back_end.interface import get_player_name, get_handicap_history, event_date, is_last_event
-from data_utilities import fmt_date
+from back_end.data_utilities import fmt_date
 
 
 class HandicapItemForm(FlaskForm):
