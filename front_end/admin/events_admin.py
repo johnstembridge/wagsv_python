@@ -32,7 +32,7 @@ class MaintainEvents:
     @staticmethod
     def edit_event(year, event_id, event_type=None):
         if event_type:
-            event_type = EventType[event_type]
+            event_type = EventType(int(event_type))
         else:
             event_type = EventType.wags_vl_event
         form = EventForm()

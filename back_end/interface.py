@@ -17,7 +17,7 @@ from .data_utilities import encode_date, encode_price, decode_date, decode_price
 from .file_access import get_field, get_record, update_record, get_records, get_file, update_records, get_fields, \
     create_data_file, get_news_file
 from globals import config
-from globals.enumerations import EventType, PlayerStatus
+from globals.enumerations import EventType, PlayerStatus, MemberStatus
 
 # region file_paths
 
@@ -728,7 +728,7 @@ def add_admin_user(user):
 
 
 def get_current_members():
-    header, data = get_records(members_file(), ['status'], [str(PlayerStatus.member)])
+    header, data = get_records(members_file(), ['status'], [str(MemberStatus.full_member.value)])
     i = lookup(header, ['salutation', 'surname'])
     member_names = sort_name_list([' '.join(itemgetter(*i)(m)) for m in data])
     all_players = get_all_player_names()

@@ -1,0 +1,35 @@
+{% extends "admin/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Member {{ form.member_id.data }}</h1>
+</div>
+<form method="POST">
+    {{ form.csrf_token }}
+    <table width="100%">
+        <tr>
+            <td>{{ form.member_id.label }}</td><td>{{ form.member_id(size='10') }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.status.label }}</td><td>{{ form.status }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.proposer.label }}</td><td>{{ form.proposer }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.first_name.label }}</td><td>{{ form.first_name(size='50') }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.surname.label }}</td><td>{{ form.surname(size='50') }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.email.label }}</td><td>{{ form.email(size='50') }}</td>
+        </tr>
+    </table>
+    <hr/>
+    {%if form.editable.data %}
+        {{ form.save(class="btn btn-primary") }}
+    {% endif %}
+</form>
+{% endblock %}

@@ -6,6 +6,7 @@ from flask_wtf import CSRFProtect
 from flask_login import LoginManager, login_required
 
 from front_end.admin.events_admin import MaintainEvents
+from front_end.admin.members_admin import MaintainMembers
 from front_end.admin.venues_admin import MaintainVenues
 from front_end.admin import accounts_admin
 from front_end.admin import login
@@ -77,6 +78,18 @@ def edit_venue(venue_id):
 @app.route('/venues/<venue_id>/courses/<course_id>', methods=['GET', 'POST'])
 def edit_course(venue_id, course_id):
     return MaintainVenues.edit_course(venue_id, course_id)
+# endregion
+
+
+# region members
+@app.route('/members', methods=['GET', 'POST'])
+def members_main():
+    return MaintainMembers.list_members()
+
+
+@app.route('/members/<member_id>', methods=['GET', 'POST'])
+def edit_member(member_id):
+    return MaintainMembers.edit_member(member_id)
 # endregion
 
 

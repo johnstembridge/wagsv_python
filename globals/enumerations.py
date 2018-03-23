@@ -1,7 +1,13 @@
 from enum import Enum
 
 
-class PlayerStatus:
+class MemberStatus(Enum):
+    full_member = 1
+    overseas_member = 2
+    ex_member = 3
+
+
+class PlayerStatus(Enum):
     guest = 0
     member = 1
     ex_member = 2

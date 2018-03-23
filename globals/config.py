@@ -3,9 +3,6 @@ import json
 from flask import url_for as flask_url_for
 
 
-old_site = 'http://80.82.113.181/'
-
-
 def read():
     file_path = os.path.join(os.path.dirname(__file__), 'config.json')
     with open(file_path) as json_data_file:
