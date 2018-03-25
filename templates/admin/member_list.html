@@ -1,0 +1,17 @@
+{% extends "admin/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>WAGS Members {{ year }}</h1>
+
+</div>
+<form method="POST">
+    {{ form.csrf_token }}
+    {{ form.member.label }} {{ form.member }}
+    <hr>
+    {{ form.edit_member(class="btn btn-primary") }}
+    {{ form.add_member(class="btn btn-primary") }}
+</form>
+{% endblock %}
+

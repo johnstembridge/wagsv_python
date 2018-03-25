@@ -3,13 +3,13 @@
 
 {% block page_content %}
 <div class="page-header">
-    <h1>Member {{ form.member_id.data }}</h1>
+    <h1>{{ form.member_id.data }} {{ form.first_name.data }} {{ form.surname.data }}</h1>
 </div>
 <form method="POST">
     {{ form.csrf_token }}
     <table width="100%">
         <tr>
-            <td>{{ form.member_id.label }}</td><td>{{ form.member_id(size='10') }}</td>
+            <td>{{ form.member_id.label }}</td><td>{{ form.member_id.data }}</td>
         </tr>
         <tr>
             <td>{{ form.status.label }}</td><td>{{ form.status }}</td>

@@ -736,6 +736,24 @@ def get_current_members():
     return OrderedDict(zip(pid, member_names))
 
 
+def get_member_select_list():
+    members = get_fields(members_file(), ['membcode', 'salutation', 'surname', 'status'])
+    members = [itemgetter(0,1,2)(m) for m in members if m[3] == str(MemberStatus.full_member.value)]
+    members = sorted(members, key=lambda tup: (tup[2], tup[1]))
+    return [(m[0], m[1] + ' ' + m[2]) for m in members]
+
+
+def get_new_member_id():
+    ids = get_field(members_file(), 'membcode')
+    ids.sort()
+    last = ids[-1]
+    next = 'WAG' + str(1 + int(last[-3:]))
+    return next
+
+def save_member(data):
+    update_record(members_file(), 'membcode', data)
+
+
 def get_members(as_of):
     def lu_fn(rec, key, value):
         date = rec[key]
