@@ -7,6 +7,7 @@
 </div>
 <form method="POST">
     {{ form.csrf_token }}
+    {{form.hidden_tag()}}
     <table width="100%">
         <tr>
             <td>{{ form.member_id.label }}</td><td>{{ form.member_id.data }}</td>
@@ -28,8 +29,6 @@
         </tr>
     </table>
     <hr/>
-    {%if form.editable.data %}
-        {{ form.save(class="btn btn-primary") }}
-    {% endif %}
+    {{ form.save(class="btn btn-primary") }}
 </form>
 {% endblock %}

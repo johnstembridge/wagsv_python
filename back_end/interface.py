@@ -145,6 +145,17 @@ def save_venue(venue_id, data):
 def get_new_venue_id():
     ids = [int(m) for m in get_field(venues_file(), 'id')]
     return max(ids) + 1
+
+
+def get_venue_url(year, url):
+    if url:
+        if url.startswith("/"):
+            url = url_for_old_site('{}/{}'.format(year, url[1:]))
+        else:
+            url = '//' + url
+    else:
+        url = '/not_found'
+    return url
 # endregion
 
 
@@ -701,21 +712,6 @@ def save_handicaps(date, header, data):
 # endregion
 
 
-def get_scores(year, status=None):
-    if status is not None:
-        status = force_list(status)
-
-    def lu_fn(rec, keys, values):
-        year, status = values
-        res = year == parse_date(rec[keys[0]]).year
-        if status is not None:
-            status = [str(s) for s in status]
-            res = res and rec[keys[1]] in status
-        return res
-    scores = get_records(scores_file(), ['date', 'status'], [coerce(year, int), status], lu_fn)
-    return scores
-
-
 # region admin
 def get_admin_user(key, value):
     return get_record(admin_users_file(), key, str(value))
@@ -725,8 +721,10 @@ def add_admin_user(user):
     all = get_field(admin_users_file(), 'id')
     user.set_id(len(all) + 1)
     update_record(admin_users_file(), 'id', user.record())
+# endregion
 
 
+# region Members
 def get_current_members():
     header, data = get_records(members_file(), ['status'], [str(MemberStatus.full_member.value)])
     i = lookup(header, ['salutation', 'surname'])
@@ -738,7 +736,7 @@ def get_current_members():
 
 def get_member_select_list():
     members = get_fields(members_file(), ['membcode', 'salutation', 'surname', 'status'])
-    members = [itemgetter(0,1,2)(m) for m in members if m[3] == str(MemberStatus.full_member.value)]
+    members = [itemgetter(0, 1, 2)(m) for m in members if m[3] == str(MemberStatus.full_member.value)]
     members = sorted(members, key=lambda tup: (tup[2], tup[1]))
     return [(m[0], m[1] + ' ' + m[2]) for m in members]
 
@@ -749,6 +747,7 @@ def get_new_member_id():
     last = ids[-1]
     next = 'WAG' + str(1 + int(last[-3:]))
     return next
+
 
 def save_member(data):
     update_record(members_file(), 'membcode', data)
@@ -789,17 +788,6 @@ def get_trophy_url(event):
     return url + trophy + '.htm'
 
 
-def get_venue_url(year, url):
-    if url:
-        if url.startswith("/"):
-            url = url_for_old_site('{}/{}'.format(year, url[1:]))
-        else:
-            url = '//' + url
-    else:
-        url = '/not_found'
-    return url
-
-
 def create_bookings_file(year, event_id):
     directory = os.path.join(data_location, str(year))
     filename = bookings_file(year, event_id)
@@ -823,3 +811,18 @@ def create_wags_data_file(directory, filename, fields, access_all=False):
 def get_all_news():
     res = get_news_file(news_file())
     return res
+
+
+def get_scores(year, status=None):
+    if status is not None:
+        status = force_list(status)
+
+    def lu_fn(rec, keys, values):
+        year, status = values
+        res = year == parse_date(rec[keys[0]]).year
+        if status is not None:
+            status = [str(s) for s in status]
+            res = res and rec[keys[1]] in status
+        return res
+    scores = get_records(scores_file(), ['date', 'status'], [coerce(year, int), status], lu_fn)
+    return scores

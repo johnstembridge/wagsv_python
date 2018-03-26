@@ -1,9 +1,9 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, HiddenField, TextAreaField, SelectField, FieldList, FormField
-from back_end.interface import get_member, \
-    get_current_members, get_member_select_list, \
-    get_new_member_id, save_member  # , get_member_select_list, save_member, get_new_member_id
-from front_end.form_helpers import set_select_field, set_select_field_from_enum
+from wtforms import StringField, SubmitField, HiddenField, SelectField
+from wtforms.validators import InputRequired, Email
+
+from back_end.interface import get_member, get_current_members, get_member_select_list, get_new_member_id, save_member
+from front_end.form_helpers import set_select_field
 from globals.enumerations import MemberStatus
 
 
@@ -18,17 +18,31 @@ class MemberListForm(FlaskForm):
 
 class MemberDetailsForm(FlaskForm):
     member_id = StringField(label='Member Id')
-    status = SelectField(label='Status')
-    first_name = StringField(label='First Name')
-    surname = StringField(label='Surname')
-    proposer = SelectField(label='Proposer')
-    email = StringField(label='Email')
-    editable = HiddenField(label='Editable')
+    member_id_return = HiddenField(label='Member Id return')
+    status = SelectField(label='Status', choices=MemberStatus.choices(), coerce=MemberStatus.coerce)
+    first_name = StringField(label='First Name', validators=[InputRequired()])
+    surname = StringField(label='Surname', validators=[InputRequired()])
+    proposer = SelectField(label='Proposer', choices=[(c, c) for c in get_current_members().values()])
+    email = StringField(label='Email', validators=[InputRequired(), Email("Invalid email address")])
     save = SubmitField(label='Save')
 
+    def validate(self):
+        new_member = self.member_id.data == 'new'
+        self.member_id.data = self.member_id_return.data
+        if not super(MemberDetailsForm, self).validate():
+            return False
+        result = True
+        current_members = [n.lower() for n in  get_current_members().values()]
+        name = self.first_name.data + ' ' + self.surname.data
+        if new_member:
+            if name.lower() in current_members:
+                self.first_name.errors.append('{} is already a member'.format(name))
+                result = False
+        return result
+
     def populate_member(self, member_id):
-        self.editable.data = True
-        if member_id == "0":
+        new_member = member_id == "new"
+        if new_member:
             member = {'membcode': get_new_member_id(),
                       'status': str(MemberStatus.full_member.value),
                       'salutation': '',
@@ -39,24 +53,25 @@ class MemberDetailsForm(FlaskForm):
         else:
             member = get_member('membcode', member_id)
         self.member_id.data = member['membcode']
-        set_select_field(self.status, 'status', [s.name for s in MemberStatus], MemberStatus(int(member['status'])).name)
-        #set_select_field_from_enum(self.status, 'status', MemberStatus, MemberStatus(int(member['status'])))
+        self.member_id_return.data = member['membcode']
+        self.status.data = MemberStatus(int(member['status']))
         self.first_name.data = member['salutation']
         self.surname.data = member['surname']
-        set_select_field(self.proposer, 'proposer', list(get_current_members().values()), member['proposer'])
+        self.proposer.data = member['proposer']
         self.email.data = member['home_email']
 
     def save_member(self, member_id):
+        new_member = member_id == "new"
+        if new_member:
+            member_id = self.member_id_return.data
         errors = self.errors
         if len(errors) > 0:
             return False
-        if member_id == '0':
-            member_id = get_new_member_id()
         member = {
             'membcode': member_id,
             'salutation': self.first_name.data,
             'surname': self.surname.data,
-            'status': str(MemberStatus[self.status.data].value),
+            'status': str(self.status.data.value),
             'proposer': self.proposer.data,
             'home_email': self.email.data,
         }
