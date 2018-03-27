@@ -702,8 +702,11 @@ def add_player(name, hcap, status, date):
     update_record(players_file(), 'id', [id, name])
     date = coerce_fmt_date(date)
     update_record(handicaps_file(), ['date', 'player'], [date, id, hcap, status])
-
     return id
+
+
+def update_player_handicap(player_id, hcap, status, date):
+    update_record(handicaps_file(), ['date', 'player'], [date, player_id, hcap, status])
 
 
 def save_handicaps(date, header, data):
@@ -726,7 +729,16 @@ def add_admin_user(user):
 
 # region Members
 def get_current_members():
-    header, data = get_records(members_file(), ['status'], [str(MemberStatus.full_member.value)])
+    header, data = get_records(members_file(), 'status', [str(MemberStatus.full_member.value), str(MemberStatus.overseas_member.value)])
+    i = lookup(header, ['salutation', 'surname'])
+    member_names = sort_name_list([' '.join(itemgetter(*i)(m)) for m in data])
+    all_players = get_all_player_names()
+    pid = lookup(all_players, member_names, index_origin=1)
+    return OrderedDict(zip(pid, member_names))
+
+
+def get_all_members():
+    header, data = get_file(members_file())
     i = lookup(header, ['salutation', 'surname'])
     member_names = sort_name_list([' '.join(itemgetter(*i)(m)) for m in data])
     all_players = get_all_player_names()

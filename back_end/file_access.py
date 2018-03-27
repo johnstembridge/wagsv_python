@@ -2,7 +2,7 @@ import os
 from tempfile import mkstemp
 from shutil import move
 from collections import OrderedDict
-from .data_utilities import force_list
+from .data_utilities import force_list, force_lower
 from operator import itemgetter
 from globals import config
 
@@ -230,7 +230,7 @@ def keys_match(rec, keys, new_rec):
         else:
             new_values = force_list(new_rec)
         rec_values = force_list(itemgetter(*keys)(rec))
-        return rec_values == new_values
+        return force_lower(rec_values) == force_lower(new_values)
     except Exception as inst:
         return None
 

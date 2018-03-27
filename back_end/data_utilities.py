@@ -106,6 +106,8 @@ def in_date_range(date, date_from, date_to):
         return date_from <= date <= date_to
     else:
         return False
+
+
 # endregion
 
 
@@ -173,6 +175,13 @@ def force_list(x):
     return x
 
 
+def force_lower(x):
+    if type(x) is list:
+        return [y.lower() for y in x]
+    else:
+        return x.lower()
+
+
 def coerce(x, required_type):
     if x is not None and type(x) != required_type:
         x = required_type(x)
@@ -228,6 +237,23 @@ def encode_address(address):
     return enquote(address)
 
 
+def encode_member_address(member: dict):
+    return ', '.join(
+        {k: member[k] for k in ['address1', 'address2', 'address3', 'address4'] if
+         k in member and member[k].strip() != ''}.values())
+
+
+def decode_member_address(address, member: dict):
+    lines = address.split(',')
+    for i in range(0, 4):
+        if i < len(lines):
+            line = lines[i].strip()
+        else:
+            line = ''
+        member['address' + str(i + 1)] = line
+    return member
+
+
 def decode_directions(dir):
     if dir and len(dir) > 0:
         dir = dequote(dir)
@@ -246,4 +272,3 @@ def de_the(string):
         if string.startswith('The '):
             string = string[4:]
     return string
-

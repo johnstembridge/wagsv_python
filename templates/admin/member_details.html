@@ -27,6 +27,22 @@
         <tr>
             <td>{{ form.email.label }}</td><td>{{ form.email(size='50') }}</td>
         </tr>
+        <tr>
+            <td>{{ form.address.label }}</td><td>{{ form.address(size='50') }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.post_code.label }}</td><td>{{ form.post_code(size='50') }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.home_phone.label }}</td><td>{{ form.home_phone(size='50') }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.mobile_phone.label }}</td><td>{{ form.mobile_phone(size='50') }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.handicap.label }}</td><td>{{ form.handicap(size=10, type="number", min="0.1", max="36", step="0.1") }}
+             &nbsp;{{ form.as_of.label }} {{ form.as_of(type="date") }}</td>
+        </tr>
     </table>
     <hr/>
     {{ form.save(class="btn btn-primary") }}

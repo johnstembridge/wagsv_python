@@ -3,6 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField, HiddenField
 from back_end.data_utilities import first_or_default, fmt_date
 from back_end.interface import get_event, get_results, save_handicaps, get_handicaps, is_last_event
+from globals.enumerations import PlayerStatus
 
 
 class EventHandicapItemForm(FlaskForm):
@@ -65,7 +66,7 @@ class EventHandicapsForm(FlaskForm):
         data = [
             [d['player_id'],
              d['handicap'],
-             0 if d['guest_return'] == 'guest' else 1
+             PlayerStatus.guest.value if d['guest_return'] == 'guest' else PlayerStatus.member.value
              ]
             for d in self.data['scores'] if d['handicap'] != d['old_handicap']]
         date = fmt_date(datetime.date.today())

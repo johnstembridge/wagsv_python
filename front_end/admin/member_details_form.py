@@ -1,10 +1,13 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, HiddenField, SelectField
+from wtforms import StringField, SubmitField, HiddenField, SelectField, DateField
 from wtforms.validators import InputRequired, Email
+import datetime
 
-from back_end.interface import get_member, get_current_members, get_member_select_list, get_new_member_id, save_member
+from back_end.data_utilities import fmt_date, encode_member_address, decode_member_address, parse_date, encode_date
+from back_end.interface import get_member, get_current_members, get_member_select_list, get_new_member_id, save_member, \
+    add_player, get_player_id, update_player_handicap, get_all_members, get_handicap_history, get_players
 from front_end.form_helpers import set_select_field
-from globals.enumerations import MemberStatus
+from globals.enumerations import MemberStatus, PlayerStatus
 
 
 class MemberListForm(FlaskForm):
@@ -20,23 +23,38 @@ class MemberDetailsForm(FlaskForm):
     member_id = StringField(label='Member Id')
     member_id_return = HiddenField(label='Member Id return')
     status = SelectField(label='Status', choices=MemberStatus.choices(), coerce=MemberStatus.coerce)
+    status_return = HiddenField(label='Status return')
     first_name = StringField(label='First Name', validators=[InputRequired()])
     surname = StringField(label='Surname', validators=[InputRequired()])
     proposer = SelectField(label='Proposer', choices=[(c, c) for c in get_current_members().values()])
     email = StringField(label='Email', validators=[InputRequired(), Email("Invalid email address")])
+    address = StringField(label='Address')
+    post_code = StringField(label='Post Code')
+    home_phone = StringField(label='Home Phone')
+    mobile_phone = StringField(label='Mobile Phone')
+    handicap = StringField(label='Handicap')
+    handicap_return = HiddenField(label='Handicap return')
+    as_of = DateField(label='as of')
     save = SubmitField(label='Save')
 
     def validate(self):
         new_member = self.member_id.data == 'new'
+        if not new_member:
+            self.proposer.choices = [(c, c) for c in get_all_members().values()]
         self.member_id.data = self.member_id_return.data
         if not super(MemberDetailsForm, self).validate():
             return False
         result = True
-        current_members = [n.lower() for n in  get_current_members().values()]
-        name = self.first_name.data + ' ' + self.surname.data
         if new_member:
+            current_members = [n.lower() for n in get_current_members().values()]
+            name = self.first_name.data + ' ' + self.surname.data
             if name.lower() in current_members:
                 self.first_name.errors.append('{} is already a member'.format(name))
+                result = False
+            date = fmt_date(datetime.datetime.today().date())
+            current_guests = [n.lower() for n in get_players(date, PlayerStatus.guest)]
+            if not name.lower() in current_guests:
+                self.first_name.errors.append('{} has not been a guest'.format(name))
                 result = False
         return result
 
@@ -48,25 +66,41 @@ class MemberDetailsForm(FlaskForm):
                       'salutation': '',
                       'surname': '',
                       'proposer': '',
-                      'home_email': ''
+                      'home_email': '',
+                      'work_email': '',
+                      'address': '',
+                      'post_code': '',
+                      'home_tel': '',
+                      'mobile_tel': '',
+                      'handicap': '28',
+                      'as_of': datetime.datetime.today().date()
                       }
         else:
             member = get_member('membcode', member_id)
-        self.member_id.data = member['membcode']
-        self.member_id_return.data = member['membcode']
-        self.status.data = MemberStatus(int(member['status']))
+            player_id = get_player_id(member['salutation'] + ' ' + member['surname'])
+            date = fmt_date(datetime.datetime.today().date())
+            hist = get_handicap_history(player_id, date)
+            member['handicap'] = hist[0][1]
+            member['as_of'] = parse_date(hist[0][0])
+        self.member_id_return.data = self.member_id.data = member['membcode']
+        self.status_return.data = self.status.data = MemberStatus(int(member['status']))
         self.first_name.data = member['salutation']
         self.surname.data = member['surname']
+        if not new_member:
+            self.proposer.choices = [(c, c) for c in get_all_members().values()]
         self.proposer.data = member['proposer']
-        self.email.data = member['home_email']
+        self.email.data = member['home_email'] if member['home_email'] != '' else member['work_email']
+        self.address.data = encode_member_address(member)
+        self.post_code.data = member['post_code']
+        self.home_phone.data = member['home_tel']
+        self.mobile_phone.data = member['mobile_tel']
+        self.handicap_return.data = self.handicap.data = member['handicap']
+        self.as_of.data = member['as_of']
 
     def save_member(self, member_id):
         new_member = member_id == "new"
         if new_member:
             member_id = self.member_id_return.data
-        errors = self.errors
-        if len(errors) > 0:
-            return False
         member = {
             'membcode': member_id,
             'salutation': self.first_name.data,
@@ -74,6 +108,27 @@ class MemberDetailsForm(FlaskForm):
             'status': str(self.status.data.value),
             'proposer': self.proposer.data,
             'home_email': self.email.data,
+            'post_code': self.post_code.data,
+            'home_tel': self.home_phone.data,
+            'mobile_tel': self.mobile_phone.data
         }
+        member = decode_member_address(self.address.data, member)
         save_member(member)
+
+        # set player status and handicap
+        name = self.first_name.data + ' ' + self.surname.data
+        handicap = self.handicap.data
+        player_id = get_player_id(name)
+        date = fmt_date(self.as_of.data)
+        if player_id is None:
+            add_player(name, handicap, PlayerStatus.member, date)
+        if new_member or \
+                handicap != self.handicap_return.data or \
+                self.status.data != self.status_return.data:
+            if self.status.data in [MemberStatus.full_member, MemberStatus.overseas_member]:
+                status = PlayerStatus.member
+            else:
+                status = PlayerStatus.ex_member
+            update_player_handicap(player_id, handicap, str(status.value), date)
+
         return True
