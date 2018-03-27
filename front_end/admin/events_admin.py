@@ -78,7 +78,7 @@ class MaintainEvents:
     @staticmethod
     def results_tour_event(year, event_id):
         form = TourResultsForm()
-        form.populate_event_results(int(year), event_id)
+        form.populate_tour_results(int(year), event_id)
         return render_template('admin/tour_result.html', form=form, event=year + event_id, render_link=render_link)
 
     @staticmethod
