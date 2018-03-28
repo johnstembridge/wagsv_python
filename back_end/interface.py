@@ -709,6 +709,10 @@ def update_player_handicap(player_id, hcap, status, date):
     update_record(handicaps_file(), ['date', 'player'], [date, player_id, hcap, status])
 
 
+def update_player_name(player_id, name):
+    update_record(players_file(), 'id', [player_id, name])
+
+
 def save_handicaps(date, header, data):
     update_records(handicaps_file(), ['date', 'player'], [date], header, data)
 

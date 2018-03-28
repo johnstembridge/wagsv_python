@@ -5,7 +5,8 @@ import datetime
 
 from back_end.data_utilities import fmt_date, encode_member_address, decode_member_address, parse_date, encode_date
 from back_end.interface import get_member, get_current_members, get_member_select_list, get_new_member_id, save_member, \
-    add_player, get_player_id, update_player_handicap, get_all_members, get_handicap_history, get_players
+    add_player, get_player_id, update_player_handicap, get_all_members, get_handicap_history, get_players, \
+    update_player_name
 from front_end.form_helpers import set_select_field
 from globals.enumerations import MemberStatus, PlayerStatus
 
@@ -21,9 +22,7 @@ class MemberListForm(FlaskForm):
 
 class MemberDetailsForm(FlaskForm):
     member_id = StringField(label='Member Id')
-    member_id_return = HiddenField(label='Member Id return')
     status = SelectField(label='Status', choices=MemberStatus.choices(), coerce=MemberStatus.coerce)
-    status_return = HiddenField(label='Status return')
     first_name = StringField(label='First Name', validators=[InputRequired()])
     surname = StringField(label='Surname', validators=[InputRequired()])
     proposer = SelectField(label='Proposer', choices=[(c, c) for c in get_current_members().values()])
@@ -33,9 +32,12 @@ class MemberDetailsForm(FlaskForm):
     home_phone = StringField(label='Home Phone')
     mobile_phone = StringField(label='Mobile Phone')
     handicap = StringField(label='Handicap')
-    handicap_return = HiddenField(label='Handicap return')
     as_of = DateField(label='as of')
     save = SubmitField(label='Save')
+    member_id_return = HiddenField()
+    status_return = HiddenField()
+    handicap_return = HiddenField()
+    name_return = HiddenField()
 
     def validate(self):
         new_member = self.member_id.data == 'new'
@@ -86,6 +88,7 @@ class MemberDetailsForm(FlaskForm):
         self.status_return.data = self.status.data = MemberStatus(int(member['status']))
         self.first_name.data = member['salutation']
         self.surname.data = member['surname']
+        self.name_return.data = self.first_name.data + ' ' + self.surname.data
         if not new_member:
             self.proposer.choices = [(c, c) for c in get_all_members().values()]
         self.proposer.data = member['proposer']
@@ -112,19 +115,22 @@ class MemberDetailsForm(FlaskForm):
             'home_tel': self.home_phone.data,
             'mobile_tel': self.mobile_phone.data
         }
-        member = decode_member_address(self.address.data, member)
+        decode_member_address(self.address.data, member)
         save_member(member)
 
         # set player status and handicap
         name = self.first_name.data + ' ' + self.surname.data
+        orig_name = self.name_return.data
         handicap = self.handicap.data
-        player_id = get_player_id(name)
+        player_id = get_player_id(name if new_member else orig_name)
         date = fmt_date(self.as_of.data)
         if player_id is None:
             add_player(name, handicap, PlayerStatus.member, date)
+        if (not new_member) and name != orig_name:
+            update_player_name(player_id, name)
         if new_member or \
                 handicap != self.handicap_return.data or \
-                self.status.data != self.status_return.data:
+                (str(self.status.data.value)) != self.status_return.data:
             if self.status.data in [MemberStatus.full_member, MemberStatus.overseas_member]:
                 status = PlayerStatus.member
             else:
