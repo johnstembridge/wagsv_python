@@ -52,6 +52,7 @@ def index():
 
 
 # region accounts
+@login_required
 @app.route('/accounts', methods=['GET', 'POST'])
 def accounts_main():
     current_year = get_user_current_year()
@@ -66,6 +67,7 @@ def accounts_upload_file(year):
 
 # region venues
 @app.route('/venues', methods=['GET', 'POST'])
+@login_required
 def venues_main():
     return MaintainVenues.list_venues()
 
@@ -83,6 +85,7 @@ def edit_course(venue_id, course_id):
 
 # region members
 @app.route('/members', methods=['GET', 'POST'])
+@login_required
 def members_main():
     return MaintainMembers.list_members()
 
