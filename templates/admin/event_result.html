@@ -8,6 +8,7 @@
 </div>
 <form method="POST">
     {{ form.csrf_token }}
+    {{ form.hidden_tag() }}
     <table width="100%" class="table table-striped">
         <thead>
         <tr>
@@ -34,16 +35,23 @@
             {% endif %}
             <td align="center">
                 {{ render_link(
-                    url=url_for('card_event_player', year=form.year.data, event_id=form.event_id.data, player_id=item.player_id.data),
+                    url=url_for('card_event_player',
+                year=form.year.data,
+                event_id=form.event_id.data,
+                player_id=item.player_id.data,
+                position = item.position.data,
+                handicap = item.handicap.data,
+                status = item.guest.data
+                ),
                     image=url_for('static', filename='images/right-arrow.png'),
                     text='Edit/show card'
                 )|safe }}
             </td>
             {%if form.editable.data %}
                 <td>{{ item.player_id }}</td>
-                <td>{{ item.guest_return }}</td>
                 <td>{{ item.strokes_return }}</td>
                 <td>{{ item.handicap_return }}</td>
+                <td>{{ item.guest_return }}</td>
             {% endif %}
         </tr>
         {% endfor %}

@@ -13,6 +13,7 @@
 </div>
 <form method="POST">
     {{ form.csrf_token }}
+    {{ form.hidden_tag() }}
     <div class="table-responsive col-md-6">
         <table class="table table-striped">
             <thead>
@@ -92,9 +93,6 @@
             </tbody>
         </table>
     </div>
-    {{ form.totalShotsReturn }}
-    {{ form.totalPointsReturn }}
-    {{ form.editable }}
     <hr/>
     {% if form.editable.data %}
         {{ form.save_card(class="btn btn-primary") }}

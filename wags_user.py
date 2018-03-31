@@ -7,6 +7,7 @@ from front_end.user.handicaps import Handicaps
 from front_end.user.vl import Vl
 
 from globals import config, logging
+from user.swing import Swing
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = config.get('SECRET_KEY')
@@ -88,6 +89,11 @@ def handicap_history_player(player_id):
 @app.route('/vl/<year>', methods=['GET', 'POST'])
 def vl(year):
     return Vl.vl_show(year)
+
+
+@app.route('/swing/<year>', methods=['GET', 'POST'])
+def swing(year):
+    return Swing.swing_show(year)
 
 
 @app.route('/players/<player_id>/<year>', methods=['GET', 'POST'])

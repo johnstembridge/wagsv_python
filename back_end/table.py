@@ -17,6 +17,10 @@ class Table:
         index = lookup(self.head, force_list(col_names))
         self.data.sort(key=itemgetter(*index), reverse=reverse)
 
+    def top_n(self, n):
+        # assume sorted
+        self.data = self.data[:min(n, len(self.data))]
+
     def groupby(self, col_names):
         index = lookup(self.head, force_list(col_names))
         return itertools.groupby(self.data, itemgetter(*index))
@@ -28,5 +32,5 @@ class Table:
     def column_index(self, col_names):
         return lookup(self.head, col_names)
 
-    def remove_duplicates(self):
+    def remove_duplicates(self, keys):
         pass

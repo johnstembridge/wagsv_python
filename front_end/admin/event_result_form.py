@@ -13,10 +13,10 @@ class EventResultItemForm(FlaskForm):
     strokes = IntegerField(label='Strokes')
     points = IntegerField(label='Points')
     guest = StringField(label='Guest')
-    player_id = HiddenField(label='Player_id')
-    strokes_return = HiddenField(label='Strokes')
-    guest_return = HiddenField(label='Guest')
-    handicap_return = HiddenField(label='Handicap')
+    player_id = HiddenField()
+    handicap_return = HiddenField()
+    strokes_return = HiddenField()
+    guest_return = HiddenField()
 
 
 class EventResultsForm(FlaskForm):
@@ -45,13 +45,13 @@ class EventResultsForm(FlaskForm):
             guest = "" if (player['guest'] == "") else " (" + player['guest'] + ")"
             item_form.player = player['name'] + guest
             item_form.handicap = player['handicap']
+            item_form.handicap_return = player['handicap']
+            item_form.guest_return = player['guest']
             item_form.points = player['points']
             item_form.strokes = player['strokes']
             item_form.position = player['position']
             item_form.guest = player['guest']
             item_form.player_id = str(player['id'])
-            item_form.guest_return = player['guest']
-            item_form.handicap_return = player['handicap']
             item_form.strokes_return = player['strokes']
             self.scores.append_entry(item_form)
 

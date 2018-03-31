@@ -272,3 +272,7 @@ def de_the(string):
         if string.startswith('The '):
             string = string[4:]
     return string
+
+
+def my_round(float_num):
+    return math.floor(float_num + 0.5)

@@ -7,7 +7,7 @@ from .event_list_form import EventListForm
 from .event_result_form import EventResultsForm
 from .handicap_history_form import HandicapHistoryForm
 from .tour_result_form import TourResultsForm
-from globals.enumerations import EventType
+from globals.enumerations import EventType, MemberStatus
 from globals.config import url_for_admin
 from front_end.utility import render_link
 
@@ -94,7 +94,7 @@ class MaintainEvents:
         return render_template('admin/event_handicap.html', form=form, event=year + event_id, render_link=render_link)
 
     @staticmethod
-    def card_event_player(year, event_id, player_id):
+    def card_event_player(year, event_id, player_id, position='0', handicap=0, status=''):
         form = EventCardForm()
         if form.is_submitted():
             if form.save_card.data:
@@ -102,7 +102,7 @@ class MaintainEvents:
                     flash('Card saved', 'success')
                     return redirect(url_for_admin('results_event', year=year, event_id=event_id))
         else:
-            form.populate_card(year, event_id, player_id)
+            form.populate_card(year, event_id, player_id, position, handicap, status)
         return render_template('admin/event_card.html', form=form, event=year + event_id, render_link=render_link)
 
     @staticmethod

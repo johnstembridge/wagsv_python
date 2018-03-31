@@ -128,7 +128,10 @@ def handicaps_event(year, event_id):
 
 @app.route('/events/<year>/<event_id>/<player_id>/card', methods=['GET', 'POST'])
 def card_event_player(year, event_id, player_id):
-    return MaintainEvents.card_event_player(year, event_id, player_id)
+    position = request.args.get('position')
+    handicap = request.args.get('handicap')
+    status = request.args.get('status')
+    return MaintainEvents.card_event_player(year, event_id, player_id, position, handicap, status)
 
 
 @app.route('/events/<year>/<event_id>/<player_id>/handicap', methods=['GET', 'POST'])

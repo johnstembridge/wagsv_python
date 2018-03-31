@@ -237,6 +237,10 @@ def get_event_scores(year, event_id):
 def get_event_cards(year, event_id):
     date = event_date(year, event_id)
     course_id = str(event_course_id(year, event_id))
+    return get_cards(course_id, date)
+
+
+def get_cards(course_id, date):
     if course_id == '0':
         header, data = get_records(shots_file(), ['date'], [date])
     else:
@@ -352,12 +356,13 @@ def get_results(year, event_id):
     all_hcaps = dict(get_handicaps(date))
     all_scores = {v[0]: v[1:] for v in get_event_scores(year, event_id)}  # player: position, points, strokes, handicap, status
     all_players = get_all_player_names()
+    current_members = get_members(date)
     booked = get_booked_players(year, event_id)  # player: handicap
     event_players = list(set(get_player_names(list(all_scores.keys()))) | set(booked.keys()))
     results = []
     for player in sort_name_list(event_players):
         player_id = str(lookup(all_players, player) + 1)
-        guest = player in booked and to_float(booked[player]) > 0
+        guest = player in booked and player not in current_members.values()
         if player_id not in all_scores:
             if not editable:
                 continue
@@ -371,13 +376,18 @@ def get_results(year, event_id):
                 'id': player_id,
                 'name': player,
                 'handicap': det[3],
-                'strokes': int(det[2]),
-                'points': int(det[1]),
-                'position': int(det[0]),
+                'strokes': coerce(det[2], int),
+                'points': coerce(det[1], int),
+                'position': coerce(det[0],int),
                 'guest': 'guest' if guest else ''
             }
         results.append(x)
-    return sorted(results, key=lambda k: k['position'] if k['position'] > 0 else 99)
+    results = sorted(results, key=lambda k: k['points'], reverse=True)
+    i = 0
+    for res in results:
+        i += 1
+        res['position'] = i
+    return results
 
 
 def get_event_by_year_and_name(year, event_name):
@@ -446,15 +456,15 @@ def get_last_event(year=None):
     return get_last_event(year-1)
 
 
-def get_events_since(date):
-    date_range = [date, datetime.date.today()]
+def get_events_in(date_range):
     def lu_fn(rec, key, date_range):
         date = parse_date(rec[key])
         res = date_range[0] <= date <= date_range[1]
         return res
     scores = Table(*get_records(scores_file(), 'date', date_range, lu_fn))
-    scores.remove_duplicates()
-    return scores
+    scores.sort('date')
+    events = [e[0] for e in scores.groupby(['date', 'course'])]
+    return events
 
 # endregion
 

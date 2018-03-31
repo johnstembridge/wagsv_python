@@ -1,0 +1,54 @@
+{% extends "user/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block page_content %}
+<table width="100%">
+    <tr>
+        <td class="h2">The Beament Big Swing {{ year }}</td>
+        <td/>
+        <td/>
+        <td class="h4" colspan=3 align="right">
+            {{ render_link(
+            url=url_for('swing', year=year-1),
+            text='&#x25C4;'
+            )|safe }}
+            &nbsp;
+            year
+            &nbsp;
+            {{ render_link(
+            url=url_for('swing', year=year+1),
+            text='&#x25BA;'
+            )|safe }}
+        </td>
+    </tr>
+</table>
+<table class="list result">
+    <thead>
+    <tr>
+        <th align="right">Position</th>
+        <th align="left">Name</th>
+        <th align="left">Course</th>
+        <th align="left">Date</th>
+        <th>Front</th>
+        <th>Back</th>
+        <th>Swing</th>
+    </tr>
+    <tr><td colspan=7><hr class="bold"/></td>
+    </thead>
+    <tbody>
+    </tr>
+    {% for item in form.swing %}
+    <tr>
+        <td align="right">{{ item.position.data }}</td>
+        <td>{{ item.player.data }}</td>
+        <td>{{ item.course.data }}</td>
+        <td>{{ item.date.data }}</td>
+        <td align="center">{{ item.points_out.data }}</td>
+        <td align="center">{{ item.points_in.data }}</td>
+        <td align="center">{{ item.swing.data }}</td>
+    </tr>
+    {% endfor %}
+    <tr><td colspan=7><hr class="bold"/></td>
+    </tbody>
+</table>
+{% endblock %}
