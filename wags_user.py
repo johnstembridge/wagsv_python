@@ -7,7 +7,7 @@ from front_end.user.handicaps import Handicaps
 from front_end.user.vl import Vl
 
 from globals import config, logging
-from user.swing import Swing
+from front_end.user.swing import Swing
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = config.get('SECRET_KEY')
