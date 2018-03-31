@@ -4,7 +4,7 @@ import datetime
 from back_end.interface import get_event, lookup_course, get_course_data, get_event_cards, get_scores, \
     get_player_names, get_events_in, get_cards, get_handicaps, get_course_names
 from back_end.table import Table
-from data_utilities import coerce, parse_date, my_round
+from back_end.data_utilities import coerce, parse_date, my_round
 from globals.enumerations import PlayerStatus
 
 
