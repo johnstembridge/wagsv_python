@@ -43,8 +43,8 @@ def events_file(year):
 
 
 def events_file_fields():
-    return ['num', 'date', 'venue', 'event', 'course', 'address', 'post_code', 'phone', 'member_price', 'guest_price',\
-            'schedule', 'organiser', 'directions', 'note', 'dinner_price', 'dinner_incl', 'jacket', 'url', 'deadline',\
+    return ['num', 'date', 'venue', 'event', 'course', 'address', 'post_code', 'phone', 'member_price', 'guest_price',
+            'schedule', 'organiser', 'directions', 'note', 'dinner_price', 'dinner_incl', 'jacket', 'url', 'deadline',
             'booking_start', 'max', 'type']
 
 
@@ -57,7 +57,7 @@ def bookings_file(year, event_id):
 
 
 def bookings_file_fields():
-    return ['date', 'name', 'playing', 'number', 'cost', 'paid', 'guest1', 'guest1_hcap', 'guest2', 'guest2_hcap',\
+    return ['date', 'name', 'playing', 'number', 'cost', 'paid', 'guest1', 'guest1_hcap', 'guest2', 'guest2_hcap',
             'guest3', 'guest3_hcap', 'comment']
 
 
@@ -445,6 +445,16 @@ def get_last_event(year=None):
         return year, nums[-1]
     return get_last_event(year-1)
 
+
+def get_events_since(date):
+    date_range = [date, datetime.date.today()]
+    def lu_fn(rec, key, date_range):
+        date = parse_date(rec[key])
+        res = date_range[0] <= date <= date_range[1]
+        return res
+    scores = Table(*get_records(scores_file(), 'date', date_range, lu_fn))
+    scores.remove_duplicates()
+    return scores
 
 # endregion
 

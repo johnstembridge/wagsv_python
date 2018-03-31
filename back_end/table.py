@@ -27,3 +27,6 @@ class Table:
 
     def column_index(self, col_names):
         return lookup(self.head, col_names)
+
+    def remove_duplicates(self):
+        pass
