@@ -62,7 +62,7 @@ def calc_event_positions(year, event_id, data):
         else:
             tot = 1e6 * player['points']
         player['sort'] = tot
-    data = sorted(data, key=lambda player: player['sort'], reverse=True)
+    data.sort(key=lambda player: player['sort'], reverse=True)
     for i in range(len(data)):
         player = data[i]
         player['position'] = i + 1

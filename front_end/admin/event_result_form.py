@@ -63,11 +63,11 @@ class EventResultsForm(FlaskForm):
         result = calc_event_positions(year, event_id, self.data['scores'])
         data = [
             [d['player_id'],
-             d['position'],
-             d['points'],
-             d['strokes_return'],
-             d['handicap_return'],
-             0 if d['guest_return'] == 'guest' else 1
+             str(d['position']),
+             str(d['points']),
+             str(d['strokes_return']),
+             str(d['handicap_return']),
+             str(0 if d['guest_return'] == 'guest' else 1)
              ]
             for d in result if d['points'] > 0]
         save_event_scores(year, event_id, fields, data)

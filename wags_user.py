@@ -86,6 +86,7 @@ def handicap_history_player(player_id):
 # endregion
 
 
+# region reports
 @app.route('/vl/<year>', methods=['GET', 'POST'])
 def vl(year):
     return Vl.vl_show(year)
@@ -104,6 +105,7 @@ def show_player_events_for_year(player_id, year):
 @app.route('/players/<player_id>', methods=['GET', 'POST'])
 def show_player_events(player_id):
     return ReportEvents.show_playing_history(player_id)
+# endregion
 
 
 @app.errorhandler(404)

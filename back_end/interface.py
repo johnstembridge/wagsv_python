@@ -382,7 +382,7 @@ def get_results(year, event_id):
                 'guest': 'guest' if guest else ''
             }
         results.append(x)
-    results = sorted(results, key=lambda k: k['points'], reverse=True)
+    results.sort(key=lambda k: k['position'] if k['points'] > 0 else 99)
     i = 0
     for res in results:
         i += 1
