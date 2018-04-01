@@ -4,7 +4,7 @@
 {% block page_content %}
 <table width="100%">
     <tr>
-        <td class="h2">The Beament Big Swing {{ year }}</td>
+        <td class="h2">The Beament Big Swing {{ form.year_span.data }}</td>
         <td/>
         <td/>
         <td class="h4" colspan=3 align="right">
@@ -14,7 +14,7 @@
             )|safe }}
             &nbsp;
             year
-            &nbsp;
+            &nbsp;            &nbsp;
             {{ render_link(
             url=url_for('swing', year=year+1),
             text='&#x25BA;'
@@ -22,6 +22,8 @@
         </td>
     </tr>
 </table>
+<img src="http://www.wags.org/pictures/swing.jpg" width="400" height="500" ALT="The Beament Big Swing">
+<p>
 <table class="list result">
     <thead>
     <tr>

@@ -115,7 +115,7 @@ def get_swings(event):
     course_si = [int(course_data['si' + h]) for h in holes]
     course_par = [int(course_data['par' + h]) for h in holes]
     scores = get_cards(course, date)
-    handicaps = dict(get_handicaps(date))
+    handicaps = dict(get_handicaps(date, PlayerStatus.member))
     res = []
     for (player_id, shots) in scores.items():
         if player_id in handicaps:

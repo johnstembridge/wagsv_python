@@ -27,7 +27,8 @@ class SwingItemForm(FlaskForm):
 
 class SwingForm(FlaskForm):
     swing = FieldList(FormField(SwingItemForm))
-    year = StringField(label='year')
+    year = StringField()
+    year_span = StringField()
 
     def populate_swing(self, year):
         self.year.data = year
@@ -43,3 +44,4 @@ class SwingForm(FlaskForm):
             item_form.swing = item[swings.column_index('swing')]
 
             self.swing.append_entry(item_form)
+        self.year_span.data = str(int(year)-1) + '/' + year
