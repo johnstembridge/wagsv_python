@@ -4,7 +4,6 @@ from back_end.interface import get_event, get_results, save_event_scores, is_eve
 
 
 class EventResultItemForm(FlaskForm):
-    num = IntegerField(label='id')
     position = IntegerField(label='Position')
     player = StringField(label='Player')
     handicap = IntegerField(label='Handicap')
@@ -33,11 +32,8 @@ class EventResultsForm(FlaskForm):
         self.event_name.data = '{} {} {}'.format(event['event'], event['venue'], event['date'])
         self.editable = is_event_result_editable(year, event_id)
         players = get_results(year, event_id)
-        num = 0
         for player in players:
-            num += 1
             item_form = EventResultItemForm()
-            item_form.num = str(num)
             guest = "" if (player['guest'] == "") else " (" + player['guest'] + ")"
             item_form.player = player['name'] + guest
             item_form.handicap = player['handicap']
