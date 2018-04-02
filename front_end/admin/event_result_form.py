@@ -6,7 +6,6 @@ from globals.enumerations import PlayerStatus
 
 
 class EventResultItemForm(FlaskForm):
-    num = IntegerField(label='id')
     position = IntegerField(label='Position')
     player = StringField(label='Player')
     handicap = IntegerField(label='Handicap')
@@ -35,13 +34,10 @@ class EventResultsForm(FlaskForm):
         self.event_name.data = '{} {} {}'.format(event['event'], event['venue'], event['date'])
         self.editable.data = is_event_result_editable(year, event_id)
         players = get_results(year, event_id)
-        num = 0
         for player in players:
             if player['id'] == '0':
                 player['id'] = add_player(player['name'], player['handicap'], PlayerStatus.guest, event['date'])
-            num += 1
             item_form = EventResultItemForm()
-            item_form.num = str(num)
             guest = "" if (player['guest'] == "") else " (" + player['guest'] + ")"
             item_form.player = player['name'] + guest
             item_form.handicap = player['handicap']
@@ -59,8 +55,8 @@ class EventResultsForm(FlaskForm):
         errors = self.errors
         if len(errors) > 0:
             return False
-        fields = ['player', 'position', 'points', 'strokes', 'handicap', 'status']
         result = calc_event_positions(year, event_id, self.data['scores'])
+        fields = ['player', 'position', 'points', 'strokes', 'handicap', 'status']
         data = [
             [d['player_id'],
              str(d['position']),

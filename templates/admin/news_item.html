@@ -1,0 +1,30 @@
+{% extends "admin/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>News {{ form.date.data }}</h1>
+</div>
+<form method="POST">
+    {{ form.csrf_token }}
+    {{ form.date.label }} {{ form.date }}
+    <hr/>
+    <table width="100%">
+        {% for item in form.items %}
+        <tr>
+            <td>{{ item.text.label }}</td> <td>{{ item.text }}</td>
+            <td>{{ item.link.label }}</td> <td>{{ item.link }}</td>
+            <td align="center">
+                {{ render_link(
+                    url=item.link.data,
+                    image=url_for('static', filename='images/go.jpg'),
+                    text='Viewt link'
+                )|safe }}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <hr/>
+    {{ form.save(class="btn btn-primary") }}
+</form>
+{% endblock %}

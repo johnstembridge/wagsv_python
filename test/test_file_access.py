@@ -1,9 +1,9 @@
 import copy
 import unittest
 import datetime
-from back_end.interface import encode_schedule, decode_schedule, get_event_card
-from back_end.file_access import get_record, get_field, get_fields, update_record, file_delimiter, get_records, get_file, \
-    keys_match
+from back_end.interface import encode_schedule, decode_schedule, get_event_card, front_page_header_file
+from back_end.file_access import get_record, get_field, get_fields, update_record, file_delimiter, get_records, get_all_records, \
+    keys_match, update_html_element
 from back_end.data_utilities import decode_date
 from test_data import TestData
 
@@ -102,7 +102,7 @@ class TestInterface(unittest.TestCase):
         self.assertTrue(len(recs) > 0)
 
     def test_get_file(self):
-        head, x = get_file(TestData.handicaps_file)
+        head, x = get_all_records(TestData.handicaps_file)
         self.assertTrue(len(x) > 0)
 
     def test_keys_match_1(self):
@@ -134,3 +134,8 @@ class TestInterface(unittest.TestCase):
         rec1 = {'num': '10', 'type': '1', 'val': 'xxx'}
         val = ['10', '1']
         self.assertTrue(keys_match(rec1, keys, val))
+
+    def test_update_date(self):
+        date = '2018/04/02'
+        file = front_page_header_file()
+        update_html_element(file, 'last_updated', date)

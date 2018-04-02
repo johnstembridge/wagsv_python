@@ -10,12 +10,12 @@ from back_end.table import Table
 from globals.config import url_for_old_site
 
 from back_end.players import Player, Players
-from .data_utilities import encode_date, encode_price, decode_date, decode_price, decode_time, \
+from back_end.data_utilities import encode_date, encode_price, decode_date, decode_price, decode_time, \
     sort_name_list, lookup, force_list, coerce, decode_event_type, encode_event_type, dequote, \
     encode_address, decode_address, de_the, encode_directions, decode_directions, coerce_date, coerce_fmt_date, \
     is_num, to_float, parse_date, decode_date_range, fmt_date
-from .file_access import get_field, get_record, update_record, get_records, get_file, update_records, get_fields, \
-    create_data_file, get_news_file
+from back_end.file_access import get_field, get_record, update_record, get_records, get_all_records, update_records, get_fields, \
+    create_data_file
 from globals import config
 from globals.enumerations import EventType, PlayerStatus, MemberStatus
 
@@ -95,6 +95,10 @@ def trophies_file():
 
 def news_file():
     return os.path.join(html_location, news_data)
+
+
+def front_page_header_file():
+    return os.path.join(html_location, 'header.htm')
 
 
 def admin_users_file():
@@ -762,7 +766,7 @@ def get_current_members():
 
 
 def get_all_members():
-    header, data = get_file(members_file())
+    header, data = get_all_records(members_file())
     i = lookup(header, ['salutation', 'surname'])
     member_names = sort_name_list([' '.join(itemgetter(*i)(m)) for m in data])
     all_players = get_all_player_names()
@@ -842,11 +846,6 @@ def create_wags_data_file(directory, filename, fields, access_all=False):
         e = sys.exc_info()[0]
         result = False
     return result
-
-
-def get_all_news():
-    res = get_news_file(news_file())
-    return res
 
 
 def get_scores(year, status=None):

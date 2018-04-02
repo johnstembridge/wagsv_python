@@ -2,7 +2,7 @@ import os
 from tempfile import mkstemp
 from shutil import move
 from collections import OrderedDict
-from .data_utilities import force_list, force_lower
+from back_end.data_utilities import force_list, force_lower
 from operator import itemgetter
 from globals import config
 
@@ -52,7 +52,21 @@ def get_records(file, key, value, lu_fn=None):
     return keys, res
 
 
-def get_file(file):
+def get_file_contents(file):
+    with open(file, 'r') as content_file:
+        return content_file.read()
+
+
+def write_file(file, contents):
+    ft, target_file_path = mkstemp()
+    os.close(ft)
+    with my_open(target_file_path, 'w') as target_file:
+        target_file.write(contents)
+    os.remove(file)
+    move(target_file_path, file)
+
+
+def get_all_records(file):
     delimiter = file_delimiter(file)
     keys = None
     res = []
@@ -243,7 +257,10 @@ def add_keys(keys, key_values, new_data):
 
 
 def my_open(filename, mode, access_all=False):
-    fh = open(filename, mode, encoding="latin-1")
+    if mode == 'w':
+        fh = open(filename, mode, encoding="latin-1", newline="\n")
+    else:
+        fh = open(filename, mode, encoding="latin-1")
     op_sys = config.get("OS")
     if op_sys == 'Unix':
         if mode == 'w':
@@ -254,16 +271,17 @@ def my_open(filename, mode, access_all=False):
     return fh
 
 
-def get_news_file(news_file):
-    with my_open(news_file, 'r') as fh:
-        res = []
-        section = []
-        for line in fh:
-            if line.startswith('<hr'):
-                if len(section) != 0:
-                    res.append(section)
-                section = [line]
-            else:
-                section.append(line)
-    res.append(section)
-    return res
+def update_html_element(file, id, value):
+    ft, target_file_path = mkstemp()
+    os.close(ft)
+    with my_open(target_file_path, 'w') as target_file:
+        with open(file, 'r') as source_file:
+            html = source_file.read()
+            i = html.find(id)
+            st = i+1+html[i:].find('>')
+            length = html[st:].find('<')
+            html = html[:st] + value + html[st + length:]
+            target_file.write(html)
+    os.remove(file)
+    move(target_file_path, file)
+

@@ -4,7 +4,7 @@ from operator import itemgetter
 from globals import config
 
 from back_end.data_utilities import lookup, sort_name_list
-from back_end.file_access import get_file, get_field
+from back_end.file_access import get_all_records, get_field
 
 # data_location = r'D:\python\wagsv\data'
 _data_location = config.get('locations')['data']
@@ -70,7 +70,7 @@ class Players(Borg):
     def get_all_members(self):
         if len(self._all_members) == 0:
             members_file = os.path.join(_data_location, _members_data)
-            self._member_keys, self._all_members = get_file(members_file)
+            self._member_keys, self._all_members = get_all_records(members_file)
         return self._member_keys, self._all_members
 
     def get_current_members(self):
