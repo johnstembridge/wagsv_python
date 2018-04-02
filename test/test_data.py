@@ -284,7 +284,7 @@ class TestData:
              'csrf_token': '', 'sort': 28130706.0},
             {'num': None, 'position': 13, 'player': '', 'handicap': None, 'strokes': None, 'points': 27, 'guest': '',
              'player_id': '129', 'strokes_return': '94', 'guest_return': '', 'handicap_return': '12.5',
-             'csrf_token': '', 'sort': 26131105.0},
+             'csrf_token': '', 'sort': 27141205.0},
             {'num': None, 'position': 14, 'player': '', 'handicap': None, 'strokes': None, 'points': 23, 'guest': '',
              'player_id': '178', 'strokes_return': '103', 'guest_return': '', 'handicap_return': '18.1',
              'csrf_token': '', 'sort': 23120805.0},

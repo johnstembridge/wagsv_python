@@ -122,6 +122,12 @@ def results_event(year, event_id):
     return MaintainEvents.results_event(year, event_id, event_type)
 
 
+@app.route('/events/<year>/<event_id>/report', methods=['GET', 'POST'])
+def report_event(year, event_id):
+    event_type = request.args.get('event_type')
+    return MaintainEvents.report_event(year, event_id, event_type)
+
+
 @app.route('/events/<year>/<event_id>/handicaps', methods=['GET', 'POST'])
 def handicaps_event(year, event_id):
     return MaintainEvents.handicaps_event(year, event_id)

@@ -1,0 +1,24 @@
+{% extends "admin/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>{{ form.event_name.data }}</h1>
+    <h2>Report</h2>
+</div>
+<form method="POST">
+    {{ form.csrf_token }}
+    {{ form.hidden_tag() }}
+    <table width="100%">
+        <tbody>
+        <tr><td class="head"><b>Winner:</b></td><td>{{ form.winner.data }}</td>
+        <tr><td class="head"><b>Nearest the Pin:</b></td><td>{{ form.ntp }}</td>
+        <tr><td class="head"><b>Longest Drive:</b></td><td>{{ form.ld }}</td>
+        <tr><td><b>Report:</b></td><td>{{ form.report }}</td>
+        </tbody>
+    </table>
+
+    <hr/>
+    {{ form.save(class="btn btn-primary") }}
+</form>
+{% endblock %}

@@ -1,5 +1,6 @@
 from flask import render_template, redirect, flash
 
+from admin.event_report_form import EventReportForm
 from .event_card_form import EventCardForm
 from .event_details_form import EventForm
 from .event_handicap_form import EventHandicapsForm
@@ -111,3 +112,18 @@ class MaintainEvents:
         form.populate_history(year, event_id, player_id)
         return render_template('admin/handicap_history.html', form=form)
 
+    @staticmethod
+    def report_event(year, event_id, event_type=None):
+        if event_type:
+            event_type = EventType(int(event_type))
+        else:
+            event_type = EventType.wags_vl_event
+        form = EventReportForm()
+        if form.is_submitted():
+            if form.save_report.data:
+                if form.save_event_report(year, event_id):
+                    flash('report saved', 'success')
+                    return redirect(url_for_admin('report_event', year=year, event_id=event_id))
+        else:
+            form.populate_event_report(int(year), event_id)
+        return render_template('admin/event_report.html', form=form, event=year + event_id, render_link=render_link)

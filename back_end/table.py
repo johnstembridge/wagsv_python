@@ -29,6 +29,13 @@ class Table:
         self.data = [list(itertools.chain(d, [c])) for d, c in zip(self.data, col)]
         self.head.append(col_name)
 
+    def select_columns(self, col_names):
+        inx = self.column_index(col_names)
+        return [itemgetter(*inx)(r) for r in self.data]
+
+    def where(self, lu_fn):
+        return Table(self.head, [d for d in self.data if lu_fn(dict(zip(self.head, d)))])
+
     def column_index(self, col_names):
         return lookup(self.head, col_names)
 

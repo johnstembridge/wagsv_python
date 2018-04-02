@@ -4,9 +4,9 @@ from back_end.file_access import get_record
 from globals.enumerations import PlayerStatus
 from back_end.interface import get_event, get_handicaps, get_players, get_event_scores, \
     get_booked_players, save_event_scores, get_course_data, get_player_handicap, get_event_card, get_venue_by_name, \
-    get_tour_events, get_last_event, get_player_name, get_player_names, get_member, get_all_news, \
+    get_tour_events, get_last_event, get_player_name, get_player_names, get_member, \
     get_event_cards, get_results, get_results_by_year_and_name, get_scores, get_members, get_tour_scores, \
-    get_tour_event_list, get_tour_event_list_from_scores, get_member_select_list, get_events_in
+    get_tour_event_list_from_scores, get_member_select_list, get_events_in
 from back_end.calc import calc_event_positions
 from test_data import TestData
 
@@ -103,8 +103,8 @@ class TestInterface(unittest.TestCase):
         self.assertTrue(len(res) > 0)
 
     def test_get_event_scores(self):
-        rec = get_event_scores(2016, '1')
-        self.assertTrue(len(rec) > 0)
+        tab = get_event_scores(2016, '1')
+        self.assertTrue(len(tab.data) > 0)
 
     def test_get_booked_players(self):
         res = get_booked_players('2017', 3)
@@ -153,10 +153,6 @@ class TestInterface(unittest.TestCase):
 
     def test_get_last_event(self):
         last = get_last_event()
-
-    def test_get_all_news(self):
-        res = get_all_news()
-        self.assertTrue(len(res) > 0)
 
     def test_calc_event_result(self):
         year = '2017'

@@ -230,12 +230,9 @@ def get_event_scores(year, event_id):
     date = event_date(year, event_id)
     course_id = str(event_course_id(year, event_id))
     if course_id in ['None', '0']:
-        header, data = get_records(scores_file(), ['date'], [date])
+        return Table(*get_records(scores_file(), ['date'], [date]))
     else:
-        header, data = get_records(scores_file(), ['date', 'course'], [date, course_id])
-    inx = lookup(header, ['player', 'position', 'points', 'strokes', 'handicap', 'status'])
-    res = [itemgetter(*inx)(r) for r in data]
-    return res
+        return Table(*get_records(scores_file(), ['date', 'course'], [date, course_id]))
 
 
 def get_event_cards(year, event_id):
@@ -358,7 +355,8 @@ def get_results(year, event_id):
     editable = is_event_editable(year)
     date = event_date(year, event_id)
     all_hcaps = dict(get_handicaps(date))
-    all_scores = {v[0]: v[1:] for v in get_event_scores(year, event_id)}  # player: position, points, strokes, handicap, status
+    all_scores = get_event_scores(year, event_id).select_columns(['player', 'position', 'points', 'strokes', 'handicap', 'status'])
+    all_scores = {v[0]: v[1:] for v in all_scores}
     all_players = get_all_player_names()
     current_members = get_members(date)
     booked = get_booked_players(year, event_id)  # player: handicap
