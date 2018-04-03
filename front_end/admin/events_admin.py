@@ -1,6 +1,6 @@
 from flask import render_template, redirect, flash
 
-from admin.event_report_form import EventReportForm
+from .event_report_form import EventReportForm
 from .event_card_form import EventCardForm
 from .event_details_form import EventForm
 from .event_handicap_form import EventHandicapsForm
@@ -120,7 +120,7 @@ class MaintainEvents:
             event_type = EventType.wags_vl_event
         form = EventReportForm()
         if form.is_submitted():
-            if form.save_report.data:
+            if form.save_event_report:
                 if form.save_event_report(year, event_id):
                     flash('report saved', 'success')
                     return redirect(url_for_admin('report_event', year=year, event_id=event_id))

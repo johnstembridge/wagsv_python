@@ -5,7 +5,7 @@ from flask_bootstrap import Bootstrap
 from flask_wtf import CSRFProtect
 from flask_login import LoginManager, login_required
 
-from admin.news_admin import MaintainNews
+from front_end.admin.news_admin import MaintainNews
 from front_end.admin.events_admin import MaintainEvents
 from front_end.admin.members_admin import MaintainMembers
 from front_end.admin.venues_admin import MaintainVenues
@@ -106,7 +106,7 @@ def events_main():
 
 
 @app.route('/events/<year>', methods=['GET', 'POST'])
-def events_list_events(year):
+def list_events(year):
     return MaintainEvents.list_events(year)
 
 
@@ -145,6 +145,7 @@ def card_event_player(year, event_id, player_id):
 def event_handicap_history_player(year, event_id, player_id):
     return MaintainEvents.handicap_history_player(year, event_id, player_id)
 # endregion
+
 
 # region news
 @app.route('/news', methods=['GET', 'POST'])

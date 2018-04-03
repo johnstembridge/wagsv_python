@@ -14,7 +14,7 @@
         <tr><td class="head"><b>Winner:</b></td><td>{{ form.winner.data }}</td>
         <tr><td class="head"><b>Nearest the Pin:</b></td><td>{{ form.ntp }}</td>
         <tr><td class="head"><b>Longest Drive:</b></td><td>{{ form.ld }}</td>
-        <tr><td><b>Report:</b></td><td>{{ form.report }}</td>
+        <tr><td valign="top"><b>Report:</b></td><td>{{ form.report(rows=4, cols=50) }}</td>
         </tbody>
     </table>
 

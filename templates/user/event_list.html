@@ -9,14 +9,14 @@
         <td/>
         <td class="h4" colspan=3 align="right">
             {{ render_link(
-            url=url_for('events_list_events', year=year-1),
+            url=url_for('list_events', year=year-1),
             text='&#x25C4;'
             )|safe }}
             &nbsp;
             year
             &nbsp;
             {{ render_link(
-            url=url_for('events_list_events', year=year+1),
+            url=url_for('list_events', year=year+1),
             text='&#x25BA;'
             )|safe }}
         </td>

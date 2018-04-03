@@ -1,7 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, HiddenField, TextAreaField, SelectField, FieldList, FormField, DateField
-from back_end.interface import get_venue_select_list, get_venue, save_venue, get_new_venue_id, get_courses_for_venue
-from data_utilities import parse_date
+from wtforms import StringField, SubmitField, HiddenField, SelectField, FieldList, FormField, DateField
+from back_end.data_utilities import parse_date
 from front_end.form_helpers import set_select_field
 from models.news import News, NewsDay
 from datetime import datetime

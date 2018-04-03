@@ -19,7 +19,7 @@ app.logger.addHandler(log_handler)
 @app.route('/', methods=['GET', 'POST'])
 def index():
     current_year = get_user_current_year()
-    return events_list_events(current_year)
+    return list_events(current_year)
 
 
 # region events
@@ -31,11 +31,11 @@ def events():
         return ReportEvents.show_from_date_and_name(request.args['date'], request.args['event'])
     else:
         current_year = get_user_current_year()
-        return events_list_events(current_year)
+        return list_events(current_year)
 
 
 @app.route('/events/<year>', methods=['GET', 'POST'])
-def events_list_events(year):
+def list_events(year):
     return ReportEvents.list_events(year)
 
 
