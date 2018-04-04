@@ -223,7 +223,6 @@ def enquote(string):
 
 def decode_address(address):
     if address and len(address) > 0:
-        address = dequote(address)
         address = address.split(",")
         address = '\n'.join(address)
     return address
@@ -234,7 +233,7 @@ def encode_address(address):
     address = address.replace('\r', '')
     address = address.split('\n')
     address = ",".join(address)
-    return enquote(address)
+    return address
 
 
 def encode_member_address(member: dict):
@@ -256,15 +255,22 @@ def decode_member_address(address, member: dict):
 
 def decode_directions(dir):
     if dir and len(dir) > 0:
-        dir = dequote(dir)
-        dir = dir.replace('\a', '\r\n')
+        dir = decode_newlines(dir)
     return dir
 
 
 def encode_directions(dir):
     if not dir: dir = ''
-    dir = dir.replace('\r\n', '\a')
-    return enquote(dir)
+    dir = encode_newlines(dir)
+    return dir
+
+
+def decode_newlines(string):
+    return string.replace('\a', '\r\n')
+
+
+def encode_newlines(string):
+    return string.replace('\r\n', '\a')
 
 
 def de_the(string):

@@ -45,6 +45,7 @@ def admin_register():
     return login.admin_register()
 # endregion
 
+
 @login_required
 @app.route('/', methods=['GET', 'POST'])
 def index():

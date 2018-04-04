@@ -1,5 +1,6 @@
 from flask import render_template, redirect, flash
 
+from back_end.interface import event_title
 from .event_report_form import EventReportForm
 from .event_card_form import EventCardForm
 from .event_details_form import EventForm
@@ -8,9 +9,9 @@ from .event_list_form import EventListForm
 from .event_result_form import EventResultsForm
 from .handicap_history_form import HandicapHistoryForm
 from .tour_result_form import TourResultsForm
-from globals.enumerations import EventType, MemberStatus
+from globals.enumerations import EventType
 from globals.config import url_for_admin
-from front_end.utility import render_link
+from front_end.form_helpers import render_link, render_html
 
 
 class MaintainEvents:
@@ -28,7 +29,8 @@ class MaintainEvents:
             return redirect(url_for_admin('edit_event', year=year, event_id=0, event_type=event_type))
         form.populate_event_list(int(year))
 
-        return render_template('admin/event_list.html', form=form, year=year, render_link=render_link, EventType=EventType)
+        return render_template('admin/event_list.html', form=form, year=year, render_link=render_link,
+                               EventType=EventType)
 
     @staticmethod
     def edit_event(year, event_id, event_type=None):
@@ -123,7 +125,15 @@ class MaintainEvents:
             if form.save_event_report:
                 if form.save_event_report(year, event_id):
                     flash('report saved', 'success')
-                    return redirect(url_for_admin('report_event', year=year, event_id=event_id))
+                    html = render_html('static/event_report.html',
+                                       title=event_title(year, event_id),
+                                       winner=form.winner_return.data,
+                                       ld=form.ld.data,
+                                       ntp=form.ntp.data,
+                                       report=form.report.data,
+                                       month_year=year
+                                       )
+                    return redirect(url_for_admin('list_events', year=year))
         else:
             form.populate_event_report(int(year), event_id)
-        return render_template('admin/event_report.html', form=form, event=year + event_id, render_link=render_link)
+        return render_template('admin/event_report.html', form=form, event=year + event_id)

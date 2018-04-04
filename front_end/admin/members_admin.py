@@ -1,8 +1,7 @@
 from flask import render_template, redirect, flash
 
 from front_end.admin.member_details_form import MemberDetailsForm, MemberListForm
-from front_end.form_helpers import flash_errors
-from front_end.utility import render_link
+from front_end.form_helpers import flash_errors, render_link
 from globals.config import url_for_admin
 
 

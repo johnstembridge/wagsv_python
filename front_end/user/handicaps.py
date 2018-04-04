@@ -1,9 +1,9 @@
 import datetime
-from flask import render_template, redirect
+from flask import render_template
 
 from .handicaps_form import HandicapsForm
 from .handicap_history_form import HandicapHistoryForm
-from front_end.utility import render_link
+from front_end.form_helpers import render_link
 
 
 class Handicaps:

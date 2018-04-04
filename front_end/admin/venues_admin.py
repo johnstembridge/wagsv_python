@@ -1,9 +1,8 @@
 from flask import render_template, redirect, flash
 
-from front_end.form_helpers import flash_errors
+from front_end.form_helpers import flash_errors, render_link
 from .venues_forms import VenueListForm, VenueDetailsForm
 from .course_details_form import CourseCardForm
-from front_end.utility import render_link
 from globals.config import url_for_admin
 
 

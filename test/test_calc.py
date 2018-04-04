@@ -1,7 +1,6 @@
 import unittest
 
-from calc import get_vl, get_big_swing, get_swings
-from models.news import News
+from back_end.calc import get_vl, get_big_swing, get_swings
 
 
 class TestCalc(unittest.TestCase):
@@ -16,6 +15,7 @@ class TestCalc(unittest.TestCase):
     def test_get_swings(self):
         swings = get_swings(('2017/11/18', '29'))
         pass
+
 
 if __name__ == '__main__':
     unittest.main()

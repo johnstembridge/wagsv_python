@@ -7,17 +7,15 @@ from operator import itemgetter
 from collections import OrderedDict
 
 from back_end.table import Table
-from globals.config import url_for_old_site
-
-from back_end.players import Player, Players
+from back_end.players import Player
 from back_end.data_utilities import encode_date, encode_price, decode_date, decode_price, decode_time, \
-    sort_name_list, lookup, force_list, coerce, decode_event_type, encode_event_type, dequote, \
+    sort_name_list, lookup, force_list, coerce, decode_event_type, encode_event_type, \
     encode_address, decode_address, de_the, encode_directions, decode_directions, coerce_date, coerce_fmt_date, \
-    is_num, to_float, parse_date, decode_date_range, fmt_date
-from back_end.file_access import get_field, get_record, update_record, get_records, get_all_records, update_records, get_fields, \
-    create_data_file
+    is_num, to_float, parse_date, decode_date_range, fmt_date, encode_newlines, decode_newlines
+from back_end.file_access import get_field, get_record, update_record, get_records, get_all_records, update_records, \
+    get_fields, create_data_file
 from globals import config
-from globals.enumerations import EventType, PlayerStatus, MemberStatus
+from globals.enumerations import EventType, MemberStatus
 
 # region file_paths
 
@@ -103,6 +101,8 @@ def front_page_header_file():
 
 def admin_users_file():
     return os.path.join(data_location, admin_users)
+
+
 # endregion
 
 
@@ -154,12 +154,14 @@ def get_new_venue_id():
 def get_venue_url(year, url):
     if url:
         if url.startswith("/"):
-            url = url_for_old_site('{}/{}'.format(year, url[1:]))
+            url = config.url_for_old_site('{}/{}'.format(year, url[1:]))
         else:
             url = '//' + url
     else:
         url = '/not_found'
     return url
+
+
 # endregion
 
 
@@ -213,7 +215,7 @@ def get_event(year, event_id):
         data['max'] = data.get('max', None)
         data['course'] = data.get('course', None)
         data['schedule'] = decode_schedule(data.get('schedule', None))
-        data['note'] = dequote(data['note'])
+        data['note'] = decode_newlines(data['note'])
         venue = get_venue_by_name(data.get('venue', None))
         data['address'] = venue['address']
         data['post_code'] = venue['post_code']
@@ -285,17 +287,18 @@ def save_event(year, event_id, data):
     data['booking_start'] = encode_date(data['start_booking'])
     data['type'] = encode_event_type(data['event_type'])
     data['schedule'] = encode_schedule(data['schedule'])
+    data['note'] = encode_newlines(data['note'])
     insert_venue_info(data)
     update_record(events_file(year), 'num', data)
 
 
 def insert_venue_info(event):
     venue = get_venue_by_name(event['venue'])
-    event['address'] = dequote(encode_address(venue['address']))
+    event['address'] = encode_address(venue['address'])
     event['post_code'] = venue['post_code']
     event['phone'] = venue['phone']
     event['url'] = venue['url']
-    event['directions'] = dequote(encode_directions(venue['directions']))
+    event['directions'] = encode_directions(venue['directions'])
 
 
 def decode_schedule(sched):
@@ -355,7 +358,8 @@ def get_results(year, event_id):
     editable = is_event_editable(year)
     date = event_date(year, event_id)
     all_hcaps = dict(get_handicaps(date))
-    all_scores = get_event_scores(year, event_id).select_columns(['player', 'position', 'points', 'strokes', 'handicap', 'status'])
+    all_scores = get_event_scores(year, event_id).select_columns(
+        ['player', 'position', 'points', 'strokes', 'handicap', 'status'])
     all_scores = {v[0]: v[1:] for v in all_scores}
     all_players = get_all_player_names()
     current_members = get_members(date)
@@ -375,14 +379,14 @@ def get_results(year, event_id):
             all_scores[player_id] = [0, '0', 0, hcap]
         det = all_scores[player_id]
         x = {
-                'id': player_id,
-                'name': player,
-                'handicap': det[3],
-                'strokes': coerce(det[2], int),
-                'points': coerce(det[1], int),
-                'position': coerce(det[0],int),
-                'guest': 'guest' if guest else ''
-            }
+            'id': player_id,
+            'name': player,
+            'handicap': det[3],
+            'strokes': coerce(det[2], int),
+            'points': coerce(det[1], int),
+            'position': coerce(det[0], int),
+            'guest': 'guest' if guest else ''
+        }
         results.append(x)
     results.sort(key=lambda k: k['position'] if k['points'] > 0 else 99)
     i = 0
@@ -412,6 +416,13 @@ def event_date(year, event_id):
     event = get_event(year, event_id)
     date = fmt_date(event['date'])
     return date
+
+
+def event_title(year, event_id):
+    event = get_event(year, event_id)
+    venue = event['venue']
+    date = fmt_date(event['date'])
+    return venue + ' ' + date
 
 
 def event_type(year, event_id):
@@ -455,7 +466,7 @@ def get_last_event(year=None):
     nums = [e['num'] for e in events if e['type'] == EventType.wags_vl_event and e['date'] <= today]
     if len(nums) > 0:
         return year, nums[-1]
-    return get_last_event(year-1)
+    return get_last_event(year - 1)
 
 
 def get_events_in(date_range):
@@ -463,10 +474,12 @@ def get_events_in(date_range):
         date = parse_date(rec[key])
         res = date_range[0] <= date <= date_range[1]
         return res
+
     scores = Table(*get_records(scores_file(), 'date', date_range, lu_fn))
     scores.sort('date')
     events = [e[0] for e in scores.groupby(['date', 'course'])]
     return events
+
 
 # endregion
 
@@ -506,6 +519,7 @@ def get_tour_event_list_from_scores(year, tour_event_id):
         date = parse_date(rec[key])
         res = date_range[0] <= date <= date_range[1]
         return res
+
     scores = Table(*get_records(scores_file(), 'date', date_range, lu_fn))
     date_course = sorted([s[0] for s in scores.groupby(['date', 'course'])])
     id = tour_event_id
@@ -541,7 +555,7 @@ def get_tour_events(year, tour_event_id, max):
             'date': None,
             'course': None,
             'venue': None
-            }
+        }
         events.append(e)
         count += 1
     return events
@@ -562,6 +576,7 @@ def get_tour_scores(year, event_id):
 
     res = get_records(scores_file(), ['date', 'course'], [dates, course_ids], lu_fn)
     return res
+
 
 # endregion
 
@@ -622,6 +637,7 @@ def save_course_card(course_id, year, fields, data):
     course_id = coerce(course_id, str)
     new = dict(zip(['course', 'year'] + fields, [course_id, year] + data))
     update_record(course_data_file(), ['course', 'year'], new)
+
 
 # endregion
 
@@ -738,6 +754,7 @@ def update_player_name(player_id, name):
 def save_handicaps(date, header, data):
     update_records(handicaps_file(), ['date', 'player'], [date], header, data)
 
+
 # endregion
 
 
@@ -750,12 +767,15 @@ def add_admin_user(user):
     all = get_field(admin_users_file(), 'id')
     user.set_id(len(all) + 1)
     update_record(admin_users_file(), 'id', user.record())
+
+
 # endregion
 
 
 # region Members
 def get_current_members():
-    header, data = get_records(members_file(), 'status', [str(MemberStatus.full_member.value), str(MemberStatus.overseas_member.value)])
+    header, data = get_records(members_file(), 'status',
+                               [str(MemberStatus.full_member.value), str(MemberStatus.overseas_member.value)])
     i = lookup(header, ['salutation', 'surname'])
     member_names = sort_name_list([' '.join(itemgetter(*i)(m)) for m in data])
     all_players = get_all_player_names()
@@ -795,6 +815,7 @@ def get_members(as_of):
     def lu_fn(rec, key, value):
         date = rec[key]
         return parse_date(date) > value
+
     header, data = get_records(members_file(), 'resigned', parse_date(as_of), lu_fn)
     i = lookup(header, ['salutation', 'surname'])
     member_names = sort_name_list([' '.join(itemgetter(*i)(m)) for m in data])
@@ -805,6 +826,8 @@ def get_members(as_of):
 
 def get_member(key, value):
     return get_record(members_file(), key, value)
+
+
 # endregion
 
 
@@ -822,7 +845,7 @@ def get_all_trophy_names():
 
 def get_trophy_url(event):
     trophy = event.lower().replace(" ", "_").replace("-", "")
-    url = url_for_old_site("history/trophies/")
+    url = config.url_for_old_site("history/trophies/")
     return url + trophy + '.htm'
 
 
@@ -857,5 +880,6 @@ def get_scores(year, status=None):
             status = [str(s) for s in status]
             res = res and rec[keys[1]] in status
         return res
+
     scores = get_records(scores_file(), ['date', 'status'], [coerce(year, int), status], lu_fn)
     return scores

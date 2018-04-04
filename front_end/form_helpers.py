@@ -1,6 +1,7 @@
-from flask import flash
+from flask import flash, url_for
 
 from back_end.data_utilities import coerce
+from globals import config
 
 
 def flash_errors(form):
@@ -31,3 +32,18 @@ def set_select_field_from_enum(field, enum_obj, default_selection=None):
             default_selection = enum_obj(coerce(default_selection, int))
         field.default = default_selection
     field.coerce = enum_obj.coerce
+
+
+def render_link(url, text="", image=None):
+    if image:
+        return '<a href="{}"><img title="{}" src="{}"></a>'.format(url, text, image)
+    if text:
+        return '<a href="{}">{}</a>'.format(url, text)
+
+
+def render_html(template, **kwargs):
+    import jinja2
+
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(searchpath='../templates/'))
+    template = env.get_template(template)
+    return template.render(url_for=url_for, **kwargs)

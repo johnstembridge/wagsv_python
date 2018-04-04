@@ -8,7 +8,7 @@ from globals.config import url_for_old_site, url_for_old_service
 from .handicap_history_form import HandicapHistoryForm
 from .player_history_form import PlayerHistoryForm
 from .tour_result_form import TourResultsForm
-from front_end.utility import render_link
+from front_end.form_helpers import render_link
 from back_end.interface import get_event, event_date, get_event_by_year_and_name
 from back_end.data_utilities import parse_date, is_num
 

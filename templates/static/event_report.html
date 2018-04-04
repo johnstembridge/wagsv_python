@@ -1,0 +1,23 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/wags.css') }}">
+    <Title>{{ title }}</title>
+</head>
+<body>
+<h2>{{ title }}</h2>
+
+<table>
+    <tr>
+        <td class="head"><b>Winner:</b></td>
+        <td>{{ winner }}</td>
+    <tr>
+        <td class="head"><b>Nearest the Pin:</b></td>
+        <td>{{ ntp }}</td>
+    <tr>
+        <td class="head"><b>Longest Drive:</b></td>
+        <td>{{ ld }}</td>
+</table>
+<p>{{ report }}</p>
+<p>&#169; Wimbledon Ancient Golf Society<br> {{ month_year }}</p>
+</body>
+</html>
