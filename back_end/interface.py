@@ -258,12 +258,6 @@ def save_event_scores(year, event_id, header, data):
     update_records(scores_file(), ['date', 'course', 'player'], [date, course_id], header, data)
 
 
-def update_event_scores(year, event_id, player_id, keys, values):
-    date = event_date(year, event_id)
-    course_id = str(event_course_id(year, event_id))
-    update_records(scores_file(), ['date', 'course', 'player'], [date, course_id, player_id], keys, [values])
-
-
 def get_event_card(year, event_id, player_id):
     player_id = coerce(player_id, str)
     date = event_date(year, event_id)
@@ -358,7 +352,7 @@ def get_results(year, event_id):
     editable = is_event_editable(year)
     date = event_date(year, event_id)
     all_hcaps = dict(get_handicaps(date))
-    all_scores = get_event_scores(year, event_id).select_columns(
+    all_scores = get_event_scores(year, event_id).get_columns(
         ['player', 'position', 'points', 'strokes', 'handicap', 'status'])
     all_scores = {v[0]: v[1:] for v in all_scores}
     all_players = get_all_player_names()

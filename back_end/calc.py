@@ -43,7 +43,7 @@ def positions(scores):
         c += n
 
 
-def calc_event_positions(year, event_id, data):
+def calc_event_positions(year, event_id, result):
     event = get_event(year, event_id)
     course_id = lookup_course(event['venue'])
     course_data = get_course_data(course_id, year)
@@ -51,22 +51,23 @@ def calc_event_positions(year, event_id, data):
     si = [int(course_data['si' + h]) for h in holes]
     par = [int(course_data['par' + h]) for h in holes]
     cards = get_event_cards(year, event_id)
-    for player in data:
-        player_id = player['player_id']
-        player_hcap = my_round(float(player['handicap_return']))
+    head = result.head
+    sort = []
+    for player in result.data:
+        player_id = player[head.index('player')]
+        player_hcap = my_round(float(player[head.index('handicap')]))
         if player_id in cards:
             shots = [int(s) for s in cards[player_id]]
             points = calc_stableford_points(player_hcap, shots, si, par)
             # countback
             tot = (1e6 * sum(points[-18:])) + (1e4 * sum(points[-9:])) + (1e2 * sum(points[-6:])) + sum(points[-3:])
         else:
-            tot = 1e6 * player['points']
-        player['sort'] = tot
-    data.sort(key=lambda player: player['sort'], reverse=True)
-    for i in range(len(data)):
-        player = data[i]
-        player['position'] = i + 1
-    return data
+            tot = 1e6 * player[head.index('points')]
+        sort.append( tot)
+    result.sort_using(sort, reverse=True)
+    position = list(range(1, len(result.data)))
+    result.update_column('position', position)
+    return result
 
 
 def calc_stableford_points(player_hcap, player_shots, course_si, course_par):

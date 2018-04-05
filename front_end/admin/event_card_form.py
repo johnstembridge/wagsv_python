@@ -1,7 +1,9 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField, HiddenField
-from back_end.interface import get_event, lookup_course, get_course_data, save_event_card, get_player_handicap, \
-    get_event_card, get_player_name, update_event_scores, is_event_result_editable
+
+from back_end.calc import calc_event_positions
+from back_end.interface import get_event, lookup_course, get_course_data, save_event_card, get_event_card, \
+    get_player_name, is_event_result_editable, get_event_scores, save_event_scores
 from globals.enumerations import PlayerStatus
 
 
@@ -67,18 +69,21 @@ class EventCardForm(FlaskForm):
         if len(errors) > 0:
             return False
 
-        total_shots = form.totalShotsReturn.data
-        total_points = form.totalPointsReturn.data
-        handicap = form.handicapReturn.data
-        status = PlayerStatus.member if form.statusReturn.data == '' else PlayerStatus.guest
-        position = form.positionReturn.data
-        update_event_scores(year, event_id, player_id,
-                            ["position", "handicap", "status", "points", "strokes"],
-                            [position, handicap, status.value, total_points, total_shots])
-
         shots = [d['shots'] for d in form.scoresOut.data] + [d['shots'] for d in form.scoresIn.data]
         shots = ['99' if v is None else str(v) for v in shots]
         fields = [str(i) for i in range(1, 19)]
         save_event_card(year, event_id, player_id, fields, shots)
+
+        handicap = form.handicapReturn.data
+        status = str(PlayerStatus.member.value if form.statusReturn.data == '' else PlayerStatus.guest.value)
+        total_shots = form.totalShotsReturn.data
+        total_points = form.totalPointsReturn.data
+
+        all_scores = get_event_scores(year, event_id).select_columns(
+            ['player', 'position', 'points', 'strokes', 'handicap', 'status'])
+        new = (player_id, '0', total_points, total_shots, handicap, status)
+        all_scores.update_row('player', player_id, new)
+        result = calc_event_positions(year, event_id, all_scores)
+        save_event_scores(year, event_id, result.head, result.data)
 
         return True

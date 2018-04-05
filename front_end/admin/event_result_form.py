@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField, HiddenField
 from back_end.interface import get_event, get_results, save_event_scores, is_event_result_editable, add_player
 from back_end.calc import calc_event_positions
+from back_end.table import Table
 from globals.enumerations import PlayerStatus
 
 
@@ -42,7 +43,7 @@ class EventResultsForm(FlaskForm):
             item_form.player = player['name'] + guest
             item_form.handicap = player['handicap']
             item_form.handicap_return = player['handicap']
-            item_form.guest_return = player['guest']
+            item_form.guest_return = str(0 if player['guest'] == 'guest' else 1)
             item_form.points = player['points']
             item_form.strokes = player['strokes']
             item_form.position = player['position']
@@ -55,16 +56,21 @@ class EventResultsForm(FlaskForm):
         errors = self.errors
         if len(errors) > 0:
             return False
-        result = calc_event_positions(year, event_id, self.data['scores'])
+
         fields = ['player', 'position', 'points', 'strokes', 'handicap', 'status']
-        data = [
-            [d['player_id'],
-             str(d['position']),
-             str(d['points']),
-             str(d['strokes_return']),
-             str(d['handicap_return']),
-             str(0 if d['guest_return'] == 'guest' else 1)
-             ]
-            for d in result if d['points'] > 0]
-        save_event_scores(year, event_id, fields, data)
+        old_fields = ['player_id', 'position', 'points', 'strokes_return', 'handicap_return', 'guest_return']
+
+        def sel_table_fields(dict, fields):
+            res = []
+            for i in range(len(fields)):
+                res.append(dict[fields[i]])
+            return res
+        result = Table(fields, [sel_table_fields(s, old_fields) for s in self.data['scores']])
+        result = calc_event_positions(year, event_id, result)
+
+        def sel_fn(values):
+            return values['points'] > 0
+
+        result.select_rows(sel_fn)
+        save_event_scores(year, event_id, fields, result.data)
         return True
