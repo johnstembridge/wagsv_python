@@ -2,7 +2,7 @@ from datetime import datetime
 
 from back_end.data_utilities import decode_date_formal, fmt_date, encode_date_formal, coerce_fmt_date, dequote
 from back_end.interface import news_file, front_page_header_file
-from back_end.file_access import my_open, update_html_element, write_file
+from back_end.file_access import my_open, update_html_elements, write_file
 
 
 class News:
@@ -47,7 +47,7 @@ class News:
 
     @staticmethod
     def update_front_page(date):
-        update_html_element(front_page_header_file(), 'last_updated', date)
+        update_html_elements(front_page_header_file(), {'last_updated': date})
 
     @staticmethod
     def get_all_news():

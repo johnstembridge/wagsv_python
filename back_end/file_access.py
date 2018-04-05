@@ -4,6 +4,8 @@ from shutil import move
 from collections import OrderedDict
 from back_end.data_utilities import force_list, force_lower
 from operator import itemgetter
+
+from front_end.form_helpers import update_html
 from globals import config
 
 
@@ -53,8 +55,11 @@ def get_records(file, key, value, lu_fn=None):
 
 
 def get_file_contents(file):
-    with open(file, 'r') as content_file:
-        return content_file.read()
+    if os.path.exists(file):
+        with open(file, 'r') as content_file:
+            return content_file.read()
+    else:
+        return None
 
 
 def write_file(file, contents):
@@ -62,7 +67,7 @@ def write_file(file, contents):
     os.close(ft)
     with my_open(target_file_path, 'w') as target_file:
         target_file.write(contents)
-    os.remove(file)
+    os.remove(file) if os.path.exists(file) else None
     move(target_file_path, file)
 
 
@@ -271,17 +276,8 @@ def my_open(filename, mode, access_all=False):
     return fh
 
 
-def update_html_element(file, id, value):
-    ft, target_file_path = mkstemp()
-    os.close(ft)
-    with my_open(target_file_path, 'w') as target_file:
-        with open(file, 'r') as source_file:
-            html = source_file.read()
-            i = html.find(id)
-            st = i+1+html[i:].find('>')
-            length = html[st:].find('<')
-            html = html[:st] + value + html[st + length:]
-            target_file.write(html)
-    os.remove(file)
-    move(target_file_path, file)
+def update_html_elements(file, id, value):
+    html = get_file_contents(file)
+    html = update_html(html, id, value)
+    write_file(file, html)
 

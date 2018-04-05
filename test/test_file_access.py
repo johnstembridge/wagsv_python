@@ -3,7 +3,7 @@ import unittest
 import datetime
 from back_end.interface import encode_schedule, decode_schedule, get_event_card, front_page_header_file
 from back_end.file_access import get_record, get_field, get_fields, update_record, file_delimiter, get_records, get_all_records, \
-    keys_match, update_html_element
+    keys_match, update_html_elements
 from back_end.data_utilities import decode_date
 from test_data import TestData
 
@@ -138,4 +138,4 @@ class TestInterface(unittest.TestCase):
     def test_update_date(self):
         date = '2018/04/02'
         file = front_page_header_file()
-        update_html_element(file, 'last_updated', date)
+        update_html_elements(file, 'last_updated', date)

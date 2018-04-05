@@ -1,7 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, HiddenField, SelectField, TextAreaField
 
-from front_end.form_helpers import set_select_field
+from back_end.file_access import get_file_contents
+from front_end.form_helpers import set_select_field, get_elements_from_html
 from globals.enumerations import PlayerStatus
 from back_end.interface import get_event, get_event_scores, get_player_name, get_player_names
 
@@ -15,7 +16,7 @@ class EventReportForm(FlaskForm):
     winner_return = HiddenField()
     save = SubmitField(label='Save')
 
-    def populate_event_report(self, year, event_id):
+    def populate_event_report(self, year, event_id, report_file):
         event = get_event(year, event_id)
         self.event_name.data = '{} {} {}'.format(event['event'], event['venue'], event['date'])
 
@@ -30,6 +31,12 @@ class EventReportForm(FlaskForm):
         self.winner_return.data = self.winner.data
         set_select_field(self.ntp, 'player', players)
         set_select_field(self.ld, 'player', players)
+        report = get_file_contents(report_file)
+        if report:
+            values = get_elements_from_html(report, ['ld', 'ntp', 'report'])
+            self.ntp.data = values['ntp']
+            self.ld.data = values['ld']
+            self.report.data = values['report']
 
     def save_event_report(self, year, event_id):
         return True

@@ -1,6 +1,8 @@
+import os
 from flask import render_template, redirect, flash
 
-from back_end.interface import event_title
+from back_end.interface import event_title, event_date
+from back_end.file_access import write_file
 from .event_report_form import EventReportForm
 from .event_card_form import EventCardForm
 from .event_details_form import EventForm
@@ -11,6 +13,7 @@ from .handicap_history_form import HandicapHistoryForm
 from .tour_result_form import TourResultsForm
 from globals.enumerations import EventType
 from globals.config import url_for_admin
+from globals import config
 from front_end.form_helpers import render_link, render_html
 
 
@@ -125,15 +128,32 @@ class MaintainEvents:
             if form.save_event_report:
                 if form.save_event_report(year, event_id):
                     flash('report saved', 'success')
-                    html = render_html('static/event_report.html',
-                                       title=event_title(year, event_id),
-                                       winner=form.winner_return.data,
-                                       ld=form.ld.data,
-                                       ntp=form.ntp.data,
-                                       report=form.report.data,
-                                       month_year=year
-                                       )
+                    MaintainEvents.save_report_page('static/event_report.html',
+                                                    year, event_id, form)
                     return redirect(url_for_admin('list_events', year=year))
         else:
-            form.populate_event_report(int(year), event_id)
+            report_file = MaintainEvents.report_file_name(year, event_id)
+            form.populate_event_report(int(year), event_id, report_file)
         return render_template('admin/event_report.html', form=form, event=year + event_id)
+
+    @staticmethod
+    def save_report_page(template_name, year, event_id, form):
+        title = event_title(year, event_id)
+        html = render_html(template_name,
+                           title=title,
+                           winner=form.winner_return.data,
+                           ld=form.ld.data,
+                           ntp=form.ntp.data,
+                           report=form.report.data,
+                           month_year=year
+                           )
+        file_name = MaintainEvents.report_file_name(year, event_id)
+        write_file(file_name, html)
+
+    @staticmethod
+    def report_file_name(year, event_id):
+        date = event_date(year, event_id)
+        location = config.get('locations')['html']
+        page_name = 'rp{}.htm'.format(date.replace('/', '')[2:])
+        file_name = os.path.join(location, year, page_name)
+        return file_name

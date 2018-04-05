@@ -1,6 +1,6 @@
 from flask import flash, url_for
 
-from back_end.data_utilities import coerce
+from back_end.data_utilities import coerce, force_list
 from globals import config
 
 
@@ -43,7 +43,26 @@ def render_link(url, text="", image=None):
 
 def render_html(template, **kwargs):
     import jinja2
-
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(searchpath='../templates/'))
     template = env.get_template(template)
     return template.render(url_for=url_for, **kwargs)
+
+
+def update_html(html, pairs):
+    for id, value in pairs.items():
+        i = html.find(id)
+        start = i + 1 + html[i:].find('>')
+        length = html[start:].find('<')
+        html = html[:start] + value + html[start + length:]
+    return html
+
+
+def get_elements_from_html(html, ids):
+    result = {}
+    for id in force_list(ids):
+        i = html.find(id)
+        if i >= 0:
+            start = i + 1 + html[i:].find('>')
+            length = html[start:].find('<')
+            result[id] = html[start: start + length]
+    return result
