@@ -23,21 +23,30 @@ class EventReportForm(FlaskForm):
         def lu_fn(values):
             return values['status'] == str(PlayerStatus.member.value)
         all = get_event_scores(year, event_id)
-        players = get_player_names(all.get_column('player'))
+        players = get_player_names(all.get_columns('player'))
         members = all.where(lu_fn)
-        pos = [int(s) for s in members.get_column('position')]
+        pos = [int(s) for s in members.get_columns('position')]
         pos = pos.index(min(pos))
-        self.winner.data = get_player_name(members.get_column('player')[pos])
+        self.winner.data = get_player_name(members.get_columns('player')[pos])
         self.winner_return.data = self.winner.data
         set_select_field(self.ntp, 'player', players)
         set_select_field(self.ld, 'player', players)
         report = get_file_contents(report_file)
         if report:
             values = get_elements_from_html(report, ['ld', 'ntp', 'report'])
+            if len(values) == 0:
+                values = self.alt_get_report_elements_from_html(report, {'ld': 'Longest Drive:', 'ntp': 'Nearest the Pin:'})
             self.ntp.data = values['ntp']
             self.ld.data = values['ld']
-            self.report.data = values['report']
+            self.report.data = values.get('report') or ''
 
-    def save_event_report(self, year, event_id):
-        return True
-
+    @staticmethod
+    def alt_get_report_elements_from_html(html, items, ):
+        # for old report files
+        result = {}
+        for item in items:
+            text = items[item] + '</td><td>'
+            start = len(text) + html.find(text)
+            length = html[start:].find('<')
+            result[item] = html[start: start + length]
+        return result

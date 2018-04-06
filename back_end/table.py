@@ -47,7 +47,7 @@ class Table:
         return Table(head, [itemgetter(*index)(r) for r in self.data])
 
     def select_rows(self, sel_fn):
-        self.data = [d for d in self.data if sel_fn(dict(zip(self.head, d)))]
+        return Table(self.head, [d for d in self.data if sel_fn(dict(zip(self.head, d)))])
 
     def update_row(self, key, value, new_data):
         index = self.get_columns(key).index(value)

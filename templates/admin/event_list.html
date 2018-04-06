@@ -17,6 +17,7 @@
             <th class="text-center">Details</th>
             <th class="text-center">Result</th>
             <th class="text-center">Hcaps</th>
+            <th class="text-center">Report</th>
         </tr>
         </thead>
         <tbody>
@@ -49,10 +50,19 @@
                             text='View/Enter handicaps'
                         )|safe }}
                     </td>
+                    <td align="center">
+                        {{ render_link(
+                            url=url_for('report_event', year=year, event_id=item.num.data),
+                            image=url_for('static', filename='images/right-arrow.png'),
+                            text='View/Enter report'
+                        )|safe }}
+                    </td>
                 {% else %}
+                    <td></td>
                     <td></td>
                 {% endif %}
             {% else %}
+                <td></td>
                 <td></td>
                 <td></td>
             {% endif %}

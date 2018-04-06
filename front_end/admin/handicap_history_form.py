@@ -4,6 +4,7 @@ from wtforms.fields.html5 import DateField
 import datetime
 from back_end.interface import get_player_name, get_handicap_history, event_date, is_last_event
 from back_end.data_utilities import fmt_date
+from globals.enumerations import PlayerStatus
 
 
 class HandicapItemForm(FlaskForm):
@@ -26,6 +27,6 @@ class HandicapHistoryForm(FlaskForm):
             item_form = HandicapItemForm()
             item_form.date = item[0]
             item_form.handicap = item[1]
-            item_form.status = '' if item[2] == '1' else 'guest'
+            item_form.status = PlayerStatus(int(item[2])).name
             self.history.append_entry(item_form)
 

@@ -15,8 +15,8 @@ def get_vl(year):
                [vl_summary(scores.column_index('points'), key, list(values))
                 for key, values in scores.groupby('player')])
     vl.sort(['points', 'lowest'], reverse=True)
-    vl.add_column('position', get_positions(vl.get_column('points')))
-    vl.add_column('name', get_player_names(vl.get_column('player')))
+    vl.add_column('position', get_positions(vl.get_columns('points')))
+    vl.add_column('name', get_player_names(vl.get_columns('player')))
     return vl
 
 
@@ -63,7 +63,7 @@ def calc_event_positions(year, event_id, result):
             tot = (1e6 * sum(points[-18:])) + (1e4 * sum(points[-9:])) + (1e2 * sum(points[-6:])) + sum(points[-3:])
         else:
             tot = 1e6 * player[head.index('points')]
-        sort.append( tot)
+        sort.append(tot)
     result.sort_using(sort, reverse=True)
     position = list(range(1, len(result.data)))
     result.update_column('position', position)
@@ -103,9 +103,9 @@ def get_big_swing(year):
     swings = Table(header, swings)
     swings.sort('swing', reverse=True)
     swings.top_n(10)
-    swings.add_column('position', get_positions(swings.get_column('swing')))
-    swings.add_column('player_name', get_player_names(swings.get_column('player_id')))
-    swings.add_column('course_name', get_course_names(swings.get_column('course_id')))
+    swings.add_column('position', get_positions(swings.get_columns('swing')))
+    swings.add_column('player_name', get_player_names(swings.get_columns('player_id')))
+    swings.add_column('course_name', get_course_names(swings.get_columns('course_id')))
     return swings
 
 

@@ -71,6 +71,6 @@ class EventResultsForm(FlaskForm):
         def sel_fn(values):
             return values['points'] > 0
 
-        result.select_rows(sel_fn)
+        result = result.select_rows(sel_fn)
         save_event_scores(year, event_id, fields, result.data)
         return True

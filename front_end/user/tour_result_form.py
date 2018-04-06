@@ -69,6 +69,6 @@ class TourResultsForm(FlaskForm):
         head = ['player_id', 'status', 'scores', 'total']
         res = Table(head, res)
         res.sort(['total'], reverse=True)
-        res.add_column('position', get_positions(res.get_column('total')))
+        res.add_column('position', get_positions(res.get_columns('total')))
         return res
 

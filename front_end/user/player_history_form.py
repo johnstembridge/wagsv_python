@@ -41,6 +41,6 @@ class PlayerHistoryForm(FlaskForm):
     @staticmethod
     def get_player_history(player_id, year=None):
         hist = Table(*get_player_scores(player_id, year))
-        hist.add_column('course_name', get_course_names(hist.get_column('course')))
+        hist.add_column('course_name', get_course_names(hist.get_columns('course')))
         hist.sort('date', reverse=year is None)
         return hist
