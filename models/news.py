@@ -126,7 +126,7 @@ class NewsDay:
 
 
 class NewsItem:
-    def __init__(self, text, link=None, title=None):
+    def __init__(self, text='', link=None, title=None):
         self.text = text
         self.link = link
         self.title = title

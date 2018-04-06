@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, HiddenField, SelectField, FieldList, FormField, DateField
 from back_end.data_utilities import parse_date
 from front_end.form_helpers import set_select_field
-from models.news import News, NewsDay
+from models.news import News, NewsDay, NewsItem
 from datetime import datetime
 
 
@@ -32,7 +32,7 @@ class NewsDayForm(FlaskForm):
             news_date = news_date.replace('-', '/')
             news_day = News().get_news_day(news_date)
         else:
-            news_day = NewsDay(date = datetime.date.today())
+            news_day = NewsDay(date=datetime.date.today())
 
         self.date.data = parse_date(news_day.date)
         self.orig_date.data = parse_date(news_day.date)
@@ -40,10 +40,10 @@ class NewsDayForm(FlaskForm):
             if i < len(news_day.items):
                 item = news_day.items[i]
             else:
-                item = ('', '')
+                item = NewsItem()
             item_form = NewsItemForm()
-            item_form.link = item[0]
-            item_form.text = item[1]
+            item_form.link = item.link
+            item_form.text = item.text
             self.items.append_entry(item_form)
 
     def save_news_day(self, news_date):

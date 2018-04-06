@@ -34,11 +34,12 @@ def set_select_field_from_enum(field, enum_obj, default_selection=None):
     field.coerce = enum_obj.coerce
 
 
-def render_link(url, text="", image=None):
+def render_link(url, text="", image=None, target=None):
+    target = ' target="{}"'.format(target) if target else ''
     if image:
-        return '<a href="{}"><img title="{}" src="{}"></a>'.format(url, text, image)
+        return '<a href="{}"{}><img title="{}" src="{}"></a>'.format(url, target, text, image)
     if text:
-        return '<a href="{}">{}</a>'.format(url, text)
+        return '<a href="{}"{}>{}</a>'.format(url, target, text)
 
 
 def render_html(template, **kwargs):

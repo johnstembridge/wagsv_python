@@ -788,7 +788,7 @@ def get_all_members():
 
 def get_member_select_list():
     members = get_fields(members_file(), ['membcode', 'salutation', 'surname', 'status'])
-    members = [itemgetter(0, 1, 2)(m) for m in members if m[3] == str(MemberStatus.full_member.value)]
+    members = [itemgetter(0, 1, 2)(m) for m in members if m[3] != str(MemberStatus.ex_member.value)]
     members = sorted(members, key=lambda tup: (tup[2], tup[1]))
     return [(m[0], m[1] + ' ' + m[2]) for m in members]
 
