@@ -7,19 +7,21 @@
 </div>
 <form method="POST">
     {{ form.csrf_token }}
-    {{ form.date.label }} {{ form.date }}
+    {{ form.date.label }} {{ form.date(type="date") }}
     <hr/>
     <table>
         <thead>
             <th>Text</th>
             <th>url</th>
+            <th>hint</th>
             <th></th>
         </thead>
         <tbody>
         {% for item in form.items %}
         <tr>
-            <td>{{ item.text }}</td>
-            <td onchange="copyLink(this)">{{ item.link }}</td>
+            <td>{{ item.text(size='70') }}</td>
+            <td onchange="copyLink(this)">{{ item.link(size='50') }}</td>
+            <td> {{ item.title }}</td>
             <td id="{{ 'link-' ~ loop.index0 }}">
                 {{ render_link(
                     url=item.link.data,
@@ -44,8 +46,8 @@
             var id = c[0].id; // items-{n}-link
             var i = Number(id.match(/(?:\d*\.)?\d+/g));
             var linkId = "link-" + i;
-            var elm = document.getElementById(id);
-            elm.value = val;
+            var elm = document.getElementById(linkId);
+            elm.children[0].href = val;
         }
     </script>
 {{super()}}

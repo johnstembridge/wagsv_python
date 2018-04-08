@@ -19,6 +19,7 @@ class NewsListForm(FlaskForm):
 class NewsItemForm(FlaskForm):
     text = StringField(label='Text')
     link = StringField(label='url')
+    title = StringField(label='Title')
 
 
 class NewsDayForm(FlaskForm):
@@ -42,8 +43,9 @@ class NewsDayForm(FlaskForm):
             else:
                 item = NewsItem()
             item_form = NewsItemForm()
-            item_form.link = item.link
             item_form.text = item.text
+            item_form.link = item.link
+            item_form.title = item.title
             self.items.append_entry(item_form)
 
     def save_news_day(self, news_date):
@@ -52,7 +54,8 @@ class NewsDayForm(FlaskForm):
         items = []
         for item in self.items:
             if len(item.text.data) > 0:
-                items.append((item.link.data, item.text.data))
+                items.append((item.text.data, item.link.data, item.title.data))
 
-        News.save_news(date, items)
+        newsday = NewsDay(date, items)
+        News().save_newsday(newsday)
         return True

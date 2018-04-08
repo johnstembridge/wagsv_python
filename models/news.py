@@ -1,6 +1,7 @@
 from datetime import datetime
 
-from back_end.data_utilities import decode_date_formal, fmt_date, encode_date_formal, coerce_fmt_date, dequote
+from back_end.data_utilities import decode_date_formal, fmt_date, encode_date_formal, coerce_fmt_date, dequote, \
+    force_list
 from back_end.interface import news_file, front_page_header_file
 from back_end.file_access import my_open, update_html_elements, write_file
 
@@ -30,7 +31,7 @@ class News:
         id = [d.replace('/', '-') for d in self.dates]
         return list(zip(id, self.dates))
 
-    def publish(self, news_day):
+    def publish_newsday(self, news_day):
         if news_day.date in self.dates:
             orig = self.get_news_day(news_day.date)
             orig.merge(news_day)
@@ -41,6 +42,13 @@ class News:
         self.write_all_news()
         News.update_front_page(news_day.date)
         pass
+
+    def save_newsday(self, news_day):
+        if news_day.date not in self.dates:
+            self.add_news_day(news_day)
+        else:
+            self.update_news_day(news_day)
+        self.write_all_news()
 
     def write_all_news(self):
         write_file(news_file(), ''.join([self.head] + self.news))
@@ -74,9 +82,8 @@ class News:
 class NewsDay:
     def __init__(self, date=None, items=[]):
         self.date = coerce_fmt_date(date or datetime.today().date())
-        if type(items) is not list:
-            items = [items]
-        self.items = items
+        items = force_list(items)
+        self.items = [NewsItem(*item) for item in items]
 
     def merge(self, extra):
         self.items += extra.items
@@ -96,20 +103,7 @@ class NewsDay:
         day.date = fmt_date(decode_date_formal(html_lines[1][6:-4]))
         day.items = []
         for html_line in html_lines[3: -2]:
-            html_line = html_line.rstrip()[4:-5]
-            if html_line.startswith("<a href="):
-                end = html_line.find('>')
-                link = html_line[8:end].rstrip()
-                text = html_line[end+1:-4]
-                t = link.find('title=')
-                if t >= 0:
-                    title = link[t+6:].rstrip()
-                    link = link[:t].rstrip()
-                else:
-                    title = None
-                item = NewsItem(text.rstrip(), dequote(link), dequote(title))
-            else:
-                item = NewsItem(html_line)
+            item = NewsItem.from_html(html_line)
             day.items.append(item)
         return day
 
@@ -126,7 +120,7 @@ class NewsDay:
 
 
 class NewsItem:
-    def __init__(self, text='', link=None, title=None):
+    def __init__(self, text, link, title):
         self.text = text
         self.link = link
         self.title = title
@@ -135,10 +129,28 @@ class NewsItem:
         html = '<li>'
         if self.link:
             html += '<a href="{}"'.format(self.link)
-            if self.title:
+            if len(self.title) > 0:
                 html += ' title="{}"'.format(self.title)
             html += '>{}</a>'.format(self.text)
         else:
             html += self.text
         html += '</li>'
         return html
+
+    @staticmethod
+    def from_html(html_line):
+        html_line = html_line.rstrip()[4:-5]
+        if html_line.startswith("<a href="):
+            end = html_line.find('>')
+            link = html_line[8:end].rstrip()
+            text = html_line[end + 1:-4]
+            t = link.find('title=')
+            if t >= 0:
+                title = link[t + 6:].rstrip()
+                link = link[:t].rstrip()
+            else:
+                title = None
+            item = NewsItem(text.rstrip(), dequote(link), dequote(title))
+        else:
+            item = NewsItem(html_line, '', '')
+        return item
