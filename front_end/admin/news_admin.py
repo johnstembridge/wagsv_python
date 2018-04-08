@@ -12,7 +12,7 @@ class MaintainNews:
         form = NewsListForm()
         if form.is_submitted():
             if form.add_news.data:
-                return redirect(url_for_admin('edit_news', news_date=None))
+                return redirect(url_for_admin('edit_news', news_date='new'))
             if form.edit_news.data:
                 return redirect(url_for_admin('edit_news', news_date=form.news_item.data))
         form.populate_news_list()

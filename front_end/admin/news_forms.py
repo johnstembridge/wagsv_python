@@ -1,9 +1,9 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, HiddenField, SelectField, FieldList, FormField, DateField
+from wtforms import StringField, SubmitField, HiddenField, SelectField, FieldList, FormField, DateField, TextAreaField
 from back_end.data_utilities import parse_date
 from front_end.form_helpers import set_select_field
 from models.news import News, NewsDay, NewsItem
-from datetime import datetime
+import datetime
 
 
 class NewsListForm(FlaskForm):
@@ -17,26 +17,28 @@ class NewsListForm(FlaskForm):
 
 
 class NewsItemForm(FlaskForm):
-    text = StringField(label='Text')
+    text = StringField(label='Item')
     link = StringField(label='url')
     title = StringField(label='Title')
 
 
 class NewsDayForm(FlaskForm):
-    items = FieldList(FormField(NewsItemForm))
     date = DateField(label='date')
     orig_date = HiddenField()
+    items = FieldList(FormField(NewsItemForm))
+    message = TextAreaField()
     save = SubmitField(label='Save')
 
-    def populate_news_day(self, news_date=None):
-        if news_date is not None:
+    def populate_news_day(self, news_date):
+        if news_date == 'new':
+            news_day = NewsDay(date=datetime.date.today())
+        else:
             news_date = news_date.replace('-', '/')
             news_day = News().get_news_day(news_date)
-        else:
-            news_day = NewsDay(date=datetime.date.today())
 
         self.date.data = parse_date(news_day.date)
         self.orig_date.data = parse_date(news_day.date)
+        self.message.data = news_day.message
         for i in range(5):
             if i < len(news_day.items):
                 item = news_day.items[i]
@@ -51,11 +53,12 @@ class NewsDayForm(FlaskForm):
     def save_news_day(self, news_date):
         date = self.date.data
         orig_date = self.orig_date.data
+        message = self.message.data
         items = []
         for item in self.items:
             if len(item.text.data) > 0:
                 items.append((item.text.data, item.link.data, item.title.data))
 
-        newsday = NewsDay(date, items)
+        newsday = NewsDay(date, message, items)
         News().save_newsday(newsday)
         return True

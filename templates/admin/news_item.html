@@ -9,6 +9,8 @@
     {{ form.csrf_token }}
     {{ form.date.label }} {{ form.date(type="date") }}
     <hr/>
+    {{ form.message.label }}<br>{{ form.message(cols=100, rows=5) }}
+    <hr/>
     <table>
         <thead>
             <th>Text</th>

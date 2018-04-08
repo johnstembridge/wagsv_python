@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from back_end.data_utilities import decode_date_formal, fmt_date, encode_date_formal, coerce_fmt_date, dequote, \
-    force_list
+    force_list, lookup
 from back_end.interface import news_file, front_page_header_file
 from back_end.file_access import my_open, update_html_elements, write_file
 
@@ -80,8 +80,9 @@ class News:
 
 
 class NewsDay:
-    def __init__(self, date=None, items=[]):
+    def __init__(self, date=None, message='', items=[]):
         self.date = coerce_fmt_date(date or datetime.today().date())
+        self.message = message
         items = force_list(items)
         self.items = [NewsItem(*item) for item in items]
 
@@ -101,26 +102,35 @@ class NewsDay:
         html_lines = html.split('\n')
         day = NewsDay()
         day.date = fmt_date(decode_date_formal(html_lines[1][6:-4]))
+        list_start = lookup(html_lines, '<ul>')
+        day.message = []
         day.items = []
-        for html_line in html_lines[3: -2]:
+        if list_start == -1:
+            list_start = len(html_lines) + 1
+        day.message = ' '.join(html_lines[2: list_start])
+        day.message = day.message.replace('<p>', '\n').replace('<br>', '\n')
+        if day.message.startswith('\n'):
+            day.message = day.message[1:]
+        for html_line in html_lines[list_start + 1: -2]:
             item = NewsItem.from_html(html_line)
             day.items.append(item)
         return day
 
     def to_html(self):
-        html = [
-            '<hr/>',
-            '<p><b>{}</b>'.format(encode_date_formal(self.date)),
-            '<ul>'
-        ]
-        for item in self.items:
-            html.append(item.to_html())
-        html.append('</ul>')
+        html = ['<hr/>', '<p><b>{}</b>'.format(encode_date_formal(self.date))]
+        if self.message:
+            m = self.message.replace('\n', '<br>')
+            html.append(m)
+        if self.items:
+            html.append('<ul>')
+            for item in self.items:
+                html.append(item.to_html())
+            html.append('</ul>')
         return ('\n'.join(html)) + '\n'
 
 
 class NewsItem:
-    def __init__(self, text, link, title):
+    def __init__(self, text='', link='', title=''):
         self.text = text
         self.link = link
         self.title = title
