@@ -25,15 +25,6 @@ def set_select_field(field, item_name, choices, default_selection=None):
             field.data = field.default = default[0]
 
 
-def set_select_field_from_enum(field, enum_obj, default_selection=None):
-    field.choices = enum_obj.choices()
-    if default_selection:
-        if type(default_selection) != enum_obj:
-            default_selection = enum_obj(coerce(default_selection, int))
-        field.default = default_selection
-    field.coerce = enum_obj.coerce
-
-
 def render_link(url, text="", image=None, target=None):
     target = ' target="{}"'.format(target) if target else ''
     if image:

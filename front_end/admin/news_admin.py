@@ -21,12 +21,16 @@ class MaintainNews:
 
     @staticmethod
     def edit_news(news_date):
+        if news_date == 'None':
+            return redirect(url_for_admin('news_main'))
         form = NewsDayForm()
         if form.is_submitted():
             if form.save.data:
                 if form.save_news_day(news_date):
-                    flash('News saved', 'success')
+                    flash('News published', 'success')
                     return redirect(url_for_admin('news_main'))
+            if form.add_item.data:
+                form.add_news_item()
         else:
             form.populate_news_day(news_date)
-        return render_template('admin/news_item.html', form=form, render_link=render_link)
+        return render_template('admin/news_day.html', form=form, render_link=render_link)

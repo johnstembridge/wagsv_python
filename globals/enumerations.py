@@ -4,7 +4,7 @@ from enum import Enum
 class FormEnum(Enum):
     @classmethod
     def choices(cls):
-        return [(choice, choice.name) for choice in cls]
+        return [(choice, choice.name.replace('_', ' ')) for choice in cls]
 
     @classmethod
     def coerce(cls, item):
@@ -31,3 +31,10 @@ class EventType(FormEnum):
     wags_vl_event = 1
     wags_tour = 2
     non_vl_event = 3
+
+
+class NewsItemType(FormEnum):
+    open_booking = 0
+    event_result = 1
+    handicap_update = 2
+    account_update = 3

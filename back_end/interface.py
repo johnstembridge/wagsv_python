@@ -463,6 +463,17 @@ def get_last_event(year=None):
     return get_last_event(year - 1)
 
 
+def get_next_event(year=None):
+    today = datetime.date.today()
+    if not year:
+        year = today.year
+    events = get_event_list(year)
+    nums = [e['num'] for e in events if e['type'] == EventType.wags_vl_event and e['date'] > today]
+    if len(nums) > 0:
+        return year, nums[0]
+    return get_next_event(year + 1)
+
+
 def get_events_in(date_range):
     def lu_fn(rec, key, date_range):
         date = parse_date(rec[key])

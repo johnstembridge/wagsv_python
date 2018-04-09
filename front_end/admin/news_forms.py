@@ -1,7 +1,10 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, HiddenField, SelectField, FieldList, FormField, DateField, TextAreaField
-from back_end.data_utilities import parse_date
+from back_end.data_utilities import parse_date, encode_date
+from back_end.interface import get_last_event, get_event, get_next_event
 from front_end.form_helpers import set_select_field
+from globals.config import url_for_user, url_for_old_service
+from globals.enumerations import NewsItemType
 from models.news import News, NewsDay, NewsItem
 import datetime
 
@@ -23,11 +26,16 @@ class NewsItemForm(FlaskForm):
 
 
 class NewsDayForm(FlaskForm):
-    date = DateField(label='date')
+    title = StringField()
+    date = DateField(label='Date')
     orig_date = HiddenField()
     items = FieldList(FormField(NewsItemForm))
     message = TextAreaField()
-    save = SubmitField(label='Save')
+    item_to_add = SelectField(label='Item to add',
+                              choices=NewsItemType.choices(),
+                              coerce=NewsItemType.coerce)
+    save = SubmitField(label='Publish')
+    add_item = SubmitField(label='Add item')
 
     def populate_news_day(self, news_date):
         if news_date == 'new':
@@ -35,7 +43,7 @@ class NewsDayForm(FlaskForm):
         else:
             news_date = news_date.replace('-', '/')
             news_day = News().get_news_day(news_date)
-
+        self.title.data = 'News ' + news_day.date
         self.date.data = parse_date(news_day.date)
         self.orig_date.data = parse_date(news_day.date)
         self.message.data = news_day.message
@@ -60,5 +68,32 @@ class NewsDayForm(FlaskForm):
                 items.append((item.text.data, item.link.data, item.title.data))
 
         newsday = NewsDay(date, message, items)
-        News().save_newsday(newsday)
+        News().publish_newsday(newsday)
         return True
+
+    def add_news_item(self):
+        item_type = self.item_to_add.data
+        year = datetime.date.today().year
+        if item_type == NewsItemType.account_update:
+            item = NewsItem(text='Accounts updated in members area', link='', title='')
+        elif item_type == NewsItemType.handicap_update:
+            item = NewsItem(text='Handicaps updated', link='/wagsuser/handicaps', title='show current handicaps')
+        elif item_type == NewsItemType.event_result:
+            event = get_event(*get_last_event())
+            item = NewsItem(text='Results for {} updated'.format(event['venue']),
+                            link='/wagsuser/events/{}/{}/results?event_type=1'.format(year, event['num']),
+                            title='show results')
+        elif item_type == NewsItemType.open_booking:
+            event = get_event(*get_next_event())
+            item = NewsItem(text='Booking open for {} {}'.format(event['venue'], encode_date(event['date'])),
+                            link=url_for_old_service('services.pl?show_event={}&year={}&book=1'.format(event['num'], year)),
+                            title='book now')
+        else:
+            return
+        free = [ind for ind, item in enumerate(self.items.data) if item['text'] == '']
+        if len(free) == 0:
+            free = [len(self.items)]
+            self.items.append_entry(NewsItemForm())
+        self.items[free[0]].text.data = item.text
+        self.items[free[0]].link.data = item.link
+        self.items[free[0]].title.data = item.title

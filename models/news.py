@@ -33,22 +33,12 @@ class News:
 
     def publish_newsday(self, news_day):
         if news_day.date in self.dates:
-            orig = self.get_news_day(news_day.date)
-            orig.merge(news_day)
-            news_day = orig
             self.update_news_day(news_day)
         else:
             self.add_news_day(news_day)
         self.write_all_news()
-        News.update_front_page(news_day.date)
-        pass
-
-    def save_newsday(self, news_day):
-        if news_day.date not in self.dates:
-            self.add_news_day(news_day)
-        else:
-            self.update_news_day(news_day)
-        self.write_all_news()
+        today = fmt_date(datetime.date().today())
+        News.update_front_page(today)
 
     def write_all_news(self):
         write_file(news_file(), ''.join([self.head] + self.news))
