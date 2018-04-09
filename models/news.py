@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 
 from back_end.data_utilities import decode_date_formal, fmt_date, encode_date_formal, coerce_fmt_date, dequote, \
     force_list, lookup
@@ -37,7 +37,7 @@ class News:
         else:
             self.add_news_day(news_day)
         self.write_all_news()
-        today = fmt_date(datetime.date().today())
+        today = fmt_date(datetime.date.today())
         News.update_front_page(today)
 
     def write_all_news(self):
@@ -71,7 +71,7 @@ class News:
 
 class NewsDay:
     def __init__(self, date=None, message='', items=[]):
-        self.date = coerce_fmt_date(date or datetime.today().date())
+        self.date = coerce_fmt_date(date or datetime.date.today())
         self.message = message
         items = force_list(items)
         self.items = [NewsItem(*item) for item in items]
@@ -110,7 +110,7 @@ class NewsDay:
         html = ['<hr/>', '<p><b>{}</b>'.format(encode_date_formal(self.date))]
         if self.message:
             m = self.message.replace('\n', '<br>')
-            html.append(m)
+            html.append('<p>' + m)
         if self.items:
             html.append('<ul>')
             for item in self.items:

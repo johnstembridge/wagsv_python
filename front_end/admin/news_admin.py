@@ -33,4 +33,5 @@ class MaintainNews:
                 form.add_news_item()
         else:
             form.populate_news_day(news_date)
-        return render_template('admin/news_day.html', form=form, render_link=render_link)
+        title = 'News ' + news_date
+        return render_template('admin/news_day.html', title=title, form=form, render_link=render_link)

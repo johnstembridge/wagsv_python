@@ -26,7 +26,6 @@ class NewsItemForm(FlaskForm):
 
 
 class NewsDayForm(FlaskForm):
-    title = StringField()
     date = DateField(label='Date')
     orig_date = HiddenField()
     items = FieldList(FormField(NewsItemForm))
@@ -43,7 +42,6 @@ class NewsDayForm(FlaskForm):
         else:
             news_date = news_date.replace('-', '/')
             news_day = News().get_news_day(news_date)
-        self.title.data = 'News ' + news_day.date
         self.date.data = parse_date(news_day.date)
         self.orig_date.data = parse_date(news_day.date)
         self.message.data = news_day.message
