@@ -174,10 +174,6 @@ def create_events_file(year):
     return create_wags_data_file(directory, filename, fields)
 
 
-def get_all_event_types():
-    return [(e.name, e.name) for e in EventType]
-
-
 def get_event_list(year):
     events = []
     for event_id in get_field(events_file(year), 'num'):
@@ -654,6 +650,12 @@ def get_all_player_names():
     return data
 
 
+def get_player_names(player_ids):
+    head, recs = get_records(players_file(), 'id', player_ids)
+    recs = {r[lookup(head, 'id')]: r[lookup(head, 'name')] for r in recs}
+    return [recs[p] for p in player_ids]
+
+
 def get_player_name(player_id):
     rec = get_record(players_file(), 'id', player_id)
     return rec['name']
@@ -888,3 +890,21 @@ def get_scores(year, status=None):
 
     scores = get_records(scores_file(), ['date', 'status'], [coerce(year, int), status], lu_fn)
     return scores
+
+
+def get_all_scores(status=None):
+    if status is not None:
+        status = force_list(status)
+        status = [str(s) for s in status]
+
+    def lu_fn(rec, keys, values):
+        status = values[0]
+        if status is not None:
+            res = rec[keys[0]] in status
+        return res
+
+    scores = get_records(scores_file(), ['status'], [status], lu_fn)
+    return scores
+
+
+

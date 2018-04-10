@@ -97,14 +97,19 @@ def swing(year):
     return Swing.swing_show(year)
 
 
+@app.route('/summary', methods=['GET', 'POST'])
+def summary():
+    return ReportEvents.playing_history_summary()
+
+
 @app.route('/players/<player_id>/<year>', methods=['GET', 'POST'])
 def show_player_events_for_year(player_id, year):
-    return ReportEvents.show_playing_history(player_id, year)
+    return ReportEvents.playing_history_player(player_id, year)
 
 
 @app.route('/players/<player_id>', methods=['GET', 'POST'])
 def show_player_events(player_id):
-    return ReportEvents.show_playing_history(player_id)
+    return ReportEvents.playing_history_player(player_id)
 # endregion
 
 

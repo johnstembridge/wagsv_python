@@ -6,7 +6,7 @@ from .event_result_form import EventResultsForm
 from globals.enumerations import EventType
 from globals.config import url_for_old_site, url_for_old_service
 from .handicap_history_form import HandicapHistoryForm
-from .player_history_form import PlayerHistoryForm
+from .player_history_form import PlayerHistoryForm, SummaryHistoryForm
 from .tour_result_form import TourResultsForm
 from front_end.form_helpers import render_link
 from back_end.interface import get_event, event_date, get_event_by_year_and_name
@@ -79,10 +79,16 @@ class ReportEvents:
         return render_template('user/handicap_history.html', form=form)
 
     @staticmethod
-    def show_playing_history(player_id, year=None):
+    def playing_history_player(player_id, year=None):
         form = PlayerHistoryForm()
         form.populate_history(player_id, year)
         return render_template('user/player_history.html', form=form)
+
+    @staticmethod
+    def playing_history_summary():
+        form = SummaryHistoryForm()
+        form.populate_summary_history()
+        return render_template('user/summary_history.html', form=form)
 
     @staticmethod
     def page_not_found(e):
