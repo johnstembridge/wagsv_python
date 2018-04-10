@@ -16,29 +16,49 @@ class News:
     def get_news_day(self, date):
         return NewsDay.from_html(self.news[self.dates.index(date)])
 
-    def add_news_day(self, newsday):
-        html = newsday.to_html()
-        self.dates = newsday.date + self.dates
+    def is_new_news_day(self, date):
+        return date not in self.dates
+
+    def add_news_day(self, news_day):
+        html = news_day.to_html()
+        self.dates = [news_day.date] + self.dates
         self.news = [html] + self.news
 
-    def update_news_day(self, newsday):
-        date = newsday.date
-        html = newsday.to_html()
-        i = self.dates.index(date)
+    def update_news_day(self, news_day, orig_date):
+        date = news_day.date
+        if date != orig_date:
+            orig = self.get_news_day(orig_date)
+            orig.merge(news_day)
+            news_day = orig
+            if date in self.dates:
+                self.remove_news_day(date)
+        html = news_day.to_html()
+        i = self.dates.index(orig_date)
+        self.dates[i] = date
         self.news[i] = html
+
+    def remove_news_day(self, date):
+        i = self.dates.index(date)
+        self.dates = self.dates[:i] + self.dates[i + 1:]
+        self.news = self.news[:i] + self.news[i + 1:]
 
     def news_select_choices(self):
         id = [d.replace('/', '-') for d in self.dates]
         return list(zip(id, self.dates))
 
-    def publish_newsday(self, news_day):
-        if news_day.date in self.dates:
-            self.update_news_day(news_day)
-        else:
-            self.add_news_day(news_day)
-        self.write_all_news()
+    def publish_news_day(self, news_day):
+        self.save_news_day(news_day)
         today = fmt_date(datetime.date.today())
         News.update_front_page(today)
+
+    def save_news_day(self, news_day, orig_date=None):
+        if not orig_date:
+            orig_date = news_day.date
+        if self.is_new_news_day(orig_date):
+            self.add_news_day(news_day)
+        else:
+            self.update_news_day(news_day, orig_date)
+        self.write_all_news()
 
     def write_all_news(self):
         write_file(news_file(), ''.join([self.head] + self.news))
@@ -77,7 +97,12 @@ class NewsDay:
         self.items = [NewsItem(*item) for item in items]
 
     def merge(self, extra):
-        self.items += extra.items
+        self.date = extra.date
+        self.message = extra.message
+        for item in extra.items:
+            if item.text in [e.text for e in self.items] or item.link in [e.link for e in self.items]:
+                continue
+            self.items += [item]
 
     @staticmethod
     def from_html(html):
@@ -129,7 +154,7 @@ class NewsItem:
         html = '<li>'
         if self.link:
             html += '<a href="{}"'.format(self.link)
-            if len(self.title) > 0:
+            if self.title and len(self.title) > 0:
                 html += ' title="{}"'.format(self.title)
             html += '>{}</a>'.format(self.text)
         else:

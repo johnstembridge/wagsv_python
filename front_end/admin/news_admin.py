@@ -26,8 +26,9 @@ class MaintainNews:
         form = NewsDayForm()
         if form.is_submitted():
             if form.save.data:
-                if form.save_news_day(news_date):
-                    flash('News published', 'success')
+                m = form.save_news_day(news_date)
+                if m:
+                    flash('News ' + m, 'success')
                     return redirect(url_for_admin('news_main'))
             if form.add_item.data:
                 form.add_news_item()
