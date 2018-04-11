@@ -1,15 +1,11 @@
-{% extends "user/base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
+{% extends "user/report_base.html" %}
+{% block title %}Playing history{% endblock %}
+{% block content %}
+{{ form.csrf_token }}
+    <h2>{{ form.player.data }}</h2>
+    <h3>Playing history</h3>
 
-{% block page_content %}
-<div class="page-header">
-    <h1>{{ form.player.data }}</h1>
-    <h2>Playing history {{ form.year.data }}</h2>
-</div>
-<form method="POST">
-    {{ form.csrf_token }}
-    <table width="100%" class="table table-striped">
-        <thead>
+    <table class="table-striped">
         <tr>
             <th>Date</th>
             <th>Course</th>
@@ -19,8 +15,7 @@
             <th>Handicap</th>
             <th>Status</th>
         </tr>
-        </thead>
-        <tbody>
+        <tr><td colspan="7"><hr></td></tr>
         {% for item in form.history %}
         <tr>
             <td>{{ item.date.data }}</td>
@@ -32,7 +27,6 @@
             <td>{{ item.status.data }}</td>
         </tr>
         {% endfor %}
-        </tbody>
     </table>
-</form>
 {% endblock %}
+{% block footer %}{{ super() }}{% endblock %}

@@ -1,31 +1,24 @@
-{% extends "user/base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
-
-{% block page_content %}
-<div class="page-header">
-    <h1>Events Played to date</h1>
-</div>
-<form method="POST">
-    {{ form.csrf_token }}
-    <table width="100%" class="table table-striped">
-        <thead>
-        <tr>
-            <th>Player</th>
-            <th>Status</th>
-            <th>Count</th>
-            <th>First Game</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for item in form.history %}
-        <tr>
-            <td>{{ item.player.data }}</td>
-            <td>{{ item.status.data }}</td>
-            <td>{{ item.count.data }}</td>
-            <td>{{ item.first_game.data }}</td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-</form>
+{% extends "user/report_base.html" %}
+{% block title %}Events Played to date{% endblock %}
+{% block content %}
+{{ form.csrf_token }}
+<h2>Events Played to date</h2>
+<table class="table-list">
+    <tr>
+        <th>Player</th>
+        <th>Status</th>
+        <th text-align=center>Count</th>
+        <th>First Game</th>
+    </tr>
+    <tr><td colspan="4"><hr></td></tr>
+    {% for item in form.history %}
+    <tr>
+        <td>{{ item.player.data }}</td>
+        <td>{{ item.status.data }}</td>
+        <td text-align=center>{{ item.count.data }}</td>
+        <td>{{ item.first_game.data }}</td>
+    </tr>
+    {% endfor %}
+</table>
 {% endblock %}
+{% block footer %}{{ super() }}{% endblock %}

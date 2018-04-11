@@ -71,7 +71,11 @@ class SummaryHistoryForm(FlaskForm):
 
     @staticmethod
     def get_summary_history():
-        all_scores = Table(*get_all_scores([PlayerStatus.member.value, PlayerStatus.ex_member.value]))
+        all_scores = Table(*get_all_scores('status',
+                                           [PlayerStatus.member.value,
+                                            PlayerStatus.ex_member.value,
+                                            PlayerStatus.guest.value]
+                                           ))
         all_scores.add_column('player_name', get_player_names(all_scores.get_columns('player')))
         all_scores.sort(['player', 'date'])
         hist = []

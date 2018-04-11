@@ -1,32 +1,32 @@
 *		{font-family: arial, helvetica, sans-serif}
-BODY, TD, P	{font-size: 10pt}
-BODY		{background: white; bgcolor: white; color: black}
+BODY, TH, TD, P	{font-size: 10pt}
+BODY	{background: white; background-color: white; color: black}
 BODY	{
 	margin-left: 0px;
 	margin-top: 20px;
 	margin-right: 10px;
 	margin-bottom: 0px;
 }
-H1		{color: #6E1285; font-family: arial, helvetica, sans-serif; font-size: 24pt}
-H2		{color: #6E1285; font-family: arial, helvetica, sans-serif; font-size: 20pt;}
-H3		{color: #6E1285; font-family: arial, helvetica, sans-serif; font-size: 16pt}
-H4		{color: #6E1285; font-family: arial, helvetica, sans-serif; font-size: 12pt}
+H1		{color: #6E1285; font-size: 24pt}
+H2		{color: #6E1285; font-size: 20pt;}
+H3		{color: #6E1285; font-size: 16pt}
+H4		{color: #6E1285; font-size: 12pt}
 HR		{margin-top: 7px; margin-bottom: 7px; border: 0; border-top: 1px solid #ccc;}
 HR.bold	{margin-top: 7px; margin-bottom: 7px; border: 0; border-top: 1px solid #777;}
 
-A:link		{color: #006233; text-decoration: none}
+A:link		    {color: #006233; text-decoration: none}
 A:visited		{color: #006233; text-decoration: none}
 A:active		{text-decoration: underline}
-A:hover		{font-weight: bold; text-decoration: underline}
+A:hover		    {font-weight: bold; text-decoration: underline}
 A.button:link 	{color: black; text-decoration: none}
 A.button:visited	{color: black; text-decoration: none}
 A.button:active	{color: white; text-decoration: none}
 A.button:hover	{color: white; text-decoration: none}
 IMG		{border-style: none}
-TD.h2		{color: #6E1285; font-family: arial, helvetica, sans-serif; font-size: 20pt; font-weight: bold; padding-bottom: 20px}
-TD.h3		{color: #6E1285; font-family: arial, helvetica, sans-serif; font-size: 16pt; font-weight: bold}
-TD.h4		{color: #6E1285; font-family: arial, helvetica, sans-serif; font-size: 12pt; font-weight: bold}
 TD.head		{color: #6E1285; font-weight: bold}
+TD.h2		{color: #6E1285; font-size: 20pt; font-weight: bold}
+TD.h3		{color: #6E1285; font-size: 16pt; font-weight: bold}
+TD.h4		{color: #6E1285; font-size: 12pt; font-weight: bold}
 TD.top3		{color: #6E1285}
 TD.button	{text-align: center; background: #A16AAF}
 TD.button1	{text-align: center; background: #98C0AD}
@@ -39,13 +39,16 @@ TD.button3	{text-align: center; background: #006233}
 	color: #000000;
 }
 .page-header {margin: 0}
-H2.table-title {color: #6E1285; font-family: arial, helvetica, sans-serif; font-size: 20pt; font-weight: bold; margin-top: 0px}
+H2.table-title {color: #6E1285; font-size: 20pt; font-weight: bold; margin-top: 0px}
 
-table.list {border:0; bgcolor:white; cellpadding:2; border-spacing: 1px; border-collapse: separate}
-table.list th {color: #6E1285; font-weight: bold; padding: 0px 2px 0px 2px}
-table.list td {padding: 0px 2px 0px 2px}
-table.list.result tr:nth-child(-n+3){color: #6E1285}
+.table-list table {border:0; background-color:white; border-spacing: 1px; border-collapse: separate}
+.table-list th {text-align: left; color: #6E1285; font-weight: bold; height:20px; padding: 0px 2px 0px 2px}
+.table-list td {text-align: left; padding: 2px 2px 2px 2px}
+.table-list hr {border-style: inset; border-width: 1px solid #6E1285;}
+.table-list-result tr:nth-child(-n+3){color: #6E1285}
 
-table.striped {border-collapse: collapse}
-table.striped tr {border: solid; border-width: 1px 0; border-color: #ccc;}
-table.striped tr:first-child {border-top: none;}
+.table-striped table {border-collapse: collapse}
+.table-striped th {text-align: left; color: #6E1285; font-weight: bold; padding: 0px 2px 0px 2px}
+.table-striped tr {text-align: left; border: solid; border-width: 1px 0; border-color: #ccc;}
+.table-striped hr {border-style: inset; border-width: 1px solid #6E1285;}
+.table-striped tr:first-child {border-top: none;}
