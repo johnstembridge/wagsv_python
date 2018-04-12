@@ -1,27 +1,23 @@
-{% extends "user/base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
-
-{% block page_content %}
-<div class="page-header">
-    <h2>{{ form.event_name.data }}</h2>
-</div>
+{% extends "user/report_base.html" %}
+{% block title %}{{ form.event_name.data }}{% endblock %}
+{% block content %}
+<h2>{{ form.event_name.data }}</h2>
 <table class="list result">
     <thead>
     <tr>
         <th align="right">Position</th>
         <th align="left">Name</th>
-        <th>Score</th>
-        <th>Strokes</th>
-        <th>Handicap</th>
-        <th class="text-center">Card</th>
+        <th align="center">Score</th>
+        <th align="center">Strokes</th>
+        <th align="center">Handicap</th>
+        <th align="center">Card</th>
     </tr>
-    <tr><td colspan=6><hr class="bold"/></td>
+    <tr><td colspan=6><hr class="bold"/></td></tr>
     </thead>
-    <tbody>
 
-    </tr>
+    <tbody>
     {% for item in form.scores %}
-    <tr>
+    <tr height="23">
         <td align="right">{{ item.position.data }}</td>
         <td>{{ item.player.data }}</td>
         <td align="center">{{ item.points.data }}</td>
@@ -37,7 +33,7 @@
         </td>
     </tr>
     {% endfor %}
-    <tr><td colspan=6><hr class="bold"/></td>
+    <tr><td colspan=6><hr class="bold"/></td></tr>
     </tbody>
 </table>
 {% endblock %}

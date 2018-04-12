@@ -1,7 +1,7 @@
-{% extends "user/base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
-
-{% block page_content %}
+{% extends "user/report_base.html" %}
+{% block title %}Victor Ludorum {{ year }}{% endblock %}
+{% block content %}
+{{ form.csrf_token }}
 <table width="100%">
     <tr>
         <td class="h2">Victor Ludorum {{ year }}</td>
@@ -21,6 +21,7 @@
             )|safe }}
         </td>
     </tr>
+    <tr><td>&nbsp;</td></tr>
 </table>
 <table class="list result">
     <thead>
@@ -30,7 +31,7 @@
         <th>Points</th>
         <th>Matches</th>
         <th>Lowest</th>
-        <th class="text-center">Matches</th>
+        <th align="center">Matches</th>
     </tr>
     <tr><td colspan=6><hr class="bold"/></td>
     </thead>
@@ -39,7 +40,7 @@
     {% for item in form.vl %}
     <tr>
         <td align="right">{{ item.position.data }}</td>
-        <td>{{ item.player.data }}</td>
+        <td align="left">{{ item.player.data }}</td>
         <td align="center">{{ item.points.data }}</td>
         <td align="center">{{ item.matches.data }}</td>
         <td align="center">{{ item.lowest.data }}</td>

@@ -2,23 +2,24 @@
 {% block title %}Events Played to date{% endblock %}
 {% block content %}
 {{ form.csrf_token }}
+
 <h2>Events Played to date</h2>
-<table class="table-list">
+<table width="100%" class="list">
     <tr>
-        <th>Player</th>
-        <th>Status</th>
-        <th text-align=center>Count</th>
-        <th>First Game</th>
+        <th align="left">Player</th>
+        <th align="left">Status</th>
+        <th align="center">Count</th>
+        <th align="left">First Game</th>
     </tr>
-    <tr><td colspan="4"><hr></td></tr>
+    <tr><td colspan="4"><hr class="bold"></td></tr>
     {% for item in form.history %}
-    <tr>
+    <tr height="23">
         <td>{{ item.player.data }}</td>
         <td>{{ item.status.data }}</td>
-        <td text-align=center>{{ item.count.data }}</td>
+        <td style="text-align:center">{{ item.count.data }}</td>
         <td>{{ item.first_game.data }}</td>
     </tr>
     {% endfor %}
+    <tr><td colspan="4"><hr class="bold"></td></tr>
 </table>
 {% endblock %}
-{% block footer %}{{ super() }}{% endblock %}

@@ -892,6 +892,9 @@ def get_scores(year, status=None):
     return scores
 
 
-def get_all_scores(key, values):
-    values = [str(v) for v in force_list(values)]
-    return get_records(scores_file(), key, values)
+def get_all_scores(key=None, values=None):
+    if key is None and values is None:
+        return get_all_records(scores_file())
+    else:
+        values = [str(v) for v in force_list(values)]
+        return get_records(scores_file(), key, values)

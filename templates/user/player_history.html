@@ -1,32 +1,31 @@
 {% extends "user/report_base.html" %}
-{% block title %}Playing history{% endblock %}
+{% block title %}Playing history {{ form.player.data }}{% endblock %}
 {% block content %}
 {{ form.csrf_token }}
-    <h2>{{ form.player.data }}</h2>
-    <h3>Playing history</h3>
-
-    <table class="table-striped">
-        <tr>
-            <th>Date</th>
-            <th>Course</th>
-            <th>Position</th>
-            <th>Points</th>
-            <th>Strokes</th>
-            <th>Handicap</th>
-            <th>Status</th>
-        </tr>
-        <tr><td colspan="7"><hr></td></tr>
-        {% for item in form.history %}
-        <tr>
-            <td>{{ item.date.data }}</td>
-            <td>{{ item.course.data }}</td>
-            <td align="center">{{ item.position.data }}</td>
-            <td align="center">{{ item.points.data }}</td>
-            <td align="center">{{ item.strokes.data }}</td>
-            <td align="center">{{ item.handicap.data }}</td>
-            <td>{{ item.status.data }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+<h2>{{ form.player.data }}</h2>
+<h3>Playing history</h3>
+<table class="list">
+    <tr>
+        <th align="left">Date</th>
+        <th align="left">Course</th>
+        <th>Position</th>
+        <th>Points</th>
+        <th>Strokes</th>
+        <th>Handicap</th>
+        <th align="left">Status</th>
+    </tr>
+    <tr><td colspan="7"><hr class="bold"/></td></tr>
+    {% for item in form.history %}
+    <tr height="23">
+        <td>{{ item.date.data }}</td>
+        <td>{{ item.course.data }}</td>
+        <td style="text-align:center">{{ item.position.data }}</td>
+        <td style="text-align:center">{{ item.points.data }}</td>
+        <td style="text-align:center">{{ item.strokes.data }}</td>
+        <td style="text-align:center">{{ item.handicap.data }}</td>
+        <td>{{ item.status.data }}</td>
+    </tr>
+    {% endfor %}
+    <tr><td colspan="7"><hr class="bold"/></td></tr>
+</table>
 {% endblock %}
-{% block footer %}{{ super() }}{% endblock %}

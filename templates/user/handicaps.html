@@ -1,17 +1,16 @@
-{% extends "user/base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
-
-{% block page_content %}
-<H2 class="table-title">Handicaps</H2>
+{% extends "user/report_base.html" %}
+{% block title %}Handicaps{% endblock %}
+{% block content %}
+<H2>Handicaps</H2>
 <table width="100%" class="list">
     <thead>
     <tr>
         <th>Name</th>
-        <th class="text-center">Handicap</th>
-        <th class="text-center">History</th>
-        <th>Name</th>
-        <th class="text-center">Handicap</th>
-        <th class="text-center">History</th>
+        <th align="center">Handicap</th>
+        <th align="center">History</th>
+        <th align="left">Name</th>
+        <th align="center">Handicap</th>
+        <th align="center">History</th>
     </tr>
     <tr><td colspan=6><hr class="bold"/></td>
     </thead>
@@ -42,7 +41,6 @@
     {% endif %}
     {% endfor %}
     </tbody>
+    <tr><td colspan=6><hr class="bold"/></td>
 </table>
-
-<hr/>
 {% endblock %}
