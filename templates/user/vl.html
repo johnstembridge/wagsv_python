@@ -2,28 +2,15 @@
 {% block title %}Victor Ludorum {{ year }}{% endblock %}
 {% block content %}
 {{ form.csrf_token }}
-<table width="100%">
-    <tr>
-        <td class="h2">Victor Ludorum {{ year }}</td>
-        <td/>
-        <td/>
-        <td class="h4" colspan=3 align="right">
-            {{ render_link(
-            url=url_for('vl', year=year-1),
-            text='&#x25C4;'
-            )|safe }}
-            &nbsp;
-            year
-            &nbsp;
-            {{ render_link(
-            url=url_for('vl', year=year+1),
-            text='&#x25BA;'
-            )|safe }}
-        </td>
-    </tr>
-    <tr><td>&nbsp;</td></tr>
-</table>
-<table class="list result">
+
+<span class="left"><h2 class="table-title">Victor Ludorum {{ year }}</h2></span>
+<span class="right">
+    <h4 class="table-title">{{ render_link(url=url_for('vl', year=year-1), text='&#x25C4;')|safe }}
+            &nbsp; year &nbsp;
+            {{ render_link(url=url_for('vl', year=year+1), text='&#x25BA;')|safe }}
+    </h4>
+</span>
+<table class="list result" width="100%">
     <thead>
     <tr>
         <th align="right">Position</th>
@@ -33,10 +20,9 @@
         <th>Lowest</th>
         <th align="center">Matches</th>
     </tr>
-    <tr><td colspan=6><hr class="bold"/></td>
+    <tr><td colspan=6><hr class="bold"/></td></tr>
     </thead>
     <tbody>
-    </tr>
     {% for item in form.vl %}
     <tr>
         <td align="right">{{ item.position.data }}</td>
@@ -47,13 +33,13 @@
         <td align="center">
             {{ render_link(
             url=url_for('show_player_events_for_year', player_id=item.player_id.data, year=form.year.data),
-            image=url_for('static', filename='images/go.jpg'),
-            text='View matches'
+            image=url_for('static', filename='images/go.png'),
+            text='View matches for ' + item.player.data
             )|safe }}
         </td>
     </tr>
     {% endfor %}
-    <tr><td colspan=6><hr class="bold"/></td>
+    <tr><td colspan=6><hr class="bold"/></td></tr>
     </tbody>
 </table>
 {% endblock %}

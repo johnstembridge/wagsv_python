@@ -1,29 +1,28 @@
 {% extends "user/report_base.html" %}
-{% block title %}Handicap History {% endblock %}
+{% block title %}Handicap History {{ form.player.data }}{% endblock %}
 {% block content %}
 {{ form.csrf_token }}
 
-<h1>Handicap history</h1>
-<h2>{{ form.player.data }}</h2>
+<h2 class="table-title">Handicap History {{ form.player.data }}</h2>
 
-<table width="100%" class="list">
+<table width="100%" class="list" style="table-layout: fixed">
     <thead>
     <tr>
         <th align="left">Date</th>
         <th>Handicap</th>
         <th align="left">Status</th>
     </tr>
-    <tr><td colspan=3><hr class="bold"/></td>
+    <tr><td colspan=3><hr class="bold"/></td></tr>
     </thead>
     <tbody>
     {% for item in form.history %}
-    <tr height="23">
+    <tr>
         <td>{{ item.date.data }}</td>
         <td align="center">{{ item.handicap.data }}</td>
         <td>{{ item.status.data }}</td>
     </tr>
     {% endfor %}
-    <tr><td colspan=3><hr class="bold"/></td>
+    <tr><td colspan=3><hr class="bold"/></td></tr>
     </tbody>
 </table>
 {% endblock %}

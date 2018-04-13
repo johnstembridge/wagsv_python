@@ -89,8 +89,8 @@ class NewsDayForm(FlaskForm):
                             title='show results')
         elif item_type == NewsItemType.open_booking:
             event = get_event(*get_next_event())
-            item = NewsItem(text='Booking open for {} {}'.format(event['venue'], encode_date(event['date'])),
-                            link=url_for_old_service('services.pl?show_event={}&year={}&book=1'.format(event['num'], year)),
+            item = NewsItem(text='Booking now open for {} {}'.format(event['venue'], encode_date(event['date'])),
+                            link='/wagsuser/events/{}/{}/book'.format(year, event['num']),
                             title='book now')
         else:
             return

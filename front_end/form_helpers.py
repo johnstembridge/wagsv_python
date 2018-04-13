@@ -25,10 +25,14 @@ def set_select_field(field, item_name, choices, default_selection=None):
             field.data = field.default = default[0]
 
 
-def render_link(url, text="", image=None, target=None):
+def render_link(url, text="", image=None, icon=None, target=None):
     target = ' target="{}"'.format(target) if target else ''
     if image:
         return '<a href="{}"{}><img title="{}" src="{}"></a>'.format(url, target, text, image)
+    if icon:
+        if icon == 'fa-link':
+            icon = '<i class="fa fa-chevron-circle-right" style="font-size:20px;color:#6E1285"></i>'
+        return '<a href="{}"{} title="{}" class="icon-block">{}'.format(url, target, text, icon)
     if text:
         return '<a href="{}"{}>{}</a>'.format(url, target, text)
 

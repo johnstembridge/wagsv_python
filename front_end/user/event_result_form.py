@@ -1,6 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField, HiddenField
-from back_end.interface import get_event, get_results, save_event_scores, is_event_result_editable
+
+from back_end.data_utilities import fmt_date
+from back_end.interface import get_event, get_results, is_event_result_editable
 
 
 class EventResultItemForm(FlaskForm):
@@ -29,10 +31,10 @@ class EventResultsForm(FlaskForm):
         self.event_id.data = event_id
         self.year.data = year
         event = get_event(year, event_id)
-        self.event_name.data = '{} {} {}'.format(event['event'], event['venue'], event['date'])
+        self.event_name.data = '{} {} {}'.format(event['event'], event['venue'], fmt_date(event['date']))
         self.editable = is_event_result_editable(year, event_id)
         players = get_results(year, event_id)
-        for player in players:
+        for player in [p for p in players if int(p['points']) > 0]:
             item_form = EventResultItemForm()
             guest = "" if (player['guest'] == "") else " (" + player['guest'] + ")"
             item_form.player = player['name'] + guest

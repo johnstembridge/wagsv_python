@@ -3,7 +3,7 @@
 {% block content %}
 {{ form.csrf_token }}
 
-<h2>Events Played to date</h2>
+<h2 class="table-title">Events Played to date</h2>
 <table width="100%" class="list">
     <tr>
         <th align="left">Player</th>
@@ -13,7 +13,7 @@
     </tr>
     <tr><td colspan="4"><hr class="bold"></td></tr>
     {% for item in form.history %}
-    <tr height="23">
+    <tr>
         <td>{{ item.player.data }}</td>
         <td>{{ item.status.data }}</td>
         <td style="text-align:center">{{ item.count.data }}</td>

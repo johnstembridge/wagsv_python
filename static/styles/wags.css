@@ -35,6 +35,19 @@ A.button:link 	{color: black; text-decoration: none}
 A.button:visited	{color: black; text-decoration: none}
 A.button:active	{color: white; text-decoration: none}
 A.button:hover	{color: white; text-decoration: none}
+
+a.icon-block {
+    display:inline-block;
+    width:10em;
+    float:left;
+    text-align:center;
+}
+a.icon-block i {
+    display:block;
+    width:100%;
+    clear:both;
+}
+
 IMG		{border-style: none}
 TD.head		{color: #6E1285; font-weight: bold}
 TD.h2		{color: #6E1285; font-size: 20pt}
@@ -52,9 +65,11 @@ TD.button3	{text-align: center; background: #006233}
 	color: #000000;
 }
 .page-header {margin: 0}
-H2.table-title {color: #6E1285; font-size: 20pt; font-weight: bold; margin-top: 0px}
+h2.table-title {color: #6E1285; font-size: 20pt; margin-top: 0px; margin-bottom: 10px; font-weight: bold}
+h3.table-title {color: #6E1285; font-size: 16pt; margin-top: 0px; margin-bottom: 10px; font-weight: bold}
+h4.table-title {color: #6E1285; font-size: 12pt; margin-top: 5px; margin-bottom: 5px; font-weight: bold}
 
-table.list {border-spacing: 0px; background-color: white}
+table.list {border-spacing: 0px; background-color: white; line-height:23px}
 table.list th {color: #6E1285; font-weight: bold; padding: 0px 2px 0px 2px}
 table.list td {padding: 0px 3px 0px 3px}
 table.list.result tr:nth-child(-n+3){color: #6E1285}
@@ -62,3 +77,12 @@ table.list.result tr:nth-child(-n+3){color: #6E1285}
 table.list.striped tr:nth-child(odd) { background-color: #ccc;}
 table.list.striped tr:first-child {border-top: none; background-color: white}
 table.list.striped tr:last-child {border-top: none; background-color: white}
+
+.right {float:right;}
+.left {float:left;}
+.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}

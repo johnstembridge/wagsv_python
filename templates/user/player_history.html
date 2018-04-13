@@ -1,9 +1,8 @@
 {% extends "user/report_base.html" %}
-{% block title %}Playing history {{ form.player.data }}{% endblock %}
+{% block title %}Playing History {{ form.player.data }} {{ form.year.data}}{% endblock %}
 {% block content %}
 {{ form.csrf_token }}
-<h2>{{ form.player.data }}</h2>
-<h3>Playing history</h3>
+<h2 class="table-title">Playing History {{ form.player.data }} {{ form.year.data}}</h2>
 <table class="list">
     <tr>
         <th align="left">Date</th>
@@ -16,13 +15,13 @@
     </tr>
     <tr><td colspan="7"><hr class="bold"/></td></tr>
     {% for item in form.history %}
-    <tr height="23">
+    <tr>
         <td>{{ item.date.data }}</td>
         <td>{{ item.course.data }}</td>
-        <td style="text-align:center">{{ item.position.data }}</td>
-        <td style="text-align:center">{{ item.points.data }}</td>
-        <td style="text-align:center">{{ item.strokes.data }}</td>
-        <td style="text-align:center">{{ item.handicap.data }}</td>
+        <td align="center">{{ item.position.data }}</td>
+        <td align="center">{{ item.points.data }}</td>
+        <td align="center">{{ item.strokes.data }}</td>
+        <td align="center">{{ item.handicap.data }}</td>
         <td>{{ item.status.data }}</td>
     </tr>
     {% endfor %}

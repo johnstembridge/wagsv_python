@@ -1,7 +1,7 @@
 {% extends "user/report_base.html" %}
 {% block title %}{{ form.event_name.data }}{% endblock %}
 {% block content %}
-<h2>{{ form.event_name.data }}</h2>
+<h2 class="table-title">{{ form.event_name.data }}</h2>
 <table class="list result">
     <thead>
     <tr>
@@ -17,7 +17,7 @@
 
     <tbody>
     {% for item in form.scores %}
-    <tr height="23">
+    <tr>
         <td align="right">{{ item.position.data }}</td>
         <td>{{ item.player.data }}</td>
         <td align="center">{{ item.points.data }}</td>
@@ -27,8 +27,8 @@
             {{ render_link(
             url=url_for('card_event_player', year=form.year.data, event_id=form.event_id.data,
             player_id=item.player_id.data),
-            image=url_for('static', filename='images/go.jpg'),
-            text='View card'
+            image=url_for('static', filename='images/go.png'),
+            text='View card for ' + item.player.data
             )|safe }}
         </td>
     </tr>

@@ -1,30 +1,14 @@
-{% extends "user/base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
+{% extends "user/report_base.html" %}
+{% block title %}The Beament Big Swing {{ form.year_span.data }}{% endblock %}
+{% block content %}
 
-{% block page_content %}
-<table width="100%">
-    <tr>
-        <td class="h2">The Beament Big Swing {{ form.year_span.data }}</td>
-        <td/>
-        <td/>
-        <td class="h4" colspan=3 align="right">
-            {{ render_link(
-            url=url_for('swing', year=year-1),
-            text='&#x25C4;'
-            )|safe }}
-            &nbsp;
-            year
-            &nbsp;            &nbsp;
-            {{ render_link(
-            url=url_for('swing', year=year+1),
-            text='&#x25BA;'
-            )|safe }}
-        </td>
-    </tr>
-</table>
-<img src="http://www.wags.org/pictures/swing.jpg" width="400" height="500" ALT="The Beament Big Swing">
-<p>
-<table class="list result">
+<h2 class="table-title left">The Beament Big Swing {{ form.year_span.data }}</h2>
+<h4 class="table-title right">{{ render_link(url=url_for('swing', year=year-1), text='&#x25C4;')|safe }}
+        &nbsp; year &nbsp;
+        {{ render_link(url=url_for('swing', year=year+1), text='&#x25BA;')|safe }}
+</h4>
+<img class="center" src="http://www.wags.org/pictures/swing.jpg" width="400" height="500" alt="The Beament Big Swing">
+<table class="list result" width="100%">
     <thead>
     <tr>
         <th align="right">Position</th>
