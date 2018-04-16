@@ -61,3 +61,6 @@ class Table:
             return row
         self.data = [update_value(list(d), index, c) for d, c in zip(self.data, col)]
 
+    def __str__(self):
+        res = ['\t'.join([str(item) for item in row]) for row in [self.head] + self.data]
+        return '\n'.join(res)

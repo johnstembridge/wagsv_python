@@ -4,6 +4,7 @@ from flask import Flask, request, session
 from flask_bootstrap import Bootstrap
 from front_end.user.events_user import ReportEvents
 from front_end.user.handicaps import Handicaps
+from front_end.user.trophy import Trophy
 from front_end.user.vl import Vl
 
 from globals import config, logging
@@ -97,7 +98,14 @@ def swing(year):
     return Swing.swing_show(year)
 
 
-@app.route('/summary', methods=['GET', 'POST'])
+@app.route('/trophies/<trophy>', methods=['GET', 'POST'])
+def trophy(trophy):
+    return Trophy.trophy_show(trophy)
+# endregion
+
+
+# region Players
+@app.route('/players/summary', methods=['GET', 'POST'])
 def summary():
     return ReportEvents.playing_history_summary()
 

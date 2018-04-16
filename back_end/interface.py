@@ -31,7 +31,8 @@ courses_data = r'courses.txt'
 handicaps_data = r'hcaps.tab'
 scores_data = r'scores.tab'
 shots_data = r'shots.tab'
-trophies_data = r'trophies.txt'
+trophy_data = r'trophies.txt'
+trophy_history = r'trophy_history.txt'
 admin_users = r'admin_users.txt'
 news_data = r'news/news.htm'
 
@@ -88,7 +89,11 @@ def shots_file():
 
 
 def trophies_file():
-    return os.path.join(data_location, trophies_data)
+    return os.path.join(data_location, trophy_data)
+
+
+def trophy_history_file():
+    return os.path.join(data_location, trophy_history)
 
 
 def news_file():
@@ -681,6 +686,11 @@ def get_players(as_of, status=None):
     return sort_name_list(current)
 
 
+def get_player_select_list():
+    players = get_fields(players_file(), ['id', 'name'])
+    return sorted(players, key=lambda tup: tup[1])
+
+
 def get_handicaps(as_of, status=None):
     header, recs = get_handicap_records(as_of, status)
     inx = lookup(header, ['player', 'handicap'])
@@ -838,44 +848,45 @@ def get_member(key, value):
 # endregion
 
 
-def get_all_years():
-    current_year = datetime.datetime.now().year
-    inc = 1 if datetime.datetime.now().month > 10 else 0
-    years = [i for i in range(current_year + inc, 1992, -1)]
-    return years
-
-
+# region Trophies
 def get_all_trophy_names():
     trophies = get_field(trophies_file(), 'name')
     return sorted(trophies)
+
+
+def get_trophy(trophy_id):
+    rec = get_record(trophies_file(), 'id', trophy_id)
+    return rec
+
+
+def get_trophy_select_list():
+    trophies = get_fields(trophies_file(), ['id', 'name'])
+    return sorted(trophies, key=lambda tup: tup[1])
+
+
+def get_trophy_history(trophy_id):
+    rec = get_records(trophy_history_file(), 'trophy', trophy_id)
+    return rec
+
+
+def get_all_trophies():
+    rec = get_all_records(trophies_file())
+    return rec
+
+
+def get_all_trophy_history():
+    rec = get_all_records(trophy_history_file())
+    return rec
 
 
 def get_trophy_url(event):
     trophy = event.lower().replace(" ", "_").replace("-", "")
     url = config.url_for_old_site("history/trophies/")
     return url + trophy + '.htm'
+# endregion
 
 
-def create_bookings_file(year, event_id):
-    directory = os.path.join(data_location, str(year))
-    filename = bookings_file(year, event_id)
-    fields = bookings_file_fields()
-    return create_wags_data_file(directory, filename, fields, access_all=True)
-
-
-def create_wags_data_file(directory, filename, fields, access_all=False):
-    result = True
-    try:
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-        if not os.path.exists(filename):
-            create_data_file(filename, fields, access_all)
-    except:
-        e = sys.exc_info()[0]
-        result = False
-    return result
-
-
+# region scores
 def get_scores(year, status=None):
     if status is not None:
         status = force_list(status)
@@ -898,3 +909,31 @@ def get_all_scores(key=None, values=None):
     else:
         values = [str(v) for v in force_list(values)]
         return get_records(scores_file(), key, values)
+# endregion
+
+
+def get_all_years():
+    current_year = datetime.datetime.now().year
+    inc = 1 if datetime.datetime.now().month > 10 else 0
+    years = [i for i in range(current_year + inc, 1992, -1)]
+    return years
+
+
+def create_bookings_file(year, event_id):
+    directory = os.path.join(data_location, str(year))
+    filename = bookings_file(year, event_id)
+    fields = bookings_file_fields()
+    return create_wags_data_file(directory, filename, fields, access_all=True)
+
+
+def create_wags_data_file(directory, filename, fields, access_all=False):
+    result = True
+    try:
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        if not os.path.exists(filename):
+            create_data_file(filename, fields, access_all)
+    except:
+        e = sys.exc_info()[0]
+        result = False
+    return result

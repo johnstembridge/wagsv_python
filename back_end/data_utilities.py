@@ -282,3 +282,19 @@ def de_the(string):
 
 def my_round(float_num):
     return math.floor(float_num + 0.5)
+
+
+def ids_from_names(all, names):
+    # all is list of tuples (id, name)
+    all_ids = [item[0] for item in all]
+    all_names = [item[1] for item in all]
+    ids = [all_ids[all_names.index(name)] for name in names]
+    return ids
+
+
+def names_from_ids(all, ids):
+    # all is list of tuples (id, name)
+    all_ids = [item[0] for item in all]
+    all_names = [item[1] for item in all]
+    names = [all_names[all_ids.index(id)] for id in ids]
+    return names

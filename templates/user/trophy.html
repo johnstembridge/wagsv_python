@@ -1,0 +1,33 @@
+{% extends "user/report_base.html" %}
+{% block title %}Trophies - {{ form.trophy_name.data }}{% endblock %}
+{% block content %}
+
+<h2 class="table-title">Trophies - {{ form.trophy_name.data }}</h2>
+<img class="center" src="{{ form.image_url.data }}" alt="{{ form.trophy_name.data }}">
+<h3 class="table-title">Winners</h3>
+<table class="list" width="100%">
+    <thead>
+    <tr>
+        <th align="left">Date</th>
+        <th align="left">Venue</th>
+        <th align="left">Winner</th>
+        <th align="center">Score</th>
+        <th align="center">Average</th>
+    </tr>
+    <tr><td colspan=5><hr class="bold"/></td>
+    </thead>
+    <tbody>
+    </tr>
+    {% for item in form.winners %}
+    <tr>
+        <td>{{ item.date.data }}</td>
+        <td>{{ item.venue.data }}</td>
+        <td>{{ item.winner.data }}</td>
+        <td align="center">{{ item.score.data }}</td>
+        <td align="center">{{ item.average.data }}</td>
+    </tr>
+    {% endfor %}
+    <tr><td colspan=5><hr class="bold"/></td>
+    </tbody>
+</table>
+{% endblock %}

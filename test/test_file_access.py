@@ -93,10 +93,6 @@ class TestInterface(unittest.TestCase):
         header, recs = get_records(TestData.handicaps_file, 'status', '1')
         self.assertTrue(len(recs) > 0)
 
-    def test_get_record_trophy(self):
-        rec = get_record(TestData.trophies_file, 'name', 'Dearden Decanter')
-        self.assertTrue(rec['sponsor'] == 'Mike Dearden')
-
     def test_get_records_multi_value(self):
         header, recs = get_records(TestData.handicaps_file, 'player', ['1', '2', '3'])
         self.assertTrue(len(recs) > 0)
@@ -138,4 +134,4 @@ class TestInterface(unittest.TestCase):
     def test_update_date(self):
         date = '2018/04/02'
         file = front_page_header_file()
-        update_html_elements(file, 'last_updated', date)
+        update_html_elements(file, {'last_updated': date})
