@@ -35,7 +35,7 @@ class TrophyForm(FlaskForm):
     def populate_trophy(self, trophy_id):
         trophy = get_trophy(trophy_id)
         self.trophy_name.data = trophy['name']
-        self.image_url.data = os.path.join(config.get('locations')['html'], 'trophies', trophy['name'] + '.jpg')
+        self.image_url.data = os.path.join(config.get('locations')['html'], 'trophies', trophy['name'].lower() + '.jpg')
         hist = Table(*get_trophy_history(trophy_id))
         hist.update_column('winner', names_from_ids(get_player_select_list(), hist.get_columns('winner')))
         hist.update_column('venue', names_from_ids(get_venue_select_list(), hist.get_columns('venue')))
