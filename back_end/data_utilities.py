@@ -284,6 +284,12 @@ def my_round(float_num):
     return math.floor(float_num + 0.5)
 
 
+def mean(values):
+    if type(first_or_default(values, 0)) == str:
+        values = [float(v) for v in values]
+    return sum(values)/max(len(values), 1)
+
+
 def ids_from_names(all, names):
     # all is list of tuples (id, name)
     all_ids = [item[0] for item in all]

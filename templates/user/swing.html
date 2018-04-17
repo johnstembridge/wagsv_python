@@ -7,7 +7,8 @@
         &nbsp; year &nbsp;
         {{ render_link(url=url_for('swing', year=year+1), text='&#x25BA;')|safe }}
 </h4>
-<img class="center" src="http://www.wags.org/pictures/swing.jpg" width="400" height="500" alt="The Beament Big Swing">
+<img class="responsive-image center" src="{{ form.image_url.data }}" alt="The Beament Big Swing">
+<br>
 <table class="list result" width="100%">
     <thead>
     <tr>

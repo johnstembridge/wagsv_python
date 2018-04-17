@@ -3,7 +3,7 @@ from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField
 
 from back_end.calc import calc_event_positions
 from back_end.interface import get_event, lookup_course, get_course_data, save_event_card, get_event_card, \
-    get_player_name, is_event_result_editable, get_event_scores, save_event_scores
+    get_player_name, is_event_result_editable, get_event_scores, save_event_scores, update_trophy_history
 from globals.enumerations import PlayerStatus
 
 
@@ -84,6 +84,7 @@ class EventCardForm(FlaskForm):
         new = (player_id, '0', total_points, total_shots, handicap, status)
         all_scores.update_row('player', player_id, new)
         result = calc_event_positions(year, event_id, all_scores)
-        save_event_scores(year, event_id, result.head, result.data)
+        save_event_scores(year, event_id, result)
+        update_trophy_history(year, event_id, result)
 
         return True

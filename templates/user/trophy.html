@@ -4,6 +4,10 @@
 
 <h2 class="table-title">Trophies - {{ form.trophy_name.data }}</h2>
 <img class="responsive-image center" src="{{ form.image_url.data }}" alt="{{ form.trophy_name.data }}">
+{% if form.extra.data %}
+    {% include form.extra.data %}
+{% endif %}
+
 <h3 class="table-title">Winners</h3>
 <table class="list" width="100%">
     <thead>

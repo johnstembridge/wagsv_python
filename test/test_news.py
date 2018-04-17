@@ -1,6 +1,5 @@
 import unittest
 
-from interface import front_page_header_file
 from models.news import News, NewsDay, NewsItem
 
 

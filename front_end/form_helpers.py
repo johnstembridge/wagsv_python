@@ -1,7 +1,6 @@
 from flask import flash, url_for
 
-from back_end.data_utilities import coerce, force_list
-from globals import config
+from back_end.data_utilities import force_list
 
 
 def flash_errors(form):
@@ -42,6 +41,12 @@ def render_html(template, **kwargs):
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(searchpath='../templates/'))
     template = env.get_template(template)
     return template.render(url_for=url_for, **kwargs)
+
+
+def template_exists(template):
+    import jinja2
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(searchpath='../templates/'))
+    return template in env.list_templates()
 
 
 def update_html(html, pairs):

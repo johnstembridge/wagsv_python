@@ -1,9 +1,11 @@
+import os
 from flask_wtf import FlaskForm
 from flask import render_template
 from wtforms import StringField, FormField, FieldList
 
 from back_end.calc import get_big_swing
 from front_end.form_helpers import render_link
+from globals import config
 
 
 class Swing:
@@ -29,6 +31,7 @@ class SwingForm(FlaskForm):
     swing = FieldList(FormField(SwingItemForm))
     year = StringField()
     year_span = StringField()
+    image_url = StringField()
 
     def populate_swing(self, year):
         self.year.data = year
@@ -45,3 +48,4 @@ class SwingForm(FlaskForm):
 
             self.swing.append_entry(item_form)
         self.year_span.data = str(int(year)-1) + '/' + year
+        self.image_url.data = os.path.join(config.get('locations')['base_url'], 'trophies', 'swing.jpg')

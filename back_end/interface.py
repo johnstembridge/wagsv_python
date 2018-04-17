@@ -11,7 +11,7 @@ from back_end.players import Player
 from back_end.data_utilities import encode_date, encode_price, decode_date, decode_price, decode_time, \
     sort_name_list, lookup, force_list, coerce, decode_event_type, encode_event_type, \
     encode_address, decode_address, de_the, encode_directions, decode_directions, coerce_date, coerce_fmt_date, \
-    is_num, to_float, parse_date, decode_date_range, fmt_date, encode_newlines, decode_newlines
+    is_num, to_float, parse_date, decode_date_range, fmt_date, encode_newlines, decode_newlines, mean
 from back_end.file_access import get_field, get_record, update_record, get_records, get_all_records, update_records, \
     get_fields, create_data_file
 from globals import config
@@ -253,10 +253,10 @@ def get_cards(course_id, date):
     return {r[inx[0]]: itemgetter(*inx[1:19])(r) for r in data}
 
 
-def save_event_scores(year, event_id, header, data):
+def save_event_scores(year, event_id, result):
     date = event_date(year, event_id)
     course_id = str(event_course_id(year, event_id))
-    update_records(scores_file(), ['date', 'course', 'player'], [date, course_id], header, data)
+    update_records(scores_file(), ['date', 'course', 'player'], [date, course_id], result.head, result.data)
 
 
 def get_event_card(year, event_id, player_id):
@@ -403,8 +403,20 @@ def get_results_by_year_and_name(year, event_name):
 
 def event_course_id(year, event_id):
     event = get_event(year, event_id)
-    course_id = lookup_course(event['venue'])
+    course_id = lookup_course(event['course'])
     return course_id
+
+
+def event_venue_id(year, event_id):
+    event = get_event(year, event_id)
+    event_id = get_venue_by_name(event['venue'])['id']
+    return event_id
+
+
+def event_trophy_id(year, event_id):
+    event = get_event(year, event_id)
+    trophy_id = get_trophy_by_name(event['event'])['id']
+    return trophy_id
 
 
 def event_date(year, event_id):
@@ -859,6 +871,11 @@ def get_trophy(trophy_id):
     return rec
 
 
+def get_trophy_by_name(name):
+    rec = get_record(trophies_file(), 'name', name)
+    return rec
+
+
 def get_trophy_select_list():
     trophies = get_fields(trophies_file(), ['id', 'name'])
     return sorted(trophies, key=lambda tup: tup[1])
@@ -880,9 +897,25 @@ def get_all_trophy_history():
 
 
 def get_trophy_url(event):
+    trophy = get_trophy_by_name(event)
+    if trophy['id']:
+        return config.url_for_user('trophy', trophy=trophy['id'])
     trophy = event.lower().replace(" ", "_").replace("-", "")
     url = config.url_for_old_site("history/trophies/")
     return url + trophy + '.htm'
+
+
+def update_trophy_history(year, event_id, result):
+    date = event_date(year, event_id)
+    venue_id = str(event_venue_id(year, event_id))
+    trophy_id = str(event_trophy_id(year, event_id))
+    winner = result.get_columns('player')[0]
+    scores = result.get_columns('points')
+    average = "{0:.1f}".format(mean(scores))
+    rec = dict(zip(['trophy', 'date', 'venue', 'winner', 'score', 'average'],
+                   [trophy_id, date, venue_id, winner, scores[0], average]))
+    update_record(trophy_history_file(), ['trophy', 'date'], rec)
+
 # endregion
 
 

@@ -10,7 +10,7 @@ from back_end.interface import get_event, get_handicaps, get_players, get_event_
     get_event_cards, get_results, get_results_by_year_and_name, get_scores, get_members, get_tour_scores, \
     get_tour_event_list_from_scores, get_member_select_list, get_events_in, get_trophy, get_all_trophy_history, \
     get_venue_select_list, get_player_select_list, get_trophy_select_list
-from back_end.calc import calc_event_positions
+from back_end.table import Table
 from test_data import TestData
 
 
@@ -134,7 +134,7 @@ class TestInterface(unittest.TestCase):
                 ['24', 20, '116', '28', 0],
                 ['12', 16, '121', '28', 0]]
 
-        save_event_scores(year, event_id, fields, data)
+        save_event_scores(year, event_id, Table(fields, data))
 
     def test_get_venue_by_name(self):
         rec = get_venue_by_name('Gatton Manor')
@@ -174,26 +174,6 @@ class TestInterface(unittest.TestCase):
         pass
 
     def test_get_trophy(self):
-        rec = get_trophy('Dearden Decanter')
+        rec = get_trophy('3')
         self.assertTrue(rec['sponsor'] == 'Mike Dearden')
 
-    def test_get_all_trophy_history(self):
-        from back_end.table import Table
-        hist = Table(*get_all_trophy_history())
-        winners = ids_from_names(get_player_select_list(), hist.get_columns('winner'))
-        trophies = ids_from_names(get_trophy_select_list(), hist.get_columns('trophy'))
-        venues = ids_from_names(get_venue_select_list(), hist.get_columns('venue'))
-
-        def conv_date(date):
-            if '/' in date:
-                date = date.split('/')
-                date = fmt_date(datetime.date(int(date[2]), int(date[1]), int(date[0])))
-            return date
-
-        dates = [conv_date(d) for d in hist.get_columns('date')]
-        hist.update_column('winner', winners)
-        hist.update_column('trophy', trophies)
-        hist.update_column('venue', venues)
-        hist.update_column('date', dates)
-        res = str(hist)
-        pass

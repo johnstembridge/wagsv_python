@@ -3,13 +3,11 @@
 {% block content %}
 {{ form.csrf_token }}
 
-<span class="left"><h2 class="table-title">Victor Ludorum {{ year }}</h2></span>
-<span class="right">
-    <h4 class="table-title">{{ render_link(url=url_for('vl', year=year-1), text='&#x25C4;')|safe }}
-            &nbsp; year &nbsp;
-            {{ render_link(url=url_for('vl', year=year+1), text='&#x25BA;')|safe }}
-    </h4>
-</span>
+<h2 class="table-title left">Victor Ludorum {{ year }}</h2>
+<h4 class="table-title right">{{ render_link(url=url_for('vl', year=year-1), text='&#x25C4;')|safe }}
+        &nbsp; year &nbsp;
+        {{ render_link(url=url_for('vl', year=year+1), text='&#x25BA;')|safe }}
+</h4>
 <table class="list result" width="100%">
     <thead>
     <tr>
