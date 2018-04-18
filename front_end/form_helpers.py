@@ -1,4 +1,5 @@
-from flask import flash, url_for
+from flask import flash, url_for, current_app
+import os
 
 from back_end.data_utilities import force_list
 
@@ -44,9 +45,7 @@ def render_html(template, **kwargs):
 
 
 def template_exists(template):
-    import jinja2
-    env = jinja2.Environment(loader=jinja2.FileSystemLoader(searchpath='../templates/'))
-    return template in env.list_templates()
+    return os.path.exists(os.path.join(current_app.jinja_loader.searchpath[0], template))
 
 
 def update_html(html, pairs):

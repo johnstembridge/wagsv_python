@@ -5,7 +5,6 @@ from wtforms.fields.html5 import DateField
 from back_end.interface import get_event_list, get_trophy_url, is_tour_event, get_venue_url
 from back_end.data_utilities import encode_date_short, in_date_range
 from globals.enumerations import EventType
-from globals.config import url_for_user
 
 
 class EventItemForm(FlaskForm):
