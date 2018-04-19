@@ -14,7 +14,7 @@
     <hr/>
     <table>
         <thead>
-            <th>Text</th>
+            <th>Item</th>
             <th>url</th>
             <th>hint</th>
             <th></th>
@@ -29,7 +29,7 @@
                 {{ render_link(
                     url=item.link.data,
                     target='_blank',
-                    image=url_for('static', filename='images/play-button.png'),
+                    image=url_for('static', filename='images/go.png'),
                     text='test link'
                 )|safe }}
             </td>

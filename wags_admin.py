@@ -46,8 +46,9 @@ def admin_register():
 # endregion
 
 
-@login_required
 @app.route('/', methods=['GET', 'POST'])
+@app.route('/index')
+@login_required
 def index():
     current_year = get_user_current_year()
     return home_main(current_year)
