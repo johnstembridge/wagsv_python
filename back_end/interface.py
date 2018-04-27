@@ -393,6 +393,8 @@ def get_results(year, event_id):
 
 def get_event_by_year_and_name(year, event_name):
     event = get_record(events_file(year), 'course', event_name)
+    if not event['num']:
+        event = get_record(events_file(year), 'venue', event_name)
     return event
 
 
