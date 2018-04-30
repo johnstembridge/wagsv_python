@@ -50,8 +50,12 @@ class Table:
         return Table(self.head, [d for d in self.data if sel_fn(dict(zip(self.head, d)))])
 
     def update_row(self, key, value, new_data):
-        index = self.get_columns(key).index(value)
-        self.data[index] = new_data
+        keys = self.get_columns(key)
+        if value in keys:
+            index = keys.index(value)
+            self.data[index] = new_data
+        else:
+            self.data.append(new_data)
 
     def update_column(self, col_name, col):
         index = self.column_index(col_name)

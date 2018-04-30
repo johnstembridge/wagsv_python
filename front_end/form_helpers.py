@@ -39,7 +39,7 @@ def render_link(url, text="", image=None, icon=None, target=None):
 
 def render_html(template, **kwargs):
     import jinja2
-    env = jinja2.Environment(loader=jinja2.FileSystemLoader(searchpath='../templates/'))
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(searchpath='templates/'))
     template = env.get_template(template)
     return template.render(url_for=url_for, **kwargs)
 

@@ -62,10 +62,10 @@ def get_file_contents(file):
         return None
 
 
-def write_file(file, contents):
+def write_file(file, contents, access_all=False):
     ft, target_file_path = mkstemp()
     os.close(ft)
-    with my_open(target_file_path, 'w') as target_file:
+    with my_open(target_file_path, 'w', access_all) as target_file:
         target_file.write(contents)
     os.remove(file) if os.path.exists(file) else None
     move(target_file_path, file)
@@ -144,7 +144,7 @@ def update_records(file, key, key_value, header, new_values):
                     keys = [k.lower() for k in values]
                     new_line = line
                 else:
-                    rec = dict(zip(keys, values))
+                    rec = OrderedDict(zip(keys, values))
                     new_line = line
                     if keys_match(rec, list(rec_key), rec_key):
                         update_rec = get_matching_update_rec(rec, key, key_value, header, new_values, found)
@@ -177,11 +177,8 @@ def get_matching_update_rec(rec, key, key_value, header, new_values, found):
 
 
 def insert_rec_values(rec, new_values, delimiter, last_line=False):
-    for item in new_values.keys():
-        k = item
-        if k in rec:
-            rec[k] = (str(new_values[item])).replace(delimiter, ' ')
-    res = (delimiter.join(rec.values()))
+    rec.update(new_values)
+    res = delimiter.join([str(v) for v in rec.values()])
     if not last_line:
         res = res + '\n'
     return res

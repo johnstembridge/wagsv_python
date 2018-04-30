@@ -125,12 +125,10 @@ class MaintainEvents:
             event_type = EventType.wags_vl_event
         form = EventReportForm()
         if form.is_submitted():
-            if form.save_event_report:
-                if form.save_event_report(year, event_id):
-                    flash('report saved', 'success')
-                    MaintainEvents.save_report_page('static/event_report.html',
-                                                    year, event_id, form)
-                    return redirect(url_for_admin('list_events', year=year))
+            if form.save:
+                MaintainEvents.save_report_page('static/event_report.html', year, event_id, form)
+                flash('report saved', 'success')
+                return redirect(url_for_admin('list_events', year=year))
         else:
             report_file = MaintainEvents.report_file_name(year, event_id)
             form.populate_event_report(int(year), event_id, report_file)
@@ -148,7 +146,7 @@ class MaintainEvents:
                            month_year=year
                            )
         file_name = MaintainEvents.report_file_name(year, event_id)
-        write_file(file_name, html)
+        write_file(file_name, html, access_all=True)
 
     @staticmethod
     def report_file_name(year, event_id):

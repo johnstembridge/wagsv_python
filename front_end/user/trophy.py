@@ -38,6 +38,7 @@ class TrophyForm(FlaskForm):
         self.trophy_name.data = trophy['name']
         self.image_url.data = os.path.join(config.get('locations')['base_url'], 'trophies', trophy['name'].lower() + '.jpg')
         hist = Table(*get_trophy_history(trophy_id))
+        hist.sort('date', reverse=True)
         hist.update_column('winner', names_from_ids(get_player_select_list(), hist.get_columns('winner')))
         hist.update_column('venue', names_from_ids(get_venue_select_list(), hist.get_columns('venue')))
         extra_file = 'user/extra/' + trophy['name'].lower() + '.htm'

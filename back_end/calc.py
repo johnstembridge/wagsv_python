@@ -62,10 +62,10 @@ def calc_event_positions(year, event_id, result):
             # countback
             tot = (1e6 * sum(points[-18:])) + (1e4 * sum(points[-9:])) + (1e2 * sum(points[-6:])) + sum(points[-3:])
         else:
-            tot = 1e6 * player[head.index('points')]
+            tot = 1e6 * coerce(player[head.index('points')], float)
         sort.append(tot)
     result.sort_using(sort, reverse=True)
-    position = list(range(1, len(result.data)))
+    position = list(range(1, len(result.data) + 1))
     result.update_column('position', position)
     return result
 
@@ -95,7 +95,7 @@ def get_big_swing(year):
     first_and_last = [e for e in events if e[1] == richmond]
     if len(first_and_last) == 1:
         first_and_last.append(events[-1])
-    events = [e for e in events if e[0] >= first_and_last[0][0] and e[0]<first_and_last[1][0]]
+    events = [e for e in events if e[0] >= first_and_last[0][0] and e[0] <= first_and_last[1][0]]
     header = ['player_id', 'course_id', 'date', 'points_out', 'points_in', 'swing']
     swings = []
     for event in events:

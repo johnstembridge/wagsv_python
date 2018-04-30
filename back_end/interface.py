@@ -911,6 +911,10 @@ def update_trophy_history(year, event_id, result):
     date = event_date(year, event_id)
     venue_id = str(event_venue_id(year, event_id))
     trophy_id = str(event_trophy_id(year, event_id))
+
+    def sel_fn(values):
+        return values['status'] == str(MemberStatus.full_member.value)
+    result = result.select_rows(sel_fn)
     winner = result.get_columns('player')[0]
     scores = result.get_columns('points')
     average = "{0:.1f}".format(mean(scores))
