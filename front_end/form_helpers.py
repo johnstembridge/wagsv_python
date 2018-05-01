@@ -18,7 +18,10 @@ def set_select_field(field, item_name, choices, default_selection=None):
             items = choices
     else:
         items = [(c, c) for c in choices]
-    field.choices = [(None, 'Choose {} ...'.format(item_name))] + items
+    if item_name:
+        field.choices = [(None, 'Choose {} ...'.format(item_name))] + items
+    else:
+        field.choices = items
     if default_selection:
         default = [c[0] for c in items if c[0] == default_selection]
         if len(default) > 0:

@@ -13,27 +13,26 @@ class EventResultItemForm(FlaskForm):
     points = IntegerField(label='Points')
     guest = StringField(label='Guest')
     player_id = HiddenField(label='Player_id')
-    strokes_return = HiddenField(label='Strokes')
-    guest_return = HiddenField(label='Guest')
-    handicap_return = HiddenField(label='Handicap')
 
 
 class EventResultsForm(FlaskForm):
     scores = FieldList(FormField(EventResultItemForm))
     event_name = StringField(label='event_name')
-    add_player = SubmitField(label='Add Player')
-    save_results = SubmitField(label='Save')
-    editable = HiddenField(label='Editable')
     event_id = HiddenField(label='Event_id')
-    year = HiddenField(label='Year')
+    date = HiddenField(label='Date')
 
-    def populate_event_results(self, year, event_id):
-        self.event_id.data = event_id
-        self.year.data = year
-        event = get_event(year, event_id)
-        self.event_name.data = '{} {} {}'.format(event['event'], event['venue'], fmt_date(event['date']))
-        self.editable = is_event_result_editable(year, event_id)
-        players = get_results(year, event_id)
+    def populate_event_results(self, year=None, event_id=None, date=None):
+        if date is not None:
+            event = get_event(date=date)
+            self.event_id.data = None
+            players = get_results(date=date)
+        else:
+            self.event_id.data = event_id
+            event = get_event(year=year, event_id=event_id)
+            date = fmt_date(event['date'])
+            players = get_results(year, event_id=event_id)
+        self.date.data = date.replace('/', '-')
+        self.event_name.data = '{} {} {}'.format(event['event'], event['venue'], date)
         for player in [p for p in players if int(p['points']) > 0]:
             item_form = EventResultItemForm()
             guest = "" if (player['guest'] == "") else " (" + player['guest'] + ")"
@@ -44,7 +43,4 @@ class EventResultsForm(FlaskForm):
             item_form.position = player['position']
             item_form.guest = player['guest']
             item_form.player_id = str(player['id'])
-            item_form.guest_return = player['guest']
-            item_form.handicap_return = player['handicap']
-            item_form.strokes_return = player['strokes']
             self.scores.append_entry(item_form)

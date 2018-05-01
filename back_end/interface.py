@@ -199,39 +199,58 @@ def get_event_list(year):
     return sorted(events, key=lambda item: (item['date'], to_float(item['num'])))
 
 
-def get_event(year, event_id):
-    year = coerce(year, int)
-    event_id = coerce(event_id, str)
-    data = get_record(events_file(year), 'num', event_id)
-    if data['date']:
-        data['date'] = decode_date(data['date'], year)
-        data['end_booking'] = decode_date(data.get('deadline', None), year)
-        data['start_booking'] = coerce_date(data.get('booking_start', None), year, data['date'])
-        data['member_price'] = decode_price(data['member_price'])
-        data['guest_price'] = decode_price(data['guest_price'])
-        if (not data.get('type', None)) and 'tour' in data.get('event').lower():
-            data['event_type'] = EventType.wags_tour
-        else:
-            data['event_type'] = decode_event_type(data.get('type', None))
-        data['max'] = data.get('max', None)
-        data['course'] = data.get('course', None)
-        data['schedule'] = decode_schedule(data.get('schedule', None))
-        data['note'] = decode_newlines(data['note'])
-        venue = get_venue_by_name(data.get('venue', None))
-        data['address'] = venue['address']
-        data['post_code'] = venue['post_code']
-        data['phone'] = venue['phone']
-        data['url'] = venue['url']
-        data['directions'] = venue['directions']
-        data['event'] = de_the(data['event'])
+def get_event_select_list():
+    events = set(get_fields(scores_file(), ['date', 'course']))
+    events = sorted(events, key=lambda dc: dc[0], reverse=True)
+    date, course_ids = zip(*events)
+    course = get_course_names(list(course_ids))
+    return [dc[0] + '-' + dc[1] for dc in zip(date, course)]
+
+
+def get_event(year=None, event_id=None, date=None):
+    if year is not None:
+            year = coerce(year, int)
+            event_id = coerce(event_id, str)
+            data = get_record(events_file(year), 'num', event_id)
+            if data['date']:
+                data['event'] = de_the(data['event'])
+                data['date'] = decode_date(data['date'], year)
+                data['end_booking'] = decode_date(data.get('deadline', None), year)
+                data['start_booking'] = coerce_date(data.get('booking_start', None), year, data['date'])
+                data['member_price'] = decode_price(data['member_price'])
+                data['guest_price'] = decode_price(data['guest_price'])
+                if (not data.get('type', None)) and 'tour' in data.get('event').lower():
+                    data['event_type'] = EventType.wags_tour
+                else:
+                    data['event_type'] = decode_event_type(data.get('type', None))
+                data['max'] = data.get('max', None)
+                data['course'] = data.get('course', None)
+                data['schedule'] = decode_schedule(data.get('schedule', None))
+                data['note'] = decode_newlines(decode_newlines(data.get('note', '')))
+                venue = get_venue_by_name(data.get('venue', None))
+                data['address'] = venue['address']
+                data['post_code'] = venue['post_code']
+                data['phone'] = venue['phone']
+                data['url'] = venue['url']
+                data['directions'] = venue['directions']
+    elif date is not None:
+        data = {}
+        data['end_booking'] = data['start_booking'] = data['date'] = parse_date(date)
+        data['event_type'] = EventType.wags_vl_event
+        course = get_course_for_date(date)
+        data['event'] = ''
+        data['venue'] = data['course'] = course['name']
     else:
         data = None
     return data
 
 
-def get_event_scores(year, event_id):
-    date = event_date(year, event_id)
-    course_id = str(event_course_id(year, event_id))
+def get_event_scores(year=None, event_id=None, date=None):
+    if date is None:
+        date = event_date(year, event_id)
+        course_id = str(event_course_id(year, event_id))
+    else:
+        course_id = get_course_for_date(date)['id']
     if course_id in ['None', '0']:
         return Table(*get_records(scores_file(), ['date'], [date]))
     else:
@@ -259,9 +278,10 @@ def save_event_scores(year, event_id, result):
     update_records(scores_file(), ['date', 'course', 'player'], [date, course_id], result.head, result.data)
 
 
-def get_event_card(year, event_id, player_id):
+def get_event_card(year=None, event_id=None, player_id=None, date=None):
+    if date is None:
+        date = event_date(year, event_id)
     player_id = coerce(player_id, str)
-    date = event_date(year, event_id)
     return get_record(shots_file(), ['date', 'player'], [date, player_id])
 
 
@@ -349,21 +369,27 @@ def get_booked_players(year, event_id):
     return {v[0]: v[1] for v in res}
 
 
-def get_results(year, event_id):
-    editable = is_event_editable(year)
-    date = event_date(year, event_id)
+def get_results(year=None, event_id=None, date=None):
+    if date is not None:
+        all_scores = get_event_scores(date=date).get_columns(
+            ['player', 'position', 'points', 'strokes', 'handicap', 'status'])
+        booked = {}
+        date = parse_date(date)
+    else:
+        date = parse_date(event_date(year, event_id))
+        all_scores = get_event_scores(year, event_id).get_columns(
+            ['player', 'position', 'points', 'strokes', 'handicap', 'status'])
+        booked = get_booked_players(year, event_id)  # player: handicap
+    editable = is_event_editable(date.year)
     all_hcaps = dict(get_handicaps(date))
-    all_scores = get_event_scores(year, event_id).get_columns(
-        ['player', 'position', 'points', 'strokes', 'handicap', 'status'])
     all_scores = {v[0]: v[1:] for v in all_scores}
     all_players = get_all_player_names()
     current_members = get_members(date)
-    booked = get_booked_players(year, event_id)  # player: handicap
     event_players = list(set(get_player_names(list(all_scores.keys()))) | set(booked.keys()))
     results = []
     for player in sort_name_list(event_players):
         player_id = str(lookup(all_players, player) + 1)
-        guest = player in booked and player not in current_members.values()
+        guest = player not in current_members.values()
         if player_id not in all_scores:
             if not editable:
                 continue
@@ -392,9 +418,11 @@ def get_results(year, event_id):
 
 
 def get_event_by_year_and_name(year, event_name):
-    event = get_record(events_file(year), 'course', event_name)
-    if not event['num']:
-        event = get_record(events_file(year), 'venue', event_name)
+    event = {'num': None}
+    if os.path.exists(events_file(year)):
+        event = get_record(events_file(year), 'course', event_name)
+        if not event['num']:
+            event = get_record(events_file(year), 'venue', event_name)
     return event
 
 
@@ -463,6 +491,7 @@ def is_last_event(year, event_id):
 
 
 def is_event_editable(year):
+    year = coerce(year, int)
     override = config.get('override')
     return override or year >= datetime.date.today().year
 
@@ -621,6 +650,15 @@ def get_course(course_id):
 
 def get_courses_for_venue(venue_id):
     return get_records(courses_file(), 'venue_id', venue_id)
+
+
+def get_course_for_date(date):
+    scores = get_all_scores(key='date', values=[date])
+    if len(scores[1]) > 1:
+        course_id = scores[1][1][scores[0].index('course')]
+        return get_record(courses_file(), 'id', course_id)
+    else:
+        return None
 
 
 def lookup_course(course):

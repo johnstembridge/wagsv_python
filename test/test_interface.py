@@ -9,7 +9,7 @@ from back_end.interface import get_event, get_handicaps, get_players, get_event_
     get_tour_events, get_last_event, get_player_name, get_player_names, get_member, \
     get_event_cards, get_results, get_results_by_year_and_name, get_scores, get_members, get_tour_scores, \
     get_tour_event_list_from_scores, get_member_select_list, get_events_in, get_trophy, get_all_trophy_history, \
-    get_venue_select_list, get_player_select_list, get_trophy_select_list
+    get_venue_select_list, get_player_select_list, get_trophy_select_list, get_course_for_date
 from back_end.table import Table
 from test_data import TestData
 
@@ -176,4 +176,12 @@ class TestInterface(unittest.TestCase):
     def test_get_trophy(self):
         rec = get_trophy('3')
         self.assertTrue(rec['sponsor'] == 'Mike Dearden')
+
+    def test_get_course_for_date(self):
+        course = get_course_for_date('2001/10/20')
+        self.assertEqual(course['name'], 'Pine Ridge')
+
+    def test_get_event_for_date(self):
+        event = get_event(date='2001/10/20')
+        self.assertEqual(event['course'], 'Pine Ridge')
 

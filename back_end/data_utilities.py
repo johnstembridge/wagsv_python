@@ -266,6 +266,7 @@ def encode_directions(dir):
 
 
 def decode_newlines(string):
+    if not string: string = ''
     return string.replace('\a', '\r\n')
 
 

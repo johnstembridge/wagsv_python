@@ -1,5 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField, HiddenField
+
+from back_end.data_utilities import parse_date
 from back_end.interface import get_event, lookup_course, get_course_data, get_player_handicap, \
     get_event_card, get_player_name, is_event_result_editable
 
@@ -25,16 +27,17 @@ class EventCardForm(FlaskForm):
     totalPointsIn = StringField(label='TotalPointsIn')
     totalShots = StringField(label='TotalShots')
     totalPoints = StringField(label='TotalPoints')
-    totalShotsReturn = HiddenField(label=None, id='totalShotsReturn')
-    totalPointsReturn = HiddenField(label=None, id='totalPointsReturn')
-    save_card = SubmitField(label='Save')
+    # totalShotsReturn = HiddenField(label=None, id='totalShotsReturn')
+    # totalPointsReturn = HiddenField(label=None, id='totalPointsReturn')
+    # save_card = SubmitField(label='Save')
 
-    def populate_card(self, year, event_id, player_id):
-        event = get_event(year, event_id)
+    def populate_card(self, date, player_id):
+        event = get_event(date=date)
         course_id = lookup_course(event['venue'])
+        year = parse_date(date).year
         course_data = get_course_data(course_id, year)
         hcap = get_player_handicap(player_id, event['date'])
-        card = get_event_card(year, event_id, player_id)
+        card = get_event_card(date=date, player_id=player_id)
 
         self.event_name.data = '{} {} {}'.format(event['event'], event['venue'], event['date'])
         self.player.data = get_player_name(player_id)

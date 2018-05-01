@@ -173,7 +173,7 @@ class Member(db.Model):
     events_organised = db.relationship("Event",  back_populates="organiser")
 
     def __repr__(self):
-        return '<Member: {}>'.format(self.name)
+        return '<Member: {}>'.format(self.player.name)
 
 
 class Handicap(db.Model):
@@ -185,7 +185,7 @@ class Handicap(db.Model):
     player = db.relationship("Player", back_populates="handicaps")
 
     def __repr__(self):
-        return '<Handicap. Player: {}, Date: {}>'.format(self.player_id, self.date)
+        return '<Handicap - Player: {}, Date: {}>'.format(self.player.name, self.date)
 
 
 class Score(db.Model):
@@ -199,7 +199,7 @@ class Score(db.Model):
     player = db.relationship("Player", back_populates="scores")
 
     def __repr__(self):
-        return '<Score. Event: {}, Player: {}>'.format(self.event_id, self.player_id)
+        return '<Score - Event: {}, Player: {}>'.format(self.event_id, self.player.name)
 
 
 db.create_all()

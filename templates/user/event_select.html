@@ -1,0 +1,14 @@
+{% extends "user/base.html" %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>WAGS Events</h1>
+
+</div>
+<form method="POST">
+    {{ form.csrf_token }}
+    {{ form.event.label }} {{ form.event }}
+    {{ form.show_result(class="btn btn-primary") }}
+</form>
+{% endblock %}
+

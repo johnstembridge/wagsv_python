@@ -31,8 +31,7 @@ def events():
     if request.args is not None and len(request.args) > 0:
         return ReportEvents.show_from_date_and_name(request.args['date'], request.args['event'])
     else:
-        current_year = get_user_current_year()
-        return list_events(current_year)
+        return ReportEvents.select_event()
 
 
 @app.route('/events/<year>', methods=['GET', 'POST'])
@@ -58,15 +57,22 @@ def results_event(year, event_id):
     return ReportEvents.results_event(year, event_id, event_type)
 
 
+@app.route('/events/<date>/results', methods=['GET', 'POST'])
+def results_event_date(date):
+    date = date.replace('-', '/')
+    return ReportEvents.results_event_date(date)
+
+
 @app.route('/events/<year>/<event_id>/report', methods=['GET', 'POST'])
 def report_event(year, event_id):
     event_type = request.args.get('event_type')
     return ReportEvents.report_event(year, event_id, event_type)
 
 
-@app.route('/events/<year>/<event_id>/<player_id>/card', methods=['GET', 'POST'])
-def card_event_player(year, event_id, player_id):
-    return ReportEvents.card_event_player(year, event_id, player_id)
+@app.route('/events/<date>/<player_id>/card', methods=['GET', 'POST'])
+def card_event_player(date, player_id):
+    date = date.replace('-', '/')
+    return ReportEvents.card_event_player(date, player_id)
 
 
 @app.route('/events/<year>/<event_id>/<player_id>/handicap', methods=['GET', 'POST'])

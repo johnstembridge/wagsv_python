@@ -56,7 +56,7 @@ def get_records(file, key, value, lu_fn=None):
 
 def get_file_contents(file):
     if os.path.exists(file):
-        with open(file, 'r') as content_file:
+        with my_open(file, 'r') as content_file:
             return content_file.read()
     else:
         return None
