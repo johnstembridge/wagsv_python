@@ -1,18 +1,29 @@
 import unittest
 
 from back_end.db_setup import db_session
-from models.wags_db import Event
+from models.wags_db import Event, Venue, Player
 
 
 class TestDb(unittest.TestCase):
 
-    def test_update(self):
-        ev = Event.query.get(3)
-        ev.max = 50
-        db_session.commit()
+    def test_venue(self):
+        ve = Venue.query.get(19)
+        pass
+        #db_session.commit()
+
+    def test_player(self):
+        pl = Player.query.get(12)
+        pass
+        #db_session.commit()
+
+    def test_event(self):
+        ev = Event.query.get(364)
+        pass
+        #ev.max = 50
+        #db_session.commit()
 
     def test_missing(self):
-        ev = Event.query.get(99)
+        ev = Event.query.get(999)
         self.assertEqual(ev, None)
 
 

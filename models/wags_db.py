@@ -29,8 +29,10 @@ class Event(db.Model):
     booking_end = db.Column(db.Date)
     max = db.Column(db.Integer)
 
+    scores = db.relationship('Score', back_populates='event')
+
     organiser_id = db.Column(db.Integer, db.ForeignKey("members.id"))
-    organiser = db.relationship("Member", back_populates="events_organised")
+    organiser = db.relationship('Member', back_populates="events_organised")
 
     trophy_id = db.Column(db.Integer, db.ForeignKey("trophies.id"))
     trophy = db.relationship('Trophy', back_populates='events')
@@ -41,24 +43,29 @@ class Event(db.Model):
     course_id = db.Column(db.Integer, db.ForeignKey("courses.id"))
     course = db.relationship('Course', back_populates='events')
 
-    schedule_id = db.Column(db.Integer, db.ForeignKey("schedules.id"))
     schedule = db.relationship('Schedule', back_populates='event')
 
     tour_event_id = db.Column(db.Integer, db.ForeignKey("events.id"))
-    tour_events = db.relationship("Event", backref=db.backref("tour_event", remote_side=id))
+    tour_events = db.relationship('Event', backref=db.backref("tour_event", remote_side=id))
 
     winner_id = db.Column(db.Integer, db.ForeignKey("players.id"))
-    winner = db.relationship("Player", back_populates="events_won")
+    winner = db.relationship('Player', back_populates="events_won")
+
+    average_score = db.Column(db.Numeric(precision=3, scale=1))
 
     def __repr__(self):
-        return '<Event: {}>'.format(self.date)
+        if self.type == EventType.wags_vl_event:
+            return '<Event: {} {}>'.format(self.course.name, self.date)
+        elif self.type == EventType.wags_tour:
+            return '<Tour: {} {}>'.format(self.venue.name, self.date)
+        else:
+            return '<Non-Event: {} {}>'.format(self.venue.name, self.date)
 
 
 class Trophy(db.Model):
     __tablename__ = "trophies"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    picture = db.Column(db.String(100))
     events = db.relationship("Event", order_by=Event.id, back_populates="trophy")
 
     def __repr__(self):
@@ -102,29 +109,18 @@ class CourseData(db.Model):
     course = db.relationship("Course", back_populates="cards")
 
     def __repr__(self):
-        return '<Course Data - Course: {}, Year: {}>'.format(self.course_id, self.year)
+        return '<Course Data: {} {}>'.format(self.course.name, self.year)
 
 
 class Schedule(db.Model):
     __tablename__ = "schedules"
-    id = db.Column(db.Integer, primary_key=True)
-    event = db.relationship("Event", uselist=False, back_populates="schedule")
-    schedule_items = db.relationship("ScheduleItem", back_populates="schedule")
-
-    def __repr__(self):
-        return '<Schedule: {}>'.format(self.id)
-
-
-class ScheduleItem(db.Model):
-    __tablename__ = "schedule_items"
-    id = db.Column(db.Integer, primary_key=True)
-    time = db.Column(db.Time, nullable=False)
+    event_id = db.Column(db.Integer, db.ForeignKey("events.id"), primary_key=True)
+    time = db.Column(db.Time, primary_key=True)
     text = db.Column(db.String(100), nullable=False)
-    schedule_id = db.Column(db.Integer, db.ForeignKey('schedules.id'))
-    schedule = db.relationship("Schedule", back_populates="schedule_items")
+    event = db.relationship("Event", back_populates="schedule")
 
     def __repr__(self):
-        return '<Schedule Item: {} {}>'.format(self.time, self.text)
+        return '<Schedule: {} {}>'.format(self.event, self.time)
 
 
 class Contact(db.Model):
@@ -152,10 +148,11 @@ class Player(db.Model):
     scores = db.relationship("Score",  back_populates="player")
     handicaps = db.relationship("Handicap",  back_populates="player")
 
-    name = first_name + ' ' + last_name
+    def full_name(self):
+        return self.first_name + ' ' + self.last_name
 
     def __repr__(self):
-        return '<Player: {}>'.format(self.name)
+        return '<Player: {}>'.format(self.full_name())
 
 
 class Member(db.Model):
@@ -173,7 +170,7 @@ class Member(db.Model):
     events_organised = db.relationship("Event",  back_populates="organiser")
 
     def __repr__(self):
-        return '<Member: {}>'.format(self.player.name)
+        return '<Member: {}>'.format(self.player.full_name())
 
 
 class Handicap(db.Model):
@@ -185,7 +182,7 @@ class Handicap(db.Model):
     player = db.relationship("Player", back_populates="handicaps")
 
     def __repr__(self):
-        return '<Handicap - Player: {}, Date: {}>'.format(self.player.name, self.date)
+        return '<Handicap - Player: {}, Date: {}>'.format(self.player.full_name(), self.date)
 
 
 class Score(db.Model):
@@ -197,9 +194,10 @@ class Score(db.Model):
     points = db.Column(db.Integer, nullable=False)
     card = db.Column(IntArray(60))
     player = db.relationship("Player", back_populates="scores")
+    event = db.relationship("Event", back_populates="scores")
 
     def __repr__(self):
-        return '<Score - Event: {}, Player: {}>'.format(self.event_id, self.player.name)
+        return '<Score - Event: {}, Player: {}>'.format(self.event, self.player.full_name())
 
 
 db.create_all()
