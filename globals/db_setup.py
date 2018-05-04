@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+from flask_sqlalchemy import SQLAlchemy
 
 from globals import config
 
@@ -11,6 +12,11 @@ Base = declarative_base()
 Base.query = db_session.query_property()
 
 
-def init_db():
+def init_db(app):
+    app.config['SECRET_KEY'] = config.get('SECRET_KEY')
+    app.config['SQLALCHEMY_DATABASE_URI'] = config.get('db_path')
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    db = SQLAlchemy(app)
     import models.wags_db
     Base.metadata.create_all(bind=engine)
+    return db

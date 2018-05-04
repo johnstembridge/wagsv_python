@@ -1,7 +1,7 @@
 import unittest
 
-from back_end.db_setup import db_session
 from models.wags_db import Event, Venue, Player
+from globals.db_setup import db_session
 
 
 class TestDb(unittest.TestCase):
