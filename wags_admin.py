@@ -1,7 +1,6 @@
 import datetime
 
 from flask import Flask, request, session
-from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap
 from flask_wtf import CSRFProtect
 from flask_login import LoginManager, login_required
@@ -15,14 +14,9 @@ from front_end.admin import login
 from front_end.admin.home import home_main, page_not_found, internal_error
 from globals import config, logging
 from models.user import User
-from back_end.db_setup import init_db
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = config.get('db_path')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
-init_db()
 login_manager = LoginManager(app)
 login_manager.login_view = config.get('url_prefix')['admin']+'/login'
 
