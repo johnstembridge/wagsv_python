@@ -2,12 +2,13 @@ import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, FieldList, FormField, HiddenField, SelectField, SubmitField
 from wtforms.fields.html5 import DateField
-from back_end.interface import get_event_list, get_trophy_url, is_tour_event, get_venue_url, get_event_select_list, \
-    get_event_by_year_and_name
 from back_end.data_utilities import encode_date_short, in_date_range, parse_date
 from front_end.form_helpers import set_select_field
 from globals.config import url_for_user
 from globals.enumerations import EventType
+from models.wags_db import Event
+from back_end.interface import get_event_list, get_trophy_url, is_tour_event, get_venue_url, get_event_select_list, \
+    get_event_by_year_and_name
 
 
 class EventItemForm(FlaskForm):
@@ -29,6 +30,7 @@ class EventListForm(FlaskForm):
     def populate_event_list(self, year):
         first = True
         tour_event = ''
+        Event.query()
         for item in get_event_list(year):
             event_type = item['type']
             item_form = EventItemForm()

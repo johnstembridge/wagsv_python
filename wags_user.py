@@ -14,6 +14,7 @@ log_handler = logging.log_init()
 app.logger.addHandler(log_handler)
 
 from views.user.events import *
+from views.user.players import *
 from views.user.others import *
 from front_end.user.others import page_not_found, internal_error
 

@@ -18,6 +18,7 @@ class MemberStatus(FormEnum):
     full_member = 1
     overseas_member = 2
     ex_member = 3
+    rip = 4
 
 
 class PlayerStatus(FormEnum):

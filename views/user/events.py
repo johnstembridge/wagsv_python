@@ -2,7 +2,7 @@ import datetime
 
 from flask import request
 from wags_user import app
-from front_end.user.events_user import ReportEvents
+from front_end.user.events import ReportEvents
 
 
 @app.route('/', methods=['GET', 'POST'])

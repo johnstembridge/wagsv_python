@@ -3,6 +3,27 @@ from globals.enumerations import EventType, PlayerStatus, MemberStatus
 import sqlalchemy.types as types
 
 
+class EnumType(types.TypeDecorator):
+    impl = types.SmallInteger
+
+    def __init__(self, data, **kw):
+        self.data = data
+        super(EnumType, self).__init__(**kw)
+
+    def process_bind_param(self, value, dialect):
+        if value is None:
+            return value
+        return value.value
+
+    def process_result_value(self, value, dialect):
+        return self.data(value)
+
+
+class TestEnum(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    type = db.Column(EnumType(EventType), nullable=False)
+
+
 class IntArray(types.TypeDecorator):
     impl = types.String
 
@@ -21,7 +42,7 @@ class Event(db.Model):
     __tablename__ = "events"
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date, nullable=False)
-    type = db.Column(db.Enum(EventType), nullable=False)
+    type = db.Column(EnumType(EventType), nullable=False)
     member_price = db.Column(db.Numeric(precision=5, scale=2))
     guest_price = db.Column(db.Numeric(precision=5, scale=2))
     note = db.Column(db.String(250))
