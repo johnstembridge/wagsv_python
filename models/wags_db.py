@@ -1,6 +1,7 @@
-from wags_admin import db
+from wags_user import db
 from globals.enumerations import EventType, PlayerStatus, MemberStatus
 import sqlalchemy.types as types
+from globals import config
 
 
 class EnumType(types.TypeDecorator):
@@ -17,11 +18,6 @@ class EnumType(types.TypeDecorator):
 
     def process_result_value(self, value, dialect):
         return self.data(value)
-
-
-class TestEnum(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    type = db.Column(EnumType(EventType), nullable=False)
 
 
 class IntArray(types.TypeDecorator):
@@ -88,6 +84,9 @@ class Trophy(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     events = db.relationship("Event", order_by=Event.id, back_populates="trophy")
+
+    def url(self):
+        return config.url_for_user('trophy', trophy=self.id)
 
     def __repr__(self):
         return '<Trophy: {}>'.format(self.name)
@@ -181,7 +180,7 @@ class Member(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     contact_id = db.Column(db.Integer, db.ForeignKey('contacts.id'), nullable=False)
     contact = db.relationship('Contact', uselist=False, back_populates="member")
-    status = db.Column(db.Enum(MemberStatus), nullable=False)
+    status = db.Column(EnumType(MemberStatus), nullable=False)
     accepted = db.Column(db.Date)
     resigned = db.Column(db.Date)
     player_id = db.Column(db.Integer, db.ForeignKey('players.id'), nullable=False)
@@ -198,7 +197,7 @@ class Handicap(db.Model):
     __tablename__ = "handicaps"
     player_id = db.Column(db.Integer, db.ForeignKey("players.id"), primary_key=True)
     date = db.Column(db.Date, primary_key=True)
-    status = db.Column(db.Enum(PlayerStatus), nullable=False)
+    status = db.Column(EnumType(PlayerStatus), nullable=False)
     handicap = db.Column(db.Numeric(precision=3, scale=1))
     player = db.relationship("Player", back_populates="handicaps")
 

@@ -30,7 +30,6 @@ class EventListForm(FlaskForm):
     def populate_event_list(self, year):
         first = True
         tour_event = ''
-        Event.query()
         for item in get_event_list(year):
             event_type = item['type']
             item_form = EventItemForm()
@@ -39,14 +38,10 @@ class EventListForm(FlaskForm):
             item_form.event = item['event']
             item_form.venue = item['venue']
             item_form.venue_url = get_venue_url(year, item['venue_url'])
-            item_form.trophy_url = get_trophy_url(item['event'])
+            item_form.trophy_url = item['trophy_url']
             item_form.event_type = event_type.value
-            if event_type == EventType.wags_tour:
-                tour_event = item['event']
-            item_form.new_section = not (first or is_tour_event(item))
+            item_form.new_section = not (first or item['tour_id'])
             first = False
-            if is_tour_event(item) and tour_event == item['event']:
-                item_form.event = ''
             # bookable:  1 - booking open, 0 - booking closed, -1 - booking not applicable
             item_form.bookable = \
                 1 if in_date_range(datetime.date.today(), item['start_booking'], item['end_booking']) \
