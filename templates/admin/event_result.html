@@ -30,23 +30,23 @@
             <td>{{ item.strokes.data }}</td>
             {%if form.editable.data %}
                 <td>{{ item.points(size=8, type="number", min="0", max="50") }}</td>
+                <td align="center">
+                    {{ render_link(
+                        url=url_for(
+                            'card_event_player',
+                            event_id=form.event_id.data,
+                            player_id=item.player_id.data,
+                            position = item.position.data,
+                            handicap = item.handicap.data,
+                            status = item.guest.data
+                        ),
+                        image=url_for('static', filename='images/right-arrow.png'),
+                        text='Edit/show card'
+                    )|safe }}
+                </td>
             {% else %}
                 <td>{{ item.points.data }}</td>
             {% endif %}
-            <td align="center">
-                {{ render_link(
-                    url=url_for('card_event_player',
-                year=form.year.data,
-                event_id=form.event_id.data,
-                player_id=item.player_id.data,
-                position = item.position.data,
-                handicap = item.handicap.data,
-                status = item.guest.data
-                ),
-                    image=url_for('static', filename='images/right-arrow.png'),
-                    text='Edit/show card'
-                )|safe }}
-            </td>
             {%if form.editable.data %}
                 <td>{{ item.player_id }}</td>
                 <td>{{ item.strokes_return }}</td>
@@ -60,8 +60,8 @@
 
     <hr/>
     {%if form.editable.data %}
-    {{ form.add_player(class="btn btn-primary") }}
-    {{ form.save_results(class="btn btn-primary") }}
+        {{ form.add_player(class="btn btn-primary") }}
+        {{ form.save_results(class="btn btn-primary") }}
     {% endif %}
 </form>
 {% endblock %}

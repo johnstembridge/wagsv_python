@@ -1,13 +1,14 @@
 import os
+import datetime
 from flask_wtf import FlaskForm
 from flask import render_template
 from wtforms import StringField, FormField, FieldList
 
-from back_end.data_utilities import names_from_ids
-from back_end.interface import get_trophy_history, get_player_select_list, get_venue_select_list, get_trophy
-from back_end.table import Table
+from back_end.data_utilities import fmt_date
+from back_end.interface import get_trophy
 from front_end.form_helpers import render_link, template_exists
 from globals import config
+from globals.enumerations import EventType
 
 
 class Trophy:
@@ -35,20 +36,21 @@ class TrophyForm(FlaskForm):
 
     def populate_trophy(self, trophy_id):
         trophy = get_trophy(trophy_id)
-        self.trophy_name.data = trophy['name']
-        self.image_url.data = os.path.join(config.get('locations')['base_url'], 'trophies', trophy['name'].lower() + '.jpg')
-        hist = Table(*get_trophy_history(trophy_id))
-        hist.sort('date', reverse=True)
-        hist.update_column('winner', names_from_ids(get_player_select_list(), hist.get_columns('winner')))
-        hist.update_column('venue', names_from_ids(get_venue_select_list(), hist.get_columns('venue')))
-        extra_file = 'user/extra/' + trophy['name'].lower() + '.htm'
+        self.trophy_name.data = trophy.name
+        self.image_url.data = os.path.join(config.get('locations')['base_url'], 'trophies', trophy.name.lower() + '.jpg')
+        hist = trophy.events
+        extra_file = 'user/extra/' + trophy.name.lower() + '.htm'
         if template_exists(extra_file):
             self.extra.data = extra_file
-        for item in hist.data:
-            item_form = TrophyItemForm()
-            item_form.venue = item[hist.column_index('venue')]
-            item_form.date = item[hist.column_index('date')]
-            item_form.winner = item[hist.column_index('winner')]
-            item_form.score = item[hist.column_index('score')]
-            item_form.average = item[hist.column_index('average')]
-            self.winners.append_entry(item_form)
+        for item in hist:
+            if item.date < datetime.date.today():
+                item_form = TrophyItemForm()
+                item_form.venue = item.venue.name
+                item_form.date = fmt_date(item.date)
+                item_form.winner = item.winner.full_name()
+                if item.type == EventType.wags_vl_event:
+                    item_form.score = item.winner.score_for(item.id)
+                    item_form.average = item.average_score
+                else:
+                    item_form.score = item_form.average = ''
+                self.winners.append_entry(item_form)

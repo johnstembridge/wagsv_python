@@ -36,7 +36,7 @@ class EventCardForm(FlaskForm):
     save_card = SubmitField(label='Save')
 
     def populate_card(self, year, event_id, player_id, position, handicap, status):
-        event = get_event(year, event_id)
+        event = get_event(event_id)
         course_id = lookup_course(event['venue'])
         course_data = get_course_data(course_id, year)
         card = get_event_card(year, event_id, player_id)
@@ -64,7 +64,7 @@ class EventCardForm(FlaskForm):
             else:
                 self.scoresIn.append_entry(item_form)
 
-    def save_event_card(self, year, event_id, player_id, form):
+    def save_event_card(self, event_id, player_id, form):
         errors = self.errors
         if len(errors) > 0:
             return False
@@ -72,19 +72,19 @@ class EventCardForm(FlaskForm):
         shots = [d['shots'] for d in form.scoresOut.data] + [d['shots'] for d in form.scoresIn.data]
         shots = ['99' if v is None else str(v) for v in shots]
         fields = [str(i) for i in range(1, 19)]
-        save_event_card(year, event_id, player_id, fields, shots)
+        save_event_card(event_id, player_id, fields, shots)
 
         handicap = form.handicapReturn.data
         status = str(PlayerStatus.member.value if form.statusReturn.data == '' else PlayerStatus.guest.value)
         total_shots = form.totalShotsReturn.data
         total_points = form.totalPointsReturn.data
 
-        all_scores = get_event_scores(year, event_id).select_columns(
+        all_scores = get_event_scores(event_id).select_columns(
             ['player', 'position', 'points', 'strokes', 'handicap', 'status'])
         new = (player_id, '0', total_points, total_shots, handicap, status)
         all_scores.update_row('player', player_id, new)
-        result = calc_event_positions(year, event_id, all_scores)
-        save_event_scores(year, event_id, result)
-        update_trophy_history(year, event_id, result)
+        result = calc_event_positions(event_id, all_scores)
+        save_event_scores(event_id, result)
+        update_trophy_history(event_id, result)
 
         return True

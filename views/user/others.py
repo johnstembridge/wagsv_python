@@ -1,5 +1,4 @@
 from wags_user import app
-from front_end.user.events import ReportEvents
 from front_end.user.handicaps import Handicaps
 from front_end.user.trophy import Trophy
 from front_end.user.vl import Vl

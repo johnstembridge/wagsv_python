@@ -24,62 +24,58 @@ class MaintainEvents:
         form = EventListForm()
         if form.is_submitted():
             if form.add_event.data:
-                event_type = EventType.wags_vl_event.name
+                event_type = EventType.wags_vl_event.value
             if form.add_tour.data:
-                event_type = EventType.wags_tour.name
+                event_type = EventType.wags_tour.value
             if form.add_non.data:
-                event_type = EventType.non_event.name
-            return redirect(url_for_admin('edit_event', year=year, event_id=0, event_type=event_type))
+                event_type = EventType.non_event.value
+            return redirect(url_for_admin('edit_event', event_id=0, event_type=event_type))
         form.populate_event_list(int(year))
 
-        return render_template('admin/event_list.html', form=form, year=year, render_link=render_link,
-                               EventType=EventType)
+        return render_template('admin/event_list.html', form=form, render_link=render_link, EventType=EventType)
 
     @staticmethod
-    def edit_event(year, event_id, event_type=None):
-        if event_type:
-            event_type = EventType(int(event_type))
-        else:
-            event_type = EventType.wags_vl_event
+    def edit_event(event_id, event_type=None):
         form = EventForm()
         if form.is_submitted():
-            if form.save_event(int(year), event_id):
+            if form.save_event(event_id):
                 flash('Event saved', 'success')
                 return redirect(url_for_admin('events_main'))
         else:
-            form.populate_event(int(year), event_id, event_type)
+            form.populate_event(event_id, event_type)
+            event_type = EventType(int(form.event_type.data))
         event = event_id if event_id != "0" else "(new)"
         if event_type == EventType.wags_vl_event:
-            return render_template('admin/event_details.html', form=form, event_id=event, year=year)
+            return render_template('admin/event_details.html', form=form, event_id=event)
         if event_type == EventType.wags_tour:
-            return render_template('admin/tour_details.html', form=form, event_id=event, year=year)
+            return render_template('admin/tour_details.html', form=form, event_id=event)
         if event_type == EventType.non_event:
-            return render_template('admin/non_event_details.html', form=form, event_id=event, year=year)
+            return render_template('admin/non_event_details.html', form=form, event_id=event)
 
     @staticmethod
-    def results_event(year, event_id, event_type=None):
+    def results_event(event_id, event_type=None):
         if event_type:
             event_type = EventType(int(event_type))
         else:
             event_type = EventType.wags_vl_event
         if event_type == EventType.wags_vl_event:
-            return MaintainEvents.results_vl_event(year, event_id)
+            return MaintainEvents.results_vl_event(event_id)
         if event_type == EventType.wags_tour:
-            return MaintainEvents.results_tour_event(year, event_id)
+            return MaintainEvents.results_tour_event(event_id)
 
     @staticmethod
-    def results_vl_event(year, event_id):
+    def results_vl_event(event_id):
         form = EventResultsForm()
         if form.is_submitted():
             if form.save_results.data:
-                if form.save_event_results(year, event_id):
+                if form.save_event_results(event_id):
                     flash('results saved', 'success')
-                    return redirect(url_for_admin('results_event', year=year, event_id=event_id))
+                    return redirect(url_for_admin('results_event', event_id=event_id, event_type=EventType.wags_vl_event.value))
             if form.add_player.data:
-                return redirect(url_for_admin('results_event', year=year, event_id=event_id))
+                return redirect(url_for_admin('results_event', event_id=event_id, event_type=EventType.wags_vl_event.value))
         else:
-            form.populate_event_results(int(year), event_id)
-        return render_template('admin/event_result.html', form=form, event=year + event_id, render_link=render_link)
+            form.populate_event_results(event_id)
+        return render_template('admin/event_result.html', form=form, event=event_id, render_link=render_link)
 
     @staticmethod
     def results_tour_event(year, event_id):
@@ -100,16 +96,16 @@ class MaintainEvents:
         return render_template('admin/event_handicap.html', form=form, event=year + event_id, render_link=render_link)
 
     @staticmethod
-    def card_event_player(year, event_id, player_id, position='0', handicap=0, status=''):
+    def card_event_player(event_id, player_id, position='0', handicap=0, status=''):
         form = EventCardForm()
         if form.is_submitted():
             if form.save_card.data:
-                if form.save_event_card(year, event_id, player_id, form):
+                if form.save_event_card(event_id, player_id, form):
                     flash('Card saved', 'success')
-                    return redirect(url_for_admin('results_event', year=year, event_id=event_id))
+                    return redirect(url_for_admin('results_event', event_id=event_id))
         else:
-            form.populate_card(year, event_id, player_id, position, handicap, status)
-        return render_template('admin/event_card.html', form=form, event=year + event_id, render_link=render_link)
+            form.populate_card(event_id, player_id, position, handicap, status)
+        return render_template('admin/event_card.html', form=form, event=event_id, render_link=render_link)
 
     @staticmethod
     def handicap_history_player(year, event_id, player_id):

@@ -7,7 +7,7 @@ from globals.enumerations import PlayerStatus
 from back_end.interface import get_event, get_handicaps, get_players, get_event_scores, \
     get_booked_players, save_event_scores, get_course_data, get_player_handicap, get_event_card, get_venue_by_name, \
     get_tour_events, get_last_event, get_player_name, get_player_names, get_member, \
-    get_event_cards, get_results, get_results_by_year_and_name, get_scores, get_members, get_tour_scores, \
+    get_event_cards, get_results_for_edit, get_results_by_year_and_name, get_scores, get_members, get_tour_scores, \
     get_tour_event_list_from_scores, get_member_select_list, get_events_in, get_trophy, get_all_trophy_history, \
     get_venue_select_list, get_player_select_list, get_trophy_select_list, get_course_for_date
 from back_end.table import Table
@@ -52,12 +52,12 @@ class TestInterface(unittest.TestCase):
         self.assertEqual(res, expected)
 
     def test_get_event_result(self):
-        res = get_results(2017, 6)
+        res = get_results_for_edit(2017, 6)
         expected = TestData.example_event_result
         self.assertEqual(res, expected)
 
     def test_get_event(self):
-        rec = get_event(2017, '4')
+        rec = get_event('4')
         expected = TestData.example_event
         self.assertDictEqual(rec, expected)
 

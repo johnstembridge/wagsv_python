@@ -1,15 +1,23 @@
 import unittest
 
-from models.wags_db import Event, Venue, Player, Member, Handicap, EnumType, db
+from sqlalchemy import text, create_engine
+from sqlalchemy.orm import sessionmaker
+
+from models.wags_db_new import Base, Event, Venue, Player, Member, Handicap, EnumType
 from globals.db_setup import db_session
-from sqlalchemy import text
+from globals import config
+from back_end.interface import get_event_list
 
 
 class TestDb(unittest.TestCase):
 
-    # def setUp(self):
-    #     pass
-    #
+    def setUp(self):
+        db_path = config.get('db_path')
+        self.engine = create_engine(db_path, convert_unicode=True, echo=True)
+        Session = sessionmaker(bind=self.engine)
+        self.session = Session()
+        Base.metadata.create_all(self.engine)
+
     # def test_venue(self):
     #     #ve = Venue.query.get(19)
     #     ve = db_session.query(Venue).get(19)
@@ -42,7 +50,8 @@ class TestDb(unittest.TestCase):
     #
     def test_get_events_for_year(self):
         year = 2018
-        stmt = text("select id from events where strftime('%Y', date)=:year order by date").params(year=year)
+        #evs = get_event_list(year)
+        stmt = text("select id from events where strftime('%Y', date)=:year order by date").params(year=str(year))
         evs = db_session.query(Event).from_statement(stmt).all()
         pass
     #

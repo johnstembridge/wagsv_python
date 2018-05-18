@@ -1,13 +1,42 @@
-from models.wags_db import Event  # , Venue, Player, Member, Handicap, EnumType, db
+import datetime
+import os
+
+from back_end.data_utilities import lookup, sort_name_list, fmt_num
+from globals.enumerations import MemberStatus, PlayerStatus
+from models.wags_db_new import Event, Score, Course, CourseData, Trophy, Player, Venue, Handicap, \
+    Member  # , Member, EnumType
 from globals.db_setup import db_session
 from sqlalchemy import text
+
+from globals import config
+from back_end.file_access import get_field, get_record, update_record, get_records
+
+data_location = config.get('locations')['data']
+admin_users = r'admin_users.txt'
+bookings_data = r'{}/event{}.csv'
+
+
+def admin_users_file():
+    return os.path.join(data_location, admin_users)
+
+
+def bookings_file(year, event_id):
+    return os.path.join(data_location, bookings_data.format(year, event_id))
+
+
+def bookings_file_fields():
+    return ['date', 'name', 'playing', 'number', 'cost', 'paid', 'guest1', 'guest1_hcap', 'guest2', 'guest2_hcap',
+            'guest3', 'guest3_hcap', 'comment']
+
+
+def gen_to_list(gen):
+    # force evaluation of a generator
+    return [x for x in gen]
 
 
 # region venues
 def get_all_venue_names():
-    pass
-    # venues = get_field(venues_file(), 'name')
-    # return sorted(venues)
+    return [v.name for v in db_session.query(Venue).order_by(Venue.name)]
 
 
 def get_venue_select_list():
@@ -79,11 +108,19 @@ def create_events_file(year):
     # return create_wags_data_file(directory, filename, fields)
 
 
+def get_event(event_id):
+    return db_session.query(Event).filter_by(id=event_id).first() or Event(id=0, date=datetime.datetime.now().date())
+
+
+def get_events_for_year(year):
+    stmt = text("select id from events where strftime('%Y', date)=:year order by date, type desc").params(
+        year=str(year))
+    return db_session.query(Event).from_statement(stmt)
+
+
 def get_event_list(year):
-    stmt = text("select id from events where strftime('%Y', date)=:year order by date").params(year=str(year))
-    evs = db_session.query(Event).from_statement(stmt)
     events = []
-    for event in evs:
+    for event in get_events_for_year(year):
         if event.venue.contact:
             url = event.venue.contact.url
         else:
@@ -117,45 +154,6 @@ def get_event_select_list():
     # date, course_ids = zip(*events)
     # course = get_course_names(list(course_ids))
     # return [dc[0] + '-' + dc[1] for dc in zip(date, course)]
-
-
-def get_event(year=None, event_id=None, date=None):
-    pass
-    # if year is not None:
-    #         year = coerce(year, int)
-    #         event_id = coerce(event_id, str)
-    #         data = get_record(events_file(year), 'num', event_id)
-    #         if data['date']:
-    #             data['event'] = de_the(data['event'])
-    #             data['date'] = decode_date(data['date'], year)
-    #             data['end_booking'] = decode_date(data.get('deadline', None), year)
-    #             data['start_booking'] = coerce_date(data.get('booking_start', None), year, data['date'])
-    #             data['member_price'] = decode_price(data['member_price'])
-    #             data['guest_price'] = decode_price(data['guest_price'])
-    #             if (not data.get('type', None)) and 'tour' in data.get('event').lower():
-    #                 data['event_type'] = EventType.wags_tour
-    #             else:
-    #                 data['event_type'] = decode_event_type(data.get('type', None))
-    #             data['max'] = data.get('max', None)
-    #             data['course'] = data.get('course', None)
-    #             data['schedule'] = decode_schedule(data.get('schedule', None))
-    #             data['note'] = decode_newlines(decode_newlines(data.get('note', '')))
-    #             venue = get_venue_by_name(data.get('venue', None))
-    #             data['address'] = venue['address']
-    #             data['post_code'] = venue['post_code']
-    #             data['phone'] = venue['phone']
-    #             data['url'] = venue['url']
-    #             data['directions'] = venue['directions']
-    # elif date is not None:
-    #     data = {}
-    #     data['end_booking'] = data['start_booking'] = data['date'] = parse_date(date)
-    #     data['event_type'] = EventType.wags_vl_event
-    #     course = get_course_for_date(date)
-    #     data['event'] = ''
-    #     data['venue'] = data['course'] = course['name']
-    # else:
-    #     data = None
-    # return data
 
 
 def get_event_scores(year=None, event_id=None, date=None):
@@ -195,12 +193,8 @@ def save_event_scores(year, event_id, result):
     # update_records(scores_file(), ['date', 'course', 'player'], [date, course_id], result.head, result.data)
 
 
-def get_event_card(year=None, event_id=None, player_id=None, date=None):
-    pass
-    # if date is None:
-    #     date = event_date(year, event_id)
-    # player_id = coerce(player_id, str)
-    # return get_record(shots_file(), ['date', 'player'], [date, player_id])
+def get_event_card(event_id, player_id):
+    return db_session.query(Score).filter_by(event_id=event_id, player_id=player_id).first()
 
 
 def save_event_card(year, event_id, player_id, fields, shots):
@@ -212,7 +206,7 @@ def save_event_card(year, event_id, player_id, fields, shots):
     # update_record(shots_file(), ['date', 'course', 'player'], new)
 
 
-def save_event(year, event_id, data):
+def save_event(event_id, data):
     pass
     # data['num'] = str(event_id)
     # data['date'] = encode_date(data['date'])
@@ -271,77 +265,84 @@ def get_new_event_id(year):
     # return math.floor(1 + max(ids + [0]))
 
 
-def get_booked_players(year, event_id):
-    pass
-    # file = bookings_file(year, event_id)
-    # if not os.path.isfile(file):
-    #     file = bookings_file(year, 0)
-    # header, bookings = get_records(file, 'playing', '1')
-    # res = []
-    # for b in bookings:
-    #     booking = dict(zip(header, b))
-    #     number = int(booking['number'])
-    #     if number > 0:
-    #         name = Player.normalise_name(booking['name'])
-    #         res.append([name, 0])
-    #         count = 1
-    #         while count < number:
-    #             guest_name = Player.normalise_name(booking['guest' + str(count)])
-    #             guest_handicap = booking['guest' + str(count) + '_hcap']
-    #             if guest_handicap == '':
-    #                 guest_handicap = '28'
-    #             res.append([guest_name, guest_handicap])
-    #             count += 1
-    # return {v[0]: v[1] for v in res}
+def get_booked_players(event):
+    year = event.date.year
+    event_dates = [event.date for event in get_events_for_year(year)]
+    event_num = lookup(event_dates, event.date, index_origin=1)
+    file = bookings_file(year, event_num)
+    if not os.path.isfile(file):
+        file = bookings_file(year, 0)
+    header, bookings = get_records(file, 'playing', '1')
+    res = {}
+    all_players = get_players_as_of(event.date)
+    all_player_names = list(all_players.keys())
+    for b in bookings:
+        booking = dict(zip(header, b))
+        number = int(booking['number'])
+        if number > 0:
+            name = normalise_name(all_player_names, booking['name'])
+            res[name] = all_players[name]
+            count = 1
+            while count < number:
+                guest_name = normalise_name(all_player_names, booking['guest' + str(count)])
+                guest_handicap = booking['guest' + str(count) + '_hcap']
+                if guest_handicap == '':
+                    guest_handicap = '28'
+                if guest_name in all_players:
+                    res[guest_name] = all_players[guest_name]
+                else:
+                    state = Handicap(player_id=0, status=PlayerStatus.guest, handicap=int(guest_handicap), date=datetime.datetime.today)
+                    res[guest_name] = state
+                count += 1
+    return res
 
 
-def get_results(year=None, event_id=None, date=None):
-    pass
-    # if date is not None:
-    #     all_scores = get_event_scores(date=date).get_columns(
-    #         ['player', 'position', 'points', 'strokes', 'handicap', 'status'])
-    #     booked = {}
-    #     date = parse_date(date)
-    # else:
-    #     date = parse_date(event_date(year, event_id))
-    #     all_scores = get_event_scores(year, event_id).get_columns(
-    #         ['player', 'position', 'points', 'strokes', 'handicap', 'status'])
-    #     booked = get_booked_players(year, event_id)  # player: handicap
-    # editable = is_event_editable(date.year)
-    # all_hcaps = dict(get_handicaps(date))
-    # all_scores = {v[0]: v[1:] for v in all_scores}
-    # all_players = get_all_player_names()
-    # current_members = get_members(date)
-    # event_players = list(set(get_player_names(list(all_scores.keys()))) | set(booked.keys()))
-    # results = []
-    # for player in sort_name_list(event_players):
-    #     player_id = str(lookup(all_players, player) + 1)
-    #     guest = player not in current_members.values()
-    #     if player_id not in all_scores:
-    #         if not editable:
-    #             continue
-    #         if guest:
-    #             hcap = booked[player]
-    #         else:
-    #             hcap = all_hcaps[player_id]
-    #         all_scores[player_id] = [0, '0', 0, hcap]
-    #     det = all_scores[player_id]
-    #     x = {
-    #         'id': player_id,
-    #         'name': player,
-    #         'handicap': det[3],
-    #         'strokes': coerce(det[2], int),
-    #         'points': coerce(det[1], int),
-    #         'position': coerce(det[0], int),
-    #         'guest': 'guest' if guest else ''
-    #     }
-    #     results.append(x)
-    # results.sort(key=lambda k: k['position'] if k['points'] > 0 else 99)
-    # i = 0
-    # for res in results:
-    #     i += 1
-    #     res['position'] = i
-    # return results
+def normalise_name(all_names, name):
+    i = lookup(all_names, name, case_sensitive=False)
+    if i == -1:
+        return name
+    else:
+        return all_names[i]
+
+
+def get_results(event):
+    players = []
+    results = []
+    for score in [s for s in event.scores]:
+        player = score.player
+        state = player.state_as_of(event.date)
+        guest = " (guest)" if (state.status == PlayerStatus.guest) else ""
+        players.append(player.full_name())
+        x = {
+            'player': player.full_name() + guest,
+            'handicap': state.handicap,
+            'points': score.points or 0,
+            'strokes': score.shots,
+            'position': score.position or 0,
+            'player_id': player.id
+        }
+        results.append(x)
+    booked = get_booked_players(event)
+    for missing in list(set(booked.keys()).difference(set(players))):
+        state = booked[missing]
+        guest = " (guest)" if (state.status == PlayerStatus.guest) else ""
+        x = {
+            'player': missing + guest,
+            'handicap': state.handicap,
+            'points': 0,
+            'strokes': 0,
+            'position': 0,
+            'player_id': 0
+        }
+        results.append(x)
+
+    results.sort(key=lambda k: k['player'])
+    results.sort(key=lambda k: k['position'] if k['points'] > 0 else 99)
+    i = 0
+    for res in results:
+        i += 1
+        res['position'] = i
+    return results
 
 
 def get_event_by_year_and_name(year, event_name):
@@ -357,7 +358,7 @@ def get_event_by_year_and_name(year, event_name):
 def get_results_by_year_and_name(year, event_name):
     pass
     # event = get_event_by_year_and_name(year, event_name)
-    # return get_results(year, event['num'])
+    # return get_results_for_edit(year, event['num'])
 
 
 def event_course_id(year, event_id):
@@ -414,25 +415,21 @@ def is_latest_event(event_id):
     # return False
 
 
-def is_event_result_editable(year, event_id):
-    pass
-    # event = get_event(year, event_id)
-    # override = config.get('override')
-    # return override or (datetime.date.today() > event['date'] and is_last_event(year, event_id))
+def is_event_result_editable(event):
+    override = config.get('override')
+    return override or (datetime.date.today() > event.date)  # and is_last_event(event))
 
 
-def is_last_event(year, event_id):
+def is_last_event(event):
     pass
-    # last = [str(x) for x in get_last_event()]
+    last = [str(x) for x in get_last_event()]
     # override = config.get('override')
     # return override or last == [str(year), str(event_id)]
 
 
 def is_event_editable(year):
-    pass
-    # year = coerce(year, int)
-    # override = config.get('override')
-    # return override or year >= datetime.date.today().year
+    override = config.get('override')
+    return override or year >= datetime.date.today().year
 
 
 def get_last_event(year=None):
@@ -557,22 +554,14 @@ def get_tour_events(year, tour_event_id, max):
     # return events
 
 
-def get_tour_scores(year, event_id):
-    pass
-    # events = get_tour_event_list(year, event_id)
-    # dates = []
-    # course_ids = []
-    # for event in events:
-    #     dates.append(event['date'].strftime('%Y/%m/%d'))
-    #     course_ids.append(str(lookup_course(event['course'])))
-    #
-    # def lu_fn(rec, keys, values):
-    #     dates, courses = values
-    #     res = rec[keys[0]] in dates and rec[keys[1]] in courses
-    #     return res
-    #
-    # res = get_records(scores_file(), ['date', 'course'], [dates, course_ids], lu_fn)
-    # return res
+def get_tour_scores(event_ids):
+    ids = '(' + (','.join([str(id) for id in event_ids])) + ')'
+    s = text("select * from scores where event_id in {} order by player_id, event_id".format(ids))
+    scores = []
+    for score in db_session.query(Score).from_statement(s):
+        scores.append([score.event_id, score.player_id, score.points])
+    head = ['event', 'player', 'points']
+    return head, scores
 
 
 # endregion
@@ -580,9 +569,7 @@ def get_tour_scores(year, event_id):
 
 # region courses
 def get_all_course_names():
-    pass
-    # courses = get_field(courses_file(), 'name')
-    # return sorted(courses)
+    return [c.name for c in db_session.query(Course).order_by(Course.name)]
 
 
 def get_course_names(course_ids):
@@ -621,6 +608,10 @@ def lookup_course(course):
 
 
 def get_course_data(course_id, year):
+    stmt = text("select sss, si, par from course_data where course_id=course_id and year>=:year order by year")
+    stmt = stmt.columns(CourseData.sss, CourseData.si, CourseData.par)
+    return db_session.query(CourseData).from_statement(stmt).params(course_id=str(course_id), year=str(year)).first()
+
     pass
     # course_id = coerce(course_id, str)
     # year = coerce(year, int)
@@ -660,17 +651,21 @@ def save_course_card(course_id, year, fields, data):
 
 # region players
 
-def get_all_player_names():
-    pass
-    # data = get_field(players_file(), 'name')
-    # return data
+def get_players_as_of(date):
+    res = {}
+    for p in db_session.query(Player).order_by(Player.last_name, Player.first_name):
+        state = p.state_as_of(date)
+        res[p.full_name()] = state
+    return res
 
 
 def get_player_names(player_ids):
-    pass
-    # head, recs = get_records(players_file(), 'id', player_ids)
-    # recs = {r[lookup(head, 'id')]: r[lookup(head, 'name')] for r in recs}
-    # return [recs[p] for p in player_ids]
+    ids = '(' + (','.join([str(id) for id in player_ids])) + ')'
+    s = text("select * from players where id in {}".format(ids))
+    players = {}
+    for player in db_session.query(Player).from_statement(s):
+        players[player.id] = player.full_name()
+    return players
 
 
 def get_player_name(player_id):
@@ -685,16 +680,9 @@ def get_player_id(player_name):
     # return rec['id']
 
 
-def get_player_names(player_ids):
-    pass
-    # head, recs = get_records(players_file(), 'id', player_ids)
-    # recs = {r[0]: r[1] for r in recs}
-    # return [recs[p] for p in player_ids]
-
-
 def get_players(as_of, status=None):
     pass
-    # header, recs = get_handicap_records(as_of, status)
+    # header, recs = get_handicap_records(course_data_as_of, status)
     # inx = [1]
     # pi = [int(itemgetter(*inx)(r)) - 1 for r in recs]
     # players = get_all_player_names()
@@ -710,7 +698,7 @@ def get_player_select_list():
 
 def get_handicaps(as_of, status=None):
     pass
-    # header, recs = get_handicap_records(as_of, status)
+    # header, recs = get_handicap_records(course_data_as_of, status)
     # inx = lookup(header, ['player', 'handicap'])
     # return [itemgetter(*inx)(r) for r in recs]
 
@@ -718,16 +706,16 @@ def get_handicaps(as_of, status=None):
 def get_player_handicap(player_id, as_of):
     pass
     # player_id = coerce(player_id, str)
-    # as_of = coerce_fmt_date(as_of)
+    # course_data_as_of = coerce_fmt_date(course_data_as_of)
     # header, recs = get_records(handicaps_file(), 'player', player_id)
-    # recs = [x for x in recs if x[0] <= as_of]
+    # recs = [x for x in recs if x[0] <= course_data_as_of]
     # recs.sort(key=lambda tup: (tup[1], tup[0]), reverse=True)
     # return float(dict(zip(header, recs[0]))['handicap'])
 
 
 def get_handicap_records(as_of, status=None):
     pass
-    # as_of = coerce_fmt_date(as_of)
+    # course_data_as_of = coerce_fmt_date(course_data_as_of)
     # if status is not None:
     #     status = force_list(status)
     #
@@ -739,7 +727,7 @@ def get_handicap_records(as_of, status=None):
     #         res = res and rec[keys[1]] in status
     #     return res
     #
-    # header, recs = get_records(handicaps_file(), ['date', 'status'], [as_of, status], lu_fn)
+    # header, recs = get_records(handicaps_file(), ['date', 'status'], [course_data_as_of, status], lu_fn)
     # recs.sort(key=lambda tup: (tup[1], tup[0]), reverse=True)  # order by date within player
     # get_item = itemgetter(lookup(header, 'player'))
     # res = [list(value)[0] for key, value in groupby(recs, get_item)]  # get latest for each player
@@ -749,9 +737,9 @@ def get_handicap_records(as_of, status=None):
 def get_handicap_history(player_id, as_of):
     pass
     # player_id = coerce(player_id, str)
-    # as_of = coerce_fmt_date(as_of)
+    # course_data_as_of = coerce_fmt_date(course_data_as_of)
     # header, recs = get_records(handicaps_file(), 'player', player_id)
-    # recs = [x for x in recs if x[0] <= as_of]
+    # recs = [x for x in recs if x[0] <= course_data_as_of]
     # recs.sort(key=lambda tup: (tup[1], tup[0]), reverse=True)
     # inx = lookup(header, ['date', 'handicap', 'status'])
     # res = [itemgetter(*inx)(r) for r in recs]
@@ -803,15 +791,13 @@ def save_handicaps(date, header, data):
 
 # region admin
 def get_admin_user(key, value):
-    pass
-    # return get_record(admin_users_file(), key, str(value))
+    return get_record(admin_users_file(), key, str(value))
 
 
 def add_admin_user(user):
-    pass
-    # all = get_field(admin_users_file(), 'id')
-    # user.set_id(len(all) + 1)
-    # update_record(admin_users_file(), 'id', user.record())
+    all = get_field(admin_users_file(), 'id')
+    user.set_id(len(all) + 1)
+    update_record(admin_users_file(), 'id', user.record())
 
 
 # endregion
@@ -819,14 +805,13 @@ def add_admin_user(user):
 
 # region Members
 def get_current_members():
-    pass
-    # header, data = get_records(members_file(), 'status',
-    #                            [str(MemberStatus.full_member.value), str(MemberStatus.overseas_member.value)])
-    # i = lookup(header, ['salutation', 'surname'])
-    # member_names = sort_name_list([' '.join(itemgetter(*i)(m)) for m in data])
-    # all_players = get_all_player_names()
-    # pid = lookup(all_players, member_names, index_origin=1)
-    # return OrderedDict(zip(pid, member_names))
+    members = db_session.query(Member).filter_by(status=MemberStatus.full_member)
+    players = [m.player for m in members]
+
+    def sk(player):
+        return player.last_name.lower() + player.first_name.lower()
+    players.sort(key=sk)
+    return players
 
 
 def get_all_members():
@@ -840,11 +825,8 @@ def get_all_members():
 
 
 def get_member_select_list():
-    pass
-    # members = get_fields(members_file(), ['membcode', 'salutation', 'surname', 'status'])
-    # members = [itemgetter(0, 1, 2)(m) for m in members if m[3] != str(MemberStatus.ex_member.value)]
-    # members = sorted(members, key=lambda tup: (tup[2], tup[1]))
-    # return [(m[0], m[1] + ' ' + m[2]) for m in members]
+    choices = [(p.member.id, p.full_name()) for p in get_current_members()]
+    return choices
 
 
 def get_new_member_id():
@@ -867,7 +849,7 @@ def get_members(as_of):
     #     date = rec[key]
     #     return parse_date(date) > value
     #
-    # header, data = get_records(members_file(), 'resigned', parse_date(as_of), lu_fn)
+    # header, data = get_records(members_file(), 'resigned', parse_date(course_data_as_of), lu_fn)
     # i = lookup(header, ['salutation', 'surname'])
     # member_names = sort_name_list([' '.join(itemgetter(*i)(m)) for m in data])
     # all_players = get_all_player_names()
@@ -885,15 +867,11 @@ def get_member(key, value):
 
 # region Trophies
 def get_all_trophy_names():
-    pass
-    # trophies = get_field(trophies_file(), 'name')
-    # return sorted(trophies)
+    return [t.name for t in db_session.query(Trophy).order_by(Trophy.name)]
 
 
 def get_trophy(trophy_id):
-    pass
-    # rec = get_record(trophies_file(), 'id', trophy_id)
-    # return rec
+    return db_session.query(Trophy).filter_by(id=trophy_id).first()
 
 
 def get_trophy_by_name(name):
@@ -987,11 +965,10 @@ def get_all_scores(key=None, values=None):
 
 
 def get_all_years():
-    pass
-    # current_year = datetime.datetime.now().year
-    # inc = 1 if datetime.datetime.now().month > 10 else 0
-    # years = [i for i in range(current_year + inc, 1992, -1)]
-    # return years
+    current_year = datetime.datetime.now().year
+    inc = 1 if datetime.datetime.now().month > 10 else 0
+    years = [i for i in range(current_year + inc, 1992, -1)]
+    return years
 
 
 def create_bookings_file(year, event_id):

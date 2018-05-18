@@ -83,12 +83,12 @@ class NewsDayForm(FlaskForm):
         elif item_type == NewsItemType.handicap_update:
             item = NewsItem(text='Handicaps updated', link='/wagsuser/handicaps', title='show current handicaps')
         elif item_type == NewsItemType.event_result:
-            event = get_event(*get_last_event())
+            event = get_event()
             item = NewsItem(text='Results for {} updated'.format(event['venue']),
                             link='/wagsuser/events/{}/{}/results?event_type=1'.format(year, event['num']),
                             title='show results')
         elif item_type == NewsItemType.open_booking:
-            event = get_event(*get_next_event())
+            event = get_event()
             item = NewsItem(text='Booking now open for {} {}'.format(event['venue'], encode_date(event['date'])),
                             link='/wagsuser/events/{}/{}/book'.format(year, event['num']),
                             title='book now')

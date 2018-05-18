@@ -19,13 +19,13 @@ def set_select_field(field, item_name, choices, default_selection=None):
     else:
         items = [(c, c) for c in choices]
     if item_name:
-        field.choices = [(None, 'Choose {} ...'.format(item_name))] + items
+        field.choices = [(0, 'Choose {} ...'.format(item_name))] + items
     else:
         field.choices = items
     if default_selection:
-        default = [c[0] for c in items if c[0] == default_selection]
+        default = [c for c in items if c[1] == default_selection]
         if len(default) > 0:
-            field.data = field.default = default[0]
+            field.data = default[0][0]
 
 
 def render_link(url, text="", image=None, icon=None, target=None):

@@ -40,7 +40,7 @@
                 {%if item.bookable.data == 1 %}
                     <td align="center">
                         {{ render_link(
-                        url=url_for('book_event', year=year, event_id=item.num.data, event_type=item.event_type.data),
+                        url=url_for('book_event', year=year, event_id=item.num.data),
                         image=url_for('static', filename='images/go.png'),
                         text='Book event'
                         )|safe }}
@@ -48,7 +48,7 @@
                 {%elif item.bookable.data == 0%}
                     <td align="center">
                         {{ render_link(
-                        url=url_for('show_event', year=year, event_id=item.num.data, event_type=item.event_type.data),
+                        url=url_for('show_event', year=year, event_id=item.num.data),
                         image=url_for('static', filename='images/go.png'),
                         text='View event'
                         )|safe }}
@@ -59,7 +59,7 @@
                 {%if item.result.data %}
                     <td align="center">
                         {{ render_link(
-                        url=url_for('results_event', year=year, event_id=item.num.data, event_type=item.event_type.data),
+                        url=url_for('results_event', event_id=item.num.data, event_type=item.event_type.data),
                         image=url_for('static', filename='images/go.png'),
                         text='View results'
                         )|safe }}
@@ -70,7 +70,7 @@
                 {%if item.result.data %}
                     <td align="center">
                         {{ render_link(
-                        url=url_for('report_event', year=year, event_id=item.num.data, event_type=item.event_type.data),
+                        url=url_for('report_event', year=year, event_id=item.num.data),
                         image=url_for('static', filename='images/go.png'),
                         text='View event report'
                         )|safe }}

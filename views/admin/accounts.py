@@ -1,5 +1,5 @@
 from wags_admin import app
-from front_end.admin.home import get_user_current_year
+from front_end.admin.others import get_user_current_year
 from front_end.admin import accounts_admin
 
 

@@ -44,7 +44,7 @@ def positions(scores):
 
 
 def calc_event_positions(year, event_id, result):
-    event = get_event(year, event_id)
+    event = get_event(event_id)
     course_id = lookup_course(event['venue'])
     course_data = get_course_data(course_id, year)
     holes = [str(i) for i in range(1, 19)]

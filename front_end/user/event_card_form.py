@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField, HiddenField
 
-from back_end.data_utilities import parse_date
+from back_end.data_utilities import parse_date, fmt_date
 from back_end.interface import get_event, lookup_course, get_course_data, get_player_handicap, \
     get_event_card, get_player_name, is_event_result_editable
 
@@ -31,27 +31,24 @@ class EventCardForm(FlaskForm):
     # totalPointsReturn = HiddenField(label=None, id='totalPointsReturn')
     # save_card = SubmitField(label='Save')
 
-    def populate_card(self, date, player_id):
-        event = get_event(date=date)
-        course_id = lookup_course(event['venue'])
-        year = parse_date(date).year
-        course_data = get_course_data(course_id, year)
-        hcap = get_player_handicap(player_id, event['date'])
-        card = get_event_card(date=date, player_id=player_id)
-
-        self.event_name.data = '{} {} {}'.format(event['event'], event['venue'], event['date'])
-        self.player.data = get_player_name(player_id)
-        self.handicap.data = hcap
+    def populate_card(self, event_id, player_id):
+        event = get_event(event_id)
+        card = get_event_card(event_id, player_id)
+        course_data = event.course.course_data_as_of(event.date.year)
+        state = card.player.state_as_of(event.date)
+        self.event_name.data = event.full_name()
+        self.player.data = card.player.full_name()
+        self.handicap.data = state.handicap
         self.editable.data = False
 
         holes = range(1, 19)
         for hole in holes:
-            i = str(hole)
-            shots = "-" if card[i] == "99" or card[i] is None else card[i]
+            i = hole - 1
+            shots = "-" if card.card[i] == 99 or card.card[i] is None else str(card.card[i])
             item_form = EventCardItemForm()
             item_form.hole = hole
-            item_form.par = int(course_data['par' + i])
-            item_form.si = int(course_data['si' + i])
+            item_form.par = int(course_data.par[i])
+            item_form.si = int(course_data.si[i])
             item_form.shots = shots
             item_form.points = 0
             if hole <= 9:

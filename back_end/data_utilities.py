@@ -154,9 +154,14 @@ def normalise_name(name):
     return name.replace('+', ' ').title()
 
 
-def lookup(item_list, items, index_origin=0):
+def lookup(item_list, items, index_origin=0, case_sensitive=None):
     res = []
+    lower = case_sensitive is False
+    if lower:
+        item_list = [item.lower() for item in item_list]
     for item in force_list(items):
+        if lower:
+            item = item.lower()
         if item in item_list:
             i = index_origin + item_list.index(item)
         else:

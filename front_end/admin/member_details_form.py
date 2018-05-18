@@ -12,12 +12,12 @@ from globals.enumerations import MemberStatus, PlayerStatus
 
 
 class MemberListForm(FlaskForm):
-    member = SelectField(label='Member')
+    member = SelectField(label='Choose Member')
     edit_member = SubmitField(label='Edit member')
     add_member = SubmitField(label='Add member')
 
     def populate_member_list(self):
-        set_select_field(self.member, 'member', get_member_select_list(), '')
+        set_select_field(self.member, None, get_member_select_list())
 
 
 class MemberDetailsForm(FlaskForm):
@@ -25,7 +25,7 @@ class MemberDetailsForm(FlaskForm):
     status = SelectField(label='Status', choices=MemberStatus.choices(), coerce=MemberStatus.coerce)
     first_name = StringField(label='First Name', validators=[InputRequired()])
     surname = StringField(label='Surname', validators=[InputRequired()])
-    proposer = SelectField(label='Proposer', choices=[(c, c) for c in get_current_members().values()])
+    proposer = SelectField(label='Proposer', choices=[(c, c) for c in get_current_members()])
     email = StringField(label='Email', validators=[InputRequired(), Email("Invalid email address")])
     address = StringField(label='Address')
     post_code = StringField(label='Post Code')
@@ -75,7 +75,7 @@ class MemberDetailsForm(FlaskForm):
                       'home_tel': '',
                       'mobile_tel': '',
                       'handicap': '28',
-                      'as_of': datetime.datetime.today().date()
+                      'course_data_as_of': datetime.datetime.today().date()
                       }
         else:
             member = get_member('membcode', member_id)
@@ -83,7 +83,7 @@ class MemberDetailsForm(FlaskForm):
             date = fmt_date(datetime.datetime.today().date())
             hist = get_handicap_history(player_id, date)
             member['handicap'] = hist[0][1]
-            member['as_of'] = parse_date(hist[0][0])
+            member['course_data_as_of'] = parse_date(hist[0][0])
         self.member_id_return.data = self.member_id.data = member['membcode']
         self.status_return.data = self.status.data = MemberStatus(int(member['status']))
         self.first_name.data = member['salutation']
@@ -98,7 +98,7 @@ class MemberDetailsForm(FlaskForm):
         self.home_phone.data = member['home_tel']
         self.mobile_phone.data = member['mobile_tel']
         self.handicap_return.data = self.handicap.data = member['handicap']
-        self.as_of.data = member['as_of']
+        self.as_of.data = member['course_data_as_of']
 
     def save_member(self, member_id):
         new_member = member_id == "new"

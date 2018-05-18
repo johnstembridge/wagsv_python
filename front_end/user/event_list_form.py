@@ -6,8 +6,7 @@ from back_end.data_utilities import encode_date_short, in_date_range, parse_date
 from front_end.form_helpers import set_select_field
 from globals.config import url_for_user
 from globals.enumerations import EventType
-from models.wags_db import Event
-from back_end.interface import get_event_list, get_trophy_url, is_tour_event, get_venue_url, get_event_select_list, \
+from back_end.interface import get_event_list, is_tour_event, get_venue_url, get_event_select_list, \
     get_event_by_year_and_name
 
 
@@ -29,7 +28,6 @@ class EventListForm(FlaskForm):
 
     def populate_event_list(self, year):
         first = True
-        tour_event = ''
         for item in get_event_list(year):
             event_type = item['type']
             item_form = EventItemForm()
@@ -47,7 +45,7 @@ class EventListForm(FlaskForm):
                 1 if in_date_range(datetime.date.today(), item['start_booking'], item['end_booking']) \
                 else -1 if (is_tour_event(item) or (True if not item['start_booking'] else datetime.date.today() < item['start_booking'])) \
                 else 0
-            item_form.result = item['date'] < datetime.date.today()
+            item_form.result = item['date'] < datetime.date.today() and event_type in (EventType.wags_vl_event, EventType.wags_tour)
             self.event_list.append_entry(item_form)
 
 

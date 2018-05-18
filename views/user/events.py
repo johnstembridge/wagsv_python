@@ -38,10 +38,10 @@ def show_event(year, event_id):
     return ReportEvents.show_event(year, event_id, event_type)
 
 
-@app.route('/events/<year>/<event_id>/results', methods=['GET', 'POST'])
-def results_event(year, event_id):
+@app.route('/events/<event_id>/results', methods=['GET', 'POST'])
+def results_event(event_id):
     event_type = request.args.get('event_type')
-    return ReportEvents.results_event(year, event_id, event_type)
+    return ReportEvents.results_event(event_id, event_type)
 
 
 @app.route('/events/<date>/results', methods=['GET', 'POST'])
@@ -52,14 +52,12 @@ def results_event_date(date):
 
 @app.route('/events/<year>/<event_id>/report', methods=['GET', 'POST'])
 def report_event(year, event_id):
-    event_type = request.args.get('event_type')
-    return ReportEvents.report_event(year, event_id, event_type)
+    return ReportEvents.report_event(year, event_id)
 
 
-@app.route('/events/<date>/<player_id>/card', methods=['GET', 'POST'])
-def card_event_player(date, player_id):
-    date = date.replace('-', '/')
-    return ReportEvents.card_event_player(date, player_id)
+@app.route('/events/<event_id>/<player_id>/card', methods=['GET', 'POST'])
+def card_event_player(event_id, player_id):
+    return ReportEvents.card_event_player(event_id, player_id)
 
 
 @app.route('/events/<year>/<event_id>/<player_id>/handicap', methods=['GET', 'POST'])

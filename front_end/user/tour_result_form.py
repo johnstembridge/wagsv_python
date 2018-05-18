@@ -1,6 +1,9 @@
+import operator
+import itertools
 from flask_wtf import FlaskForm
 from wtforms import StringField, FieldList, FormField
-from back_end.interface import get_event, get_tour_scores, get_tour_event_list, get_player_name
+from back_end.interface import get_event, get_player_names, get_tour_scores
+from back_end.interface_old import get_tour_scores_old
 from back_end.table import Table
 from back_end.data_utilities import fmt_date
 from back_end.calc import get_positions
@@ -26,24 +29,23 @@ class TourResultsForm(FlaskForm):
     venues = FieldList(FormField(TourEventVenueItemForm))
     scores = FieldList(FormField(TourResultItemForm))
 
-    def populate_tour_results(self, year, event_id):
-        event = get_event(year, event_id)
-        self.event_name.data = '{} {} {}'.format(event['event'], event['venue'], event['date'])
-
-        venues = get_tour_event_list(year, event_id)
+    def populate_tour_results(self, event_id):
+        event = get_event(event_id)
+        self.event_name.data = event.full_name()
+        venues = event.tour_events
         for venue in venues:
             venue_form = TourEventVenueItemForm()
-            venue_form.name = venue['course']
+            venue_form.name = venue.course.name
             self.venues.append_entry(venue_form)
 
-        dates = [fmt_date(v['date']) for v in venues]
-        results = self.get_tour_results(year, event_id, dates)
+        results = self.make_tour_results(venues)
+        player_names = get_player_names(results.get_columns('player_id'))
 
         for res in results.data:
             item_form = TourResultItemForm()
-            guest = "" if (res[results.column_index('status')] != "0") else " (guest)"
+            guest = ""  # if (res[results.column_index('status')] != "0") else " (guest)"
             item_form.position = res[results.column_index('position')]
-            item_form.player = get_player_name(res[results.column_index('player_id')]) + guest
+            item_form.player = player_names[res[results.column_index('player_id')]] + guest
             item_form.total = res[results.column_index('total')]
             for score in res[results.column_index('scores')]:
                 score_form = TourEventScoreItemForm()
@@ -52,21 +54,20 @@ class TourResultsForm(FlaskForm):
             self.scores.append_entry(item_form)
 
     @staticmethod
-    def get_tour_results(year, event_id, dates):
-        scores = Table(*get_tour_scores(year, event_id))
-        scores.sort(['player', 'date'])
+    def make_tour_results(venues):
+        event_ids = [v.id for v in venues]
+        scores = Table(*get_tour_scores(event_ids))
         res = []
         for player_id, event_scores in scores.groupby('player'):
             s = [s for s in event_scores]
-            missing = list(set(dates).difference(set([x[0] for x in s])))
-            status = s[0][7]
+            missing = list(set(event_ids).difference(set([x[0] for x in s])))
             for m in missing:
-                s.append([m] + 7*['0'])
+                s.append([m] + 2*['0'])
             s.sort()
-            s = [int(x[4]) for x in s]
-            r = (player_id, status, s, sum(s))
+            p = [int(x[2]) for x in s]
+            r = (player_id, p, sum(p))
             res.append(r)
-        head = ['player_id', 'status', 'scores', 'total']
+        head = ['player_id', 'scores', 'total']
         res = Table(head, res)
         res.sort(['total'], reverse=True)
         res.add_column('position', get_positions(res.get_columns('total')))

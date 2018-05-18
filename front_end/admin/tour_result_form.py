@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField, HiddenField
-from back_end.interface import get_event, get_results, save_event_scores, is_event_result_editable
+from back_end.interface import get_event, get_results_for_edit, save_event_scores, is_event_result_editable
 
 
 class TourResultItemForm(FlaskForm):
@@ -29,10 +29,10 @@ class TourResultsForm(FlaskForm):
     def populate_tour_results(self, year, event_id):
         self.event_id.data = event_id
         self.year.data = year
-        event = get_event(year, event_id)
+        event = get_event(event_id)
         self.event_name.data = '{} {} {}'.format(event['event'], event['venue'], event['date'])
         self.editable = is_event_result_editable(year, event_id)
-        players = get_results(year, event_id)
+        players = get_results_for_edit(year, event_id)
         num = 0
         for player in players:
             num += 1

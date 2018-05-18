@@ -206,6 +206,7 @@ class Handicap(db.Model):
 
 
 class Score(db.Model):
+    __tablename__ = "scores"
     id = db.Column(db.Integer, primary_key=True)
     event_id = db.Column(db.Integer, db.ForeignKey('events.id'), nullable=False)
     player_id = db.Column(db.Integer, db.ForeignKey('players.id'), nullable=False)

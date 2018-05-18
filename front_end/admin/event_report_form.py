@@ -17,7 +17,7 @@ class EventReportForm(FlaskForm):
     save = SubmitField(label='Save')
 
     def populate_event_report(self, year, event_id, report_file):
-        event = get_event(year, event_id)
+        event = get_event(event_id)
         self.event_name.data = '{} {} {}'.format(event['event'], event['venue'], event['date'])
 
         def lu_fn(values):

@@ -43,7 +43,7 @@ class EventForm(FlaskForm):
 
     def populate_event(self, year, event_id, event_type):
         self.editable = is_event_editable(year)
-        event = get_event(year, event_id)
+        event = get_event(event_id)
         self.date.data = event['date']
         set_select_field(self.organiser, 'organiser', Players().get_current_members(), event['organiser'])
         self.member_price.data = event['member_price']
