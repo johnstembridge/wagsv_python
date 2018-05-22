@@ -200,6 +200,13 @@ class Player(Base):
         else:
             return Handicap(player_id=self.id, status=PlayerStatus.guest, handicap=0, date=datetime.datetime.today)
 
+    def state_up_to(self, date):
+        state = [h for h in self.handicaps if h.date <= date]
+        if len(state) > 0:
+            return state
+        else:
+            return [Handicap(player_id=self.id, status=PlayerStatus.guest, handicap=0, date=datetime.datetime.today)]
+
     def score_for(self, event_id):
         scores = [s.points for s in self.scores if s.event_id == event_id]
         if len(scores) > 0:

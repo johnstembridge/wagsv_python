@@ -3,7 +3,7 @@ import unittest
 from sqlalchemy import text, create_engine
 from sqlalchemy.orm import sessionmaker
 
-from models.wags_db_new import Base, Event, Venue, Player, Member, Handicap, EnumType
+from models.wags_db_new import Base, Event, Venue, Player, Member, Handicap, EnumType, CourseData
 from globals.db_setup import db_session
 from globals import config
 from back_end.interface import get_event_list
@@ -53,6 +53,14 @@ class TestDb(unittest.TestCase):
         #evs = get_event_list(year)
         stmt = text("select id from events where strftime('%Y', date)=:year order by date").params(year=str(year))
         evs = db_session.query(Event).from_statement(stmt).all()
+        pass
+
+    def test_get_card_for_course(self):
+        year = 2018
+        id = 102
+        stmt = text("select * from course_data where course_id=:id and year>=:year order by year")
+        res = db_session.query(CourseData).from_statement(stmt).params(id=str(id), year=str(year)).first()
+
         pass
     #
     # def test_missing(self):

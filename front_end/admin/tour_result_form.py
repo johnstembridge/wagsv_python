@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField, HiddenField
-from back_end.interface import get_event, get_results_for_edit, save_event_scores, is_event_result_editable
+from back_end.interface import get_event, get_results, save_event_result, is_event_result_editable
 
 
 class TourResultItemForm(FlaskForm):

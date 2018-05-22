@@ -4,7 +4,7 @@ from wtforms import StringField, SubmitField, HiddenField, SelectField, TextArea
 from back_end.file_access import get_file_contents
 from front_end.form_helpers import set_select_field, get_elements_from_html
 from globals.enumerations import PlayerStatus
-from back_end.interface import get_event, get_event_scores, get_player_name, get_player_names
+from back_end.interface import get_event, get_event_scores, get_player, get_player_names
 
 
 class EventReportForm(FlaskForm):
@@ -27,7 +27,7 @@ class EventReportForm(FlaskForm):
         members = all.where(lu_fn)
         pos = [int(s) for s in members.get_columns('position')]
         pos = pos.index(min(pos))
-        self.winner.data = get_player_name(members.get_columns('player')[pos])
+        self.winner.data = get_player(members.get_columns('player')[pos]).full_name
         self.winner_return.data = self.winner.data
         set_select_field(self.ntp, 'player', players)
         set_select_field(self.ld, 'player', players)

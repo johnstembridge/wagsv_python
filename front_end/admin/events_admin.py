@@ -84,16 +84,16 @@ class MaintainEvents:
         return render_template('admin/tour_result.html', form=form, event=year + event_id, render_link=render_link)
 
     @staticmethod
-    def handicaps_event(year, event_id):
+    def handicaps_event(event_id):
         form = EventHandicapsForm()
         if form.is_submitted():
             if form.save_handicaps.data:
                 if form.save_event_handicaps():
                     flash('Handicaps saved', 'success')
-                    return redirect(url_for_admin('handicaps_event', year=year, event_id=event_id))
+                    return redirect(url_for_admin('handicaps_event', event_id=event_id))
         else:
-            form.populate_event_handicaps(int(year), event_id)
-        return render_template('admin/event_handicap.html', form=form, event=year + event_id, render_link=render_link)
+            form.populate_event_handicaps(event_id)
+        return render_template('admin/event_handicap.html', form=form,  event_id=event_id, render_link=render_link)
 
     @staticmethod
     def card_event_player(event_id, player_id, position='0', handicap=0, status=''):
@@ -108,9 +108,9 @@ class MaintainEvents:
         return render_template('admin/event_card.html', form=form, event=event_id, render_link=render_link)
 
     @staticmethod
-    def handicap_history_player(year, event_id, player_id):
+    def handicap_history_player(event_id, player_id):
         form = HandicapHistoryForm()
-        form.populate_history(year, event_id, player_id)
+        form.populate_history(event_id, player_id)
         return render_template('admin/handicap_history.html', form=form)
 
     @staticmethod

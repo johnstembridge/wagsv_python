@@ -2,8 +2,8 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField, HiddenField
 
 from back_end.calc import calc_event_positions
-from back_end.interface import get_event, lookup_course, get_course_data, save_event_card, get_event_card, \
-    get_player_name, is_event_result_editable, get_event_scores, save_event_scores, update_trophy_history
+from back_end.interface import get_event, get_course_data, save_event_score, get_event_card, \
+    get_player, is_event_result_editable, get_event_scores, save_event_result, update_trophy_history
 from globals.enumerations import PlayerStatus
 
 
@@ -35,28 +35,29 @@ class EventCardForm(FlaskForm):
     statusReturn = HiddenField(label=None, id='statusReturn')
     save_card = SubmitField(label='Save')
 
-    def populate_card(self, year, event_id, player_id, position, handicap, status):
+    def populate_card(self, event_id, player_id, position, handicap, status):
         event = get_event(event_id)
-        course_id = lookup_course(event['venue'])
+        year = event.date.year
+        course_id = event.course_id
         course_data = get_course_data(course_id, year)
-        card = get_event_card(year, event_id, player_id)
+        card = get_event_card(event_id, player_id)
 
-        self.event_name.data = '{} {} {}'.format(event['event'], event['venue'], event['date'])
-        self.player.data = get_player_name(player_id)
+        self.event_name.data = event.full_name()
+        self.player.data = get_player(player_id).full_name()
         self.handicap.data = handicap
         self.positionReturn.data = position
         self.handicapReturn.data = handicap
         self.statusReturn.data = status
-        self.editable.data = is_event_result_editable(year, event_id)
+        self.editable.data = is_event_result_editable(event_id)
 
         holes = range(1, 19)
         for hole in holes:
-            i = str(hole)
-            shots = "-" if card[i] == "99" or card[i] is None else card[i]
+            i = hole - 1
+            shots = "-" if card[i] == 99 or card[i] is None else card[i]
             item_form = EventCardItemForm()
             item_form.hole = hole
-            item_form.par = int(course_data['par' + i])
-            item_form.si = int(course_data['si' + i])
+            item_form.par = course_data.par[i]
+            item_form.si = course_data.si[i]
             item_form.shots = shots
             item_form.points = 0
             if hole <= 9:
@@ -69,22 +70,14 @@ class EventCardForm(FlaskForm):
         if len(errors) > 0:
             return False
 
-        shots = [d['shots'] for d in form.scoresOut.data] + [d['shots'] for d in form.scoresIn.data]
-        shots = ['99' if v is None else str(v) for v in shots]
-        fields = [str(i) for i in range(1, 19)]
-        save_event_card(event_id, player_id, fields, shots)
-
-        handicap = form.handicapReturn.data
-        status = str(PlayerStatus.member.value if form.statusReturn.data == '' else PlayerStatus.guest.value)
+        card = [d['shots'] for d in form.scoresOut.data] + [d['shots'] for d in form.scoresIn.data]
+        card = [99 if v is None else v for v in card]
         total_shots = form.totalShotsReturn.data
         total_points = form.totalPointsReturn.data
+        save_event_score(event_id, int(player_id), 0, card, total_shots, total_points)
 
-        all_scores = get_event_scores(event_id).select_columns(
-            ['player', 'position', 'points', 'strokes', 'handicap', 'status'])
-        new = (player_id, '0', total_points, total_shots, handicap, status)
-        all_scores.update_row('player', player_id, new)
+        all_scores = get_event_scores(event_id)
         result = calc_event_positions(event_id, all_scores)
-        save_event_scores(event_id, result)
-        update_trophy_history(event_id, result)
+        save_event_result(event_id, result)
 
         return True

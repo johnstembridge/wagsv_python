@@ -42,13 +42,13 @@ def report_event(year, event_id):
 
 
 @app.route('/events/<event_id>/handicaps', methods=['GET', 'POST'])
-def handicaps_event(year, event_id):
-    return MaintainEvents.handicaps_event(year, event_id)
+def handicaps_event(event_id):
+    return MaintainEvents.handicaps_event(event_id)
 
 
 @app.route('/events/<event_id>/<player_id>/handicap', methods=['GET', 'POST'])
-def event_handicap_history_player(year, event_id, player_id):
-    return MaintainEvents.handicap_history_player(year, event_id, player_id)
+def event_handicap_history_player(event_id, player_id):
+    return MaintainEvents.handicap_history_player(event_id, player_id)
 
 
 @app.route('/trophies/<trophy>', methods=['GET', 'POST'])

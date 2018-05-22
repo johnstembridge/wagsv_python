@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, FormField, FieldList
 from wtforms.fields.html5 import DateField
 import datetime
-from back_end.interface import get_player_name, get_handicap_history, event_date, is_last_event
+from back_end.interface import get_player, get_handicap_history, event_date, is_last_event, get_event
 from back_end.data_utilities import fmt_date
 from globals.enumerations import PlayerStatus
 
@@ -17,16 +17,18 @@ class HandicapHistoryForm(FlaskForm):
     player = StringField(label='Player')
     history = FieldList(FormField(HandicapItemForm))
 
-    def populate_history(self, year, event_id, player_id):
-        if is_last_event(year, event_id):
-            date = fmt_date(datetime.date.today())
+    def populate_history(self, event_id, player_id):
+        event = get_event(event_id)
+        if is_last_event(event):
+            date = datetime.date.today()
         else:
-            date = event_date(year, event_id)
-        self.player.data = get_player_name(player_id)
-        for item in get_handicap_history(player_id, date):
+            date = event.date
+        player = get_player(player_id)
+        self.player.data = player.full_name()
+        for state in player.state_up_to(date):
             item_form = HandicapItemForm()
-            item_form.date = item[0]
-            item_form.handicap = item[1]
-            item_form.status = PlayerStatus(int(item[2])).name
+            item_form.date = state.date
+            item_form.handicap = state.handicap
+            item_form.status = state.status.name
             self.history.append_entry(item_form)
 

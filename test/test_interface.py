@@ -5,7 +5,7 @@ from back_end.data_utilities import ids_from_names, fmt_date
 from back_end.file_access import get_record
 from globals.enumerations import PlayerStatus
 from back_end.interface import get_event, get_handicaps, get_players, get_event_scores, \
-    get_booked_players, save_event_scores, get_course_data, get_player_handicap, get_event_card, get_venue_by_name, \
+    get_booked_players, save_event_result, get_course_data, get_player_handicap, get_event_card, get_venue_by_name, \
     get_tour_events, get_last_event, get_player_name, get_player_names, get_member, \
     get_event_cards, get_results_for_edit, get_results_by_year_and_name, get_scores, get_members, get_tour_scores, \
     get_tour_event_list_from_scores, get_member_select_list, get_events_in, get_trophy, get_all_trophy_history, \
@@ -42,7 +42,7 @@ class TestInterface(unittest.TestCase):
         self.assertEqual(rec, expected)
 
     def test_get_event_shots(self):
-        res = get_event_cards(2017, 3)
+        res = get_event_cards(348)
         expected = TestData.example_event_cards
         self.assertEqual(res, expected)
 
@@ -106,11 +106,11 @@ class TestInterface(unittest.TestCase):
         self.assertTrue(len(res) > 0)
 
     def test_get_event_scores(self):
-        tab = get_event_scores(2016, '1')
+        tab = get_event_scores(328)
         self.assertTrue(len(tab.data) > 0)
 
     def test_get_booked_players(self):
-        res = get_booked_players('2017', 3)
+        res = get_booked_players(348)
         self.assertTrue(len(res) > 0)
 
     def test_save_event_scores(self):
@@ -134,7 +134,7 @@ class TestInterface(unittest.TestCase):
                 ['24', 20, '116', '28', 0],
                 ['12', 16, '121', '28', 0]]
 
-        save_event_scores(year, event_id, Table(fields, data))
+        save_event_result(year, event_id, Table(fields, data))
 
     def test_get_venue_by_name(self):
         rec = get_venue_by_name('Gatton Manor')

@@ -38,7 +38,7 @@
                             player_id=item.player_id.data,
                             position = item.position.data,
                             handicap = item.handicap.data,
-                            status = item.guest.data
+                            status = item.status_return.data
                         ),
                         image=url_for('static', filename='images/right-arrow.png'),
                         text='Edit/show card'
@@ -51,7 +51,7 @@
                 <td>{{ item.player_id }}</td>
                 <td>{{ item.strokes_return }}</td>
                 <td>{{ item.handicap_return }}</td>
-                <td>{{ item.guest_return }}</td>
+                <td>{{ item.status_return }}</td>
             {% endif %}
         </tr>
         {% endfor %}
