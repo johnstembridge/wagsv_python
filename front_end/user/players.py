@@ -8,10 +8,9 @@ from back_end.interface import event_date
 class ReportPlayers:
 
     @staticmethod
-    def handicap_history_player(year, event_id, player_id):
+    def handicap_history_player(event_id, player_id):
         form = HandicapHistoryForm()
-        date = event_date(year, event_id)
-        form.populate_history(player_id, date)
+        form.populate_history(player_id, event_id)
         return render_template('user/handicap_history.html', form=form)
 
     @staticmethod

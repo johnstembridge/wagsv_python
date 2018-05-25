@@ -100,8 +100,8 @@ class Trophy(Base):
     events = relationship("Event", order_by="desc(Event.date)", back_populates="trophy")
 
     def url(self):
-        app = 'admin'
-        return config.url_for(app, 'trophy', trophy=self.id)
+        app = 'user'
+        return config.url_for(app, 'trophy', trophy_id=self.id)
 
     def __repr__(self):
         return '<Trophy: {}>'.format(self.name)
@@ -135,7 +135,7 @@ class Course(Base):
         if len(data) > 0:
             return data[0]
         else:
-            pass
+            return None
 
     def __repr__(self):
         return '<Course: {}>'.format(self.name)
@@ -203,7 +203,7 @@ class Player(Base):
     def state_up_to(self, date):
         state = [h for h in self.handicaps if h.date <= date]
         if len(state) > 0:
-            return state
+            return sorted(state, key=lambda s: s.date, reverse=True)
         else:
             return [Handicap(player_id=self.id, status=PlayerStatus.guest, handicap=0, date=datetime.datetime.today)]
 

@@ -32,7 +32,7 @@ class MaintainVenues:
                 return redirect(url_for_admin('edit_course', venue_id=venue_id, course_id=0))
         if not form.is_submitted():
             form.populate_venue(venue_id)
-        venue = venue_id if venue_id != "0" else "(new)"
+        venue = venue_id if venue_id != 0 else "(new)"
         return render_template('admin/venue_details.html', venue_id=venue, form=form, render_link=render_link)
 
     @staticmethod

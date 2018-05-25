@@ -9,9 +9,9 @@ def summary():
 
 @app.route('/players/<player_id>', methods=['GET', 'POST'])
 def show_player_events(player_id):
-    return ReportPlayers.playing_history_player(player_id)
+    return ReportPlayers.playing_history_player(int(player_id))
 
 
 @app.route('/players/<player_id>/<year>', methods=['GET', 'POST'])
 def show_player_events_for_year(player_id, year):
-    return ReportPlayers.playing_history_player(player_id, year)
+    return ReportPlayers.playing_history_player(int(player_id), int(year))

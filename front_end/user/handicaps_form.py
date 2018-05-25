@@ -17,19 +17,15 @@ class HandicapsForm(FlaskForm):
     handicaps = FieldList(FormField(HandicapItemForm))
 
     def populate_handicaps(self):
-        today = datetime.date.today()
-        status = PlayerStatus.member
-        head, handicaps = get_handicap_records(today, status)
-        players = get_current_members()
+        date = datetime.date.today()
         count = 1
-        for pid, name in players.items():
-            hcap = dict(zip(head, first_or_default([h for h in handicaps if h[1] == str(pid)], [None]*4)))
-            # if hcap['status'] == str(PlayerStatus.member):
+        for player in get_current_members():
+            state = player.state_as_of(date)
             item_form = HandicapItemForm()
             item_form.item_pos = 1 + count % 2
-            item_form.player_id = str(pid)
-            item_form.player = name
-            item_form.handicap = hcap['handicap']
+            item_form.player_id = player.id
+            item_form.player = player.full_name()
+            item_form.handicap = state.handicap
             self.handicaps.append_entry(item_form)
             count += 1
 

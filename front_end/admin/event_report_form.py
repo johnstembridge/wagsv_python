@@ -4,7 +4,7 @@ from wtforms import StringField, SubmitField, HiddenField, SelectField, TextArea
 from back_end.file_access import get_file_contents
 from front_end.form_helpers import set_select_field, get_elements_from_html
 from globals.enumerations import PlayerStatus
-from back_end.interface import get_event, get_event_scores, get_player, get_player_names
+from back_end.interface import get_event, get_event_scores, get_player, get_player_names_as_dict
 
 
 class EventReportForm(FlaskForm):
@@ -16,18 +16,20 @@ class EventReportForm(FlaskForm):
     winner_return = HiddenField()
     save = SubmitField(label='Save')
 
-    def populate_event_report(self, year, event_id, report_file):
+    def populate_event_report(self, event_id, report_file):
         event = get_event(event_id)
-        self.event_name.data = '{} {} {}'.format(event['event'], event['venue'], event['date'])
+        self.event_name.data = event.full_name()
 
         def lu_fn(values):
-            return values['status'] == str(PlayerStatus.member.value)
-        all = get_event_scores(year, event_id)
-        players = get_player_names(all.get_columns('player'))
+            return values['status'] == PlayerStatus.member
+        all = get_event_scores(event_id)
+        if len(all.data) == 0:
+            raise Exception("Results not yet available")
         members = all.where(lu_fn)
-        pos = [int(s) for s in members.get_columns('position')]
+        players = members.get_columns('player_name')
+        pos = [s for s in members.get_columns('position')]
         pos = pos.index(min(pos))
-        self.winner.data = get_player(members.get_columns('player')[pos]).full_name
+        self.winner.data = players[pos]
         self.winner_return.data = self.winner.data
         set_select_field(self.ntp, 'player', players)
         set_select_field(self.ld, 'player', players)

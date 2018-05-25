@@ -1,8 +1,8 @@
 import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField, HiddenField
-from back_end.data_utilities import first_or_default, fmt_date
-from back_end.interface import get_event, get_results, save_handicaps, get_handicaps, is_last_event
+from back_end.interface import get_event, get_results, save_handicaps, is_last_event
+from back_end.table import Table
 from globals.enumerations import PlayerStatus
 
 
@@ -15,7 +15,7 @@ class EventHandicapItemForm(FlaskForm):
     guest = StringField(label='Guest')
     handicap = StringField(label='Handicap')
     player_id = HiddenField(label='Player_id')
-    guest_return = HiddenField(label='Guest')
+    status_return = HiddenField(label='Guest')
     old_handicap = HiddenField(label='Old_Handicap')
 
 
@@ -32,7 +32,7 @@ class EventHandicapsForm(FlaskForm):
         self.event_name.data = event.full_name()
         self.editable.data = is_last_event(event)
         num = 0
-        for player in get_results(event):
+        for player in get_results(event, for_edit_hcap=True):
             num += 1
             item_form = EventHandicapItemForm()
             item_form.num = str(num)
@@ -42,7 +42,7 @@ class EventHandicapsForm(FlaskForm):
             item_form.strokes = player['strokes']
             item_form.handicap = player['handicap']
             item_form.position = player['position']
-            item_form.player_id = str(player['player_id'])
+            item_form.player_id = player['player_id']
             item_form.status_return = player['status'].value
             item_form.old_handicap = player['handicap']
             self.scores.append_entry(item_form)
@@ -51,13 +51,10 @@ class EventHandicapsForm(FlaskForm):
         errors = self.errors
         if len(errors) > 0:
             return False
-        fields = ['player', 'handicap', 'status']
-        data = [
-            [d['player_id'],
-             d['handicap'],
-             PlayerStatus.guest.value if d['guest_return'] == 'guest' else PlayerStatus.member.value
-             ]
-            for d in self.data['scores'] if d['handicap'] != d['old_handicap']]
-        date = fmt_date(datetime.date.today())
-        save_handicaps(date, fields, data)
+        date = datetime.date.today()
+        fields = ['player_id', 'date', 'status', 'handicap']
+        data = [[int(d['player_id']), date, PlayerStatus(int(d['status_return'])), float(d['handicap'])]
+                for d in self.data['scores'] if d['handicap'] != d['old_handicap']]
+
+        save_handicaps(Table(fields, data))
         return True

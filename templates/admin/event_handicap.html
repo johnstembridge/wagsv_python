@@ -36,12 +36,12 @@
                 {{ render_link(
                     url=url_for('event_handicap_history_player', event_id=form.event_id.data, player_id=item.player_id.data),
                     image=url_for('static', filename='images/right-arrow.png'),
-                    text='Show handicap history'
+                    text='Show handicap history for ' + item.player.data
                 )|safe }}
             </td>
             {%if form.editable %}
                 <td>{{ item.player_id }}</td>
-                <td>{{ item.guest_return }}</td>
+                <td>{{ item.status_return }}</td>
                 <td>{{ item.old_handicap }}</td>
             {% endif %}
         </tr>

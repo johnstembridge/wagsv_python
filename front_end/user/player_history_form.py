@@ -1,8 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, FormField, FieldList
 from wtforms.fields.html5 import DateField
-from back_end.interface import get_player_name, get_player_id, get_player_scores, get_course_names, get_all_scores, \
-    get_player_names
+from back_end.interface import get_player, get_player_id, get_player_scores, get_course_names, get_all_scores, \
+    get_player_names_as_dict, get_scores
 from back_end.data_utilities import is_num, normalise_name
 from back_end.table import Table
 from globals.enumerations import PlayerStatus
@@ -13,7 +13,7 @@ class PlayerEventForm(FlaskForm):
     course = StringField(label='Course')
     position = StringField(label='Position')
     points = StringField(label='Points')
-    strokes = StringField(label='Strokes')
+    strokes = StringField(label='Shots')
     handicap = StringField(label='Handicap')
     status = StringField(label='Status')
 
@@ -24,9 +24,7 @@ class PlayerHistoryForm(FlaskForm):
     history = FieldList(FormField(PlayerEventForm))
 
     def populate_history(self, player_id, year=None):
-        if not is_num(player_id):
-            player_id = get_player_id(normalise_name(player_id))
-        self.player.data = get_player_name(player_id)
+        self.player.data = get_player(player_id).full_name()
         self.year.data = year or ''
         events = self.get_player_history(player_id, year)
         for item in events.data:
@@ -35,15 +33,15 @@ class PlayerHistoryForm(FlaskForm):
             item_form.course = item[events.column_index('course_name')]
             item_form.position = item[events.column_index('position')]
             item_form.points = item[events.column_index('points')]
-            item_form.strokes = item[events.column_index('strokes')]
+            item_form.strokes = item[events.column_index('shots')]
             item_form.handicap = item[events.column_index('handicap')]
-            item_form.status = 'member' if item[events.column_index('status')] == '1' else 'guest'
+            item_form.status = item[events.column_index('status')].name
             self.history.append_entry(item_form)
 
     @staticmethod
     def get_player_history(player_id, year=None):
-        hist = Table(*get_player_scores(player_id, year))
-        hist.add_column('course_name', get_course_names(hist.get_columns('course')))
+        hist = get_scores(player_id=player_id, year=year)
+        hist.add_column('course_name', get_course_names(hist.get_columns('course_id')))
         hist.sort('date', reverse=year is None)
         return hist
 
@@ -76,7 +74,7 @@ class SummaryHistoryForm(FlaskForm):
         #                                     PlayerStatus.guest.value]
         #                                    ))
         all_scores = Table(*get_all_scores())
-        all_scores.add_column('player_name', get_player_names(all_scores.get_columns('player')))
+        all_scores.add_column('player_name', get_player_names_as_dict(all_scores.get_columns('player')))
         all_scores.sort(['player', 'date'])
         hist = []
         head = all_scores.head

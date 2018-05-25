@@ -1,7 +1,8 @@
 import os
 from flask import render_template, redirect, flash
 
-from back_end.interface import event_title, event_date
+from back_end.data_utilities import fmt_date
+from back_end.interface import event_title, event_date, get_event
 from back_end.file_access import write_file
 from .event_report_form import EventReportForm
 from .event_card_form import EventCardForm
@@ -35,7 +36,7 @@ class MaintainEvents:
         return render_template('admin/event_list.html', form=form, render_link=render_link, EventType=EventType)
 
     @staticmethod
-    def edit_event(event_id, event_type=None):
+    def edit_event(event_id, event_type):
         form = EventForm()
         if form.is_submitted():
             if form.save_event(event_id):
@@ -78,10 +79,10 @@ class MaintainEvents:
         return render_template('admin/event_result.html', form=form, event=event_id, render_link=render_link)
 
     @staticmethod
-    def results_tour_event(year, event_id):
+    def results_tour_event(event_id):
         form = TourResultsForm()
-        form.populate_tour_results(int(year), event_id)
-        return render_template('admin/tour_result.html', form=form, event=year + event_id, render_link=render_link)
+        form.populate_tour_results(event_id)
+        return render_template('admin/tour_result.html', form=form, event=event_id, render_link=render_link)
 
     @staticmethod
     def handicaps_event(event_id):
@@ -114,40 +115,37 @@ class MaintainEvents:
         return render_template('admin/handicap_history.html', form=form)
 
     @staticmethod
-    def report_event(year, event_id, event_type=None):
-        if event_type:
-            event_type = EventType(int(event_type))
-        else:
-            event_type = EventType.wags_vl_event
+    def report_event(event_id):
+        event = get_event(event_id)
         form = EventReportForm()
         if form.is_submitted():
             if form.save:
-                MaintainEvents.save_report_page('static/event_report.html', year, event_id, form)
+                MaintainEvents.save_report_page('static/event_report.html', event, form)
                 flash('report saved', 'success')
-                return redirect(url_for_admin('list_events', year=year))
+                return redirect(url_for_admin('list_events', year=event.date.year))
         else:
-            report_file = MaintainEvents.report_file_name(year, event_id)
-            form.populate_event_report(int(year), event_id, report_file)
-        return render_template('admin/event_report.html', form=form, event=year + event_id)
+            report_file = MaintainEvents.report_file_name(event.date)
+            form.populate_event_report(event_id, report_file)
+        return render_template('admin/event_report.html', form=form, event=event_id)
 
     @staticmethod
-    def save_report_page(template_name, year, event_id, form):
-        title = event_title(year, event_id)
+    def save_report_page(template_name, event, form):
+        title = event.full_name()
         html = render_html(template_name,
                            title=title,
                            winner=form.winner_return.data,
                            ld=form.ld.data,
                            ntp=form.ntp.data,
                            report=form.report.data,
-                           month_year=year
+                           month_year=str(event.date.year)
                            )
-        file_name = MaintainEvents.report_file_name(year, event_id)
+        file_name = MaintainEvents.report_file_name(event.date)
         write_file(file_name, html, access_all=True)
 
     @staticmethod
-    def report_file_name(year, event_id):
-        date = event_date(year, event_id)
+    def report_file_name(event_date):
+        date = fmt_date(event_date)
         location = config.get('locations')['html']
         page_name = 'rp{}.htm'.format(date.replace('/', '')[2:])
-        file_name = os.path.join(location, year, page_name)
+        file_name = os.path.join(location, str(event_date.year), page_name)
         return file_name

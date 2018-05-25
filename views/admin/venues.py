@@ -9,9 +9,9 @@ def venues_main():
 
 @app.route('/venues/<venue_id>', methods=['GET', 'POST'])
 def edit_venue(venue_id):
-    return MaintainVenues.edit_venue(venue_id)
+    return MaintainVenues.edit_venue(int(venue_id))
 
 
 @app.route('/venues/<venue_id>/courses/<course_id>', methods=['GET', 'POST'])
 def edit_course(venue_id, course_id):
-    return MaintainVenues.edit_course(venue_id, course_id)
+    return MaintainVenues.edit_course(int(venue_id), int(course_id))

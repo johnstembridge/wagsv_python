@@ -1,8 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, FormField, FieldList
 from wtforms.fields.html5 import DateField
-from back_end.interface import get_player_name, get_player_id, get_handicap_history
-from back_end.data_utilities import is_num, normalise_name
+from back_end.interface import get_player, get_event
+from back_end.data_utilities import is_num
 
 
 class HandicapItemForm(FlaskForm):
@@ -15,14 +15,14 @@ class HandicapHistoryForm(FlaskForm):
     player = StringField(label='Player')
     history = FieldList(FormField(HandicapItemForm))
 
-    def populate_history(self, player_id, date):
-        if not is_num(player_id):
-            player_id = get_player_id(normalise_name(player_id))
-        self.player.data = get_player_name(player_id)
-        for item in get_handicap_history(player_id, date):
+    def populate_history(self, player_id, event_id):
+        player = get_player(player_id)
+        event = get_event(event_id)
+        self.player.data = player.full_name()
+        for item in player.state_up_to(event.date):
             item_form = HandicapItemForm()
-            item_form.date = item[0]
-            item_form.handicap = item[1]
-            item_form.status = 'member' if item[2] == '1' else 'guest'
+            item_form.date = item.date
+            item_form.handicap = item.handicap
+            item_form.status = item.status.name
             self.history.append_entry(item_form)
 

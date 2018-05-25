@@ -2,7 +2,7 @@ import operator
 import itertools
 from flask_wtf import FlaskForm
 from wtforms import StringField, FieldList, FormField
-from back_end.interface import get_event, get_player_names, get_tour_scores
+from back_end.interface import get_event, get_player_names_as_dict, get_tour_scores
 from back_end.interface_old import get_tour_scores_old
 from back_end.table import Table
 from back_end.data_utilities import fmt_date
@@ -39,7 +39,7 @@ class TourResultsForm(FlaskForm):
             self.venues.append_entry(venue_form)
 
         results = self.make_tour_results(venues)
-        player_names = get_player_names(results.get_columns('player_id'))
+        player_names = get_player_names_as_dict(results.get_columns('player_id'))
 
         for res in results.data:
             item_form = TourResultItemForm()

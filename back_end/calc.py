@@ -9,19 +9,19 @@ from globals.enumerations import PlayerStatus
 
 
 def get_vl(year):
-    scores = Table(*get_scores(year, PlayerStatus.member))
-    scores.sort(['player', 'date'])
-    vl = Table(['player', 'points', 'events', 'lowest'],
+    scores = get_scores(year=year, status=PlayerStatus.member)
+    scores.sort(['player_id', 'date'])
+    vl = Table(['player_id', 'points', 'events', 'lowest'],
                [vl_summary(scores.column_index('points'), key, list(values))
-                for key, values in scores.groupby('player')])
+                for key, values in scores.groupby('player_id')])
     vl.sort(['points', 'lowest'], reverse=True)
     vl.add_column('position', get_positions(vl.get_columns('points')))
-    vl.add_column('name', get_player_names(vl.get_columns('player')))
+    vl.add_column('name', get_player_names(vl.get_columns('player_id')))
     return vl
 
 
 def vl_summary(pi, player_id, scores):
-    points = [int(s[pi]) for s in scores]
+    points = [s[pi] for s in scores]
     points = sorted(points, reverse=True)
     top_6 = points[:6]
     return [player_id, sum(top_6), len(top_6), min(top_6)]
@@ -103,7 +103,7 @@ def get_big_swing(year):
     swings.sort('swing', reverse=True)
     swings.top_n(10)
     swings.add_column('position', get_positions(swings.get_columns('swing')))
-    swings.add_column('player_name', get_player_names(swings.get_columns('player_id')))
+    swings.add_column('player_name', get_player_names_as_dict(swings.get_columns('player_id')))
     swings.add_column('course_name', get_course_names(swings.get_columns('course_id')))
     return swings
 

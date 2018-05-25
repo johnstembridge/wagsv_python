@@ -14,7 +14,7 @@ class Vl:
     def vl_show(year):
         form = VlForm()
         form.populate_vl(year)
-        return render_template('user/vl.html', form=form, year=int(year), render_link=render_link)
+        return render_template('user/vl.html', form=form, year=year, render_link=render_link)
 
 
 class VlItemForm(FlaskForm):
@@ -42,5 +42,5 @@ class VlForm(FlaskForm):
             item_form.points = item[vl.column_index('points')]
             item_form.matches = item[vl.column_index('events')]
             item_form.lowest = item[vl.column_index('lowest')]
-            item_form.player_id = item[vl.column_index('player')]
+            item_form.player_id = item[vl.column_index('player_id')]
             self.vl.append_entry(item_form)

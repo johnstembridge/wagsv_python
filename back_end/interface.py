@@ -4,8 +4,7 @@ import os
 from back_end.data_utilities import lookup, sort_name_list, fmt_num, mean, first_or_default
 from back_end.table import Table
 from globals.enumerations import MemberStatus, PlayerStatus, EventType
-from models.wags_db_new import Event, Score, Course, CourseData, Trophy, Player, Venue, Handicap, \
-    Member  # , Member, EnumType
+from models.wags_db_new import Event, Score, Course, CourseData, Trophy, Player, Venue, Handicap, Member, Contact
 from globals.db_setup import db_session
 from sqlalchemy import text
 
@@ -41,48 +40,32 @@ def get_all_venue_names():
 
 
 def get_venue_select_list():
-    pass
-    # venues = get_fields(venues_file(), ['id', 'name'])
-    # return sorted(venues, key=lambda tup: tup[1])
-
-
-def get_all_venues():
-    pass
-    # venues = get_fields(venues_file(), [])
-    # return sorted(venues, key=lambda item: (item['name']))
+    return [(v.id, v.name) for v in db_session.query(Venue).order_by(Venue.name)]
 
 
 def get_venue(venue_id):
-    pass
-    # data = get_record(venues_file(), 'id', venue_id)
-    # data['address'] = decode_address(data['address'])
-    # data['directions'] = decode_directions(data['directions'])
-    # return data
-
-
-def get_venue_by_name(name):
-    pass
-    # res = get_record(venues_file(), 'name', name)
-    # res['address'] = decode_address(res['address'])
-    # res['directions'] = decode_directions(res['directions'])
-    # return res
+    if venue_id > 0:
+        return db_session.query(Venue).filter(Venue.id == venue_id).first()
+    else:
+        return Venue()
 
 
 def save_venue(venue_id, data):
-    pass
-    # data['id'] = str(venue_id)
-    # data['name'] = data['name']
-    # data['url'] = data['url']
-    # data['phone'] = data['phone']
-    # data['address'] = encode_address(data['address'])
-    # data['directions'] = encode_directions(data['directions'])
-    # update_record(venues_file(), 'id', data)
-
-
-def get_new_venue_id():
-    pass
-    # ids = [int(m) for m in get_field(venues_file(), 'id')]
-    # return max(ids) + 1
+    if venue_id > 0:
+        venue = get_venue(venue_id)
+    else:
+        venue = Venue()
+        db_session.add(venue)
+    venue.name = data['name']
+    venue.directions = data['directions']
+    if not venue.contact:
+        venue.contact = Contact()
+    venue.contact.phone = data['phone']
+    venue.contact.address = data['address']
+    venue.contact.post_code = data['post_code']
+    venue.contact.url = data['url']
+    db_session.commit()
+    return venue.id
 
 
 def get_venue_url(year, url):
@@ -117,6 +100,10 @@ def get_events_for_year(year):
     stmt = text("select id from events where strftime('%Y', date)=:year order by date, type desc").params(
         year=str(year))
     return db_session.query(Event).from_statement(stmt)
+
+
+def get_events_for_period(start, end):
+    return db_session.query(Event).filter(Event.date.between(start, end))
 
 
 def get_event_list(year):
@@ -159,7 +146,7 @@ def get_event_select_list():
 
 def get_event_scores(event_id):
     event = get_event(event_id)
-    head = ['player_id', 'position', 'points', 'shots', 'handicap', 'status', 'card']
+    head = ['player_id', 'position', 'points', 'shots', 'handicap', 'status', 'card', 'player_name']
     data = []
     for score in event.scores:
         player_state = score.player.state_as_of(event.date)
@@ -169,7 +156,8 @@ def get_event_scores(event_id):
                score.shots,
                player_state.handicap,
                player_state.status,
-               score.card]
+               score.card,
+               score.player.full_name()]
         data.append(row)
     return Table(head, data)
 
@@ -307,7 +295,7 @@ def get_new_event_id(year):
     # return math.floor(1 + max(ids + [0]))
 
 
-def get_booked_players(event):
+def get_booked_players(event, for_edit_hcap=False):
     year = event.date.year
     event_dates = [event.date for event in get_events_for_year(year)]
     event_num = lookup(event_dates, event.date, index_origin=1)
@@ -316,7 +304,8 @@ def get_booked_players(event):
         file = bookings_file(year, 0)
     header, bookings = get_records(file, 'playing', '1')
     res = {}
-    all_players = get_players_as_of(event.date)
+    state_date = datetime.date.today() if for_edit_hcap else event.date
+    all_players = get_players_as_of(state_date)
     all_player_names = list(all_players.keys())
     for b in bookings:
         booking = dict(zip(header, b))
@@ -348,13 +337,14 @@ def normalise_name(all_names, name):
         return all_names[i]
 
 
-def get_results(event):
+def get_results(event, for_edit_hcap=False):
     '''Returns all results for an event. Adds any players that were booked but without any recorded scores yet.'''
     players = []
     results = []
+    state_date = datetime.date.today() if for_edit_hcap else event.date
     for score in [s for s in event.scores]:
         player = score.player
-        state = player.state_as_of(event.date)
+        state = player.state_as_of(state_date)
         players.append(player.full_name())
         x = {
             'player': player.full_name(),
@@ -367,7 +357,7 @@ def get_results(event):
             'card:': score.card
         }
         results.append(x)
-    booked = get_booked_players(event)
+    booked = get_booked_players(event, for_edit_hcap)
     for missing in list(set(booked.keys()).difference(set(players))):
         state = booked[missing]
         x = {
@@ -478,7 +468,8 @@ def is_event_editable(year):
 
 
 def get_last_event(year):
-    past = [e for e in get_events_for_year(year) if e.type == EventType.wags_vl_event and e.date <= datetime.date.today()]
+    past = [e for e in get_events_for_year(year) if
+            e.type == EventType.wags_vl_event and e.date <= datetime.date.today()]
     if len(past) > 0:
         return past[-1]
     return get_last_event(year - 1)
@@ -612,33 +603,23 @@ def get_all_course_names():
     return [c.name for c in db_session.query(Course).order_by(Course.name)]
 
 
+def get_all_course_names_as_dict():
+    courses = {}
+    for course in db_session.query(Course).order_by(Course.name):
+        courses[course.id] = course.name
+    return courses
+
+
 def get_course_names(course_ids):
-    pass
-    # head, recs = get_records(courses_file(), 'id', course_ids)
-    # recs = {r[lookup(head, 'id')]: r[lookup(head, 'name')] for r in recs}
-    # return [recs[p] for p in course_ids]
+    courses = get_all_course_names_as_dict()
+    return [courses[id] for id in course_ids]
 
 
 def get_course(course_id):
-    pass
-    # course_id = coerce(course_id, str)
-    # data = get_record(courses_file(), 'id', course_id)
-    # return data
-
-
-def get_courses_for_venue(venue_id):
-    pass
-    # return get_records(courses_file(), 'venue_id', venue_id)
-
-
-def get_course_for_date(date):
-    pass
-    # scores = get_all_scores(key='date', values=[date])
-    # if len(scores[1]) > 1:
-    #     course_id = scores[1][1][scores[0].index('course')]
-    #     return get_record(courses_file(), 'id', course_id)
-    # else:
-    #     return None
+    if course_id > 0:
+        return db_session.query(Course).filter(Course.id == course_id).first()
+    else:
+        return Course()
 
 
 def lookup_course(course):
@@ -660,11 +641,22 @@ def get_new_course_id():
 
 
 def save_course(course_id, data):
-    pass
-    # data['id'] = str(course_id)
-    # data['venue_id'] = data['venue_id']
-    # data['name'] = data['name']
-    # update_record(courses_file(), 'id', data)
+    year = data['year']
+    if course_id > 0:
+        course = get_course(course_id)
+    else:
+        course = Course()
+        course.cards = [CourseData(year=year)]
+        db_session.add(course)
+    course.name = data['name']
+    course.venue_id = data['venue_id']
+    card = course.course_data_as_of(year)
+    card.year = year
+    card.sss = data['sss']
+    card.si = data['si']
+    card.par = data['par']
+
+    db_session.commit()
 
 
 def save_course_card(course_id, year, fields, data):
@@ -687,13 +679,18 @@ def get_players_as_of(date):
     return res
 
 
-def get_player_names(player_ids):
+def get_player_names_as_dict(player_ids):
     ids = '(' + (','.join([str(id) for id in player_ids])) + ')'
     s = text("select * from players where id in {}".format(ids))
     players = {}
     for player in db_session.query(Player).from_statement(s):
         players[player.id] = player.full_name()
     return players
+
+
+def get_player_names(player_ids):
+    players = get_player_names_as_dict(player_ids)
+    return [players[id] for id in player_ids]
 
 
 def get_player(player_id):
@@ -792,15 +789,6 @@ def add_player(name, hcap, status, date):
     db_session.add(player)
     db_session.commit()
     return player.id
-    pass
-    # all_players = get_all_player_names()
-    # if lookup(all_players, name) != -1:
-    #     raise Exception("Player {} already exists, can't add.".format(name))
-    # id = str(len(all_players) + 1)
-    # update_record(players_file(), 'id', [id, name])
-    # date = coerce_fmt_date(date)
-    # update_record(handicaps_file(), ['date', 'player'], [date, id, hcap, status])
-    # return id
 
 
 def update_player_handicap(player_id, hcap, status, date):
@@ -813,9 +801,25 @@ def update_player_name(player_id, name):
     # update_record(players_file(), 'id', [player_id, name])
 
 
-def save_handicaps(date, header, data):
-    pass
-    # update_records(handicaps_file(), ['date', 'player'], [date], header, data)
+def save_handicaps(new_table):
+    if len(new_table.data) == 0:
+        return
+    players = set(new_table.get_columns('player_id'))
+    dates = set(new_table.get_columns('date'))
+    current = db_session.query(Handicap).filter(Handicap.date.in_(dates), Handicap.player_id.in_(players)).all()
+    for record in new_table.data:
+        new = dict(zip(new_table.head, record))
+        hcap = first_or_default([h for h in current if h.player_id == new['player_id'] and h.date == new['date']], None)
+        if hcap:
+            hcap.handicap = new['handicap']
+            hcap.status = new['status']
+        else:
+            hcap = Handicap(player_id=new['player_id'],
+                            date=new['date'],
+                            handicap=new['handicap'],
+                            status=new['status'])
+        db_session.add(hcap)
+    db_session.commit()
 
 
 # endregion
@@ -836,8 +840,11 @@ def add_admin_user(user):
 
 
 # region Members
-def get_current_members():
-    members = db_session.query(Member).filter_by(status=MemberStatus.full_member)
+def get_current_members(current=True):
+    if current:
+        members = db_session.query(Member).filter_by(status=MemberStatus.full_member)
+    else:
+        members = db_session.query(Member)
     players = [m.player for m in members]
 
     def sk(player):
@@ -847,18 +854,12 @@ def get_current_members():
     return players
 
 
-def get_all_members():
-    pass
-    # header, data = get_all_records(members_file())
-    # i = lookup(header, ['salutation', 'surname'])
-    # member_names = sort_name_list([' '.join(itemgetter(*i)(m)) for m in data])
-    # all_players = get_all_player_names()
-    # pid = lookup(all_players, member_names, index_origin=1)
-    # return OrderedDict(zip(pid, member_names))
+def get_all_member_names():
+    return get_current_members(current=False)
 
 
-def get_member_select_list():
-    choices = [(p.member.id, p.full_name()) for p in get_current_members()]
+def get_member_select_list(current=False):
+    choices = [(p.member.id, p.full_name()) for p in get_current_members(current=current)]
     return choices
 
 
@@ -871,7 +872,7 @@ def get_new_member_id():
     # return next
 
 
-def save_member(data):
+def save_member(member_id, data):
     pass
     # update_record(members_file(), 'membcode', data)
 
@@ -890,8 +891,8 @@ def get_members(as_of):
     # return OrderedDict(zip(pid, member_names))
 
 
-def get_member(key, value):
-    pass
+def get_member(member_id):
+    return db_session.query(Member).filter_by(id=member_id).first()
     # return get_record(members_file(), key, value)
 
 
@@ -968,21 +969,33 @@ def update_trophy_history(year, event_id, result):
 
 
 # region Scores
-def get_scores(year, status=None):
-    pass
-    # if status is not None:
-    #     status = force_list(status)
-    #
-    # def lu_fn(rec, keys, values):
-    #     year, status = values
-    #     res = year == parse_date(rec[keys[0]]).year
-    #     if status is not None:
-    #         status = [str(s) for s in status]
-    #         res = res and rec[keys[1]] in status
-    #     return res
-    #
-    # scores = get_records(scores_file(), ['date', 'status'], [coerce(year, int), status], lu_fn)
-    # return scores
+def get_scores(year=None, status=None, player_id=None):
+    if year:
+        start = datetime.date(year, 1, 1)
+        end = min(datetime.date(year, 12, 31), datetime.date.today())
+        events = get_events_for_period(start, end)
+    else:
+        events = db_session.query(Event)
+    scores = [e.scores for e in events]
+    if status:
+        scores = [s for ls in scores for s in ls if s.player.state_as_of(s.event.date).status == status]
+    if player_id:
+        scores = [s for ls in scores for s in ls if s.player.id == player_id]
+
+    def extract_score_data(score):
+        date = score.event.date
+        state = score.player.state_as_of(date)
+        return [date,
+                score.event.course_id,
+                score.player_id,
+                score.position,
+                score.shots,
+                score.points,
+                state.handicap,
+                state.status]
+
+    head = ['date', 'course_id', 'player_id', 'position', 'shots', 'points', 'handicap', 'status']
+    return Table(head, [extract_score_data(s) for s in scores])
 
 
 def get_all_scores(key=None, values=None):

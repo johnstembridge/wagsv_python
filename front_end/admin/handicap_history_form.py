@@ -2,9 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, FormField, FieldList
 from wtforms.fields.html5 import DateField
 import datetime
-from back_end.interface import get_player, get_handicap_history, event_date, is_last_event, get_event
-from back_end.data_utilities import fmt_date
-from globals.enumerations import PlayerStatus
+from back_end.interface import get_player, is_last_event, get_event
 
 
 class HandicapItemForm(FlaskForm):

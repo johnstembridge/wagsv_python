@@ -1,9 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField, HiddenField
+from wtforms import StringField, IntegerField, FieldList, FormField, HiddenField
 
-from back_end.data_utilities import parse_date, fmt_date
-from back_end.interface import get_event, lookup_course, get_course_data, get_player_handicap, \
-    get_event_card, get_player_name, is_event_result_editable
+from back_end.interface import get_event, get_event_card, get_player
 
 
 class EventCardItemForm(FlaskForm):
@@ -27,24 +25,21 @@ class EventCardForm(FlaskForm):
     totalPointsIn = StringField(label='TotalPointsIn')
     totalShots = StringField(label='TotalShots')
     totalPoints = StringField(label='TotalPoints')
-    # totalShotsReturn = HiddenField(label=None, id='totalShotsReturn')
-    # totalPointsReturn = HiddenField(label=None, id='totalPointsReturn')
-    # save_card = SubmitField(label='Save')
 
     def populate_card(self, event_id, player_id):
         event = get_event(event_id)
+        player = get_player(player_id)
         card = get_event_card(event_id, player_id)
         course_data = event.course.course_data_as_of(event.date.year)
-        state = card.player.state_as_of(event.date)
+        state = player.state_as_of(event.date)
         self.event_name.data = event.full_name()
-        self.player.data = card.player.full_name()
+        self.player.data = player.full_name()
         self.handicap.data = state.handicap
-        self.editable.data = False
 
         holes = range(1, 19)
         for hole in holes:
             i = hole - 1
-            shots = "-" if card.card[i] == 99 or card.card[i] is None else str(card.card[i])
+            shots = "-" if card[i] == 99 or card[i] is None else card[i]
             item_form = EventCardItemForm()
             item_form.hole = hole
             item_form.par = int(course_data.par[i])

@@ -36,9 +36,8 @@ def card_event_player(event_id, player_id):
 
 
 @app.route('/events/<event_id>/report', methods=['GET', 'POST'])
-def report_event(year, event_id):
-    event_type = request.args.get('event_type')
-    return MaintainEvents.report_event(year, event_id, event_type)
+def report_event(event_id):
+    return MaintainEvents.report_event(event_id)
 
 
 @app.route('/events/<event_id>/handicaps', methods=['GET', 'POST'])
@@ -51,7 +50,7 @@ def event_handicap_history_player(event_id, player_id):
     return MaintainEvents.handicap_history_player(event_id, player_id)
 
 
-@app.route('/trophies/<trophy>', methods=['GET', 'POST'])
-def trophy(trophy):
+@app.route('/trophies/<trophy_id>', methods=['GET', 'POST'])
+def trophy(trophy_id):
     pass
-    #return Trophy.trophy_show(trophy)
+    #return Trophy.trophy_show(int(trophy_id))

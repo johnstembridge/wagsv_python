@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, HiddenField, TextAreaField, SelectField, FieldList, FormField
-from back_end.interface import get_venue_select_list, get_venue, save_venue, get_new_venue_id, get_courses_for_venue
+from back_end.interface import get_venue_select_list, get_venue, save_venue
 from front_end.form_helpers import set_select_field
 
 
@@ -36,19 +36,18 @@ class VenueDetailsForm(FlaskForm):
     def populate_venue(self, venue_id):
         self.editable.data = True
         venue = get_venue(venue_id)
-        self.venue_id = venue['id']
-        self.name.data = venue['name']
-        self.url.data = venue['url']
-        self.phone.data = venue['phone']
-        self.post_code.data = venue['post_code']
-        self.address.data = venue['address']
-        self.directions.data = venue['directions']
-        keys, courses = get_courses_for_venue(venue['id'])
-        for course in courses:
-            c = dict(zip(keys, course))
+        self.venue_id = venue.id
+        self.name.data = venue.name
+        self.directions.data = venue.directions
+        if venue.contact:
+            self.url.data = venue.contact.url
+            self.phone.data = venue.contact.phone
+            self.post_code.data = venue.contact.post_code
+            self.address.data = venue.contact.address
+        for course in venue.courses:
             item_form = VenueCourseForm()
-            item_form.id = c['id']
-            item_form.name = c['name']
+            item_form.id = course.id
+            item_form.name = course.name
             self.courses.append_entry(item_form)
 
     def save_venue(self, venue_id):
@@ -63,8 +62,5 @@ class VenueDetailsForm(FlaskForm):
             'address': self.address.data,
             'directions': self.directions.data
         }
-        if venue_id == "0":
-            venue_id = str(get_new_venue_id())
-
-        save_venue(venue_id, venue)
+        venue_id = save_venue(venue_id, venue)
         return True
