@@ -41,7 +41,7 @@
                             status = item.status_return.data
                         ),
                         image=url_for('static', filename='images/right-arrow.png'),
-                        text='Edit/show card'
+                        text='Edit/show card for ' + item.player.data
                     )|safe }}
                 </td>
             {% else %}

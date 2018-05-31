@@ -4,7 +4,7 @@ from enum import Enum
 class FormEnum(Enum):
     @classmethod
     def choices(cls):
-        return [(choice.value, choice.name.replace('_', ' ')) for choice in cls]
+        return [(choice, choice.name.replace('_', ' ')) for choice in cls]
 
     @classmethod
     def coerce(cls, item):

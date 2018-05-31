@@ -1,10 +1,11 @@
 import datetime
 import os
 
-from back_end.data_utilities import lookup, sort_name_list, fmt_num, mean, first_or_default
+from back_end.data_utilities import lookup, sort_name_list, fmt_num, mean, first_or_default, fmt_date
 from back_end.table import Table
 from globals.enumerations import MemberStatus, PlayerStatus, EventType
-from models.wags_db_new import Event, Score, Course, CourseData, Trophy, Player, Venue, Handicap, Member, Contact
+from models.wags_db_new import Event, Score, Course, CourseData, Trophy, Player, Venue, Handicap, Member, Contact, \
+    Schedule
 from globals.db_setup import db_session
 from sqlalchemy import text
 
@@ -39,7 +40,14 @@ def get_all_venue_names():
     return [v.name for v in db_session.query(Venue).order_by(Venue.name)]
 
 
-def get_venue_select_list():
+def get_all_venues():
+    venues = {}
+    for venue in db_session.query(Venue).order_by(Venue.name):
+        venues[venue.id] = venue
+    return venues
+
+
+def get_venue_select_choices():
     return [(v.id, v.name) for v in db_session.query(Venue).order_by(Venue.name)]
 
 
@@ -96,6 +104,14 @@ def get_event(event_id):
     return db_session.query(Event).filter_by(id=event_id).first() or Event(id=0, date=datetime.datetime.now().date())
 
 
+def get_all_events():
+    return db_session.query(Event).order_by(Event.date)
+
+
+def get_event_select_list():
+    return [(e.id, fmt_date(e.date) + ' ' + e.venue.name) for e in get_all_events()]
+
+
 def get_events_for_year(year):
     stmt = text("select id from events where strftime('%Y', date)=:year order by date, type desc").params(
         year=str(year))
@@ -135,15 +151,6 @@ def get_event_list(year):
     return events
 
 
-def get_event_select_list():
-    pass
-    # events = set(get_fields(scores_file(), ['date', 'course']))
-    # events = sorted(events, key=lambda dc: dc[0], reverse=True)
-    # date, course_ids = zip(*events)
-    # course = get_course_names(list(course_ids))
-    # return [dc[0] + '-' + dc[1] for dc in zip(date, course)]
-
-
 def get_event_scores(event_id):
     event = get_event(event_id)
     head = ['player_id', 'position', 'points', 'shots', 'handicap', 'status', 'card', 'player_name']
@@ -175,6 +182,70 @@ def get_cards(course_id, date):
     #     header, data = get_records(shots_file(), ['date', 'course'], [date, course_id])
     # inx = lookup(header, ['player'] + [str(x) for x in range(1, 19)])
     # return {r[inx[0]]: itemgetter(*inx[1:19])(r) for r in data}
+
+
+def save_event_details(event_id, details):
+    event_type = details['event_type']
+    if event_id > 0:
+        event = get_event(event_id)
+    else:
+        event = Event(type=event_type)
+        db_session.add(event)
+
+    event.venue_id = details['venue_id']
+    event.date = details['date']
+    event.trophy_id = details['trophy_id']
+    event.course_id = details['course_id']
+    event.organiser_id = details['organiser_id']
+    event.member_price = details['member_price']
+    event.guest_price = details['guest_price']
+    event.booking_start = details['start_booking']
+    event.booking_end = details['end_booking']
+    event.max = details['max']
+    event.note = details['note']
+
+    if event_type == EventType.wags_vl_event:
+        schedule = []
+        for row in details['schedule']:
+            if row['time'] is None:
+                continue
+            item = first_or_default([s for s in event.schedule if s.time == row['time']], None)
+            if item:
+                item.time = row['time']
+                item.text = row['text']
+            else:
+                item = Schedule(event_id=event_id, time=row['time'], text=row['text'])
+            schedule.append(item)
+        event.schedule = sorted(schedule)
+        db_session.commit()
+
+    if event_type == EventType.wags_tour:
+        tour_events = []
+        all_courses = get_all_courses()
+        all_venues = get_all_venues()
+        for row in details['tour_schedule']:
+            course_id = [c.id for c in all_courses.values() if c.name == row['course']][0]
+            venue_id = first_or_default([v.id for v in all_venues.values() if v.name == row['course']], None)
+            if not venue_id:
+                venue_id = all_courses[course_id].venue_id
+            trophy_id = None
+            item = first_or_default([s for s in event.tour_events if s.date == row['date']], None)
+            if item:
+                item.course_id = course_id
+                item.venue_id = venue_id
+                item.trophy_id = trophy_id
+            else:
+                item = Event(date=row['date'],
+                             type=EventType.wags_vl_event,
+                             tour_event_id=event_id,
+                             course_id=course_id,
+                             venue_id=venue_id,
+                             trophy_id=trophy_id
+                             )
+            tour_events.append(item)
+        event.tour_events = tour_events
+        db_session.commit()
+    return event.id
 
 
 def save_event_result(event_id, result):
@@ -305,22 +376,22 @@ def get_booked_players(event, for_edit_hcap=False):
     header, bookings = get_records(file, 'playing', '1')
     res = {}
     state_date = datetime.date.today() if for_edit_hcap else event.date
-    all_players = get_players_as_of(state_date)
-    all_player_names = list(all_players.keys())
+    all_players = get_all_players()
+    all_player_names = [p.full_name() for p in all_players]
     for b in bookings:
         booking = dict(zip(header, b))
         number = int(booking['number'])
         if number > 0:
-            name = normalise_name(all_player_names, booking['name'])
-            res[name] = all_players[name]
+            name, i = normalise_name(all_player_names, booking['name'])
+            res[name] = all_players[i].state_as_of(state_date)
             count = 1
             while count < number:
-                guest_name = normalise_name(all_player_names, booking['guest' + str(count)])
+                guest_name, i = normalise_name(all_player_names, booking['guest' + str(count)])
                 guest_handicap = booking['guest' + str(count) + '_hcap']
                 if guest_handicap == '':
                     guest_handicap = '28'
-                if guest_name in all_players:
-                    res[guest_name] = all_players[guest_name]
+                if i >= 0:
+                    res[guest_name] = all_players[i].state_as_of(state_date)
                 else:
                     state = Handicap(player_id=0, status=PlayerStatus.guest, handicap=int(guest_handicap),
                                      date=datetime.datetime.today)
@@ -332,9 +403,9 @@ def get_booked_players(event, for_edit_hcap=False):
 def normalise_name(all_names, name):
     i = lookup(all_names, name, case_sensitive=False)
     if i == -1:
-        return name
+        return name.title(), i
     else:
-        return all_names[i]
+        return all_names[i], i
 
 
 def get_results(event, for_edit_hcap=False):
@@ -599,6 +670,10 @@ def get_tour_scores(event_ids):
 
 
 # region courses
+def get_course_select_choices():
+    return [(c.id, c.name) for c in db_session.query(Course).order_by(Course.name)]
+
+
 def get_all_course_names():
     return [c.name for c in db_session.query(Course).order_by(Course.name)]
 
@@ -607,6 +682,13 @@ def get_all_course_names_as_dict():
     courses = {}
     for course in db_session.query(Course).order_by(Course.name):
         courses[course.id] = course.name
+    return courses
+
+
+def get_all_courses():
+    courses = {}
+    for course in db_session.query(Course).order_by(Course.name):
+        courses[course.id] = course
     return courses
 
 
@@ -671,12 +753,12 @@ def save_course_card(course_id, year, fields, data):
 
 # region players
 
-def get_players_as_of(date):
-    res = {}
-    for p in db_session.query(Player).order_by(Player.last_name, Player.first_name):
-        state = p.state_as_of(date)
-        res[p.full_name()] = state
-    return res
+def get_all_players():
+    return db_session.query(Player).order_by(Player.last_name, Player.first_name)
+
+
+def get_player(player_id):
+    return db_session.query(Player).filter(Player.id == player_id).first()
 
 
 def get_player_names_as_dict(player_ids):
@@ -693,24 +775,23 @@ def get_player_names(player_ids):
     return [players[id] for id in player_ids]
 
 
-def get_player(player_id):
-    return db_session.query(Player).filter(Player.id == player_id).first()
-
-
 def get_player_id(player_name):
-    pass
-    # rec = get_record(players_file(), 'name', player_name)
-    # return rec['id']
+    all_players = get_all_players()
+    all_player_names = [p.full_name() for p in all_players]
+    name, i = normalise_name(all_player_names, player_name)
+    if i >= 0:
+        return all_players[i].id
+    else:
+        return 0
 
 
-def get_players(as_of, status=None):
-    pass
-    # header, recs = get_handicap_records(course_data_as_of, status)
-    # inx = [1]
-    # pi = [int(itemgetter(*inx)(r)) - 1 for r in recs]
-    # players = get_all_player_names()
-    # current = itemgetter(*pi)(players)
-    # return sort_name_list(current)
+def get_players_as_of(date, status):
+    res = []
+    for p in get_all_players():
+        state = p.state_as_of(date)
+        if state.status == status:
+            res.append(p)
+    return res
 
 
 def get_player_select_list():
@@ -788,7 +869,7 @@ def add_player(name, hcap, status, date):
     player.handicaps.append(Handicap(date=date, handicap=hcap, status=status))
     db_session.add(player)
     db_session.commit()
-    return player.id
+    return player
 
 
 def update_player_handicap(player_id, hcap, status, date):
@@ -840,6 +921,10 @@ def add_admin_user(user):
 
 
 # region Members
+def get_member(member_id):
+    return db_session.query(Member).filter_by(id=member_id).first()
+
+
 def get_current_members(current=True):
     if current:
         members = db_session.query(Member).filter_by(status=MemberStatus.full_member)
@@ -854,52 +939,78 @@ def get_current_members(current=True):
     return players
 
 
-def get_all_member_names():
-    return get_current_members(current=False)
-
-
-def get_member_select_list(current=False):
+def get_member_select_choices(current=False):
     choices = [(p.member.id, p.full_name()) for p in get_current_members(current=current)]
     return choices
 
 
-def get_new_member_id():
-    pass
-    # ids = get_field(members_file(), 'membcode')
-    # ids.sort()
-    # last = ids[-1]
-    # next = 'WAG' + str(1 + int(last[-3:]))
-    # return next
-
-
 def save_member(member_id, data):
-    pass
-    # update_record(members_file(), 'membcode', data)
+    new_member = member_id == 0
+    name = data['first_name'] + ' ' + data['last_name']
+    orig_name = data['orig_name']
+    handicap = data['handicap']
+    status = data['status']
+    player_id = get_player_id(name if new_member else orig_name)
+    date = data['as_of']
 
+    # set player status and handicap
+    if status in [MemberStatus.full_member, MemberStatus.overseas_member]:
+        player_status = PlayerStatus.member
+    else:
+        player_status = PlayerStatus.ex_member
+    if player_id == 0:
+        player = add_player(name, handicap, player_status, date)
+    else:
+        player = get_player(player_id)
+        if name != orig_name:
+            player.first_name = data['first_name']
+            player.last_name = data['last_name']
 
-def get_members(as_of):
-    pass
-    # def lu_fn(rec, key, value):
-    #     date = rec[key]
-    #     return parse_date(date) > value
-    #
-    # header, data = get_records(members_file(), 'resigned', parse_date(course_data_as_of), lu_fn)
-    # i = lookup(header, ['salutation', 'surname'])
-    # member_names = sort_name_list([' '.join(itemgetter(*i)(m)) for m in data])
-    # all_players = get_all_player_names()
-    # pid = lookup(all_players, member_names, index_origin=1)
-    # return OrderedDict(zip(pid, member_names))
+        if handicap != data['orig_handicap'] or status.value != data['orig_status']:
+            state = first_or_default([s for s in player.handicaps if s.date == date], None)
+            if state:
+                state.handicap = handicap
+                state.status = player_status
+            else:
+                state = Handicap(date=date, status=player_status, handicap=handicap)
+                player.handicaps.append(state)
+    # create/update member
+    contact = Contact(
+        email=data['email'],
+        address=data['address'],
+        post_code=data['post_code'],
+        phone=data['phone']
+    )
+    if new_member:
+        member = Member(
+            player=player,
+            contact=contact,
+            status=status,
+            proposer_id=data['proposer_id']
+        )
+    else:
+        member = get_member(member_id)
+        member.contact = contact
+        member.player = player
+        member.status = status
+        member.proposer_id = data['proposer_id']
+    if status.value != data['orig_status']:
+        if status == MemberStatus.full_member:
+            member.accepted = date
+        elif status in (MemberStatus.ex_member, MemberStatus.rip):
+            member.resigned = date
 
-
-def get_member(member_id):
-    return db_session.query(Member).filter_by(id=member_id).first()
-    # return get_record(members_file(), key, value)
+    db_session.commit()
 
 
 # endregion
 
 
 # region Trophies
+def get_trophy_select_choices():
+    return [(t.id, t.name) for t in db_session.query(Trophy).order_by(Trophy.name)]
+
+
 def get_all_trophy_names():
     return [t.name for t in db_session.query(Trophy).order_by(Trophy.name)]
 

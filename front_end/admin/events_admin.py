@@ -44,8 +44,8 @@ class MaintainEvents:
                 return redirect(url_for_admin('events_main'))
         else:
             form.populate_event(event_id, event_type)
-            event_type = EventType(int(form.event_type.data))
-        event = event_id if event_id != "0" else "(new)"
+            event_type = EventType(form.event_type.data)
+        event = event_id if event_id != 0 else "(new)"
         if event_type == EventType.wags_vl_event:
             return render_template('admin/event_details.html', form=form, event_id=event)
         if event_type == EventType.wags_tour:

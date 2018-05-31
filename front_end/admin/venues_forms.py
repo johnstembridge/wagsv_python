@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, HiddenField, TextAreaField, SelectField, FieldList, FormField
-from back_end.interface import get_venue_select_list, get_venue, save_venue
+from back_end.interface import get_venue_select_choices, get_venue, save_venue
 from front_end.form_helpers import set_select_field
 
 
@@ -11,7 +11,7 @@ class VenueListForm(FlaskForm):
     editable = HiddenField(label='Editable')
 
     def populate_venue_list(self):
-        set_select_field(self.venue, 'venue', get_venue_select_list(), '')
+        set_select_field(self.venue, 'venue', get_venue_select_choices(), '')
         self.editable = True
 
 

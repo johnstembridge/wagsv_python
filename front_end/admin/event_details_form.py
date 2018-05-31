@@ -6,12 +6,12 @@ from wtforms import StringField, SelectField, DecimalField, TextAreaField, Integ
 from wtforms.fields.html5 import DateField
 from wtforms_components import TimeField
 
-from back_end.data_utilities import coerce
-from front_end.form_helpers import set_select_field
+from back_end.data_utilities import coerce, first_or_default, lookup
+from front_end.form_helpers import set_select_field_new
 from globals.enumerations import EventType
-from back_end.interface import get_all_venue_names, get_all_course_names, get_event, save_event, \
-    get_new_event_id, get_all_trophy_names, create_bookings_file, is_event_editable, \
-    get_member_select_list
+from back_end.interface import get_event, save_event, get_trophy_select_choices, create_bookings_file, \
+    is_event_editable, get_member_select_choices, get_venue_select_choices, get_course_select_choices, \
+    save_event_details
 from models.wags_db_new import Event, Schedule
 
 
@@ -22,15 +22,14 @@ class ScheduleForm(FlaskForm):
 
 class TourScheduleForm(FlaskForm):
     date = DateField('Date')
-    #course = SelectField(label='Course')
     course = StringField(label='Course')
 
 
 class EventForm(FlaskForm):
     date = DateField(label='Date')
-    trophy = SelectField(label='Trophy')
-    venue = SelectField(label='Venue')
-    course = SelectField(label='Course')
+    trophy = SelectField(label='Trophy', coerce=int)
+    venue = SelectField(label='Venue', coerce=int)
+    course = SelectField(label='Course', coerce=int)
     organiser = SelectField(label='Organiser', coerce=int)
     member_price = DecimalField(label='Member Price')
     guest_price = DecimalField(label='Guest Price')
@@ -46,98 +45,78 @@ class EventForm(FlaskForm):
 
     def populate_event(self, event_id, event_type):
         event = get_event(event_id)
-        event_type = event_type or event.type.value
+        event_type = event_type or event.type
         self.editable = is_event_editable(event.date.year)
         self.date.data = event.date
-        organiser = event.organiser.player.full_name() if event.organiser else ''
-        trophy = event.trophy.name if event.trophy else ''
-        venue = event.venue.name if event.venue else ''
-        course = event.course.name if event.course else ''
-        all_courses = get_all_course_names()
+        organiser = event.organiser.id if event.organiser else 0
+        trophy = event.trophy.id if event.trophy else 0
+        venue = event.venue.id if event.venue else 0
+        course = event.course.id if event.course else 0
+        course_choices = get_course_select_choices()
 
         self.member_price.data = event.member_price
         self.guest_price.data = event.guest_price
         self.start_booking.data = event.booking_start
         self.end_booking.data = event.booking_end
         self.max.data = event.max
-        self.event_type.data = event_type
+        self.event_type.data = event_type.value
         self.note.data = event.note
-        set_select_field(self.organiser, 'organiser', get_member_select_list(), organiser)
-        set_select_field(self.trophy, 'trophy', get_all_trophy_names(), trophy)
-        set_select_field(self.venue, 'venue', get_all_venue_names(), venue)
-        event_type = EventType(coerce(event_type, int))
+        set_select_field_new(self.organiser, get_member_select_choices(), default_selection=organiser, item_name='Organiser')
+        set_select_field_new(self.trophy, get_trophy_select_choices(), default_selection=trophy, item_name='Trophy')
+        set_select_field_new(self.venue, get_venue_select_choices(), default_selection=venue, item_name='Venue')
         if event_type in [EventType.wags_vl_event, EventType.non_event]:
-            set_select_field(self.course, 'course', all_courses, course)
-            for item in event.schedule + (6-len(event.schedule))*[Schedule()]:
+            set_select_field_new(self.course, course_choices, default_selection=course, item_name='Course')
+            for item in event.schedule + (6 - len(event.schedule)) * [Schedule()]:
                 item_form = ScheduleForm()
                 item_form.time = item.time
                 item_form.text = item.text
                 self.schedule.append_entry(item_form)
         if event_type == EventType.wags_tour:
-            for item in event.tour_events + (6-len(event.tour_events))*[Event()]:
+            for item in event.tour_events + (6 - len(event.tour_events)) * [Event()]:
                 item_form = TourScheduleForm()
                 item_form.date = item.date
                 course = item.course.name if item.course else ''
-                #set_select_field(item_form.course, 'course', all_courses, course)
                 item_form.course = course
+
                 self.tour_schedule.append_entry(item_form)
+                pass
         return event_id
 
     def save_event(self, event_id):
         errors = self.errors
         if len(errors) > 0:
             return False
+        event_type = EventType(int(self.event_type.data))
         event = {
-            'venue': self.venue.data,
+            'venue_id': self.venue.data,
             'date': self.date.data,
-            'event': self.trophy.data,
-            'course': self.course.data,
-            'organiser': self.organiser.data,
+            'trophy_id': self.trophy.data,
+            'course_id': self.course.data,
+            'organiser_id': self.organiser.data,
             'member_price': self.member_price.data,
             'guest_price': self.guest_price.data,
             'start_booking': self.start_booking.data,
             'end_booking': self.end_booking.data,
             'max': self.max.data or '0',
-            'event_type': self.event_type.data,
+            'event_type': event_type,
             'note': self.note.data,
             'schedule': [],
             'tour_schedule': []
         }
-        year = event['date'].year
-        event_type = EventType[self.event_type.data]
-        if event_id == "0":
-            event_id = str(get_new_event_id(year))
 
         if event_type == EventType.wags_vl_event:
             for item in self.schedule.data:
-                event.schedule.append(item)
-            if self.start_booking.data is not None and self.start_booking.data <= datetime.date.today():
-                create_bookings_file(year, event_id)
+                event['schedule'].append(item)
 
         if event_type == EventType.wags_tour:
-            event.course = ''
-            tour_event_id = int(event_id)
+            event['course_id'] = None
             for item in self.tour_schedule.data:
-                if item.date and item.course:
-                    tour_event_id += 0.1
-                    id = '{0:.1f}'.format(tour_event_id)
-                    item.update({
-                        'num': id,
-                        'date': item.date,
-                        'venue': item.course,
-                        'event': self.trophy.data,
-                        'course': item.course,
-                        'event_type': EventType.wags_vl_event.name,
-                        'start_booking': None,
-                        'end_booking': None,
-                        'member_price': None,
-                        'guest_price': None,
-                        'schedule': [],
-                        'organiser': self.organiser.data
-                    })
-                    event.tour_schedule.append(item)
-                    save_event(id, item)
+                if item['date'] and item['course']:
+                    event['tour_schedule'].append(item)
 
-        save_event(event_id, event)
+        event_id = save_event_details(event_id, event)
+
+        if event['start_booking'] is not None and event['start_booking'] <= datetime.date.today():
+            create_bookings_file(event['date'].year, event_id)
 
         return True

@@ -9,4 +9,4 @@ def members_main():
 
 @app.route('/members/<member_id>', methods=['GET', 'POST'])
 def edit_member(member_id):
-    return MaintainMembers.edit_member(member_id)
+    return MaintainMembers.edit_member(int(member_id))

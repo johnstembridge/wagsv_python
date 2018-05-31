@@ -44,12 +44,6 @@ def results_event(event_id):
     return ReportEvents.results_event(event_id, event_type)
 
 
-@app.route('/events/<date>/results', methods=['GET', 'POST'])
-def results_event_date(date):
-    date = date.replace('-', '/')
-    return ReportEvents.results_event_date(date)
-
-
 @app.route('/events/<year>/<event_id>/report', methods=['GET', 'POST'])
 def report_event(year, event_id):
     return ReportEvents.report_event(year, event_id)

@@ -3,11 +3,11 @@
 
 {% block page_content %}
 <div class="page-header">
-    <h1>Wag {{ form.member_id.data }} {{ form.first_name.data }} {{ form.surname.data }}</h1>
+    <h1>Wag {{ form.member_id.data }} {{ form.first_name.data }} {{ form.last_name.data }}</h1>
 </div>
 <form method="POST">
     {{ form.csrf_token }}
-    {{form.hidden_tag()}}
+    {{ form.hidden_tag() }}
     <table width="100%">
         <tr>
             <td>{{ form.member_id.label }}</td><td>{{ form.member_id.data }}</td>
@@ -22,7 +22,7 @@
             <td>{{ form.first_name.label }}</td><td>{{ form.first_name(size='50') }}</td>
         </tr>
         <tr>
-            <td>{{ form.surname.label }}</td><td>{{ form.surname(size='50') }}</td>
+            <td>{{ form.last_name.label }}</td><td>{{ form.last_name(size='50') }}</td>
         </tr>
         <tr>
             <td>{{ form.email.label }}</td><td>{{ form.email(size='50') }}</td>

@@ -3,7 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, FieldList, FormField, HiddenField, SelectField, SubmitField
 from wtforms.fields.html5 import DateField
 from back_end.data_utilities import encode_date_short, in_date_range, parse_date
-from front_end.form_helpers import set_select_field
+from front_end.form_helpers import set_select_field, set_select_field_new
 from globals.config import url_for_user
 from globals.enumerations import EventType
 from back_end.interface import get_event_list, is_tour_event, get_venue_url, get_event_select_list, \
@@ -50,17 +50,13 @@ class EventListForm(FlaskForm):
 
 
 class EventSelectForm(FlaskForm):
-    event = SelectField(label='Select Event')
+    event = SelectField(label='Select Event', coerce=int)
     show_result = SubmitField(label='Show Result')
 
     def populate_event_select(self):
-        set_select_field(self.event, None, get_event_select_list(), '')
+        set_select_field_new(self.event, get_event_select_list(), item_name='Event')
 
     def show_event_result(self):
-        date, course = self.event.data.split('-')
-        year = parse_date(date).year
-        event_id = get_event_by_year_and_name(year, course)['num']
-        if event_id:
-            return url_for_user('results_event', year=year, event_id=event_id)
-        else:
-            return url_for_user('results_event_date', date=date.replace('/', '-'))
+        event_id = self.event.data
+        return url_for_user('results_event', event_id=event_id)
+

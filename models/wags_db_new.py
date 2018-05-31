@@ -161,6 +161,9 @@ class Schedule(Base):
     text = Column(String(100), nullable=False)
     event = relationship("Event", back_populates="schedule")
 
+    def __lt__(self, other):  # for sorting
+        return self.time < other.time
+
     def __repr__(self):
         return '<Schedule: {} {}>'.format(self.event, self.time)
 
@@ -198,14 +201,14 @@ class Player(Base):
         if len(state) > 0:
             return state[-1]
         else:
-            return Handicap(player_id=self.id, status=PlayerStatus.guest, handicap=0, date=datetime.datetime.today)
+            return Handicap(player_id=self.id, status=PlayerStatus.guest, handicap=0, date=datetime.date.today())
 
     def state_up_to(self, date):
         state = [h for h in self.handicaps if h.date <= date]
         if len(state) > 0:
             return sorted(state, key=lambda s: s.date, reverse=True)
         else:
-            return [Handicap(player_id=self.id, status=PlayerStatus.guest, handicap=0, date=datetime.datetime.today)]
+            return [Handicap(player_id=self.id, status=PlayerStatus.guest, handicap=0, date=datetime.date.today())]
 
     def score_for(self, event_id):
         scores = [s.points for s in self.scores if s.event_id == event_id]

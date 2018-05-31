@@ -1,4 +1,6 @@
 from flask import request
+
+from globals.enumerations import EventType
 from wags_admin import app
 from front_end.admin.events_admin import MaintainEvents
 from front_end.admin.others import get_user_current_year
@@ -17,8 +19,9 @@ def list_events(year):
 
 @app.route('/events/<event_id>/details', methods=['GET', 'POST'])
 def edit_event(event_id):
-    event_type = request.args.get('event_type')  # for add event/tour
-    return MaintainEvents.edit_event(event_id, event_type)
+    event_type = request.args.get('event_type')
+    event_type = EventType(int(request.args.get('event_type'))) if event_type else None  # for add event/tour
+    return MaintainEvents.edit_event(int(event_id), event_type)
 
 
 @app.route('/events/<event_id>/results', methods=['GET', 'POST'])

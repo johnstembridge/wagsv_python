@@ -3,12 +3,12 @@ import datetime
 
 from back_end.file_access import get_record
 from globals.enumerations import PlayerStatus
-from back_end.interface import get_event, get_handicaps, get_players, get_event_scores, \
+from back_end.interface import get_event, get_handicaps, get_players_as_of, get_event_scores, \
     get_booked_players, save_event_result, get_course_data, get_player_handicap, get_event_card, get_venue, \
     get_tour_events, get_last_event, get_player_name, get_player_names_as_dict, get_member, \
     get_event_cards, get_results_for_edit, get_results_by_year_and_name, get_scores, get_current_members, get_tour_scores, \
-    get_tour_event_list_from_scores, get_member_select_list, get_events_in, get_trophy, get_all_trophy_history, \
-    get_venue_select_list, get_player_select_list, get_trophy_select_list, get_course_for_date
+    get_tour_event_list_from_scores, get_member_select_choices, get_events_in, get_trophy, get_all_trophy_history, \
+    get_venue_select_choices, get_player_select_list, get_trophy_select_list, get_course_for_date
 from back_end.table import Table
 from test_data import TestData
 
@@ -85,7 +85,7 @@ class TestInterface(unittest.TestCase):
         self.assertTrue(len(card) > 0)
 
     def test_get_members(self):
-        res = get_players('2018/01/01', 1)
+        res = get_players_as_of('2018/01/01', 1)
         self.assertTrue(len(res) > 0)
 
     def test_get_members(self):
@@ -97,11 +97,11 @@ class TestInterface(unittest.TestCase):
         self.assertEqual('john.stembridge@gmail.com', res['home_email'])
 
     def test_get_players(self):
-        res = get_players('2016/08/07', [PlayerStatus.member, PlayerStatus.guest])
+        res = get_players_as_of('2016/08/07', [PlayerStatus.member, PlayerStatus.guest])
         self.assertTrue(len(res) > 0)
 
     def test_get_ex_members(self):
-        res = get_players('2016/08/07', PlayerStatus.ex_member)
+        res = get_players_as_of('2016/08/07', PlayerStatus.ex_member)
         self.assertTrue(len(res) > 0)
 
     def test_get_event_scores(self):
@@ -165,7 +165,7 @@ class TestInterface(unittest.TestCase):
     #     self.assertEqual(result, expected)
 
     def test_get_member_select_list(self):
-        res = get_member_select_list()
+        res = get_member_select_choices()
 
     def test_get_events_since(self):
         date_range = [datetime.date(2016, 1, 1), datetime.date(2017, 12, 31)]

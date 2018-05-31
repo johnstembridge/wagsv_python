@@ -48,7 +48,7 @@ class EventCardForm(FlaskForm):
         self.positionReturn.data = position
         self.handicapReturn.data = handicap
         self.statusReturn.data = status
-        self.editable.data = is_event_result_editable(event_id)
+        self.editable.data = is_event_result_editable(event)
 
         holes = range(1, 19)
         for hole in holes:

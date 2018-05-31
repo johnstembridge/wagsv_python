@@ -36,7 +36,7 @@ class EventResultsForm(FlaskForm):
         self.editable.data = is_event_result_editable(event)
         for player in get_results(event):
             if player['player_id'] == 0:
-                player['player_id'] = add_player(player['player'], player['handicap'], player['status'], event.date)
+                player['player_id'] = (add_player(player['player'], player['handicap'], player['status'], event.date)).id
             item_form = EventResultItemForm()
             guest = " (guest)" if (player['status'] == PlayerStatus.guest) else ""
             item_form.player = player['player'] + guest

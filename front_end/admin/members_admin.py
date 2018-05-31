@@ -12,7 +12,7 @@ class MaintainMembers:
         form = MemberListForm()
         if form.is_submitted():
             if form.add_member.data:
-                return redirect(url_for_admin('edit_member', member_id="new"))
+                return redirect(url_for_admin('edit_member', member_id=0))
             if form.edit_member.data:
                 return redirect(url_for_admin('edit_member', member_id=form.member.data))
         form.populate_member_list()
