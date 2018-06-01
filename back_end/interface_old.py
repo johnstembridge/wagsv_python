@@ -526,7 +526,7 @@ def get_events_in(date_range):
 
     scores = Table(*get_records(scores_file(), 'date', date_range, lu_fn))
     scores.sort('date')
-    events = [e[0] for e in scores.groupby(['date', 'course'])]
+    events = [e[0] for e in scores.group_by(['date', 'course'])]
     return events
 
 
@@ -570,7 +570,7 @@ def get_tour_event_list_from_scores(year, tour_event_id):
         return res
 
     scores = Table(*get_records(scores_file(), 'date', date_range, lu_fn))
-    date_course = sorted([s[0] for s in scores.groupby(['date', 'course'])])
+    date_course = sorted([s[0] for s in scores.group_by(['date', 'course'])])
     id = tour_event_id
     for event in date_course:
         id += 0.1

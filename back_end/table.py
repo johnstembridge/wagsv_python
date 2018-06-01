@@ -27,7 +27,7 @@ class Table:
         # assume sorted
         self.data = self.data[:min(n, len(self.data))]
 
-    def groupby(self, col_names):
+    def group_by(self, col_names):
         index = self.column_index(force_list(col_names))
         return itertools.groupby(self.data, itemgetter(*index))
 

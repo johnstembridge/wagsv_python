@@ -1,9 +1,7 @@
 import datetime
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField, HiddenField
-from back_end.data_utilities import first_or_default, fmt_date
-from back_end.interface import save_handicaps, get_handicap_records, get_current_members
-from globals.enumerations import PlayerStatus
+from wtforms import StringField, FieldList, FormField, HiddenField
+from back_end.interface import get_current_members_as_players
 
 
 class HandicapItemForm(FlaskForm):
@@ -19,7 +17,7 @@ class HandicapsForm(FlaskForm):
     def populate_handicaps(self):
         date = datetime.date.today()
         count = 1
-        for player in get_current_members():
+        for player in get_current_members_as_players():
             state = player.state_as_of(date)
             item_form = HandicapItemForm()
             item_form.item_pos = 1 + count % 2

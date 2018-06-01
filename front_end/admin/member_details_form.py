@@ -3,9 +3,8 @@ from wtforms import StringField, SubmitField, HiddenField, SelectField, DateFiel
 from wtforms.validators import InputRequired, Email
 import datetime
 
-from back_end.data_utilities import fmt_date
-from back_end.interface import get_member, get_member_select_choices, save_member, \
-    add_player, get_player_id, update_player_handicap, get_players_as_of, update_player_name, get_current_members
+from back_end.interface import get_member, get_member_select_choices, save_member, get_players_as_of, \
+    get_current_members_as_players
 from front_end.form_helpers import set_select_field, set_select_field_new
 from globals.enumerations import MemberStatus, PlayerStatus
 from models.wags_db import Member
@@ -45,7 +44,7 @@ class MemberDetailsForm(FlaskForm):
             return False
         result = True
         if new_member:
-            current_members = [n.full_name().lower() for n in get_current_members()]
+            current_members = [n.full_name().lower() for n in get_current_members_as_players()]
             name = self.first_name.data + ' ' + self.last_name.data
             if name.lower() in current_members:
                 self.first_name.errors.append('{} is already a member'.format(name))

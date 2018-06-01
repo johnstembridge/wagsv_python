@@ -5,8 +5,7 @@ from .event_list_form import EventListForm, EventSelectForm
 from .event_result_form import EventResultsForm
 from .tour_result_form import TourResultsForm
 from front_end.form_helpers import render_link
-from back_end.interface import get_event, get_event_by_year_and_name
-from back_end.data_utilities import parse_date
+from back_end.interface import get_event
 from globals.enumerations import EventType
 from globals.config import url_for_old_site, url_for_old_service
 
@@ -29,33 +28,25 @@ class ReportEvents:
         return render_template('user/event_select.html', form=form)
 
     @staticmethod
-    def book_event(year, event_id, event_type=None):
+    def book_event(year, event_id):
         return redirect(url_for_old_service('services.pl?show_event={}&year={}&book=1'.format(event_id, year)))
 
     @staticmethod
-    def show_event(year, event_id, event_type=None):
+    def show_event(year, event_id):
         return redirect(url_for_old_service('services.pl?show_event={}&year={}&book=3'.format(event_id, year)))
 
-    @classmethod
-    def show_from_date_and_name(cls, date, event_name):
-        year = parse_date(date).year
-        event_id = get_event_by_year_and_name(year, event_name)['num']
-        return cls.results_event(year, event_id)
-
     @staticmethod
-    def results_event(event_id, event_type=None):
-        if event_type:
-            event_type = EventType(int(event_type))
-        else:
-            event_type = EventType.wags_vl_event
+    def results_event(event_id):
+        event_type = get_event(event_id).type
         if event_type == EventType.wags_vl_event:
             return ReportEvents.results_vl_event(event_id)
         if event_type == EventType.wags_tour:
             return ReportEvents.results_tour_event(event_id)
 
     @staticmethod
-    def report_event(year, event_id):
+    def report_event(event_id):
         date = get_event(event_id).date
+        year = date.year
         file = 'rp{}.htm'.format(date.strftime('%y%m%d'))
         return redirect(url_for_old_site('{}/{}'.format(year, file)))
 

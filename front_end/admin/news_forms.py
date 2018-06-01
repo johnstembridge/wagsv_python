@@ -1,9 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, HiddenField, SelectField, FieldList, FormField, DateField, TextAreaField
 from back_end.data_utilities import parse_date, encode_date
-from back_end.interface import get_last_event, get_event, get_next_event
+from back_end.interface import get_event
 from front_end.form_helpers import set_select_field
-from globals.config import url_for_old_service
 from globals.enumerations import NewsItemType
 from models.news import News, NewsDay, NewsItem
 import datetime

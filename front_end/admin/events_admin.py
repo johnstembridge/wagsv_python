@@ -2,7 +2,7 @@ import os
 from flask import render_template, redirect, flash
 
 from back_end.data_utilities import fmt_date
-from back_end.interface import event_title, event_date, get_event
+from back_end.interface import get_event
 from back_end.file_access import write_file
 from .event_report_form import EventReportForm
 from .event_card_form import EventCardForm

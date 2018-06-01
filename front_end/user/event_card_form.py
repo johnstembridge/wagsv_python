@@ -42,8 +42,8 @@ class EventCardForm(FlaskForm):
             shots = "-" if card[i] == 99 or card[i] is None else card[i]
             item_form = EventCardItemForm()
             item_form.hole = hole
-            item_form.par = int(course_data.par[i])
-            item_form.si = int(course_data.si[i])
+            item_form.par = course_data.par[i]
+            item_form.si = course_data.si[i]
             item_form.shots = shots
             item_form.points = 0
             if hole <= 9:

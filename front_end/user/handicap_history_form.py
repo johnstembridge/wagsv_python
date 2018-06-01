@@ -2,7 +2,6 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, FormField, FieldList
 from wtforms.fields.html5 import DateField
 from back_end.interface import get_player, get_event
-from back_end.data_utilities import is_num
 
 
 class HandicapItemForm(FlaskForm):

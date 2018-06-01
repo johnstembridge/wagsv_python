@@ -1,11 +1,7 @@
-import operator
-import itertools
 from flask_wtf import FlaskForm
 from wtforms import StringField, FieldList, FormField
 from back_end.interface import get_event, get_player_names_as_dict, get_tour_scores
-from back_end.interface_old import get_tour_scores_old
 from back_end.table import Table
-from back_end.data_utilities import fmt_date
 from back_end.calc import get_positions
 
 
@@ -58,7 +54,7 @@ class TourResultsForm(FlaskForm):
         event_ids = [v.id for v in venues]
         scores = Table(*get_tour_scores(event_ids))
         res = []
-        for player_id, event_scores in scores.groupby('player'):
+        for player_id, event_scores in scores.group_by('player'):
             s = [s for s in event_scores]
             missing = list(set(event_ids).difference(set([x[0] for x in s])))
             for m in missing:

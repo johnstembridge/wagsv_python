@@ -3,7 +3,7 @@ from wtforms import StringField, IntegerField, FieldList, FormField, HiddenField
 
 from back_end.interface import get_event
 from globals.enumerations import PlayerStatus
-from back_end.data_utilities import fmt_date, fmt_num
+from back_end.data_utilities import fmt_num
 
 
 class EventResultItemForm(FlaskForm):

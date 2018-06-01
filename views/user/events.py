@@ -13,12 +13,7 @@ def index():
 
 @app.route('/events', methods=['GET', 'POST'])
 def events():
-    # replacement end point for old-style non-restful service event calls
-    # e.g. http://wags.org/wagsuser/events?date=2017/11/18&event=Pine%20Ridge
-    if request.args is not None and len(request.args) > 0:
-        return ReportEvents.show_from_date_and_name(request.args['date'], request.args['event'])
-    else:
-        return ReportEvents.select_event()
+    return ReportEvents.select_event()
 
 
 @app.route('/events/<year>', methods=['GET', 'POST'])
@@ -28,33 +23,26 @@ def list_events(year):
 
 @app.route('/events/<year>/<event_id>/book', methods=['GET', 'POST'])
 def book_event(year, event_id):
-    event_type = request.args.get('event_type')
-    return ReportEvents.book_event(year, event_id, event_type)
+    return ReportEvents.book_event(year, event_id)
 
 
 @app.route('/events/<year>/<event_id>/show', methods=['GET', 'POST'])
 def show_event(year, event_id):
-    event_type = request.args.get('event_type')
-    return ReportEvents.show_event(year, event_id, event_type)
+    return ReportEvents.show_event(year, event_id)
 
 
 @app.route('/events/<event_id>/results', methods=['GET', 'POST'])
 def results_event(event_id):
-    event_type = request.args.get('event_type')
-    return ReportEvents.results_event(event_id, event_type)
+    return ReportEvents.results_event(int(event_id))
 
 
-@app.route('/events/<year>/<event_id>/report', methods=['GET', 'POST'])
-def report_event(year, event_id):
-    return ReportEvents.report_event(year, event_id)
+@app.route('/events/<event_id>/report', methods=['GET', 'POST'])
+def report_event(event_id):
+    return ReportEvents.report_event(int(event_id))
 
 
 @app.route('/events/<event_id>/<player_id>/card', methods=['GET', 'POST'])
 def card_event_player(event_id, player_id):
-    return ReportEvents.card_event_player(event_id, player_id)
+    return ReportEvents.card_event_player(int(event_id), int(player_id))
 
-
-@app.route('/events/<year>/<event_id>/<player_id>/handicap', methods=['GET', 'POST'])
-def event_handicap_history_player(year, event_id, player_id):
-    return ReportEvents.handicap_history_player(year, event_id, player_id)
 

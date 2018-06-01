@@ -2,12 +2,11 @@ import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, FieldList, FormField, HiddenField, SelectField, SubmitField
 from wtforms.fields.html5 import DateField
-from back_end.data_utilities import encode_date_short, in_date_range, parse_date
-from front_end.form_helpers import set_select_field, set_select_field_new
+from back_end.data_utilities import encode_date_short, in_date_range
+from front_end.form_helpers import set_select_field_new
 from globals.config import url_for_user
 from globals.enumerations import EventType
-from back_end.interface import get_event_list, is_tour_event, get_venue_url, get_event_select_list, \
-    get_event_by_year_and_name
+from back_end.interface import get_event_list, is_tour_event, get_venue_url, get_event_select_list
 
 
 class EventItemForm(FlaskForm):

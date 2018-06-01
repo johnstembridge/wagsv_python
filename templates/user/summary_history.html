@@ -2,24 +2,32 @@
 {% block title %}Events Played to date{% endblock %}
 {% block content %}
 {{ form.csrf_token }}
-
+{{ form.hidden_tag() }}
 <h2 class="table-title">Events Played to date</h2>
 <table width="100%" class="list">
     <tr>
         <th align="left">Player</th>
-        <th align="left">Status</th>
         <th align="center">Count</th>
+        <th align="left">Status</th>
         <th align="left">First Game</th>
+        <th align="center">History</th>
     </tr>
-    <tr><td colspan="4"><hr class="bold"></td></tr>
+    <tr><td colspan="5"><hr class="bold"></td></tr>
     {% for item in form.history %}
     <tr>
         <td>{{ item.player.data }}</td>
-        <td>{{ item.status.data }}</td>
         <td style="text-align:center">{{ item.count.data }}</td>
+        <td>{{ item.status.data }}</td>
         <td>{{ item.first_game.data }}</td>
+        <td align="center">
+            {{ render_link(
+                url=url_for('show_player_events', player_id=item.player_id.data),
+                image=url_for('static', filename='images/go.png'),
+                text='Show playing history for ' + item.player.data
+            )|safe }}
+        </td>
     </tr>
     {% endfor %}
-    <tr><td colspan="4"><hr class="bold"></td></tr>
+    <tr><td colspan="5"><hr class="bold"></td></tr>
 </table>
 {% endblock %}

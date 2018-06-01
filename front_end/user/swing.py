@@ -39,8 +39,8 @@ class SwingForm(FlaskForm):
         for item in swings.data:
             item_form = SwingItemForm()
             item_form.position = item[swings.column_index('position')]
-            item_form.player = item[swings.column_index('player_name')]
-            item_form.course = item[swings.column_index('course_name')]
+            item_form.player = item[swings.column_index('player')]
+            item_form.course = item[swings.column_index('course')]
             item_form.date = item[swings.column_index('date')]
             item_form.points_out = item[swings.column_index('points_out')]
             item_form.points_in = item[swings.column_index('points_in')]

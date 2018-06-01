@@ -4,7 +4,7 @@ from wtforms import StringField, SubmitField, HiddenField, SelectField, TextArea
 from back_end.file_access import get_file_contents
 from front_end.form_helpers import set_select_field, get_elements_from_html
 from globals.enumerations import PlayerStatus
-from back_end.interface import get_event, get_event_scores, get_player, get_player_names_as_dict
+from back_end.interface import get_event, get_event_scores
 
 
 class EventReportForm(FlaskForm):

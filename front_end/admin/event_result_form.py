@@ -1,8 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField, HiddenField
 
-from back_end.interface import get_event, get_results, save_event_result, is_event_result_editable, add_player, \
-    update_trophy_history
+from back_end.interface import get_event, get_results, save_event_result, is_event_result_editable, add_player
 from back_end.calc import calc_event_positions
 from back_end.table import Table
 from globals.enumerations import PlayerStatus

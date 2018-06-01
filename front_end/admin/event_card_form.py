@@ -3,8 +3,7 @@ from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField
 
 from back_end.calc import calc_event_positions
 from back_end.interface import get_event, get_course_data, save_event_score, get_event_card, \
-    get_player, is_event_result_editable, get_event_scores, save_event_result, update_trophy_history
-from globals.enumerations import PlayerStatus
+    get_player, is_event_result_editable, get_event_scores, save_event_result
 
 
 class EventCardItemForm(FlaskForm):

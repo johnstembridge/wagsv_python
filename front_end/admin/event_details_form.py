@@ -6,12 +6,10 @@ from wtforms import StringField, SelectField, DecimalField, TextAreaField, Integ
 from wtforms.fields.html5 import DateField
 from wtforms_components import TimeField
 
-from back_end.data_utilities import coerce, first_or_default, lookup
 from front_end.form_helpers import set_select_field_new
 from globals.enumerations import EventType
-from back_end.interface import get_event, save_event, get_trophy_select_choices, create_bookings_file, \
-    is_event_editable, get_member_select_choices, get_venue_select_choices, get_course_select_choices, \
-    save_event_details
+from back_end.interface import get_event, get_trophy_select_choices, create_bookings_file, save_event_details, \
+    is_event_editable, get_member_select_choices, get_venue_select_choices, get_course_select_choices
 from models.wags_db_new import Event, Schedule
 
 
@@ -61,7 +59,8 @@ class EventForm(FlaskForm):
         self.max.data = event.max
         self.event_type.data = event_type.value
         self.note.data = event.note
-        set_select_field_new(self.organiser, get_member_select_choices(), default_selection=organiser, item_name='Organiser')
+        set_select_field_new(self.organiser, get_member_select_choices(), default_selection=organiser,
+                             item_name='Organiser')
         set_select_field_new(self.trophy, get_trophy_select_choices(), default_selection=trophy, item_name='Trophy')
         set_select_field_new(self.venue, get_venue_select_choices(), default_selection=venue, item_name='Venue')
         if event_type in [EventType.wags_vl_event, EventType.non_event]:
