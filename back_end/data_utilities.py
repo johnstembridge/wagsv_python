@@ -215,6 +215,14 @@ def to_float(s):
         return 0
 
 
+def to_bool(s):
+    if s is None:
+        return True
+    if type(s) is bool:
+        return s
+    return s == 'True'
+
+
 def dequote(string):
     if string:
         if string.startswith('"') and string.endswith('"'):

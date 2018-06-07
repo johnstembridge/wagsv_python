@@ -6,6 +6,7 @@ from globals import logging
 from globals.db_setup import init_db
 
 app = Flask(__name__)
+#db = init_db(app, create=True)
 db = init_db(app)
 
 bootstrap = Bootstrap(app)

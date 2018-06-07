@@ -2,15 +2,17 @@
 table, caption, tbody, tfoot, thead, tr, th, td {
   margin: 0;
   padding: 0;
-  border: 0;
+  border: 2;
   font-size: 100%;
   font: inherit;
   vertical-align: middle;
+  line-height: normal;
 }
 table {
   border-collapse: collapse;
   border-spacing: 0;
 }
+
 BODY, TH, TD, P	{font-size: 10pt}
 BODY	{background: white; background-color: white; color: black}
 BODY	{
@@ -19,6 +21,7 @@ BODY	{
 	margin-right: 10px;
 	margin-bottom: 0px;
 }
+
 H1, H2, H3, H4 {font-weight: 500}
 H1		{color: #6E1285; font-size: 24pt}
 H2		{color: #6E1285; font-size: 20pt;}
@@ -78,12 +81,18 @@ table.list.striped tr:nth-child(odd) { background-color: #ccc;}
 table.list.striped tr:first-child {border-top: none; background-color: white}
 table.list.striped tr:last-child {border-top: none; background-color: white}
 
-.right {float:right;}
-.left {float:left;}
+.right  {float:right;}
+.left   {float:left;}
 .center {
     display: block;
     margin-left: auto;
     margin-right: auto;
     width: 50%;
 }
+.top    {vertical-align: top}
+.bottom {vertical-align: bottom}
+.middle {vertical-align: middle}
+
+.bold  {font-weight: bold}
+
 responsive-image {  width: 60%;  height: auto; }

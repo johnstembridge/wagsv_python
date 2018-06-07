@@ -1,6 +1,5 @@
 import datetime
 
-from flask import request
 from wags_user import app
 from front_end.user.events import ReportEvents
 
@@ -21,14 +20,21 @@ def list_events(year):
     return ReportEvents.list_events(year)
 
 
-@app.route('/events/<year>/<event_id>/book', methods=['GET', 'POST'])
-def book_event(year, event_id):
-    return ReportEvents.book_event(year, event_id)
+@app.route('/events/<event_id>/book', methods=['GET', 'POST'])
+def book_event(event_id):
+    member_id = 12 # 113
+    return ReportEvents.show_or_book_event(int(event_id), member_id)
 
 
-@app.route('/events/<year>/<event_id>/show', methods=['GET', 'POST'])
-def show_event(year, event_id):
-    return ReportEvents.show_event(year, event_id)
+@app.route('/events/<event_id>/show', methods=['GET', 'POST'])
+def show_event(event_id):
+    member_id = 12  # 113
+    return ReportEvents.show_or_book_event(int(event_id), member_id)
+
+
+@app.route('/events/<event_id>/show_all', methods=['GET', 'POST'])
+def show_all_bookings(event_id):
+    return ReportEvents.show_all_bookings(event_id)
 
 
 @app.route('/events/<event_id>/results', methods=['GET', 'POST'])

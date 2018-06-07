@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Date, Time, Numeric, String, ForeignKey, types
+from sqlalchemy import Column, Integer, Date, Time, Numeric, String, ForeignKey, types, Boolean
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -74,6 +74,8 @@ class Event(Base):
 
     winner_id = Column(Integer, ForeignKey("players.id"))
     winner = relationship('Player', back_populates="events_won")
+
+    bookings = relationship("Booking",  back_populates="event")
 
     average_score = Column(Numeric(precision=3, scale=1))
 
@@ -234,6 +236,7 @@ class Member(Base):
     proposer_id = Column(Integer, ForeignKey("members.id"), nullable=False)
     proposed = relationship("Member", backref=backref("proposer", remote_side=id))
     events_organised = relationship("Event",  back_populates="organiser")
+    bookings = relationship("Booking",  back_populates="member")
 
     def __repr__(self):
         return '<Member: {}>'.format(self.player.full_name())
@@ -265,3 +268,26 @@ class Score(Base):
 
     def __repr__(self):
         return '<Score - Event: {}, Player: {}>'.format(self.event, self.player.full_name())
+
+
+class Booking(Base):
+    __tablename__ = "bookings"
+    id = Column(Integer, primary_key=True)
+    event_id = Column(Integer, ForeignKey('events.id'), nullable=False)
+    member_id = Column(Integer, ForeignKey('members.id'), nullable=False)
+    date = Column(Date, nullable=False)
+    playing = Column(Boolean, nullable=False)
+    comment = Column(String(100), nullable=True)
+    guests = relationship("Guest",  back_populates="booking")
+    event = relationship("Event", back_populates="bookings")
+    member = relationship("Member", back_populates="bookings")
+
+
+class Guest(Base):
+    __tablename__ = "guests"
+    id = Column(Integer, primary_key=True)
+    booking_id = Column(Integer, ForeignKey('bookings.id'), nullable=False)
+    name = Column(String(100), nullable=False)
+    handicap = Column(Numeric(precision=3, scale=1), nullable=False)
+    booking = relationship("Booking", back_populates="guests")
+

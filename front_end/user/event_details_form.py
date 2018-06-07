@@ -1,128 +1,113 @@
 import datetime
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, DecimalField, TextAreaField, IntegerField, SubmitField, FieldList, \
-    FormField, HiddenField
+from wtforms import StringField, DecimalField, TextAreaField, SubmitField, FieldList, FormField, HiddenField, RadioField
 from wtforms.fields.html5 import DateField
-from wtforms_components import TimeField
+from wtforms.validators import Optional
 
-from back_end.players import Players
-from front_end.form_helpers import set_select_field
-from globals.enumerations import EventType
-from back_end.interface import get_all_venue_names, get_all_course_names, get_event, save_event, \
-    get_new_event_id, get_tour_events, get_all_trophy_names, create_bookings_file, is_event_editable
-
-
-class ScheduleForm(FlaskForm):
-    time = TimeField('Time')
-    text = StringField('Item')
+from back_end.data_utilities import encode_date, fmt_date, first_or_default, to_bool
+from back_end.interface import get_event, get_booking, save_booking, is_event_bookable, get_member
+from front_end.form_helpers import line_break
+from models.wags_db_new import Guest, Booking
 
 
-class TourScheduleForm(FlaskForm):
-    date = DateField('Date')
-    course = StringField(label='Course')
+class GuestForm(FlaskForm):
+    item_pos = HiddenField(label='Item_pos')
+    guest_name = StringField('Name', validators=[Optional()])
+    handicap = StringField('Handicap')
 
 
-class EventForm(FlaskForm):
-    date = DateField(label='Date')
-    trophy = SelectField(label='Trophy')
-    venue = SelectField(label='Venue')
-    course = SelectField(label='Course')
-    organiser = SelectField(label='Organiser')
-    member_price = DecimalField(label='Member Price')
-    guest_price = DecimalField(label='Guest Price')
-    start_booking = DateField(label='Booking Starts')
-    end_booking = DateField(label='Booking Ends')
-    max = IntegerField(label='Maximum')
+class EventDetailsForm(FlaskForm):
+    bookable = HiddenField(label='Bookable')
+    title = StringField(label='Title')
+    event = StringField(label='Event')
+    date = StringField(label='Date')
+    venue = StringField(label='Venue')
+    venue_address = StringField(label='Address')
+    venue_phone = StringField(label='Phone')
+    map_url = StringField(label='map_url')
+    schedule = TextAreaField(label='Schedule')
+    member_price = DecimalField(label='Members')
+    guest_price = DecimalField(label='Guests')
+    organiser = StringField(label='Organiser')
+    organiser_id = StringField(label='Organiser Id')
+    booking_deadline = StringField(label='Booking deadline')
+    venue_directions = StringField(label='directions')
+    notes = StringField(label='Notes', default='')
+    member_name = StringField(label='Member Name')
+    booking_date = DateField(label='Booking Date')
+    attend = RadioField('Attending', choices=[(True, 'will attend'), (False, 'will not attend')], coerce=to_bool)
+    guests = FieldList(FormField(GuestForm))
+    comment = TextAreaField(label='Comments')
+
+    event_id = HiddenField(label='Event Id')
     event_type = HiddenField(label='Event Type')
-    schedule = FieldList(FormField(ScheduleForm))
-    tour_schedule = FieldList(FormField(TourScheduleForm))
-    note = TextAreaField(label='Notes', default='')
+
     submit = SubmitField(label='Save')
-    editable = HiddenField(label='Editable')
 
-    def populate_event(self, year, event_id, event_type):
-        self.editable = is_event_editable(year)
+    def populate_event(self, event_id, member_id):
         event = get_event(event_id)
-        self.date.data = event['date']
-        set_select_field(self.organiser, 'organiser', Players().get_current_members(), event['organiser'])
-        self.member_price.data = event['member_price']
-        self.guest_price.data = event['guest_price']
-        self.start_booking.data = event['start_booking']
-        self.end_booking.data = event['end_booking']
-        self.max.data = event['max']
-        self.event_type.data = event_type.name
-        self.note.data = event['note']
-        set_select_field(self.trophy, 'trophy', get_all_trophy_names(), event['event'])
-        set_select_field(self.venue, 'venue', get_all_venue_names(), event['venue'])
-        if event_type in [EventType.wags_vl_event, EventType.non_event]:
-            set_select_field(self.course, 'course', get_all_course_names(), event['course'])
-            for item in event['schedule']:
-                item_form = ScheduleForm()
-                item_form.time = item['time']
-                item_form.text = item['text']
-                self.schedule.append_entry(item_form)
-        if event_type == EventType.wags_tour:
-            for item in get_tour_events(year, event_id, 6):
-                item_form = TourScheduleForm()
-                item_form.date = item['date']
-                item_form.course = item['course']
-                self.tour_schedule.append_entry(item_form)
-        return event_id
+        self.bookable.data = is_event_bookable(event)
+        if self.bookable.data:
+            self.title.data = 'Book Event'
+        else:
+            self.title.data = 'Event Details'
+        self.event_id.data = event_id
+        self.event_type.data = event.type
+        self.date.data = encode_date(event.date)
+        if event.organiser:
+            self.organiser_id.data = event.organiser.id
+            self.organiser.data = event.organiser.player.full_name()
+        else:
+            self.organiser_id.data = 0
+        self.event.data = event.trophy.name if event.trophy else event.venue.name
+        self.venue.data = event.venue.name
+        post_code = event.venue.contact.post_code or ''
+        self.venue_address.data = line_break(event.venue.contact.address or '' + ',' + post_code, ',')
+        self.venue_phone.data = event.venue.contact.phone
+        self.map_url.data = 'http://maps.google.co.uk/maps?q={}&title={}&z=12 target="googlemap"'\
+            .format(post_code.replace(' ', '+'), event.venue.name)
+        self.venue_directions.data = line_break(event.venue.directions or '', '\n')
+        self.schedule.data = line_break([(s.time.strftime('%H:%M ') + s.text)for s in event.schedule])
+        self.member_price.data = event.member_price
+        self.guest_price.data = event.guest_price
+        self.booking_deadline.data = encode_date(event.booking_end)
+        self.notes.data = event.note or ''
 
-    def save_event(self, year, event_id):
+        booking = get_booking(event_id, member_id)
+        if booking is None:
+            booking = Booking(member=get_member(member_id), playing=True)
+        else:
+            self.booking_date.data = fmt_date(booking.date)
+            self.attend.data = booking.playing
+            self.comment.data = booking.comment
+        self.member_name.data = booking.member.player.full_name()
+        count = 1
+        for guest in booking.guests + (3 - len(booking.guests)) * [Guest()]:
+            item_form = GuestForm()
+            item_form.item_pos = count
+            item_form.guest_name = guest.name
+            item_form.handicap = guest.handicap
+            self.guests.append_entry(item_form)
+            count += 1
+        pass
+
+    def save_event(self, event_id, member_id):
         errors = self.errors
         if len(errors) > 0:
             return False
-        event = {
-            'venue': self.venue.data,
-            'date': self.date.data,
-            'event': self.trophy.data,
-            'course': self.course.data,
-            'organiser': self.organiser.data,
-            'member_price': self.member_price.data,
-            'guest_price': self.guest_price.data,
-            'start_booking': self.start_booking.data,
-            'end_booking': self.end_booking.data,
-            'max': self.max.data or '0',
-            'event_type': self.event_type.data,
-            'note': self.note.data,
-            'schedule': [],
-            'tour_schedule': []
-        }
-        if event_id == "0":
-            event_id = str(get_new_event_id(year))
-
-        if EventType[self.event_type.data] == EventType.wags_vl_event:
-            for item in self.schedule.data:
-                event['schedule'].append(item)
-            if self.start_booking.data and self.start_booking.data <= datetime.date.today():
-                create_bookings_file(year, event_id)
-
-        if EventType[self.event_type.data] == EventType.wags_tour:
-            event['course'] = ''
-            tour_event_id = int(event_id)
-            for item in self.tour_schedule.data:
-                if item['date'] and item['course']:
-                    tour_event_id += 0.1
-                    id = '{0:.1f}'.format(tour_event_id)
-                    item.update({
-                        'num': id,
-                        'date': item['date'],
-                        'venue': item['course'],
-                        'event': self.trophy.data,
-                        'course': item['course'],
-                        'event_type': EventType.wags_vl_event.name,
-                        'start_booking': None,
-                        'end_booking': None,
-                        'member_price': None,
-                        'guest_price': None,
-                        'schedule': [],
-                        'organiser': self.organiser.data
-                    })
-                    event['tour_schedule'].append(item)
-                    save_event(year, id, item)
-
-        save_event(year, event_id, event)
+        booking = get_booking(event_id, member_id) or Booking(event_id=event_id, member_id=member_id)
+        booking.date = datetime.date.today()
+        booking.playing = self.attend.data
+        booking.comment = self.comment.data if len(self.comment.data) > 0 else None
+        guests = []
+        for guest in self.guests:
+            name = guest.guest_name.data
+            if len(name) > 0:
+                obj = first_or_default([g for g in booking.guests if g.name == name], Guest(name=name))
+                obj.handicap = guest.handicap
+                guests.append(obj)
+        booking.guests = guests
+        save_booking(booking)
 
         return True

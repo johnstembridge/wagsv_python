@@ -3,6 +3,7 @@ from front_end.user.handicaps import Handicaps
 from front_end.user.trophy import Trophy
 from front_end.user.vl import Vl
 from front_end.user.swing import Swing
+from front_end.user.members import Members
 
 
 # region handicaps
@@ -32,6 +33,11 @@ def swing(year):
 def trophy(trophy_id):
     return Trophy.trophy_show(int(trophy_id))
 # endregion
+
+
+@app.route('/members/<member_id>', methods=['GET', 'POST'])
+def show_contact(member_id):
+    return Members.contact_show(int(member_id))
 
 
 

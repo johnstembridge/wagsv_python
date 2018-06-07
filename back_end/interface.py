@@ -3,11 +3,11 @@ import os
 import itertools
 from operator import and_
 
-from back_end.data_utilities import lookup, mean, first_or_default, fmt_date
+from back_end.data_utilities import lookup, mean, first_or_default, fmt_date, in_date_range
 from back_end.table import Table
 from globals.enumerations import MemberStatus, PlayerStatus, EventType
 from models.wags_db_new import Event, Score, Course, CourseData, Trophy, Player, Venue, Handicap, Member, Contact, \
-    Schedule
+    Schedule, Booking
 from globals.db_setup import db_session
 from sqlalchemy import text
 
@@ -409,6 +409,21 @@ def is_event_editable(year):
     return override or year >= datetime.date.today().year
 
 
+def is_event_bookable(event):
+    # result:  1 - booking open, 0 - booking closed, -1 - booking not applicable
+    if event.booking_start:
+        booking_start = event.booking_start
+        booking_end = event.booking_end
+        in_range = in_date_range(datetime.date.today(), booking_start, booking_end)
+    else:
+        in_range = False
+    event_type = event.type
+    override = config.get('override')
+    return override or (in_range and event_type == EventType.wags_vl_event)
+        # else -1 if (event_type != EventType.wags_vl_event or (True if not booking_start else datetime.date.today() < booking_start)) \
+        # else 0
+
+
 def get_last_event(year):
     past = [e for e in get_events_for_year(year) if
             e.type == EventType.wags_vl_event and e.date <= datetime.date.today()]
@@ -420,6 +435,7 @@ def get_last_event(year):
 def get_events_in(date_range):
     events = db_session.query(Event).filter(and_(Event.date >= date_range[0], Event.date <= date_range[1])).all()
     return events
+
 
 # endregion
 
@@ -625,7 +641,8 @@ def get_member(member_id):
 
 def get_all_members(current=True):
     if current:
-        return db_session.query(Member).filter(Member.status.in_([MemberStatus.full_member, MemberStatus.overseas_member]))
+        return db_session.query(Member).filter(
+            Member.status.in_([MemberStatus.full_member, MemberStatus.overseas_member]))
     else:
         return db_session.query(Member)
 
@@ -734,6 +751,7 @@ def get_scores_for_player(player_id, year=None):
     if year:
         def lu_fn(values):
             return values['date'].year == year
+
         res = res.where(lu_fn)
     return res
 
@@ -771,10 +789,10 @@ def get_scores(year=None, status=None, player_id=None):
 def get_all_scores():
     current_members = get_all_members(current=True)
     current_players = [m.player_id for m in current_members]
-    scores = db_session.query(Score.player_id, Event.date)\
-        .join(Event)\
-        .filter(Score.player_id.in_(current_players))\
-        .order_by(Score.player_id, Event.date)\
+    scores = db_session.query(Score.player_id, Event.date) \
+        .join(Event) \
+        .filter(Score.player_id.in_(current_players)) \
+        .order_by(Score.player_id, Event.date) \
         .all()
     head = ['player_id', 'player', 'status', 'count', 'first_game']
     data = []
@@ -787,6 +805,7 @@ def get_all_scores():
     res = Table(head, data)
     res.sort('count', reverse=True)
     return res
+
 
 # endregion
 
@@ -804,3 +823,13 @@ def create_bookings_file(year, event_id):
     # filename = bookings_file(year, event_id)
     # fields = bookings_file_fields()
     # return create_wags_data_file(directory, filename, fields, access_all=True)
+
+
+def get_booking(event_id, member_id):
+    return db_session.query(Booking).filter_by(event_id=event_id, member_id=member_id).first()
+
+
+def save_booking(booking):
+    if not booking.id:
+        db_session.add(booking)
+    db_session.commit()

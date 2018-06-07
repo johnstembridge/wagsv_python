@@ -1,5 +1,8 @@
-from flask import render_template, redirect
+import datetime
 
+from flask import render_template, redirect, flash
+
+from front_end.user.event_details_form import EventDetailsForm
 from .event_card_form import EventCardForm
 from .event_list_form import EventListForm, EventSelectForm
 from .event_result_form import EventResultsForm
@@ -7,7 +10,7 @@ from .tour_result_form import TourResultsForm
 from front_end.form_helpers import render_link
 from back_end.interface import get_event
 from globals.enumerations import EventType
-from globals.config import url_for_old_site, url_for_old_service
+from globals.config import url_for_old_site, url_for_old_service, url_for_user
 
 
 class ReportEvents:
@@ -28,12 +31,15 @@ class ReportEvents:
         return render_template('user/event_select.html', form=form)
 
     @staticmethod
-    def book_event(year, event_id):
-        return redirect(url_for_old_service('services.pl?show_event={}&year={}&book=1'.format(event_id, year)))
-
-    @staticmethod
-    def show_event(year, event_id):
-        return redirect(url_for_old_service('services.pl?show_event={}&year={}&book=3'.format(event_id, year)))
+    def show_or_book_event(event_id, member_id):
+        form = EventDetailsForm()
+        if form.is_submitted():
+            if form.save_event(event_id, member_id):
+                flash('Booking saved', 'success')
+                return redirect(url_for_user('list_events', year=datetime.date.today().year))
+        else:
+            form.populate_event(event_id, member_id)
+        return render_template('user/event_details.html', form=form, render_link=render_link)
 
     @staticmethod
     def results_event(event_id):
@@ -49,12 +55,6 @@ class ReportEvents:
         year = date.year
         file = 'rp{}.htm'.format(date.strftime('%y%m%d'))
         return redirect(url_for_old_site('{}/{}'.format(year, file)))
-
-    @staticmethod
-    def results_event_date(date):
-        form = EventResultsForm()
-        form.populate_event_results(date=date)
-        return render_template('user/event_result.html', form=form, render_link=render_link)
 
     @staticmethod
     def results_vl_event(event_id):

@@ -2,11 +2,12 @@ import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, FieldList, FormField, HiddenField, SelectField, SubmitField
 from wtforms.fields.html5 import DateField
-from back_end.data_utilities import encode_date_short, in_date_range
+from back_end.data_utilities import encode_date_short
 from front_end.form_helpers import set_select_field_new
 from globals.config import url_for_user
 from globals.enumerations import EventType
-from back_end.interface import get_event_list, is_tour_event, get_venue_url, get_event_select_list
+from back_end.interface import get_event_list, get_venue_url, get_event_select_list, is_event_bookable, \
+    get_events_for_year
 
 
 class EventItemForm(FlaskForm):
@@ -27,24 +28,25 @@ class EventListForm(FlaskForm):
 
     def populate_event_list(self, year):
         first = True
-        for item in get_event_list(year):
-            event_type = item['type']
+        for event in get_events_for_year(year):
+            event_type = event.type
             item_form = EventItemForm()
-            item_form.num = item['num']
-            item_form.date = encode_date_short(item['date'])
-            item_form.event = item['event']
-            item_form.venue = item['venue']
-            item_form.venue_url = get_venue_url(year, item['venue_url'])
-            item_form.trophy_url = item['trophy_url']
-            item_form.event_type = event_type.value
-            item_form.new_section = not (first or item['tour_id'])
+            item_form.num = event.id
+            item_form.date = encode_date_short(event.date)
+            if event.trophy:
+                item_form.event = event.trophy.name
+                item_form.trophy_url = event.trophy.url()
+            else:
+                item_form.event = ''
+                item_form.trophy_url = None
+            item_form.venue = event.venue.name
+            item_form.venue_url = get_venue_url(year, event.venue.contact.url or None)
+
+            item_form.event_type = event_type.name
+            item_form.new_section = not (first or event.tour_event_id)
             first = False
-            # bookable:  1 - booking open, 0 - booking closed, -1 - booking not applicable
-            item_form.bookable = \
-                1 if in_date_range(datetime.date.today(), item['start_booking'], item['end_booking']) \
-                else -1 if (is_tour_event(item) or (True if not item['start_booking'] else datetime.date.today() < item['start_booking'])) \
-                else 0
-            item_form.result = item['date'] < datetime.date.today() and event_type in (EventType.wags_vl_event, EventType.wags_tour)
+            item_form.bookable = is_event_bookable(event)
+            item_form.result = event.date < datetime.date.today() and event.type in (EventType.wags_vl_event, EventType.wags_tour)
             self.event_list.append_entry(item_form)
 
 
