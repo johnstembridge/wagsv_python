@@ -40,7 +40,7 @@ class EventListForm(FlaskForm):
                 item_form.event = ''
                 item_form.trophy_url = None
             item_form.venue = event.venue.name
-            item_form.venue_url = get_venue_url(year, event.venue.contact.url or None)
+            item_form.venue_url = get_venue_url(event.venue)
 
             item_form.event_type = event_type.name
             item_form.new_section = not (first or event.tour_event_id)

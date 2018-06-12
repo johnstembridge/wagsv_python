@@ -18,7 +18,7 @@ def init_db(app, create=False):
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db = SQLAlchemy(app)
     if create:
-        import models.wags_db_new
+        import models.wags_db
         #Base.metadata.create_all(bind=engine)
-        models.wags_db_new.Base.metadata.create_all(bind=engine)
+        models.wags_db.Base.metadata.create_all(bind=engine)
     return db

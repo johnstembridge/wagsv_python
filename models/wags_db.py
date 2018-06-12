@@ -1,7 +1,14 @@
-from wags_user import db
+from sqlalchemy import Column, Integer, Date, Time, Numeric, String, ForeignKey, types, Boolean
+from sqlalchemy.orm import relationship, backref
+from sqlalchemy.ext.declarative import declarative_base
+
+from back_end.data_utilities import fmt_date
 from globals.enumerations import EventType, PlayerStatus, MemberStatus
-import sqlalchemy.types as types
 from globals import config
+
+import datetime
+
+Base = declarative_base()
 
 
 class EnumType(types.TypeDecorator):
@@ -34,41 +41,50 @@ class IntArray(types.TypeDecorator):
         return value
 
 
-class Event(db.Model):
+class Event(Base):
     __tablename__ = "events"
-    id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.Date, nullable=False)
-    type = db.Column(EnumType(EventType), nullable=False)
-    member_price = db.Column(db.Numeric(precision=5, scale=2))
-    guest_price = db.Column(db.Numeric(precision=5, scale=2))
-    note = db.Column(db.String(250))
-    booking_start = db.Column(db.Date)
-    booking_end = db.Column(db.Date)
-    max = db.Column(db.Integer)
+    id = Column(Integer, primary_key=True)
+    date = Column(Date, nullable=False)
+    type = Column(EnumType(EventType), nullable=False)
+    member_price = Column(Numeric(precision=5, scale=2))
+    guest_price = Column(Numeric(precision=5, scale=2))
+    note = Column(String(250))
+    booking_start = Column(Date)
+    booking_end = Column(Date)
+    max = Column(Integer)
 
-    scores = db.relationship('Score', back_populates='event')
+    scores = relationship('Score', order_by="Score.position", back_populates='event')
 
-    organiser_id = db.Column(db.Integer, db.ForeignKey("members.id"))
-    organiser = db.relationship('Member', back_populates="events_organised")
+    organiser_id = Column(Integer, ForeignKey("members.id"))
+    organiser = relationship('Member', back_populates="events_organised")
 
-    trophy_id = db.Column(db.Integer, db.ForeignKey("trophies.id"))
-    trophy = db.relationship('Trophy', back_populates='events')
+    trophy_id = Column(Integer, ForeignKey("trophies.id"))
+    trophy = relationship('Trophy', back_populates='events')
 
-    venue_id = db.Column(db.Integer, db.ForeignKey("venues.id"))
-    venue = db.relationship('Venue', back_populates='events')
+    venue_id = Column(Integer, ForeignKey("venues.id"))
+    venue = relationship('Venue', back_populates='events')
 
-    course_id = db.Column(db.Integer, db.ForeignKey("courses.id"))
-    course = db.relationship('Course', back_populates='events')
+    course_id = Column(Integer, ForeignKey("courses.id"))
+    course = relationship('Course', back_populates='events')
 
-    schedule = db.relationship('Schedule', back_populates='event')
+    schedule = relationship('Schedule', back_populates='event')
 
-    tour_event_id = db.Column(db.Integer, db.ForeignKey("events.id"))
-    tour_events = db.relationship('Event', backref=db.backref("tour_event", remote_side=id))
+    tour_event_id = Column(Integer, ForeignKey("events.id"))
+    tour_events = relationship('Event', order_by=date, backref=backref("tour_event", remote_side=id))
 
-    winner_id = db.Column(db.Integer, db.ForeignKey("players.id"))
-    winner = db.relationship('Player', back_populates="events_won")
+    winner_id = Column(Integer, ForeignKey("players.id"))
+    winner = relationship('Player', back_populates="events_won")
 
-    average_score = db.Column(db.Numeric(precision=3, scale=1))
+    bookings = relationship("Booking",  back_populates="event")
+
+    average_score = Column(Numeric(precision=3, scale=1))
+
+    def full_name(self):
+        name = ''
+        if self.trophy:
+            name += self.trophy.name + ' '
+        name += self.venue.name + ' ' + fmt_date(self.date)
+        return name
 
     def __repr__(self):
         if self.type == EventType.wags_vl_event:
@@ -79,147 +95,199 @@ class Event(db.Model):
             return '<Non-Event: {} {}>'.format(self.venue.name, self.date)
 
 
-class Trophy(db.Model):
+class Trophy(Base):
     __tablename__ = "trophies"
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    events = db.relationship("Event", order_by=Event.id, back_populates="trophy")
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100), nullable=False)
+    events = relationship("Event", order_by="desc(Event.date)", back_populates="trophy")
 
     def url(self):
-        return config.url_for_user('trophy', trophy=self.id)
+        app = 'user'
+        return config.url_for(app, 'trophy', trophy_id=self.id)
 
     def __repr__(self):
         return '<Trophy: {}>'.format(self.name)
 
 
-class Venue(db.Model):
+class Venue(Base):
     __tablename__ = "venues"
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    directions = db.Column(db.String(500))
-    contact_id = db.Column(db.Integer, db.ForeignKey("contacts.id"))
-    contact = db.relationship("Contact", uselist=False, back_populates="venue")
-    events = db.relationship("Event", order_by=Event.id, back_populates="venue")
-    courses = db.relationship("Course", back_populates="venue")
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100), nullable=False)
+    directions = Column(String(500))
+    contact_id = Column(Integer, ForeignKey("contacts.id"))
+    contact = relationship("Contact", uselist=False, back_populates="venue")
+    events = relationship("Event", order_by=Event.id, back_populates="venue")
+    courses = relationship("Course", back_populates="venue")
 
     def __repr__(self):
         return '<Venue: {}>'.format(self.name)
 
 
-class Course(db.Model):
+class Course(Base):
     __tablename__ = "courses"
-    id = db.Column(db.Integer, primary_key=True)
-    venue_id = db.Column(db.Integer, db.ForeignKey("venues.id"))
-    name = db.Column(db.String(100), nullable=False)
-    events = db.relationship("Event", order_by=Event.id, back_populates="course")
-    venue = db.relationship('Venue', back_populates="courses")
-    cards = db.relationship('CourseData', back_populates="course")
+    id = Column(Integer, primary_key=True)
+    venue_id = Column(Integer, ForeignKey("venues.id"))
+    name = Column(String(100), nullable=False)
+    events = relationship("Event", order_by=Event.id, back_populates="course")
+    venue = relationship('Venue', back_populates="courses")
+    cards = relationship('CourseData', order_by="CourseData.year", back_populates="course")
+
+    def course_data_as_of(self, year):
+        data = [cd for cd in self.cards if cd.year >= year]
+        if len(data) > 0:
+            return data[0]
+        else:
+            return None
 
     def __repr__(self):
         return '<Course: {}>'.format(self.name)
 
 
-class CourseData(db.Model):
+class CourseData(Base):
     __tablename__ = "course_data"
-    course_id = db.Column(db.Integer, db.ForeignKey("courses.id"), primary_key=True)
-    year = db.Column(db.Integer, primary_key=True)
-    sss = db.Column(db.Integer)
-    si = db.Column(IntArray(60), nullable=False)
-    par = db.Column(IntArray(60), nullable=False)
-    course = db.relationship("Course", back_populates="cards")
+    course_id = Column(Integer, ForeignKey("courses.id"), primary_key=True)
+    year = Column(Integer, primary_key=True)
+    sss = Column(Integer)
+    si = Column(IntArray(60), nullable=False)
+    par = Column(IntArray(60), nullable=False)
+    course = relationship("Course", back_populates="cards")
 
     def __repr__(self):
         return '<Course Data: {} {}>'.format(self.course.name, self.year)
 
 
-class Schedule(db.Model):
+class Schedule(Base):
     __tablename__ = "schedules"
-    event_id = db.Column(db.Integer, db.ForeignKey("events.id"), primary_key=True)
-    time = db.Column(db.Time, primary_key=True)
-    text = db.Column(db.String(100), nullable=False)
-    event = db.relationship("Event", back_populates="schedule")
+    event_id = Column(Integer, ForeignKey("events.id"), primary_key=True)
+    time = Column(Time, primary_key=True)
+    text = Column(String(100), nullable=False)
+    event = relationship("Event", back_populates="schedule")
+
+    def __lt__(self, other):  # for sorting
+        return self.time < other.time
 
     def __repr__(self):
         return '<Schedule: {} {}>'.format(self.event, self.time)
 
 
-class Contact(db.Model):
+class Contact(Base):
     __tablename__ = "contacts"
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120))
-    address = db.Column(db.String(120))
-    post_code = db.Column(db.String(12))
-    phone = db.Column(db.String(20))
-    url = db.Column(db.String(120))
-    venue = db.relationship("Venue", uselist=False, back_populates="contact")
-    member = db.relationship("Member", uselist=False, back_populates="contact")
+    id = Column(Integer, primary_key=True)
+    email = Column(String(120))
+    address = Column(String(120))
+    post_code = Column(String(12))
+    phone = Column(String(20))
+    url = Column(String(120))
+    venue = relationship("Venue", uselist=False, back_populates="contact")
+    member = relationship("Member", uselist=False, back_populates="contact")
 
     def __repr__(self):
         return '<Contact: {}>'.format(self.id)
 
 
-class Player(db.Model):
+class Player(Base):
     __tablename__ = "players"
-    id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(25), nullable=False)
-    last_name = db.Column(db.String(25), nullable=False)
-    member = db.relationship('Member', uselist=False, back_populates="player")
-    events_won = db.relationship("Event",  back_populates="winner")
-    scores = db.relationship("Score",  back_populates="player")
-    handicaps = db.relationship("Handicap",  back_populates="player")
+    id = Column(Integer, primary_key=True)
+    first_name = Column(String(25), nullable=False)
+    last_name = Column(String(25), nullable=False)
+    member = relationship('Member', uselist=False, back_populates="player")
+    events_won = relationship("Event",  back_populates="winner")
+    scores = relationship("Score",  back_populates="player")
+    handicaps = relationship("Handicap", order_by="Handicap.date", back_populates="player")
 
     def full_name(self):
         return self.first_name + ' ' + self.last_name
+
+    def state_as_of(self, date):
+        state = [h for h in self.handicaps if h.date <= date]
+        if len(state) > 0:
+            return state[-1]
+        else:
+            return Handicap(player_id=self.id, status=PlayerStatus.guest, handicap=0, date=datetime.date.today())
+
+    def state_up_to(self, date):
+        state = [h for h in self.handicaps if h.date <= date]
+        if len(state) > 0:
+            return sorted(state, key=lambda s: s.date, reverse=True)
+        else:
+            return [Handicap(player_id=self.id, status=PlayerStatus.guest, handicap=0, date=datetime.date.today())]
+
+    def score_for(self, event_id):
+        scores = [s.points for s in self.scores if s.event_id == event_id]
+        if len(scores) > 0:
+            return scores[0]
+        else:
+            return 0
 
     def __repr__(self):
         return '<Player: {}>'.format(self.full_name())
 
 
-class Member(db.Model):
+class Member(Base):
     __tablename__ = "members"
-    id = db.Column(db.Integer, primary_key=True)
-    contact_id = db.Column(db.Integer, db.ForeignKey('contacts.id'), nullable=False)
-    contact = db.relationship('Contact', uselist=False, back_populates="member")
-    status = db.Column(EnumType(MemberStatus), nullable=False)
-    accepted = db.Column(db.Date)
-    resigned = db.Column(db.Date)
-    player_id = db.Column(db.Integer, db.ForeignKey('players.id'), nullable=False)
-    player = db.relationship("Player", back_populates="member")
-    proposer_id = db.Column(db.Integer, db.ForeignKey("members.id"), nullable=False)
-    proposed = db.relationship("Member", backref=db.backref("proposer", remote_side=id))
-    events_organised = db.relationship("Event",  back_populates="organiser")
+    id = Column(Integer, primary_key=True)
+    contact_id = Column(Integer, ForeignKey('contacts.id'), nullable=False)
+    contact = relationship('Contact', uselist=False, back_populates="member")
+    status = Column(EnumType(MemberStatus), nullable=False)
+    accepted = Column(Date)
+    resigned = Column(Date)
+    player_id = Column(Integer, ForeignKey('players.id'), nullable=False)
+    player = relationship("Player", back_populates="member")
+    proposer_id = Column(Integer, ForeignKey("members.id"), nullable=False)
+    proposed = relationship("Member", backref=backref("proposer", remote_side=id))
+    events_organised = relationship("Event",  back_populates="organiser")
+    bookings = relationship("Booking",  back_populates="member")
 
     def __repr__(self):
         return '<Member: {}>'.format(self.player.full_name())
 
 
-class Handicap(db.Model):
+class Handicap(Base):
     __tablename__ = "handicaps"
-    player_id = db.Column(db.Integer, db.ForeignKey("players.id"), primary_key=True)
-    date = db.Column(db.Date, primary_key=True)
-    status = db.Column(EnumType(PlayerStatus), nullable=False)
-    handicap = db.Column(db.Numeric(precision=3, scale=1))
-    player = db.relationship("Player", back_populates="handicaps")
+    player_id = Column(Integer, ForeignKey("players.id"), primary_key=True)
+    date = Column(Date, primary_key=True)
+    status = Column(EnumType(PlayerStatus), nullable=False)
+    handicap = Column(Numeric(precision=3, scale=1))
+    player = relationship("Player", back_populates="handicaps")
 
     def __repr__(self):
         return '<Handicap - Player: {}, Date: {}>'.format(self.player.full_name(), self.date)
 
 
-class Score(db.Model):
+class Score(Base):
     __tablename__ = "scores"
-    id = db.Column(db.Integer, primary_key=True)
-    event_id = db.Column(db.Integer, db.ForeignKey('events.id'), nullable=False)
-    player_id = db.Column(db.Integer, db.ForeignKey('players.id'), nullable=False)
-    position = db.Column(db.Integer, nullable=False)
-    shots = db.Column(db.Integer, nullable=False)
-    points = db.Column(db.Integer, nullable=False)
-    card = db.Column(IntArray(60))
-    player = db.relationship("Player", back_populates="scores")
-    event = db.relationship("Event", back_populates="scores")
+    id = Column(Integer, primary_key=True)
+    event_id = Column(Integer, ForeignKey('events.id'), nullable=False)
+    player_id = Column(Integer, ForeignKey('players.id'), nullable=False)
+    position = Column(Integer, nullable=False)
+    shots = Column(Integer, nullable=False)
+    points = Column(Integer, nullable=False)
+    card = Column(IntArray(60))
+    player = relationship("Player", back_populates="scores")
+    event = relationship("Event", back_populates="scores")
 
     def __repr__(self):
         return '<Score - Event: {}, Player: {}>'.format(self.event, self.player.full_name())
 
 
-db.create_all()
+class Booking(Base):
+    __tablename__ = "bookings"
+    id = Column(Integer, primary_key=True)
+    event_id = Column(Integer, ForeignKey('events.id'), nullable=False)
+    member_id = Column(Integer, ForeignKey('members.id'), nullable=False)
+    date = Column(Date, nullable=False)
+    playing = Column(Boolean, nullable=False)
+    comment = Column(String(100), nullable=True)
+    guests = relationship("Guest",  back_populates="booking")
+    event = relationship("Event", back_populates="bookings")
+    member = relationship("Member", back_populates="bookings")
+
+
+class Guest(Base):
+    __tablename__ = "guests"
+    id = Column(Integer, primary_key=True)
+    booking_id = Column(Integer, ForeignKey('bookings.id'), nullable=False)
+    name = Column(String(100), nullable=False)
+    handicap = Column(Numeric(precision=3, scale=1), nullable=False)
+    booking = relationship("Booking", back_populates="guests")
 

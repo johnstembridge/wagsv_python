@@ -14,17 +14,17 @@ class FormEnum(Enum):
         return str(self.value)
 
 
+class PlayerStatus(FormEnum):
+    guest = 0
+    member = 1
+    ex_member = 2
+
+
 class MemberStatus(FormEnum):
     full_member = 1
     overseas_member = 2
     ex_member = 3
     rip = 4
-
-
-class PlayerStatus(FormEnum):
-    guest = 0
-    member = 1
-    ex_member = 2
 
 
 class EventType(FormEnum):
@@ -39,3 +39,8 @@ class NewsItemType(FormEnum):
     event_result = 1
     handicap_update = 2
     account_update = 3
+
+
+class UserRole(FormEnum):
+    user = 1
+    admin = 2

@@ -6,7 +6,7 @@ from operator import and_
 from back_end.data_utilities import lookup, mean, first_or_default, fmt_date, in_date_range
 from back_end.table import Table
 from globals.enumerations import MemberStatus, PlayerStatus, EventType
-from models.wags_db_new import Event, Score, Course, CourseData, Trophy, Player, Venue, Handicap, Member, Contact, \
+from models.wags_db import Event, Score, Course, CourseData, Trophy, Player, Venue, Handicap, Member, Contact, \
     Schedule, Booking
 from globals.db_setup import db_session
 from sqlalchemy import text
@@ -35,6 +35,20 @@ def bookings_file_fields():
 def gen_to_list(gen):
     # force evaluation of a generator
     return [x for x in gen]
+
+
+# region admin
+def get_admin_user(key, value):
+    return get_record(admin_users_file(), key, str(value))
+
+
+def add_admin_user(user):
+    all = get_field(admin_users_file(), 'id')
+    user.set_id(len(all) + 1)
+    update_record(admin_users_file(), 'id', user.record())
+
+
+# endregion
 
 
 # region venues
@@ -78,12 +92,9 @@ def save_venue(venue_id, data):
     return venue.id
 
 
-def get_venue_url(year, url):
-    if url:
-        if url.startswith("/"):
-            url = config.url_for_old_site('{}/{}'.format(year, url[1:]))
-        else:
-            url = '//' + url
+def get_venue_url(venue):
+    if venue.contact:
+        url = '//' + venue.contact.url
     else:
         url = '/not_found'
     return url
@@ -620,23 +631,17 @@ def save_handicaps(new_table):
 # endregion
 
 
-# region admin
-def get_admin_user(key, value):
-    return get_record(admin_users_file(), key, str(value))
-
-
-def add_admin_user(user):
-    all = get_field(admin_users_file(), 'id')
-    user.set_id(len(all) + 1)
-    update_record(admin_users_file(), 'id', user.record())
-
-
-# endregion
-
-
 # region Members
 def get_member(member_id):
     return db_session.query(Member).filter_by(id=member_id).first()
+
+
+def get_member_by_email(email):
+    contact = db_session.query(Contact).filter_by(email=email).first()
+    if contact:
+        return db_session.query(Member).filter_by(contact_id = contact.id).first()
+    else:
+        return None
 
 
 def get_all_members(current=True):

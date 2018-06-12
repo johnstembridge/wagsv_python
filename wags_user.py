@@ -14,6 +14,7 @@ csrf = CSRFProtect(app)
 log_handler = logging.log_init()
 app.logger.addHandler(log_handler)
 
+from views.user.access import *
 from views.user.events import *
 from views.user.players import *
 from views.user.others import *

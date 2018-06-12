@@ -8,7 +8,7 @@ from wtforms.validators import Optional
 from back_end.data_utilities import encode_date, fmt_date, first_or_default, to_bool
 from back_end.interface import get_event, get_booking, save_booking, is_event_bookable, get_member
 from front_end.form_helpers import line_break
-from models.wags_db_new import Guest, Booking
+from models.wags_db import Guest, Booking
 
 
 class GuestForm(FlaskForm):

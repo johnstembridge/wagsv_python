@@ -8,6 +8,7 @@ class User(UserMixin):
     def __init__(self, username=None, email=None, password_hash=None):
         if type(username) is dict:
             self.id = username['id']
+            self.member_id = int(username['member_id'])
             self.username = username['username']
             self.password_hash = username['password_hash']
             self.email = username['email']

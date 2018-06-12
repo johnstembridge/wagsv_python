@@ -3,7 +3,7 @@ import unittest
 from sqlalchemy import text, create_engine
 from sqlalchemy.orm import sessionmaker
 
-from models.wags_db_new import Base, Event, Venue, Player, Member, Handicap, EnumType, CourseData
+from models.wags_db import Base, Event, Venue, Player, Member, Handicap, EnumType, CourseData
 from globals.db_setup import db_session
 from globals import config
 from back_end.interface import get_event_list

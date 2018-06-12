@@ -1,11 +1,11 @@
 from flask import request
 from flask_login import LoginManager
 from front_end import login
-from wags_admin import app
+from wags_user import app
 from globals import config
 from models.user import User
 
-role = 'admin'
+role = 'user'
 login_manager = LoginManager(app)
 login_manager.login_view = config.get('url_prefix')[role]+'/login'
 
@@ -16,7 +16,7 @@ def load_user(id):
 
 
 @app.route('/login', methods=['GET', 'POST'])
-def admin_login():
+def user_login():
     next_page = request.args.get('next')
     return login.user_login(role, next_page)
 
@@ -27,5 +27,5 @@ def user_logout():
 
 
 @app.route('/register', methods=['GET', 'POST'])
-def admin_register():
+def user_register():
     return login.user_register(role)

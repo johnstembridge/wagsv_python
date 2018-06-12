@@ -42,6 +42,10 @@ class ReportEvents:
         return render_template('user/event_details.html', form=form, render_link=render_link)
 
     @staticmethod
+    def show_all_bookings(event_id):
+        pass
+
+    @staticmethod
     def results_event(event_id):
         event_type = get_event(event_id).type
         if event_type == EventType.wags_vl_event:
