@@ -3,7 +3,7 @@ from flask_login import LoginManager
 from front_end import login
 from wags_user import app
 from globals import config
-from models.user import User
+from back_end.interface import get_user
 
 role = 'user'
 login_manager = LoginManager(app)
@@ -12,7 +12,7 @@ login_manager.login_view = config.get('url_prefix')[role]+'/login'
 
 @login_manager.user_loader
 def load_user(id):
-    return User.get(id=int(id))
+    return get_user(id=int(id))
 
 
 @app.route('/login', methods=['GET', 'POST'])

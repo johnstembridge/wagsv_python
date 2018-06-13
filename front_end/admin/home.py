@@ -7,6 +7,7 @@ from back_end.interface import get_all_years, create_events_file
 from front_end.form_helpers import set_select_field
 from front_end.admin.others import get_user_current_year
 from globals import config
+from globals.decorators import role_required
 
 login_manager = LoginManager(app)
 login_manager.login_view = config.get('url_prefix')['admin']+'/login'
@@ -15,6 +16,7 @@ login_manager.login_view = config.get('url_prefix')['admin']+'/login'
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index')
 @login_required
+@role_required('admin')
 def index():
     current_year = get_user_current_year()
     return home_main(current_year)

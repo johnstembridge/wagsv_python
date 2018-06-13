@@ -6,8 +6,9 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 
 from globals.config import url_for
-from models.user import User
-from back_end.interface import get_member_by_email
+from globals.enumerations import UserRole, MemberStatus
+from models.wags_db import User, Role
+from back_end.interface import get_member_by_email, get_user, save_user
 
 
 class LoginForm(FlaskForm):
@@ -22,14 +23,17 @@ class LoginForm(FlaskForm):
 
 def user_login(app, next_page):
     if current_user.is_authenticated:
-        return redirect(app, qualify_url(app, next_page))
+        return redirect(qualify_url(app, next_page))
     form = LoginForm()
     if form.is_submitted():
         if form.validate_on_submit():
-            user = User.get(username=form.username.data)
+            user = get_user(user_name=form.username.data)
             if user is None or not user.check_password(form.password.data):
                 flash('Invalid username or password', 'danger')
                 return render_template('{}/login.html'.format(app), title='Sign In', form=form)
+            # if app not in [role.role.name for role in user.roles]:
+            #     flash('Sorry, you do not have {} access'.format(app))
+            #     return redirect(qualify_url(app))
             login_user(user, remember=form.remember_me.data)
             if not next_page or url_parse(next_page).netloc != '':
                 next_page = qualify_url(app)
@@ -51,14 +55,9 @@ class RegistrationForm(FlaskForm):
     submit = SubmitField('Register')
 
     def validate_username(self, username):
-        user = User.get(username=username.data)
+        user = get_user(user_name=username.data)
         if user is not None:
             raise ValidationError('Please use a different username.')
-
-    def validate_email(self, email):
-        user = User.get(email=email.data)
-        if user is not None:
-            raise ValidationError('Please use a different email address.')
 
 
 def user_register(app):
@@ -69,18 +68,26 @@ def user_register(app):
         if form.validate_on_submit():
             member = get_member_by_email(form.email.data)
             if member:
-                user = User(username=form.username.data, email=form.email.data)
+                if member.status not in [MemberStatus.full_member, MemberStatus.overseas_member]:
+                    flash('Sorry, you are not a current member')
+                    return redirect(qualify_url(app))
+                user = User(user_name=form.username.data, member_id=member.id)
                 user.set_password(form.password.data)
-                User.add(user)
-                flash('Congratulations, you are now a registered user!')
+                if app == 'user':
+                    role = Role(role=UserRole.user)
+                if app == 'admin':
+                    role = Role(role=UserRole.admin)
+                user.roles.append(role)
+                save_user(user)
+                flash('Congratulations, you are now a registered {}!'.format(app))
                 return redirect(url_for(app, 'user_login'))
             else:
-                flash('Unknown member - please give your WAGS home contact email address')
+                flash('Cannot find your membership - please give your WAGS contact email address')
     return render_template('{}/register.html'.format(app), title='Register', form=form)
 
 
 def qualify_url(app, page=None):
-    return (url_for(app, 'index') + page or '').replace("//", "/")
+    return (url_for(app, 'index') + (page or '')).replace("//", "/")
 
 
 def user_logout(app):

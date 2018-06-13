@@ -4,7 +4,7 @@ from flask_wtf import CSRFProtect
 
 from globals import logging
 from globals.db_setup import init_db
-from front_end.admin.others import page_not_found, internal_error
+from front_end.admin.others import page_not_found, internal_error, unauthorised
 
 app = Flask(__name__)
 db = init_db(app)
@@ -21,6 +21,11 @@ from views.admin.events import *
 from views.admin.members import *
 from views.admin.news import *
 from views.admin.venues import *
+
+
+@app.errorhandler(401)
+def not_found(e):
+    return unauthorised(e)
 
 
 @app.errorhandler(404)

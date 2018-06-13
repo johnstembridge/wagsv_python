@@ -7,7 +7,7 @@ from back_end.data_utilities import lookup, mean, first_or_default, fmt_date, in
 from back_end.table import Table
 from globals.enumerations import MemberStatus, PlayerStatus, EventType
 from models.wags_db import Event, Score, Course, CourseData, Trophy, Player, Venue, Handicap, Member, Contact, \
-    Schedule, Booking
+    Schedule, Booking, User
 from globals.db_setup import db_session
 from sqlalchemy import text
 
@@ -37,15 +37,19 @@ def gen_to_list(gen):
     return [x for x in gen]
 
 
-# region admin
-def get_admin_user(key, value):
-    return get_record(admin_users_file(), key, str(value))
+# region user
+
+def get_user(id=None, user_name=None):
+    if id:
+        return db_session.query(User).filter(User.id == id).first()
+    if user_name:
+        return db_session.query(User).filter(User.user_name == user_name).first()
 
 
-def add_admin_user(user):
-    all = get_field(admin_users_file(), 'id')
-    user.set_id(len(all) + 1)
-    update_record(admin_users_file(), 'id', user.record())
+def save_user(user):
+    if not user.id:
+        db_session.add(user)
+    db_session.commit()
 
 
 # endregion
@@ -639,7 +643,7 @@ def get_member(member_id):
 def get_member_by_email(email):
     contact = db_session.query(Contact).filter_by(email=email).first()
     if contact:
-        return db_session.query(Member).filter_by(contact_id = contact.id).first()
+        return db_session.query(Member).filter_by(contact_id=contact.id).first()
     else:
         return None
 

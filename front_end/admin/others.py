@@ -2,6 +2,10 @@ import datetime
 from flask import render_template, session
 
 
+def unauthorised(e):
+    return render_template('admin/401.html'), 404
+
+
 def page_not_found(e):
     return render_template('admin/404.html'), 404
 

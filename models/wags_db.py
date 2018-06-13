@@ -1,9 +1,11 @@
+from flask_login import UserMixin
 from sqlalchemy import Column, Integer, Date, Time, Numeric, String, ForeignKey, types, Boolean
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from back_end.data_utilities import fmt_date
-from globals.enumerations import EventType, PlayerStatus, MemberStatus
+from globals.enumerations import EventType, PlayerStatus, MemberStatus, UserRole
 from globals import config
 
 import datetime
@@ -237,6 +239,7 @@ class Member(Base):
     proposed = relationship("Member", backref=backref("proposer", remote_side=id))
     events_organised = relationship("Event",  back_populates="organiser")
     bookings = relationship("Booking",  back_populates="member")
+    user = relationship('User', uselist=False, back_populates="member")
 
     def __repr__(self):
         return '<Member: {}>'.format(self.player.full_name())
@@ -291,3 +294,31 @@ class Guest(Base):
     handicap = Column(Numeric(precision=3, scale=1), nullable=False)
     booking = relationship("Booking", back_populates="guests")
 
+
+class User(Base, UserMixin):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True)
+    member_id = Column(Integer, ForeignKey('members.id'), nullable=False)
+    user_name = Column(String(25), nullable=False)
+    password = Column(String(100), nullable=False)
+    roles = relationship("Role",  back_populates="user")
+    member = relationship('Member', back_populates="user")
+
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
+
+    def __repr__(self):
+        return '<User {}>'.format(self.user_name)
+
+
+class Role(Base):
+    __tablename__ = "roles"
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False, primary_key=True)
+    role = Column(EnumType(UserRole), nullable=False, primary_key=True)
+    user = relationship("User", back_populates="roles")
+
+    def __repr__(self):
+        return '<Role {}>'.format(self.role.name)
