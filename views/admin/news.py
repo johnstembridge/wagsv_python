@@ -16,4 +16,5 @@ def news_main():
 @login_required
 @role_required('admin')
 def edit_news(news_date):
+    news_date = news_date.replace('-', '/')
     return MaintainNews.edit_news(news_date)

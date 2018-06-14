@@ -21,7 +21,7 @@ class MaintainNews:
 
     @staticmethod
     def edit_news(news_date):
-        if news_date == 'None':
+        if news_date == '0':
             return redirect(url_for_admin('news_main'))
         form = NewsDayForm()
         if form.is_submitted():

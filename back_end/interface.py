@@ -439,12 +439,28 @@ def is_event_bookable(event):
         # else 0
 
 
-def get_last_event(year):
-    past = [e for e in get_events_for_year(year) if
-            e.type == EventType.wags_vl_event and e.date <= datetime.date.today()]
+def get_last_event(year=None):
+    today = datetime.date.today()
+    if not year:
+        year = today.year
+    past = [e for e in get_events_for_year(year) if e.type == EventType.wags_vl_event and e.date <= today]
     if len(past) > 0:
-        return past[-1]
+        if past[-1].tour_event:
+            return past[-1].tour_event
+        else:
+            return past[-1]
     return get_last_event(year - 1)
+
+
+def get_next_event(year=None):
+    today = datetime.date.today()
+    if not year:
+        year = today.year
+    future = [e for e in get_events_for_year(year) if e.type == EventType.wags_vl_event and e.date >= today]
+    for event in future:
+        if not event.tour_event:
+            return event
+    return None
 
 
 def get_events_in(date_range):

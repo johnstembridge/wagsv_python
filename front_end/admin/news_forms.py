@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, HiddenField, SelectField, FieldList, FormField, DateField, TextAreaField
 from back_end.data_utilities import parse_date, encode_date
-from back_end.interface import get_event
+from back_end.interface import get_last_event, get_next_event
 from front_end.form_helpers import set_select_field
 from globals.enumerations import NewsItemType
 from models.news import News, NewsDay, NewsItem
@@ -42,7 +42,6 @@ class NewsDayForm(FlaskForm):
             news_day = NewsDay(date=datetime.date.today())
             self.save.label.text = 'Publish'
         else:
-            news_date = news_date.replace('-', '/')
             news_day = News().get_news_day(news_date)
             self.save.label.text = 'Save'
         self.date.data = parse_date(news_day.date)
@@ -76,20 +75,19 @@ class NewsDayForm(FlaskForm):
 
     def add_news_item(self):
         item_type = self.item_to_add.data
-        year = datetime.date.today().year
         if item_type == NewsItemType.account_update:
             item = NewsItem(text='Accounts updated in members area', link='', title='')
         elif item_type == NewsItemType.handicap_update:
             item = NewsItem(text='Handicaps updated', link='/wagsuser/handicaps', title='show current handicaps')
         elif item_type == NewsItemType.event_result:
-            event = get_event()
-            item = NewsItem(text='Results for {} updated'.format(event['venue']),
-                            link='/wagsuser/events/{}/{}/results?event_type=1'.format(year, event['num']),
+            event = get_last_event()
+            item = NewsItem(text='Results for {} updated'.format(event.venue.name),
+                            link='/wagsuser/events/{}/results'.format(event.id),
                             title='show results')
         elif item_type == NewsItemType.open_booking:
-            event = get_event()
-            item = NewsItem(text='Booking now open for {} {}'.format(event['venue'], encode_date(event['date'])),
-                            link='/wagsuser/events/{}/{}/book'.format(year, event['num']),
+            event = get_next_event()
+            item = NewsItem(text='Booking now open for {} {}'.format(event.venue.name, encode_date(event.date)),
+                            link='/wagsuser/events/{}/book'.format(event.id),
                             title='book now')
         else:
             return
