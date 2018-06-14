@@ -45,7 +45,7 @@ def show_event(event_id):
 @app.route('/events/<event_id>/show_all', methods=['GET', 'POST'])
 @login_required
 def show_all_bookings(event_id):
-    return ReportEvents.show_all_bookings(event_id)
+    return ReportEvents.show_all_bookings(int(event_id))
 
 
 @app.route('/events/<event_id>/results', methods=['GET', 'POST'])

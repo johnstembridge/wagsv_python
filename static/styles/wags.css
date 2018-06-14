@@ -6,7 +6,6 @@ table, caption, tbody, tfoot, thead, tr, th, td {
   font-size: 100%;
   font: inherit;
   vertical-align: middle;
-  line-height: normal;
 }
 table {
   border-collapse: collapse;
