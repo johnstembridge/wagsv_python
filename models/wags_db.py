@@ -202,6 +202,7 @@ class Player(Base):
 
     def state_as_of(self, date):
         state = [h for h in self.handicaps if h.date <= date]
+        state.sort(key = lambda s: s.date)
         if len(state) > 0:
             return state[-1]
         else:
@@ -209,17 +210,18 @@ class Player(Base):
 
     def state_up_to(self, date):
         state = [h for h in self.handicaps if h.date <= date]
+        state.sort(key=lambda s: s.date)
         if len(state) > 0:
             return sorted(state, key=lambda s: s.date, reverse=True)
         else:
             return [Handicap(player_id=self.id, status=PlayerStatus.guest, handicap=0, date=datetime.date.today())]
 
     def score_for(self, event_id):
-        scores = [s.points for s in self.scores if s.event_id == event_id]
+        scores = [s for s in self.scores if s.event_id == event_id]
         if len(scores) > 0:
             return scores[0]
         else:
-            return 0
+            return Score(event_id=event_id, points=0, shots=0, position=0, player=self)
 
     def __repr__(self):
         return '<Player: {}>'.format(self.full_name())

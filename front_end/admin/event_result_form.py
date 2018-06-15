@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField, HiddenField
 
-from back_end.interface import get_event, get_results, save_event_result, is_event_result_editable, add_player
+from back_end.interface import get_event, save_event_result, is_event_result_editable, sorted_players_for_event
 from back_end.calc import calc_event_positions
 from back_end.table import Table
 from globals.enumerations import PlayerStatus
@@ -33,20 +33,20 @@ class EventResultsForm(FlaskForm):
         event = get_event(event_id)
         self.event_name.data = event.full_name()
         self.editable.data = is_event_result_editable(event)
-        for player in get_results(event):
-            if player['player_id'] == 0:
-                player['player_id'] = (add_player(player['player'], player['handicap'], player['status'], event.date)).id
+        for player in sorted_players_for_event(event):
             item_form = EventResultItemForm()
-            guest = " (guest)" if (player['status'] == PlayerStatus.guest) else ""
-            item_form.player = player['player'] + guest
-            item_form.handicap = player['handicap']
-            item_form.handicap_return = player['handicap']
-            item_form.status_return = player['status'].value
-            item_form.points = player['points']
-            item_form.strokes = player['strokes']
-            item_form.strokes_return = player['strokes']
-            item_form.position = player['position']
-            item_form.player_id = player['player_id']
+            state = player.state_as_of(event.date)
+            guest = " (guest)" if (state.status == PlayerStatus.guest) else ""
+            item_form.player = player.full_name() + guest
+            item_form.handicap = state.handicap
+            item_form.handicap_return = state.handicap
+            score = player.score_for(event.id)
+            item_form.points = score.points
+            item_form.strokes = score.shots
+            item_form.strokes_return = score.shots
+            item_form.position = score.position
+            item_form.player_id = player.id
+            item_form.status_return = state.status.value
             self.scores.append_entry(item_form)
 
     def save_event_results(self, event_id):

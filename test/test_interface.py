@@ -4,7 +4,7 @@ import datetime
 from back_end.file_access import get_record
 from globals.enumerations import PlayerStatus
 from back_end.interface import get_event, get_handicaps, get_players_as_of, get_event_scores, \
-    get_booked_players, save_event_result, get_course_data, get_player_handicap, get_event_card, get_venue, \
+    get_players_for_event, save_event_result, get_course_data, get_player_handicap, get_event_card, get_venue, \
     get_tour_events, get_last_event, get_player_name, get_player_names_as_dict, get_member, \
     get_event_cards, get_results_for_edit, get_results_by_year_and_name, get_scores, get_current_members_as_players, get_tour_scores, \
     get_tour_event_list_from_scores, get_member_select_choices, get_events_in, get_trophy, get_all_trophy_history, \
@@ -109,7 +109,7 @@ class TestInterface(unittest.TestCase):
         self.assertTrue(len(tab.data) > 0)
 
     def test_get_booked_players(self):
-        res = get_booked_players(348)
+        res = get_players_for_event(348)
         self.assertTrue(len(res) > 0)
 
     def test_save_event_scores(self):

@@ -89,7 +89,7 @@ class MaintainEvents:
         form = EventHandicapsForm()
         if form.is_submitted():
             if form.save_handicaps.data:
-                if form.save_event_handicaps():
+                if form.save_event_handicaps(event_id):
                     flash('Handicaps saved', 'success')
                     return redirect(url_for_admin('handicaps_event', event_id=event_id))
         else:

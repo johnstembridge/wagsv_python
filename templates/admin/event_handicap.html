@@ -4,7 +4,7 @@
 {% block page_content %}
 <div class="page-header">
     <h1>{{ form.event_name.data }}</h1>
-    <h2>Handicaps</h2>
+    <h2>Handicaps from {{ form.new_date.data }}</h2>
 </div>
 <form method="POST">
     {{ form.csrf_token }}

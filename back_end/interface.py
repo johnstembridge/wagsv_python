@@ -322,38 +322,32 @@ def insert_venue_info(event):
     pass
 
 
-def get_booked_players(event, for_edit_hcap=False):
-    year = event.date.year
-    event_dates = [event.date for event in get_events_for_year(year)]
-    event_num = lookup(event_dates, event.date, index_origin=1)
-    file = bookings_file(year, event_num)
-    if not os.path.isfile(file):
-        file = bookings_file(year, 0)
-    header, bookings = get_records(file, 'playing', '1')
-    res = {}
-    state_date = datetime.date.today() if for_edit_hcap else event.date
-    all_players = get_all_players()
-    all_player_names = [p.full_name() for p in all_players]
-    for b in bookings:
-        booking = dict(zip(header, b))
-        number = int(booking['number'])
-        if number > 0:
-            name, i = normalise_name(all_player_names, booking['name'])
-            res[name] = all_players[i].state_as_of(state_date)
-            count = 1
-            while count < number:
-                guest_name, i = normalise_name(all_player_names, booking['guest' + str(count)])
-                guest_handicap = booking['guest' + str(count) + '_hcap']
-                if guest_handicap == '':
-                    guest_handicap = '28'
-                if i >= 0:
-                    res[guest_name] = all_players[i].state_as_of(state_date)
-                else:
-                    state = Handicap(player_id=0, status=PlayerStatus.guest, handicap=int(guest_handicap),
-                                     date=datetime.datetime.today)
-                    res[guest_name] = state
-                count += 1
-    return res
+def get_players_for_event(event):
+    if event.tour_event_id:
+        event = event.tour_event
+    players = []
+    for member in event.bookings:
+        players.append(member.member.player)
+        for guest in member.guests:
+            p = get_player_by_name(guest.name)
+            if p:
+                state = p.state_as_of(event.date)
+                if state.handicap != guest.handicap:
+                    p.handicaps.append(Handicap(date=event.date, status=PlayerStatus.guest, handicap=guest.handicap))
+            else:
+                p = add_player(guest.name, guest.handicap, PlayerStatus.guest, event.date)
+            players.append(p)
+    return players
+
+
+def sorted_players_for_event(event):
+    players = get_players_for_event(event)
+
+    def getKey(player):
+        score = player.score_for(event.id)
+        return score.position if score.points > 0 else 99, player.last_name, player.first_name
+
+    return sorted(players, key=getKey)
 
 
 def normalise_name(all_names, name):
@@ -384,7 +378,8 @@ def get_results(event, for_edit_hcap=False):
             'card:': score.card
         }
         results.append(x)
-    booked = get_booked_players(event, for_edit_hcap)
+    bookings = event.bookings
+    booked = get_players_for_event(event, for_edit_hcap)
     for missing in list(set(booked.keys()).difference(set(players))):
         state = booked[missing]
         x = {
@@ -433,19 +428,19 @@ def is_event_bookable(event):
     else:
         in_range = False
     event_type = event.type
+    if event.tour_event_id or event_type == EventType.non_event:
+        return -1
     override = config.get('override')
-    return override or (in_range and event_type == EventType.wags_vl_event)
-        # else -1 if (event_type != EventType.wags_vl_event or (True if not booking_start else datetime.date.today() < booking_start)) \
-        # else 0
+    return 1 if override or in_range else 0
 
 
-def get_last_event(year=None):
+def get_last_event(year=None, include_tours=False):
     today = datetime.date.today()
     if not year:
         year = today.year
     past = [e for e in get_events_for_year(year) if e.type == EventType.wags_vl_event and e.date <= today]
     if len(past) > 0:
-        if past[-1].tour_event:
+        if include_tours and past[-1].tour_event:
             return past[-1].tour_event
         else:
             return past[-1]
@@ -579,6 +574,16 @@ def get_player(player_id):
     return db_session.query(Player).filter(Player.id == player_id).first()
 
 
+def get_player_by_name(player_name):
+    all_players = get_all_players()
+    all_player_names = [p.full_name() for p in all_players]
+    name, i = normalise_name(all_player_names, player_name)
+    if i >= 0:
+        return all_players[i]
+    else:
+        return None
+
+
 def get_player_names_as_dict(player_ids):
     ids = '(' + (','.join([str(id) for id in player_ids])) + ')'
     s = text("select * from players where id in {}".format(ids))
@@ -623,7 +628,7 @@ def add_player(name, hcap, status, date):
     player = Player(first_name=first, last_name=last)
     player.handicaps.append(Handicap(date=date, handicap=hcap, status=status))
     db_session.add(player)
-    db_session.commit()
+    # db_session.commit()
     return player
 
 
@@ -852,6 +857,10 @@ def create_bookings_file(year, event_id):
 
 def get_booking(event_id, member_id):
     return db_session.query(Booking).filter_by(event_id=event_id, member_id=member_id).first()
+
+
+def get_all_bookings(event_id):
+    return db_session.query(Booking).filter_by(event_id=event_id)
 
 
 def save_booking(booking):
