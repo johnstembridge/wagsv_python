@@ -34,7 +34,7 @@
                     text='View/Edit event'
                 )|safe }}
             </td>
-            {%if item.event_type.data != EventType.non_event.value and item.result.data %}
+            {%if item.event_type.data == EventType.wags_vl_event.value and item.result.data %}
                 <td align="center">
                     {{ render_link(
                         url=url_for('results_event', event_id=item.num.data, event_type=item.event_type.data),

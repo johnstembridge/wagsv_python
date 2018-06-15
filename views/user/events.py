@@ -25,7 +25,7 @@ def events():
 @app.route('/events/<year>', methods=['GET', 'POST'])
 @login_required
 def list_events(year):
-    return ReportEvents.list_events(year)
+    return ReportEvents.list_events(int(year))
 
 
 @app.route('/events/<event_id>/book', methods=['GET', 'POST'])

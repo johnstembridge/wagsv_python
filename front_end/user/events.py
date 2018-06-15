@@ -2,6 +2,7 @@ import datetime
 
 from flask import render_template, redirect, flash
 
+from front_end.user.event_bookings_form import EventBookingsForm
 from front_end.user.event_details_form import EventDetailsForm
 from .event_card_form import EventCardForm
 from .event_list_form import EventListForm, EventSelectForm
@@ -18,8 +19,8 @@ class ReportEvents:
     @staticmethod
     def list_events(year):
         form = EventListForm()
-        form.populate_event_list(int(year))
-        return render_template('user/event_list.html', form=form, year=int(year), render_link=render_link)
+        form.populate_event_list(year)
+        return render_template('user/event_list.html', form=form, year=year, render_link=render_link)
 
     @staticmethod
     def select_event():
@@ -43,7 +44,9 @@ class ReportEvents:
 
     @staticmethod
     def show_all_bookings(event_id):
-        pass
+        form = EventBookingsForm()
+        form.populate_event_bookings(event_id)
+        return render_template('user/event_bookings.html', form=form, render_link=render_link)
 
     @staticmethod
     def results_event(event_id):

@@ -1,0 +1,32 @@
+{% extends "user/report_base.html" %}
+{% block title %}{{ form.event_name.data }} {% endblock %}
+{% block content %}
+{{ form.csrf_token }}
+<h2 class="table-title">{{ form.event_name.data }}</h2>
+<h3 class="table-title">All bookings {{ form.sub_title.data }}</h3>
+<table class="list">
+    <tr>
+        <th align="left">Date</th>
+        <th align="left">Name</th>
+        <th>Number</th>
+        <th align="left">Guests</th>
+        <th align="left">Comment</th>
+    </tr>
+    <tr><td colspan="5"><hr class="bold"/></td></tr>
+    {% for item in form.booking_list %}
+    <tr>
+        <td>{{ item.date.data }}</td>
+        <td>{{ item.member_name.data }}</td>
+        <td align="center">{{ item.number.data }}</td>
+        <td>{{ item.guests.data }}</td>
+        <td>{{ item.comment.data }}</td>
+    </tr>
+    {% endfor %}
+    <tr>
+        <td></td>
+        <td><b>Total</b></td>
+        <td align="center">{{ form.total.data }}</td>
+        <td></td>
+    <tr><td colspan="5"><hr class="bold"/></td></tr>
+</table>
+{% endblock %}

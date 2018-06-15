@@ -314,14 +314,6 @@ def save_event_score(event_id, player_id, position, card, shots, points):
     db_session.commit()
 
 
-def save_event(event_id, data):
-    pass
-
-
-def insert_venue_info(event):
-    pass
-
-
 def get_players_for_event(event):
     if event.tour_event_id:
         event = event.tour_event
