@@ -11,7 +11,6 @@ from .event_handicap_form import EventHandicapsForm
 from .event_list_form import EventListForm
 from .event_result_form import EventResultsForm
 from .handicap_history_form import HandicapHistoryForm
-from .tour_result_form import TourResultsForm
 from globals.enumerations import EventType
 from globals.config import url_for_admin
 from globals import config
@@ -54,17 +53,6 @@ class MaintainEvents:
             return render_template('admin/non_event_details.html', form=form, event_id=event)
 
     @staticmethod
-    def results_event(event_id, event_type=None):
-        if event_type:
-            event_type = EventType(int(event_type))
-        else:
-            event_type = EventType.wags_vl_event
-        if event_type == EventType.wags_vl_event:
-            return MaintainEvents.results_vl_event(event_id)
-        if event_type == EventType.wags_tour:
-            return MaintainEvents.results_tour_event(event_id)
-
-    @staticmethod
     def results_vl_event(event_id):
         form = EventResultsForm()
         if form.is_submitted():
@@ -77,12 +65,6 @@ class MaintainEvents:
         else:
             form.populate_event_results(event_id)
         return render_template('admin/event_result.html', form=form, event=event_id, render_link=render_link)
-
-    @staticmethod
-    def results_tour_event(event_id):
-        form = TourResultsForm()
-        form.populate_tour_results(event_id)
-        return render_template('admin/tour_result.html', form=form, event=event_id, render_link=render_link)
 
     @staticmethod
     def handicaps_event(event_id):

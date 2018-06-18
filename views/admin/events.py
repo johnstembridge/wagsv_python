@@ -36,8 +36,7 @@ def edit_event(event_id):
 @login_required
 @role_required('admin')
 def results_event(event_id):
-    event_type = request.args.get('event_type')
-    return MaintainEvents.results_event(event_id, event_type)
+    return MaintainEvents.results_vl_event(int(event_id))
 
 
 @app.route('/events/<event_id>/<player_id>/card', methods=['GET', 'POST'])

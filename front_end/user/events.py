@@ -11,7 +11,7 @@ from .tour_result_form import TourResultsForm
 from front_end.form_helpers import render_link
 from back_end.interface import get_event
 from globals.enumerations import EventType
-from globals.config import url_for_old_site, url_for_old_service, url_for_user
+from globals.config import url_for_old_site, url_for_user
 
 
 class ReportEvents:

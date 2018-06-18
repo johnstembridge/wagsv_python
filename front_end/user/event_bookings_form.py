@@ -1,13 +1,8 @@
 import datetime
 from flask_wtf import FlaskForm
-from wtforms import StringField, FieldList, FormField, HiddenField, SelectField, SubmitField
-from wtforms.fields.html5 import DateField
-from back_end.data_utilities import encode_date_short, fmt_date
-from front_end.form_helpers import set_select_field_new
-from globals.config import url_for_user
-from globals.enumerations import EventType
-from back_end.interface import get_event_list, get_venue_url, get_event_select_list, is_event_bookable, \
-    get_events_for_year, get_event
+from wtforms import StringField, FieldList, FormField
+from back_end.data_utilities import fmt_date
+from back_end.interface import get_event
 
 
 class BookingItemForm(FlaskForm):
