@@ -52,7 +52,7 @@
         <tr>
             <td>{{ form.organiser.label }}</td>
             <td>{{ render_link(
-                    url=url_for('show_contact', member_id=form.organiser_id.data),
+                    url=url_for('show_contact_details', member_id=form.organiser_id.data),
                     text=form.organiser.data
                 )|safe }}
             </td>

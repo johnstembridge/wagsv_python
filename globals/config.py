@@ -23,7 +23,7 @@ def url_for_user(endpoint, **values):
     return url_for('user', endpoint, **values)
 
 
-def url_for_old_site(end):
+def url_for_wags_site(end):
     end = end.replace(" ", "%20")
     return get('locations')['base_url'] + end
 

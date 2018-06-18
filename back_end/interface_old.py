@@ -159,7 +159,7 @@ def get_new_venue_id():
 def get_venue_url(year, url):
     if url:
         if url.startswith("/"):
-            url = config.url_for_old_site('{}/{}'.format(year, url[1:]))
+            url = config.url_for_wags_site('{}/{}'.format(year, url[1:]))
         else:
             url = '//' + url
     else:
@@ -941,7 +941,7 @@ def get_trophy_url(event):
     if trophy['id']:
         return config.url_for_user('trophy', trophy=trophy['id'])
     trophy = event.lower().replace(" ", "_").replace("-", "")
-    url = config.url_for_old_site("history/trophies/")
+    url = config.url_for_wags_site("history/trophies/")
     return url + trophy + '.htm'
 
 

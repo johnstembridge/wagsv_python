@@ -1,0 +1,35 @@
+{% extends "user/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>{{ form.first_name.data }} {{ form.last_name.data }} - Personal Details</h1>
+</div>
+<form>
+    {{ form.csrf_token }}
+    {{ form.hidden_tag() }}
+    <hr/>
+    <table width="100%">
+        <tr>
+            <td>{{ form.first_name.label }}</td><td>{{ form.first_name.data }}</td>
+            <td  align=center rowspan=6><img src={{ form.mugshot.data }} width=107  alt="Mugshot"></td>
+        </tr>
+        <tr>
+            <td>{{ form.last_name.label }}</td><td>{{ form.last_name.data }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.email.label }}</td><td>{{ form.email.data }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.address.label }}</td><td>{{ form.address.data }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.post_code.label }}</td><td>{{ form.post_code.data }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.phone.label }}</td><td>{{ form.phone.data }}</td>
+        </tr>
+    </table>
+    <hr/>
+</form>
+{% endblock %}

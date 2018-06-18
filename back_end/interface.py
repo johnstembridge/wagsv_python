@@ -744,6 +744,18 @@ def save_member(member_id, data):
     db_session.commit()
 
 
+def save_member_details(member_id, data):
+    member = get_member(member_id)
+    player = member.player
+    contact = member.contact
+    player.first_name = data['first_name']
+    player.last_name = data['last_name']
+    contact.email=data['email']
+    contact.address=data['address']
+    contact.post_code=data['post_code']
+    contact.phone=data['phone']
+    db_session.commit()
+
 # endregion
 
 

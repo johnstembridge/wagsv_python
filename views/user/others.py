@@ -1,4 +1,4 @@
-from wags_user import app
+from wags_user import app, current_user
 from front_end.user.handicaps import Handicaps
 from front_end.user.trophy import Trophy
 from front_end.user.vl import Vl
@@ -35,9 +35,20 @@ def trophy(trophy_id):
 # endregion
 
 
+@app.route('/members', methods=['GET', 'POST'])
+def select_member():
+    return Members.select()
+
+
+@app.route('/members/current', methods=['GET', 'POST'])
+def edit_contact_details():
+    member_id = current_user.member_id
+    return Members.contact(int(member_id), edit=True)
+
+
 @app.route('/members/<member_id>', methods=['GET', 'POST'])
-def show_contact(member_id):
-    return Members.contact_show(int(member_id))
+def show_contact_details(member_id):
+    return Members.contact(int(member_id), edit=False)
 
 
 

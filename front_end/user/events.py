@@ -11,7 +11,7 @@ from .tour_result_form import TourResultsForm
 from front_end.form_helpers import render_link
 from back_end.interface import get_event
 from globals.enumerations import EventType
-from globals.config import url_for_old_site, url_for_user
+from globals.config import url_for_wags_site, url_for_user
 
 
 class ReportEvents:
@@ -61,7 +61,7 @@ class ReportEvents:
         date = get_event(event_id).date
         year = date.year
         file = 'rp{}.htm'.format(date.strftime('%y%m%d'))
-        return redirect(url_for_old_site('{}/{}'.format(year, file)))
+        return redirect(url_for_wags_site('{}/{}'.format(year, file)))
 
     @staticmethod
     def results_vl_event(event_id):

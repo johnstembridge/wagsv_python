@@ -90,7 +90,6 @@ class EventDetailsForm(FlaskForm):
             item_form.handicap = guest.handicap
             self.guests.append_entry(item_form)
             count += 1
-        pass
 
     def save_event(self, event_id, member_id):
         errors = self.errors
