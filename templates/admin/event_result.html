@@ -30,7 +30,10 @@
             <td>{{ item.strokes.data }}</td>
             {%if form.editable.data %}
                 <td>{{ item.points(size=8, type="number", min="0", max="50") }}</td>
-                <td align="center">
+            {% else %}
+                <td>{{ item.points.data }}</td>
+            {% endif %}
+            <td align="center">
                     {{ render_link(
                         url=url_for(
                             'card_event_player',
@@ -44,9 +47,7 @@
                         text='Edit/show card for ' + item.player.data
                     )|safe }}
                 </td>
-            {% else %}
-                <td>{{ item.points.data }}</td>
-            {% endif %}
+
             {%if form.editable.data %}
                 <td>{{ item.player_id }}</td>
                 <td>{{ item.strokes_return }}</td>

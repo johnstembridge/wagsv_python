@@ -51,13 +51,20 @@
                     {% endfor %}
                     </tbody>
                 </table>
-            </td>
+         {%if form.editable.data %}
+                <table>
+                    <tr><td>&nbsp;</td></tr>
+                    <tr>
+                        <td>{{ form.select_course }}</td><td>&nbsp;{{ form.add_course() }}</td><td>&nbsp;{{ form.remove_course() }}</td>
+                    </tr>
+                </table>
+                {% endif %}
         </tr>
     </table>
     <hr/>
     {%if form.editable.data %}
-        {{ form.save(class="btn btn-primary") }}
-        {{ form.add_course(class="btn btn-primary") }}
+        <p>{{ form.new_course() }}
+        <p>{{ form.save(class="btn btn-primary") }}
     {% endif %}
 </form>
 {% endblock %}

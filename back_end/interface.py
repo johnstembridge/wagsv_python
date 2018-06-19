@@ -78,20 +78,9 @@ def get_venue(venue_id):
         return Venue()
 
 
-def save_venue(venue_id, data):
-    if venue_id > 0:
-        venue = get_venue(venue_id)
-    else:
-        venue = Venue()
+def save_venue(venue):
+    if venue.id == 0:
         db_session.add(venue)
-    venue.name = data['name']
-    venue.directions = data['directions']
-    if not venue.contact:
-        venue.contact = Contact()
-    venue.contact.phone = data['phone']
-    venue.contact.address = data['address']
-    venue.contact.post_code = data['post_code']
-    venue.contact.url = data['url']
     db_session.commit()
     return venue.id
 
@@ -118,7 +107,11 @@ def create_events_file(year):
 
 
 def get_event(event_id):
-    return db_session.query(Event).filter_by(id=event_id).first() or Event(id=0, date=datetime.datetime.now().date())
+    return db_session.query(Event).filter_by(id=event_id).first() or Event(id=0, date=datetime.date.today())
+
+
+def get_event_for_course_and_date(date, course_id):
+    return db_session.query(Event).filter_by(date=date, course_id=course_id).first() or Event(date=date, course_id=course_id)
 
 
 def get_all_events():
@@ -224,15 +217,14 @@ def save_event_details(event_id, details):
                 item = Schedule(event_id=event_id, time=row['time'], text=row['text'])
             schedule.append(item)
         event.schedule = sorted(schedule)
-        db_session.commit()
 
     if event_type == EventType.wags_tour:
         tour_events = []
         all_courses = get_all_courses()
         all_venues = get_all_venues()
         for row in details['tour_schedule']:
-            course_id = [c.id for c in all_courses.values() if c.name == row['course']][0]
-            venue_id = first_or_default([v.id for v in all_venues.values() if v.name == row['course']], None)
+            course_id = first_or_default([c.id for c in all_courses.values() if c.name.lower() == row['course'].lower()], None)
+            venue_id = first_or_default([v.id for v in all_venues.values() if v.name.lower() == row['course'].lower()], None)
             if not venue_id:
                 venue_id = all_courses[course_id].venue_id
             trophy_id = None
@@ -242,16 +234,14 @@ def save_event_details(event_id, details):
                 item.venue_id = venue_id
                 item.trophy_id = trophy_id
             else:
-                item = Event(date=row['date'],
-                             type=EventType.wags_vl_event,
-                             tour_event_id=event_id,
-                             course_id=course_id,
-                             venue_id=venue_id,
-                             trophy_id=trophy_id
-                             )
+                item = get_event_for_course_and_date(row['date'], course_id)
+                item.type = EventType.wags_vl_event
+                item.tour_event_id = event_id
+                item.venue_id = venue_id
+                item.trophy_id = trophy_id
             tour_events.append(item)
         event.tour_events = tour_events
-        db_session.commit()
+    db_session.commit()
     return event.id
 
 
@@ -316,19 +306,23 @@ def save_event_score(event_id, player_id, position, card, shots, points):
 
 def get_players_for_event(event):
     if event.tour_event_id:
-        event = event.tour_event
+        if len(event.tour_event.bookings) > 0:
+            event = event.tour_event
     players = []
-    for member in event.bookings:
-        players.append(member.member.player)
-        for guest in member.guests:
-            p = get_player_by_name(guest.name)
-            if p:
-                state = p.state_as_of(event.date)
-                if state.handicap != guest.handicap:
-                    p.handicaps.append(Handicap(date=event.date, status=PlayerStatus.guest, handicap=guest.handicap))
-            else:
-                p = add_player(guest.name, guest.handicap, PlayerStatus.guest, event.date)
-            players.append(p)
+    if len(event.bookings) > 0:
+        for member in event.bookings:
+            players.append(member.member.player)
+            for guest in member.guests:
+                p = get_player_by_name(guest.name)
+                if p:
+                    state = p.state_as_of(event.date)
+                    if state.handicap != guest.handicap:
+                        p.handicaps.append(Handicap(date=event.date, status=PlayerStatus.guest, handicap=guest.handicap))
+                else:
+                    p = add_player(guest.name, guest.handicap, PlayerStatus.guest, event.date)
+                players.append(p)
+    else:
+        players = [s.player for s in event.scores]
     return players
 
 
@@ -397,7 +391,7 @@ def get_results(event, for_edit_hcap=False):
 
 def is_event_result_editable(event):
     override = config.get('override')
-    return override or (datetime.date.today() > event.date)  # and is_last_event(event))
+    return override or (datetime.date.today() > event.date) and (datetime.date.today().year == event.date.year)
 
 
 def is_last_event(event):

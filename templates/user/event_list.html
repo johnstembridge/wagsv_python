@@ -21,7 +21,7 @@
         <th align="left">Date</th>
         <th align="left">Event</th>
         <th align="left">Venue</th>
-        <th align="center">Book</th>
+        <th align="center">Booking</th>
         <th align="center">Result</th>
         <th align="center">Report</th>
     </tr>
@@ -33,7 +33,11 @@
             <tr><td colspan=6><hr></td>
         {% endif %}
         <tr>
-            <td>{{ item.date.data }}</td>
+            <td>
+            {%if item.event_type.data != 'wags_tour' %}
+                {{ item.date.data }}
+            {% endif %}
+            </td>
             <td><a href={{ item.trophy_url.data }}>{{ item.event.data }}</a></td>
             <td><a href={{ item.venue_url.data }} target="_blank">{{ item.venue.data }}</a></td>
             {%if item.event_type.data != 'non_event' %}

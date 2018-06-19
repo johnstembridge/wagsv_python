@@ -1,6 +1,7 @@
 from flask import request
 from flask_login import login_required
 
+from front_end.user.events import ReportEvents
 from globals.decorators import role_required
 from globals.enumerations import EventType
 from wags_admin import app
@@ -36,7 +37,11 @@ def edit_event(event_id):
 @login_required
 @role_required('admin')
 def results_event(event_id):
-    return MaintainEvents.results_vl_event(int(event_id))
+    event_type = int(request.args.get('event_type'))
+    if event_type == EventType.wags_vl_event.value:
+        return MaintainEvents.results_vl_event(int(event_id))
+    else:
+        return ReportEvents.results_tour_event(int(event_id))
 
 
 @app.route('/events/<event_id>/<player_id>/card', methods=['GET', 'POST'])

@@ -24,11 +24,11 @@ class MaintainVenues:
     def edit_venue(venue_id):
         form = VenueDetailsForm()
         if form.is_submitted():
-            if form.save.data:
+            if form.save.data or form.add_course.data or form.remove_course.data:
                 if form.save_venue(venue_id):
                     flash('Venue saved', 'success')
                     return redirect(url_for_admin('venues_main'))
-            if form.add_course.data:
+            if form.new_course.data:
                 return redirect(url_for_admin('edit_course', venue_id=venue_id, course_id=0))
         if not form.is_submitted():
             form.populate_venue(venue_id)
