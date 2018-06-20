@@ -8,7 +8,7 @@ from wtforms.validators import Optional
 from back_end.data_utilities import encode_date, fmt_date, first_or_default, to_bool
 from back_end.interface import get_event, get_booking, save_booking, is_event_bookable, get_member
 from front_end.form_helpers import line_break
-from models.wags_db import Guest, Booking
+from models.wags_db import Guest, Booking, Contact
 
 
 class GuestForm(FlaskForm):
@@ -62,9 +62,10 @@ class EventDetailsForm(FlaskForm):
             self.organiser_id.data = 0
         self.event.data = event.trophy.name if event.trophy else event.venue.name
         self.venue.data = event.venue.name
-        post_code = event.venue.contact.post_code or ''
-        self.venue_address.data = line_break(event.venue.contact.address or '' + ',' + post_code, ',')
-        self.venue_phone.data = event.venue.contact.phone
+        contact = event.venue.contact or Contact()
+        post_code = contact.post_code or ''
+        self.venue_address.data = line_break(contact.address or '' + ',' + post_code, ',')
+        self.venue_phone.data = contact.phone or ''
         self.map_url.data = 'http://maps.google.co.uk/maps?q={}&title={}&z=12 target="googlemap"'\
             .format(post_code.replace(' ', '+'), event.venue.name)
         self.venue_directions.data = line_break(event.venue.directions or '', '\n')

@@ -6,7 +6,7 @@ from back_end.data_utilities import encode_date_short
 from front_end.form_helpers import set_select_field_new
 from globals.config import url_for_user
 from globals.enumerations import EventType
-from back_end.interface import get_event_list, get_venue_url, get_event_select_list, is_event_bookable, \
+from back_end.interface import get_venue_url, get_event_select_list, is_event_bookable, \
     get_events_for_year
 
 
@@ -37,9 +37,9 @@ class EventListForm(FlaskForm):
                 item_form.event = event.trophy.name
                 item_form.trophy_url = event.trophy.url()
             else:
-                item_form.event = ''
-                item_form.trophy_url = None
-            item_form.venue = event.venue.name
+                item_form.event = event.venue.name
+                item_form.trophy_url = get_venue_url(event.venue)
+            item_form.venue = event.course.name if event_type == EventType.wags_vl_event else event.venue.name
             item_form.venue_url = get_venue_url(event.venue)
 
             item_form.event_type = event_type.name

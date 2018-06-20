@@ -79,7 +79,7 @@ def get_venue(venue_id):
 
 
 def save_venue(venue):
-    if venue.id == 0:
+    if not venue.id:
         db_session.add(venue)
     db_session.commit()
     return venue.id
@@ -130,35 +130,6 @@ def get_events_for_year(year):
 
 def get_events_for_period(start, end):
     return db_session.query(Event).filter(Event.date.between(start, end))
-
-
-def get_event_list(year):
-    events = []
-    for event in get_events_for_year(year):
-        if event.venue.contact:
-            url = event.venue.contact.url
-        else:
-            url = None
-        if event.trophy:
-            trophy = event.trophy.name
-            trophy_url = event.trophy.url()
-        else:
-            trophy = ''
-        events.append(
-            {
-                'num': event.id,
-                'date': event.date,
-                'event': trophy,
-                'trophy_url': trophy_url,
-                'venue': event.venue.name,
-                'type': event.type,
-                'tour_id': event.tour_event_id,
-                'start_booking': event.booking_start,
-                'end_booking': event.booking_end,
-                'venue_url': url
-            }
-        )
-    return events
 
 
 def get_event_scores(event_id):
@@ -269,12 +240,20 @@ def save_event_result(event_id, result):
         if delete[lookup(event.scores, score)]:
             db_session.delete(score)
     if len(result.data) > 0:
-        event.winner_id = result.get_columns('player_id')[0]
-        event.average_score = "{0:.1f}".format(mean(result.get_columns('points')))
+        update_trophy_history(event, result)
     else:
         event.winner_id = event.average_score = None
     event.scores = scores
     db_session.commit()
+
+
+def update_trophy_history(event, result):
+    event.average_score = mean(result.get_columns('points'))
+
+    def sel_fn(values):
+        return values['status'] == str(MemberStatus.full_member.value)
+    result = result.select_rows(sel_fn)
+    event.winner_id = int(result.get_columns('player_id')[0])
 
 
 def get_event_card(event_id, player_id):
@@ -458,29 +437,13 @@ def is_tour_event(event):
     # return (not is_num(event['num'])) or float(event['num']) > math.floor(float(event['num']))
 
 
-def get_tour_events(year, tour_event_id, max):
-    pass
-    # events = get_tour_event_list(year, tour_event_id)
-    # count = len(events)
-    # while count < max:
-    #     e = {
-    #         'num': None,
-    #         'date': None,
-    #         'course': None,
-    #         'venue': None
-    #     }
-    #     events.append(e)
-    #     count += 1
-    # return events
-
-
 def get_tour_scores(event_ids):
     ids = '(' + (','.join([str(id) for id in event_ids])) + ')'
     s = text("select * from scores where event_id in {} order by player_id, event_id".format(ids))
     scores = []
     for score in db_session.query(Score).from_statement(s):
-        scores.append([score.event_id, score.player_id, score.points])
-    head = ['event', 'player', 'points']
+        scores.append([score.event.date, score.event_id, score.player_id, score.points, score.event.trophy])
+    head = ['date', 'event', 'player', 'points', 'trophy']
     return head, scores
 
 

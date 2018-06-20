@@ -1,16 +1,18 @@
 import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, FieldList, FormField, HiddenField
-from wtforms.fields.html5 import DateField
-from back_end.interface import get_event_list, is_event_editable
+
+from back_end.data_utilities import fmt_date
+from back_end.interface import is_event_editable, get_events_for_year
 from globals import config
+from globals.enumerations import EventType
 
 
 class EventItemForm(FlaskForm):
-    num = StringField(label='id')
-    date = DateField(label='Date')
+    date = StringField(label='Date')
     event = StringField(label='Event')
     venue = StringField(label='Venue')
+    event_id = HiddenField(label='id')
     event_type = HiddenField(label='Event type')
     result = HiddenField(label='Result available')
 
@@ -25,13 +27,14 @@ class EventListForm(FlaskForm):
     def populate_event_list(self, year):
         self.editable.data = is_event_editable(year)
         override = config.get('override')
-        for item in get_event_list(year):
+        for event in get_events_for_year(year):
+            event_type = event.type
             item_form = EventItemForm()
-            item_form.num = item['num']
-            item_form.date = item['date']
-            item_form.event = item['event']
-            item_form.venue = item['venue']
-            item_form.event_type = item['type'].value
-            item_form.result = override or item['date'] < datetime.date.today()
+            item_form.event_id = event.id
+            item_form.date = fmt_date(event.date)
+            item_form.event = event.trophy.name if event.trophy else ''
+            item_form.venue = event.course.name if event_type == EventType.wags_vl_event else event.venue.name
+            item_form.event_type = event_type.value
+            item_form.result = override or event.date < datetime.date.today() and event.type in (EventType.wags_vl_event, EventType.wags_tour)
             self.event_list.append_entry(item_form)
 

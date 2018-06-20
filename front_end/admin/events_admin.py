@@ -40,7 +40,8 @@ class MaintainEvents:
         if form.is_submitted():
             if form.save_event(event_id):
                 flash('Event saved', 'success')
-                return redirect(url_for_admin('events_main'))
+                year = form.date.data.year
+                return redirect(url_for_admin('list_events', year=year))
         else:
             form.populate_event(event_id, event_type)
             event_type = EventType(form.event_type.data)
@@ -85,7 +86,7 @@ class MaintainEvents:
             if form.save_card.data:
                 if form.save_event_card(event_id, player_id, form):
                     flash('Card saved', 'success')
-                    return redirect(url_for_admin('results_event', event_id=event_id))
+                    return redirect(url_for_admin('results_event', event_id=event_id, event_type=EventType.wags_vl_event.value))
         else:
             form.populate_card(event_id, player_id, position, handicap, status)
         return render_template('admin/event_card.html', form=form, event=event_id, render_link=render_link)

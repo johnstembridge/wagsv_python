@@ -10,7 +10,6 @@
     <table width="100%" class="table table-striped">
         <thead>
         <tr>
-            <th>#</th>
             <th>Date</th>
             <th>Event</th>
             <th>Venue</th>
@@ -23,13 +22,12 @@
         <tbody>
         {% for item in form.event_list %}
         <tr>
-            <td>{{ item.num.data }}</td>
             <td>{{ item.date.data }}</td>
             <td>{{ item.event.data }}</td>
             <td>{{ item.venue.data }}</td>
             <td align="center">
                 {{ render_link(
-                    url=url_for('edit_event', event_id=item.num.data),
+                    url=url_for('edit_event', event_id=item.event_id.data),
                     image=url_for('static', filename='images/right-arrow.png'),
                     text='View/Edit event'
                 )|safe }}
@@ -37,7 +35,7 @@
             {%if item.event_type.data in [EventType.wags_vl_event.value, EventType.wags_tour.value] and item.result.data %}
                 <td align="center">
                     {{ render_link(
-                        url=url_for('results_event', event_id=item.num.data, event_type=item.event_type.data),
+                        url=url_for('results_event', event_id=item.event_id.data, event_type=item.event_type.data),
                         image=url_for('static', filename='images/right-arrow.png'),
                         text='View/Enter results'
                     )|safe }}
@@ -45,14 +43,14 @@
                 {%if item.event_type.data == EventType.wags_vl_event.value and item.result.data %}
                     <td align="center">
                         {{ render_link(
-                            url=url_for('handicaps_event', event_id=item.num.data),
+                            url=url_for('handicaps_event', event_id=item.event_id.data),
                             image=url_for('static', filename='images/right-arrow.png'),
                             text='View/Enter handicaps'
                         )|safe }}
                     </td>
                     <td align="center">
                         {{ render_link(
-                            url=url_for('report_event', event_id=item.num.data),
+                            url=url_for('report_event', event_id=item.event_id.data),
                             image=url_for('static', filename='images/right-arrow.png'),
                             text='View/Enter report'
                         )|safe }}

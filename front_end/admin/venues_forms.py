@@ -67,7 +67,7 @@ class VenueDetailsForm(FlaskForm):
         venue.contact.url = self.url.data
         venue.contact.phone = self.phone.data
         venue.contact.post_code = self.post_code.data
-        venue.contact.address =self.address.data
+        venue.contact.address = self.address.data
         venue.contact.directions = self.directions.data
         selected_course_id = self.select_course.data
         if self.add_course.data and selected_course_id > 0:

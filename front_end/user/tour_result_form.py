@@ -1,5 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, FieldList, FormField
+
+from back_end.data_utilities import first_or_default
 from back_end.interface import get_event, get_player_names_as_dict, get_tour_scores
 from back_end.table import Table
 from back_end.calc import get_positions
@@ -34,7 +36,7 @@ class TourResultsForm(FlaskForm):
             venue_form.name = venue.course.name
             self.venues.append_entry(venue_form)
 
-        results = self.make_tour_results(venues)
+        results = self.make_tour_results(event)
         player_names = get_player_names_as_dict(results.get_columns('player_id'))
 
         for res in results.data:
@@ -50,18 +52,25 @@ class TourResultsForm(FlaskForm):
             self.scores.append_entry(item_form)
 
     @staticmethod
-    def make_tour_results(venues):
-        event_ids = [v.id for v in venues]
+    def make_tour_results(event):
+        trophy = event.trophy
+        event_ids = [v.id for v in event.tour_events]
+        dates = {v.id: v.date for v in event.tour_events}
+        multi = len([v for v in event.tour_events if v.trophy == trophy]) > 0
         scores = Table(*get_tour_scores(event_ids))
         res = []
         for player_id, event_scores in scores.group_by('player'):
             s = [s for s in event_scores]
-            missing = list(set(event_ids).difference(set([x[0] for x in s])))
+            missing = list(set(event_ids).difference(set([x[1] for x in s])))  # event ids
             for m in missing:
-                s.append([m] + 2*['0'])
+                s.append([dates[m], m, 0, 0, None])
             s.sort()
-            p = [int(x[2]) for x in s]
-            r = (player_id, p, sum(p))
+            p = [int(x[3]) for x in s]  # points
+            if trophy and multi:
+                tp = sum([int(x[3]) for x in s if x[4] == trophy])  # total points for trophy
+            else:
+                tp = sum(p)
+            r = (player_id, p, tp)
             res.append(r)
         head = ['player_id', 'scores', 'total']
         res = Table(head, res)
