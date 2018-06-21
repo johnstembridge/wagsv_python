@@ -8,7 +8,7 @@ from back_end.table import Table
 from globals.enumerations import MemberStatus, PlayerStatus, EventType
 from models.wags_db import Event, Score, Course, CourseData, Trophy, Player, Venue, Handicap, Member, Contact, \
     Schedule, Booking, User
-from globals.db_setup import db_session
+from globals.app_setup import db_session
 from sqlalchemy import text
 
 from globals import config
@@ -240,20 +240,29 @@ def save_event_result(event_id, result):
         if delete[lookup(event.scores, score)]:
             db_session.delete(score)
     if len(result.data) > 0:
-        update_trophy_history(event, result)
+        update_event_winner(event, result)
     else:
         event.winner_id = event.average_score = None
     event.scores = scores
     db_session.commit()
+    if event.tour_event:
+        if event.tour_event.trophy and event in event.tour_event.tour_events:
+            update_tour_winner(event.tour_event)
 
 
-def update_trophy_history(event, result):
+def update_event_winner(event, result):
     event.average_score = mean(result.get_columns('points'))
 
     def sel_fn(values):
         return values['status'] == str(MemberStatus.full_member.value)
     result = result.select_rows(sel_fn)
     event.winner_id = int(result.get_columns('player_id')[0])
+
+
+def update_tour_winner(event):
+    pass
+    # result = get_tour_results(event)
+    # event.winner_id = int(result.get_columns('player_id')[0])
 
 
 def get_event_card(event_id, player_id):
@@ -445,7 +454,6 @@ def get_tour_scores(event_ids):
         scores.append([score.event.date, score.event_id, score.player_id, score.points, score.event.trophy])
     head = ['date', 'event', 'player', 'points', 'trophy']
     return head, scores
-
 
 # endregion
 

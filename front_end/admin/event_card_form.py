@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField, HiddenField
 
 from back_end.calc import calc_event_positions
-from back_end.interface import get_event, get_course_data, save_event_score, get_event_card, \
+from back_end.interface import get_event, save_event_score, get_event_card, \
     get_player, is_event_result_editable, get_event_scores, save_event_result
 
 
@@ -36,9 +36,7 @@ class EventCardForm(FlaskForm):
 
     def populate_card(self, event_id, player_id, position, handicap, status):
         event = get_event(event_id)
-        year = event.date.year
-        course_id = event.course_id
-        course_data = get_course_data(course_id, year)
+        course_data = event.course.course_data_as_of(event.date.year)
         card = get_event_card(event_id, player_id)
 
         self.event_name.data = event.full_name()

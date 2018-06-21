@@ -610,7 +610,7 @@ def get_tour_events(year, tour_event_id, max):
     return events
 
 
-def get_tour_scores_old(year, event_id):
+def get_tour_scores(year, event_id):
     events = get_tour_event_list(year, event_id)
     dates = []
     course_ids = []
@@ -1014,3 +1014,8 @@ def create_wags_data_file(directory, filename, fields, access_all=False):
         e = sys.exc_info()[0]
         result = False
     return result
+
+
+def get_member_select_choices(current=False):
+    choices = [(p.member.id, p.full_name()) for p in get_current_members_as_players(current=current)]
+    return choices

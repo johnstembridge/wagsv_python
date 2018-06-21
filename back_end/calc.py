@@ -1,8 +1,8 @@
 import itertools
 import datetime
 
-from back_end.interface import get_event, lookup_course, get_course_data, get_event_cards, get_scores, \
-    get_player_names, get_events_in
+from back_end.interface import get_event, lookup_course, get_event_cards, get_scores, \
+    get_player_names, get_events_in, get_tour_scores
 from back_end.table import Table
 from back_end.data_utilities import coerce, my_round
 from globals.enumerations import PlayerStatus, EventType
@@ -45,7 +45,7 @@ def positions(scores):
 
 def calc_event_positions(event_id, result):
     event = get_event(event_id)
-    course_data = get_course_data(event.course_id, event.date.year)
+    course_data = event.course.course_data_as_of(event.date.year)
     if 'card' not in result.head:
         cards = get_event_cards(event_id)
     else:
@@ -110,7 +110,7 @@ def get_big_swing(year):
 
 
 def get_swings(event):
-    course_data = get_course_data(event.course_id, event.date.year)
+    course_data = event.course.course_data_as_of(event.date.year)
     course_name = event.course.name
     res = []
     for score in event.scores:
@@ -123,4 +123,31 @@ def get_swings(event):
             swing = points_in - points_out
             if swing > 0:
                 res.append((player.full_name(), course_name, event.date, points_out, points_in, swing))
+    return res
+
+
+def get_tour_results(event):
+    trophy = event.trophy
+    event_ids = [v.id for v in event.tour_events]
+    dates = {v.id: v.date for v in event.tour_events}
+    multi = len([v for v in event.tour_events if v.trophy == trophy]) > 0
+    scores = Table(*get_tour_scores(event_ids))
+    res = []
+    for player_id, event_scores in scores.group_by('player'):
+        s = [s for s in event_scores]
+        missing = list(set(event_ids).difference(set([x[1] for x in s])))  # event ids
+        for m in missing:
+            s.append([dates[m], m, 0, 0, None])
+        s.sort()
+        p = [int(x[3]) for x in s]  # points
+        if trophy and multi:
+            tp = sum([int(x[3]) for x in s if x[4] == trophy])  # total points for trophy
+        else:
+            tp = sum(p)
+        r = (player_id, p, tp)
+        res.append(r)
+    head = ['player_id', 'scores', 'total']
+    res = Table(head, res)
+    res.sort(['total'], reverse=True)
+    res.add_column('position', get_positions(res.get_columns('total')))
     return res

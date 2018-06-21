@@ -3,6 +3,7 @@ SQLAlchemy=1.2.7
 Flask==0.12.2
 Flask-Bootstrap==3.3.7.1
 Flask-Login==0.4.1
+Flask-Sendmail==0.1
 Flask-SQLAlchemy=2.3.2
 Flask-WTF==0.14.2
 Jinja2==2.9.6

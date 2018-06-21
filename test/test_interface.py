@@ -3,12 +3,7 @@ import datetime
 
 from back_end.file_access import get_record
 from globals.enumerations import PlayerStatus
-from back_end.interface import get_event, get_handicaps, get_players_as_of, get_event_scores, \
-    get_players_for_event, save_event_result, get_course_data, get_player_handicap, get_event_card, get_venue, \
-    get_tour_events, get_last_event, get_player_name, get_player_names_as_dict, get_member, \
-    get_event_cards, get_results_for_edit, get_results_by_year_and_name, get_scores, get_current_members_as_players, get_tour_scores, \
-    get_tour_event_list_from_scores, get_member_select_choices, get_events_in, get_trophy, get_all_trophy_history, \
-    get_venue_select_choices, get_player_select_list, get_trophy_select_list, get_course_for_date
+from back_end.interface_old import *
 from back_end.table import Table
 from test_data import TestData
 
@@ -51,12 +46,12 @@ class TestInterface(unittest.TestCase):
         self.assertEqual(res, expected)
 
     def test_get_event_result(self):
-        res = get_results_for_edit(2017, 6)
+        res = get_results(2017, 6)
         expected = TestData.example_event_result
         self.assertEqual(res, expected)
 
     def test_get_event(self):
-        rec = get_event('4')
+        rec = get_event(2017, '4')
         expected = TestData.example_event
         self.assertDictEqual(rec, expected)
 
@@ -73,7 +68,7 @@ class TestInterface(unittest.TestCase):
         self.assertTrue(res == 'Peter Berring')
 
     def test_get_player_names(self):
-        res = get_player_names_as_dict(['1', '2'])
+        res = get_player_names(['1', '2'])
         self.assertTrue(res == ['Fred Berring', 'Peter Berring'])
 
     def test_get_event_player_card(self):
@@ -85,11 +80,11 @@ class TestInterface(unittest.TestCase):
         self.assertTrue(len(card) > 0)
 
     def test_get_members(self):
-        res = get_players_as_of('2018/01/01', 1)
+        res = get_players('2018/01/01', 1)
         self.assertTrue(len(res) > 0)
 
     def test_get_members(self):
-        res = get_current_members_as_players()
+        res = get_current_members()
         self.assertTrue(len(res) > 0)
 
     def test_get_member(self):
@@ -97,11 +92,11 @@ class TestInterface(unittest.TestCase):
         self.assertEqual('john.stembridge@gmail.com', res['home_email'])
 
     def test_get_players(self):
-        res = get_players_as_of('2016/08/07', [PlayerStatus.member, PlayerStatus.guest])
+        res = get_players('2016/08/07', [PlayerStatus.member, PlayerStatus.guest])
         self.assertTrue(len(res) > 0)
 
     def test_get_ex_members(self):
-        res = get_players_as_of('2016/08/07', PlayerStatus.ex_member)
+        res = get_players('2016/08/07', PlayerStatus.ex_member)
         self.assertTrue(len(res) > 0)
 
     def test_get_event_scores(self):
@@ -109,7 +104,7 @@ class TestInterface(unittest.TestCase):
         self.assertTrue(len(tab.data) > 0)
 
     def test_get_booked_players(self):
-        res = get_players_for_event(348)
+        res = get_booked_players(2017, 3)
         self.assertTrue(len(res) > 0)
 
     def test_save_event_scores(self):
@@ -133,7 +128,7 @@ class TestInterface(unittest.TestCase):
                 ['24', 20, '116', '28', 0],
                 ['12', 16, '121', '28', 0]]
 
-        save_event_result(year, event_id, Table(fields, data))
+        save_event_scores(year, event_id, Table(fields, data))
 
     def test_get_venue_by_name(self):
         rec = get_venue(4)
@@ -177,8 +172,8 @@ class TestInterface(unittest.TestCase):
         self.assertTrue(rec['sponsor'] == 'Mike Dearden')
 
     def test_get_course(self):
-        course = get_course_for_date(29)
-        self.assertEqual(course.name, 'Pine Ridge')
+        course = get_course(29)
+        self.assertEqual(course['name'], 'Pine Ridge')
 
     def test_get_event_for_date(self):
         event = get_event(date='2001/10/20')
