@@ -4,7 +4,7 @@ from flask_wtf import FlaskForm
 from flask import render_template
 from wtforms import StringField, FormField, FieldList
 
-from back_end.data_utilities import fmt_date
+from back_end.data_utilities import fmt_date, first_or_default
 from back_end.interface import get_trophy
 from front_end.form_helpers import render_link, template_exists
 from globals import config
@@ -42,15 +42,18 @@ class TrophyForm(FlaskForm):
         extra_file = 'user/extra/' + trophy.name.lower() + '.htm'
         if template_exists(extra_file):
             self.extra.data = extra_file
-        for item in hist:
-            if item.date < datetime.date.today():
+        for event in hist:
+            tour = first_or_default([e for e in hist if e.date.year == event.date.year and e.type == EventType.wags_tour], None)
+            if event.date < datetime.date.today() \
+                    and (event.type == EventType.wags_vl_event and not tour) \
+                    or (tour and event.type == EventType.wags_tour):
                 item_form = TrophyItemForm()
-                item_form.venue = item.venue.name
-                item_form.date = fmt_date(item.date)
-                item_form.winner = item.winner.full_name()
-                if item.type == EventType.wags_vl_event:
-                    item_form.score = item.winner.score_for(item.id).points
-                    item_form.average = item.average_score
+                item_form.venue = event.venue.name
+                item_form.date = fmt_date(event.date)
+                item_form.winner = event.winner.full_name()
+                if event.type == EventType.wags_vl_event:
+                    item_form.score = event.winner.score_for(event.id).points
+                    item_form.average = event.average_score
                 else:
                     item_form.score = item_form.average = ''
                 self.winners.append_entry(item_form)
