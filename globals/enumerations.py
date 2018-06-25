@@ -44,3 +44,17 @@ class NewsItemType(FormEnum):
 class UserRole(FormEnum):
     user = 1
     admin = 2
+
+
+class Function(FormEnum):
+    Chairman = 1
+    Communications = 2
+    Fixtures = 3
+    Handicaps = 4
+    Membership = 5
+    Merchandise = 6
+    Secretary = 7
+    Treasurer = 8
+    Website = 9
+    Captain = 10
+    Design = 11

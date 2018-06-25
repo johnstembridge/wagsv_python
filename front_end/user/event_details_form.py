@@ -6,8 +6,11 @@ from wtforms.fields.html5 import DateField
 from wtforms.validators import Optional
 
 from back_end.data_utilities import encode_date, fmt_date, first_or_default, to_bool
-from back_end.interface import get_event, get_booking, save_booking, is_event_bookable, get_member
+from back_end.interface import get_event, get_booking, save_booking, is_event_bookable, get_member, \
+    get_committee_function
 from front_end.form_helpers import line_break
+from globals.email import send_mail
+from globals.enumerations import Function
 from models.wags_db import Guest, Booking, Contact
 
 
@@ -76,7 +79,7 @@ class EventDetailsForm(FlaskForm):
         self.notes.data = event.note or ''
 
         booking = get_booking(event_id, member_id)
-        if booking is None:
+        if not booking:
             booking = Booking(member=get_member(member_id), playing=True)
         else:
             self.booking_date.data = fmt_date(booking.date)
@@ -92,11 +95,11 @@ class EventDetailsForm(FlaskForm):
             self.guests.append_entry(item_form)
             count += 1
 
-    def save_event(self, event_id, member_id):
+    def book_event(self, event_id, member_id):
         errors = self.errors
         if len(errors) > 0:
             return False
-        booking = get_booking(event_id, member_id) or Booking(event_id=event_id, member_id=member_id)
+        booking = get_booking(event_id, member_id) or Booking(event=get_event(event_id), member=get_member(member_id))
         booking.date = datetime.date.today()
         booking.playing = self.attend.data
         booking.comment = self.comment.data if len(self.comment.data) > 0 else None
@@ -105,9 +108,51 @@ class EventDetailsForm(FlaskForm):
             name = guest.guest_name.data
             if len(name) > 0:
                 obj = first_or_default([g for g in booking.guests if g.name == name], Guest(name=name))
-                obj.handicap = guest.handicap
+                obj.handicap = guest.handicap.data
                 guests.append(obj)
         booking.guests = guests
         save_booking(booking)
+        return self.confirm_booking(booking)
 
-        return True
+    @staticmethod
+    def confirm_booking(booking):
+        subject = 'Book event - {}'.format(booking.event.full_name())
+        cost = 0
+        if booking.playing:
+            treasurer = get_committee_function(Function.Treasurer)
+            message = ['{} will attend'.format(booking.member.player.full_name())]
+            if booking.guests:
+                message.append('Guests:')
+                for guest in booking.guests:
+                    cost += booking.event.guest_price
+                    message.append('{} (handicap {})'.format(guest.name, guest.handicap))
+            message.append('Total cost £{}'.format(cost))
+            message.append('(Please send cheque to {} ASAP or pay by on-line credit to the WAGS bank account number 01284487, sort code 40-07-30)'.format(treasurer.member.player.full_name()))
+            if booking.comment:
+                message.append(booking.comment)
+        else:
+            message = '{} will not attend'.format()
+        sender = 'booking@wags.org'
+        to = booking.member.contact.email
+        fixtures = get_committee_function(Function.Fixtures).member.contact.email
+        organiser = booking.event.organiser.contact.email
+        send_mail(to=to,
+                  sender=sender,
+                  cc=[treasurer.member.contact.email, fixtures, organiser],
+                  subject='WAGS: ' + subject,
+                  message=message)
+
+        form = EventBookingConfirmationForm()
+        form.populate(subject, message)
+        return form
+
+
+class EventBookingConfirmationForm(FlaskForm):
+    title = StringField(label='Title')
+    message = StringField(label='Message')
+
+    def populate(self, title, message):
+        self.title.data = title
+        self.message.data = message
+
+

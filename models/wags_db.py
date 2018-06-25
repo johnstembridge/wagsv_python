@@ -5,7 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from back_end.data_utilities import fmt_date
-from globals.enumerations import EventType, PlayerStatus, MemberStatus, UserRole
+from globals.enumerations import EventType, PlayerStatus, MemberStatus, UserRole, Function
 from globals import config
 
 import datetime
@@ -242,9 +242,20 @@ class Member(Base):
     events_organised = relationship("Event",  back_populates="organiser")
     bookings = relationship("Booking",  back_populates="member")
     user = relationship('User', uselist=False, back_populates="member")
+    committee = relationship("Committee",  back_populates="member")
 
     def __repr__(self):
         return '<Member: {}>'.format(self.player.full_name())
+
+
+class Committee(Base):
+    __tablename__ = "committee"
+    member_id = Column(Integer, ForeignKey('members.id'), nullable=False, primary_key=True)
+    function = Column(EnumType(Function), nullable=False, primary_key=True)
+    member = relationship("Member", back_populates="committee")
+
+    def __repr__(self):
+        return '<Committee {} {}>'.format(self.function.name, self.member.player.full_name())
 
 
 class Handicap(Base):

@@ -7,7 +7,7 @@ from back_end.data_utilities import lookup, mean, first_or_default, fmt_date, in
 from back_end.table import Table
 from globals.enumerations import MemberStatus, PlayerStatus, EventType
 from models.wags_db import Event, Score, Course, CourseData, Trophy, Player, Venue, Handicap, Member, Contact, \
-    Schedule, Booking, User
+    Schedule, Booking, User, Committee
 from globals.app_setup import db_session
 from sqlalchemy import text
 
@@ -816,14 +816,6 @@ def get_all_years():
     return years
 
 
-def create_bookings_file(year, event_id):
-    pass
-    # directory = os.path.join(data_location, str(year))
-    # filename = bookings_file(year, event_id)
-    # fields = bookings_file_fields()
-    # return create_wags_data_file(directory, filename, fields, access_all=True)
-
-
 def get_booking(event_id, member_id):
     return db_session.query(Booking).filter_by(event_id=event_id, member_id=member_id).first()
 
@@ -836,3 +828,11 @@ def save_booking(booking):
     if not booking.id:
         db_session.add(booking)
     db_session.commit()
+
+
+def get_committee():
+    return db_session.query(Committee).all()
+
+
+def get_committee_function(function):
+    return db_session.query(Committee).filter_by(function=function).first()

@@ -35,9 +35,11 @@ class ReportEvents:
     def show_or_book_event(event_id, member_id):
         form = EventDetailsForm()
         if form.is_submitted():
-            if form.save_event(event_id, member_id):
+            form = form.book_event(event_id, member_id)
+            if form:
                 flash('Booking saved', 'success')
-                return redirect(url_for_user('list_events', year=datetime.date.today().year))
+                return render_template('user/event_booking_confirmation.html', form=form)
+                #return redirect(url_for_user('list_events', year=datetime.date.today().year))
         else:
             form.populate_event(event_id, member_id)
         return render_template('user/event_details.html', form=form, render_link=render_link)

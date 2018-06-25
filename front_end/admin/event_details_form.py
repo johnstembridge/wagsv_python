@@ -115,7 +115,4 @@ class EventForm(FlaskForm):
 
         event_id = save_event_details(event_id, event)
 
-        if event['start_booking'] is not None and event['start_booking'] <= datetime.date.today():
-            create_bookings_file(event['date'].year, event_id)
-
         return True
