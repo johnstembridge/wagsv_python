@@ -117,9 +117,9 @@ class EventDetailsForm(FlaskForm):
     @staticmethod
     def confirm_booking(booking):
         subject = 'Book event - {}'.format(booking.event.full_name())
+        treasurer = get_committee_function(Function.Treasurer)
         cost = 0
         if booking.playing:
-            treasurer = get_committee_function(Function.Treasurer)
             message = ['{} will attend'.format(booking.member.player.full_name())]
             if booking.guests:
                 message.append('Guests:')
@@ -131,7 +131,7 @@ class EventDetailsForm(FlaskForm):
             if booking.comment:
                 message.append(booking.comment)
         else:
-            message = '{} will not attend'.format()
+            message = ['{} will not attend'.format(booking.member.player.full_name())]
         sender = 'booking@wags.org'
         to = booking.member.contact.email
         fixtures = get_committee_function(Function.Fixtures).member.contact.email
