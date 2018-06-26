@@ -90,12 +90,15 @@ def fmt_date(date):
     return date.strftime("%Y/%m/%d")
 
 
-def parse_date(ymd):
+def parse_date(ymd, reverse=False):
+
     if type(ymd) is datetime.date:
         return ymd
     else:
         if len(ymd) > 0:
             date = ymd.split('/')
+            if reverse:
+                date = date[::-1]
             return datetime.date(int(date[0]), int(date[1]), int(date[2]))
         else:
             return datetime.datetime.now().date()
@@ -195,6 +198,22 @@ def coerce(x, required_type):
 
 def fmt_num(num):
     return str(int(num) if num == math.floor(num) else num)
+
+
+def parse_float(num):
+    if len(num) == 0:
+        return None
+    return float(num)
+
+
+def fmt_curr(num):
+    if num:
+        res = '£{:,.2f}'.format(abs(num))
+        if num < 0:
+            res = '({})'.format(res)
+    else:
+        res = ''
+    return res
 
 
 def first_or_default(list, default):
@@ -318,3 +337,8 @@ def names_from_ids(all, ids):
     all_names = [item[1] for item in all]
     names = [all_names[all_ids.index(id)] for id in ids]
     return names
+
+
+def gen_to_list(gen):
+    # force evaluation of a generator
+    return [x for x in gen]

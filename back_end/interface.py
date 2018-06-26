@@ -15,26 +15,8 @@ from globals import config
 from back_end.file_access import get_field, get_record, update_record, get_records
 
 data_location = config.get('locations')['data']
-admin_users = r'admin_users.txt'
-bookings_data = r'{}/event{}.csv'
-
-
-def admin_users_file():
-    return os.path.join(data_location, admin_users)
-
-
-def bookings_file(year, event_id):
-    return os.path.join(data_location, bookings_data.format(year, event_id))
-
-
-def bookings_file_fields():
-    return ['date', 'name', 'playing', 'number', 'cost', 'paid', 'guest1', 'guest1_hcap', 'guest2', 'guest2_hcap',
-            'guest3', 'guest3_hcap', 'comment']
-
-
-def gen_to_list(gen):
-    # force evaluation of a generator
-    return [x for x in gen]
+def accounts_file(year):
+    return os.path.join(data_location, '{}/accounts.tab'.format(year))
 
 
 # region user
@@ -721,6 +703,11 @@ def save_member_details(member_id, data):
     contact.phone=data['phone']
     db_session.commit()
 
+
+def get_member_account(member_name, year):
+    file = accounts_file(year)
+    return Table(*get_records(file, 'member', member_name))
+
 # endregion
 
 
@@ -809,13 +796,7 @@ def get_all_scores():
 # endregion
 
 
-def get_all_years():
-    current_year = datetime.datetime.now().year
-    inc = 1 if datetime.datetime.now().month > 10 else 0
-    years = [i for i in range(current_year + inc, 1992, -1)]
-    return years
-
-
+# region Bookings
 def get_booking(event_id, member_id):
     return db_session.query(Booking).filter_by(event_id=event_id, member_id=member_id).first()
 
@@ -828,6 +809,14 @@ def save_booking(booking):
     if not booking.id:
         db_session.add(booking)
     db_session.commit()
+# endregion
+
+
+def get_all_years():
+    current_year = datetime.datetime.now().year
+    inc = 1 if datetime.datetime.now().month > 10 else 0
+    years = [i for i in range(current_year + inc, 1992, -1)]
+    return years
 
 
 def get_committee():

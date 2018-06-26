@@ -3,7 +3,7 @@ from werkzeug.utils import redirect
 
 from back_end.interface import get_member
 from front_end.form_helpers import render_link
-from front_end.user.member_details_form import EditMemberDetailsForm, ShowMemberDetailsForm
+from front_end.user.member_details_form import EditMemberDetailsForm, ShowMemberDetailsForm, ShowMemberAccountsForm
 from globals.config import url_for_user
 
 
@@ -29,3 +29,9 @@ class Members:
     @staticmethod
     def select():
         pass
+
+    @staticmethod
+    def account(member_id, year):
+        form = ShowMemberAccountsForm()
+        form.populate_account(member_id, year)
+        return render_template('user/account.html', form=form, year=year, render_link=render_link)

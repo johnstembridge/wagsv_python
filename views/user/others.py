@@ -1,3 +1,4 @@
+from datetime import datetime
 from wags_user import app, current_user
 from front_end.user.handicaps import Handicaps
 from front_end.user.trophy import Trophy
@@ -35,6 +36,7 @@ def trophy(trophy_id):
 # endregion
 
 
+# region members
 @app.route('/members', methods=['GET', 'POST'])
 def select_member():
     return Members.select()
@@ -49,6 +51,15 @@ def edit_contact_details():
 @app.route('/members/<member_id>', methods=['GET', 'POST'])
 def show_contact_details(member_id):
     return Members.contact(int(member_id), edit=False)
+
+
+@app.route('/members/account/<year>', methods=['GET', 'POST'])
+def show_member_account(year=None):
+    member_id = current_user.member_id
+    if year == 'current':
+        year = str(datetime.today().year)
+    return Members.account(int(member_id), int(year))
+# endregion
 
 
 

@@ -93,5 +93,5 @@ table.list.striped tr:last-child {border-top: none; background-color: white}
 .middle {vertical-align: middle}
 
 .bold  {font-weight: bold}
-
+.negative {color: red}
 responsive-image {  width: 60%;  height: auto; }
