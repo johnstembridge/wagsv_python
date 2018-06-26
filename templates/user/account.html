@@ -1,0 +1,46 @@
+{% extends "user/report_base.html" %}
+{% block title %}{{ form.title.data }}{% endblock %}
+{% block content %}
+
+<h2 class="table-title">{{ form.title.data }}</h2>
+{%if form.negative_balance.data %}
+    <h3 class="table-title left">Balance <font color="red">{{ form.balance.data }}</font></h3>
+{% else %}
+    <h3 class="table-title left">Balance {{ form.balance.data }}</h3>
+{% endif %}
+<h4 class="table-title right">{{ render_link(
+        url=url_for('show_member_account', year=year-1),
+        text='&#x25C4;'
+        )|safe }}
+        &nbsp;
+        year
+        &nbsp;
+        {{ render_link(
+        url=url_for('show_member_account', year=year+1),
+        text='&#x25BA;'
+        )|safe }}
+</h4>
+<table width="100%" class="list">
+    <thead>
+    <tr>
+        <th align="left">Date</th>
+        <th align="left">Item</th>
+        <th align="right">Debit</th>
+        <th align="right">Credit</th>
+    </tr>
+    <tr><td colspan=4><hr class="bold"/></td>
+    </thead>
+    <tbody>
+    {% for item in form.items %}
+        <tr>
+            <td>{{ item.date.data }}</td>
+            <td>{{ item.item.data }}</td>
+            <td align="right">{{ item.debit.data }}</td>
+            <td align="right">{{ item.credit.data }}</td>
+        <tr>
+    {% endfor %}
+    <tr><td colspan=4><hr class="bold"/></td>
+    </tbody>
+</table>
+<p><a href="http://www.wags.org/payment.htm"><i>Paying by internet transfer</i></a></p>
+{% endblock %}
