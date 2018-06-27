@@ -3,11 +3,12 @@
 
 {% block page_content %}
 <div class="page-header">
-    <h1>{{ form.first_name.data }} {{ form.last_name.data }} - Personal Details</h1>
+    <h1>Personal Details - other members</h1>
 </div>
-<form>
+<form method="POST">
     {{ form.csrf_token }}
     {{ form.hidden_tag() }}
+    {{ form.choose_member.label }} {{ form.choose_member }} {{ form.load(class="btn btn-primary") }}
     <hr/>
     <table width="100%">
         <tr>

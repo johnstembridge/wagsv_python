@@ -3,12 +3,6 @@ from wags_user import app, current_user, login_required
 from front_end.user.members import Members
 
 
-@app.route('/members', methods=['GET', 'POST'])
-@login_required
-def select_member():
-    return Members.select()
-
-
 @app.route('/members/current', methods=['GET', 'POST'])
 @login_required
 def edit_contact_details():

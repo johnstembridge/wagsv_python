@@ -610,8 +610,8 @@ def get_member_by_email(email):
 
 def get_all_members(current=True):
     if current:
-        return db_session.query(Member).filter(
-            Member.status.in_([MemberStatus.full_member, MemberStatus.overseas_member]))
+        return db_session.query(Member)\
+            .filter(Member.status.in_([MemberStatus.full_member, MemberStatus.overseas_member]))
     else:
         return db_session.query(Member)
 

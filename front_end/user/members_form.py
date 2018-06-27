@@ -29,8 +29,8 @@ class EditMemberDetailsForm(FlaskForm):
 
     save = SubmitField(label='Save')
 
-    def populate_details(self, member):
-        MemberDetails.populate(self, member)
+    def populate_details(self, member_id):
+        MemberDetails.populate(self, member_id, edit=True)
         self.name_return.data = self.first_name.data + ' ' + self.last_name.data
 
     def save_details(self, member_id):
@@ -47,6 +47,8 @@ class EditMemberDetailsForm(FlaskForm):
 
 
 class ShowMemberDetailsForm(FlaskForm):
+    choose_member = SelectField(label='Choose Member', coerce=int)
+    load = SubmitField(label='Load')
     first_name = StringField(label='First Name')
     last_name = StringField(label='Last Name')
     email = StringField(label='Email')
@@ -55,24 +57,27 @@ class ShowMemberDetailsForm(FlaskForm):
     phone = StringField(label='Phone')
     mugshot = HiddenField()
 
-    def populate_details(self, member):
-        MemberDetails.populate(self, member)
+    def populate_details(self, member_id):
+        MemberDetails.populate(self, member_id)
         
 
 class MemberDetails:
 
     @staticmethod
-    def populate(form, member, edit=False):
-        #set_select_field_new(self.proposer, get_member_select_choices(), default_selection=proposer, item_name='proposer')
-        player = member.player
-        contact = member.contact
-        form.first_name.data = player.first_name
-        form.last_name.data = player.last_name
-        form.email.data = contact.email
-        form.address.data = contact.address
-        form.post_code.data = contact.post_code
-        form.phone.data = contact.phone
-        form.mugshot.data = "http://www.wags.org/pictures/mugshots/{}.jpg".format(player.first_name + '_' + player.last_name)
+    def populate(form, member_id, edit=False):
+        if not edit:
+            set_select_field_new(form.choose_member, get_member_select_choices(), None, member_id)
+        member = get_member(member_id)
+        if member:
+            player = member.player
+            contact = member.contact
+            form.first_name.data = player.first_name
+            form.last_name.data = player.last_name
+            form.email.data = contact.email
+            form.address.data = contact.address
+            form.post_code.data = contact.post_code
+            form.phone.data = contact.phone
+            form.mugshot.data = "http://www.wags.org/pictures/mugshots/{}.jpg".format(player.first_name + '_' + player.last_name)
 
 
 class AccountItemForm(FlaskForm):
