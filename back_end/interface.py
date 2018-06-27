@@ -97,7 +97,9 @@ def get_event_for_course_and_date(date, course_id):
 
 
 def get_all_events():
-    return db_session.query(Event).order_by(Event.date)
+    return db_session.query(Event)\
+        .filter(Event.date <= datetime.date.today())\
+        .order_by(Event.date.desc())
 
 
 def get_event_select_list():
