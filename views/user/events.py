@@ -13,7 +13,7 @@ def index():
 
 @app.route('/events', methods=['GET', 'POST'])
 @login_required
-def events():
+def select_event():
     return ReportEvents.select_event()
 
 

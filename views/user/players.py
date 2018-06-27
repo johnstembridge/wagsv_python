@@ -4,7 +4,7 @@ from front_end.user.players import ReportPlayers
 
 @app.route('/players/summary', methods=['GET', 'POST'])
 @login_required
-def summary():
+def players_summary():
     return ReportPlayers.playing_history_summary()
 
 

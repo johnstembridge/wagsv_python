@@ -112,3 +112,16 @@ class ShowMemberAccountsForm(FlaskForm):
         self.balance.data = fmt_curr(balance)
         self.negative_balance.data = balance < 0
 
+
+class MembersAreaForm(FlaskForm):
+    year = HiddenField(label='Year')
+    member_id = HiddenField(label='Member Id')
+    player_id = HiddenField(label='Player Id')
+    member_name = StringField(label='Member name')
+
+    def populate(self, member_id, year):
+        self.year.data = year
+        self.member_id.data = member_id
+        member = get_member(member_id)
+        self.member_name.data = member.player.full_name()
+        self.player_id.data = member.player_id

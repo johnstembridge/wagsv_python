@@ -2,7 +2,8 @@ from flask import render_template
 from werkzeug.utils import redirect
 
 from front_end.form_helpers import render_link
-from front_end.user.members_form import EditMemberDetailsForm, ShowMemberDetailsForm, ShowMemberAccountsForm
+from front_end.user.members_form import EditMemberDetailsForm, ShowMemberDetailsForm, ShowMemberAccountsForm, \
+    MembersAreaForm
 from globals.config import url_for_user
 
 
@@ -31,3 +32,9 @@ class Members:
         form = ShowMemberAccountsForm()
         form.populate_account(member_id, year)
         return render_template('user/account.html', form=form, year=year, render_link=render_link)
+
+    @staticmethod
+    def area(member_id, year):
+        form = MembersAreaForm()
+        form.populate(member_id, year)
+        return render_template('user/member.html', form=form, year=year, render_link=render_link)

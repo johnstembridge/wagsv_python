@@ -1,0 +1,79 @@
+{% extends "user/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block page_content %}
+<div class="page-header">
+    <h2>Wags Members Area - {{ form.member_name.data }}</h2>
+</div>
+<form method="POST">
+    {{ form.csrf_token }}
+    {{ form.hidden_tag() }}
+    <hr/>
+    <table width="100%">
+        <tr>
+            <td>Edit your details</td>
+            <td align="left">
+                        {{ render_link(
+                        url=url_for('edit_contact_details'),
+                        image=url_for('static', filename='images/go.png')
+                        )|safe }}
+            </td>
+        </tr>
+        <tr>
+            <td>Show other member's details</td>
+            <td align="left">
+                        {{ render_link(
+                        url=url_for('show_contact_details', member_id=0),
+                        image=url_for('static', filename='images/go.png')
+                        )|safe }}
+            </td>
+        </tr>
+        <tr>
+            <td>Your playing history</td>
+            <td align="left">
+                        {{ render_link(
+                        url=url_for('show_player_events', player_id=form.player_id.data),
+                        image=url_for('static', filename='images/go.png')
+                        )|safe }}
+            </td>
+        </tr>
+        <tr>
+            <td>Your handicap history</td>
+            <td align="left">
+                        {{ render_link(
+                        url=url_for('handicap_history_player', player_id=form.player_id.data),
+                        image=url_for('static', filename='images/go.png')
+                        )|safe }}
+            </td>
+        </tr>
+        <tr>
+            <td>Your account</td>
+            <td align="left">
+                        {{ render_link(
+                        url=url_for('show_member_account', year=form.year.data),
+                        image=url_for('static', filename='images/go.png')
+                        )|safe }}
+            </td>
+        </tr>
+        <tr>
+            <td>Matches played (by member)</td>
+            <td align="left">
+                        {{ render_link(
+                        url=url_for('players_summary'),
+                        image=url_for('static', filename='images/go.png')
+                        )|safe }}
+            </td>
+        </tr>
+        <tr>
+            <td>Show event result</td>
+            <td align="left">
+                        {{ render_link(
+                        url=url_for('select_event'),
+                        image=url_for('static', filename='images/go.png')
+                        )|safe }}
+            </td>
+        </tr>
+    </table>
+    <hr/>
+</form>
+{% endblock %}
