@@ -8,7 +8,7 @@ from wtforms_components import TimeField
 
 from front_end.form_helpers import set_select_field_new
 from globals.enumerations import EventType
-from back_end.interface import get_event, get_trophy_select_choices, create_bookings_file, save_event_details, \
+from back_end.interface import get_event, get_trophy_select_choices, save_event_details, \
     is_event_editable, get_member_select_choices, get_venue_select_choices, get_course_select_choices
 from models.wags_db import Event, Schedule
 

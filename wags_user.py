@@ -9,6 +9,7 @@ init_app(app)
 from views.user.access import *
 from views.user.events import *
 from views.user.players import *
+from views.user.members import *
 from views.user.others import *
 from front_end.user.others import page_not_found, internal_error
 

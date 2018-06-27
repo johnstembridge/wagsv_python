@@ -1,13 +1,8 @@
 import datetime
 
-from flask_login import login_required, LoginManager, current_user
+from flask_login import login_required, current_user
 from wags_user import app
 from front_end.user.events import ReportEvents
-
-from globals import config
-
-login_manager = LoginManager(app)
-login_manager.login_view = config.get('url_prefix')['user']+'/login'
 
 
 @app.route('/', methods=['GET', 'POST'])

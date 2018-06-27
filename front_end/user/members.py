@@ -3,7 +3,7 @@ from werkzeug.utils import redirect
 
 from back_end.interface import get_member
 from front_end.form_helpers import render_link
-from front_end.user.member_details_form import EditMemberDetailsForm, ShowMemberDetailsForm, ShowMemberAccountsForm
+from front_end.user.members_form import EditMemberDetailsForm, ShowMemberDetailsForm, ShowMemberAccountsForm
 from globals.config import url_for_user
 
 

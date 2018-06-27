@@ -1,5 +1,5 @@
+from flask import current_app
 from flask_sendmail import Message
-from wags_user import app
 
 from globals.decorators import async
 from back_end.data_utilities import force_list
@@ -18,6 +18,7 @@ def send_mail(to, sender, cc=None, subject=None, message=None):
     msg.recipients = force_list(to)
     msg.cc = force_list(cc)
     msg.body = message
+    app = current_app._get_current_object()
     send_async_email(app, msg)
     #mail.send(msg)
 

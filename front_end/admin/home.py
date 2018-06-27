@@ -1,4 +1,4 @@
-from flask_login import login_required, LoginManager
+from flask_login import login_required
 from flask_wtf import FlaskForm
 from flask import render_template, session
 from wtforms import SubmitField, SelectField
@@ -6,11 +6,7 @@ from wags_admin import app
 from back_end.interface import get_all_years, create_events_file
 from front_end.form_helpers import set_select_field
 from front_end.admin.others import get_user_current_year
-from globals import config
 from globals.decorators import role_required
-
-login_manager = LoginManager(app)
-login_manager.login_view = config.get('url_prefix')['admin']+'/login'
 
 
 @app.route('/', methods=['GET', 'POST'])
