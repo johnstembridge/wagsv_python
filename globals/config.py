@@ -28,11 +28,6 @@ def url_for_wags_site(end):
     return get('locations')['base_url'] + end
 
 
-def url_for_old_service(end):
-    prefix = get('locations')['base_url'] + '/cgi-bin/members/'
-    return prefix + end
-
-
 def url_for(app, endpoint, **values):
     url = flask_url_for(endpoint, **values)
     prefix = get('url_prefix')[app]

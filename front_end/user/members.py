@@ -4,7 +4,7 @@ from werkzeug.utils import redirect
 from front_end.form_helpers import render_link
 from front_end.user.members_form import EditMemberDetailsForm, ShowMemberDetailsForm, ShowMemberAccountsForm, \
     MembersAreaForm
-from globals.config import url_for_user
+from globals.config import url_for_user, url_for_wags_site
 
 
 class Members:
@@ -37,4 +37,4 @@ class Members:
     def area(member_id, year):
         form = MembersAreaForm()
         form.populate(member_id, year)
-        return render_template('user/member.html', form=form, year=year, render_link=render_link)
+        return render_template('user/member.html', form=form, year=year, render_link=render_link, url_for_wags_site=url_for_wags_site)

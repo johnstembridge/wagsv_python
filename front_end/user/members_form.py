@@ -5,6 +5,7 @@ from wtforms.validators import InputRequired, Email
 from back_end.data_utilities import fmt_date, fmt_curr, parse_date, parse_float
 from back_end.interface import get_member_select_choices, save_member_details, get_member, get_member_account
 from front_end.form_helpers import set_select_field, set_select_field_new
+from globals.config import url_for_wags_site
 
 
 class MemberListForm(FlaskForm):
@@ -126,4 +127,4 @@ class MembersAreaForm(FlaskForm):
         member = get_member(member_id)
         self.member_name.data = member.player.full_name()
         self.player_id.data = member.player_id
-        self.inc_bal_url.data = 'http://www.wags.org/' + str(year - 1) + '/incexp.htm'
+        self.inc_bal_url.data = url_for_wags_site(str(year - 1)) + '/incexp.htm'

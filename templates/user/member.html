@@ -18,7 +18,7 @@
                         image=url_for('static', filename='images/go.png')
                         )|safe }}
             </td>
-            <td style="width:50%"/>
+            <td style="width:50%">&nbsp;</td>
         </tr>
         <tr>
             <td>Show other member's details</td>
@@ -78,7 +78,7 @@
             <td>Meeting minutes</td>
             <td align="left">
                         {{ render_link(
-                        url='http://www.wags.org/minutes/',
+                        url=url_for_wags_site('minutes/'),
                         image=url_for('static', filename='images/go.png')
                         )|safe }}
             </td>
