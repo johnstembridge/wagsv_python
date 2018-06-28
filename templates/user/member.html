@@ -8,16 +8,17 @@
 <form method="POST">
     {{ form.csrf_token }}
     {{ form.hidden_tag() }}
-    <hr/>
-    <table width="100%">
+    <p><b>This is your personal area of the WAGSITE. The following options are available</b></p>
+    <table class="table table-striped" width="100%">
         <tr>
-            <td>Edit your details</td>
-            <td align="left">
+            <td style="width:40%">Edit your details</td>
+            <td style="width:5%" align="left">
                         {{ render_link(
                         url=url_for('edit_contact_details'),
                         image=url_for('static', filename='images/go.png')
                         )|safe }}
             </td>
+            <td style="width:55%"/>
         </tr>
         <tr>
             <td>Show other member's details</td>
@@ -65,10 +66,19 @@
             </td>
         </tr>
         <tr>
-            <td>Show event result</td>
+            <td>{{ form.year.data - 1 }} Income Statement and Balance Sheet</td>
             <td align="left">
                         {{ render_link(
-                        url=url_for('select_event'),
+                        url=form.inc_bal_url.data,
+                        image=url_for('static', filename='images/go.png')
+                        )|safe }}
+            </td>
+        </tr>
+        <tr>
+            <td>Meeting minutes</td>
+            <td align="left">
+                        {{ render_link(
+                        url='http://www.wags.org/minutes/',
                         image=url_for('static', filename='images/go.png')
                         )|safe }}
             </td>

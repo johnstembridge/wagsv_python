@@ -118,6 +118,7 @@ class MembersAreaForm(FlaskForm):
     member_id = HiddenField(label='Member Id')
     player_id = HiddenField(label='Player Id')
     member_name = StringField(label='Member name')
+    inc_bal_url = HiddenField(label='IncBalUrl')
 
     def populate(self, member_id, year):
         self.year.data = year
@@ -125,3 +126,4 @@ class MembersAreaForm(FlaskForm):
         member = get_member(member_id)
         self.member_name.data = member.player.full_name()
         self.player_id.data = member.player_id
+        self.inc_bal_url.data = 'http://www.wags.org/' + str(year - 1) + '/incexp.htm'
