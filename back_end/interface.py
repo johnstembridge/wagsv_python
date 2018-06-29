@@ -12,11 +12,24 @@ from globals.app_setup import db_session
 from sqlalchemy import text
 
 from globals import config
-from back_end.file_access import get_field, get_record, update_record, get_records
+from back_end.file_access import get_records, update_html_elements
 
+# region text files
 data_location = config.get('locations')['data']
+html_location = config.get('locations')['html']
+
+
 def accounts_file(year):
     return os.path.join(data_location, '{}/accounts.tab'.format(year))
+
+
+def news_file():
+    return os.path.join(html_location, 'news/news.htm')
+
+
+def front_page_header_file():
+    return os.path.join(html_location, 'header.htm')
+# endregion
 
 
 # region user
@@ -827,3 +840,7 @@ def get_committee():
 
 def get_committee_function(function):
     return db_session.query(Committee).filter_by(function=function).first()
+
+
+def update_front_page(items):
+    update_html_elements(front_page_header_file(), items)

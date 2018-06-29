@@ -2,8 +2,8 @@ import datetime
 
 from back_end.data_utilities import decode_date_formal, fmt_date, encode_date_formal, coerce_fmt_date, dequote, \
     force_list, lookup
-from back_end.interface_old import news_file, front_page_header_file
-from back_end.file_access import my_open, update_html_elements, write_file
+from back_end.interface import news_file, update_front_page
+from back_end.file_access import my_open, write_file
 
 
 class News:
@@ -49,7 +49,7 @@ class News:
     def publish_news_day(self, news_day):
         self.save_news_day(news_day)
         today = fmt_date(datetime.date.today())
-        News.update_front_page(today)
+        update_front_page({'last_updated': today})
 
     def save_news_day(self, news_day, orig_date=None):
         if not orig_date:
@@ -62,10 +62,6 @@ class News:
 
     def write_all_news(self):
         write_file(news_file(), ''.join([self.head] + self.news))
-
-    @staticmethod
-    def update_front_page(date):
-        update_html_elements(front_page_header_file(), {'last_updated': date})
 
     @staticmethod
     def get_all_news():
