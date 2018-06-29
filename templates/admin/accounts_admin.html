@@ -1,0 +1,30 @@
+{% extends "admin/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Accounts {{ year }}</h1>
+</div>
+
+<form method = "POST"  enctype = "multipart/form-data">
+    {{ form.csrf_token }}
+    <table>
+        <tbody>
+        <tr>
+            <td>{{ form.file_name(filename='*.tab') }}</td>
+            <td>&nbsp;</td>
+            <td>{{ form.submit_upload(class="btn btn-primary") }}</td>
+        </tr>
+        <tr>
+            <td>or</td>
+        </tr>
+        <tr>
+            <td>{{ form.hole_in_one.label }} {{ form.hole_in_one }}</td>
+            <td></td>
+            <td>{{ form.submit_hole_in_one(class="btn btn-primary") }}</td>
+        </tr>
+        </tbody>
+    </table>
+</form>
+{% endblock %}
+

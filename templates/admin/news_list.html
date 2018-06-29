@@ -7,7 +7,18 @@
 </div>
 <form method="POST">
     {{ form.csrf_token }}
-    {{ form.news_item.label}} {{ form.news_item}}
-    {{ form.edit_news(class="btn btn-primary") }} {{ form.add_news(class="btn btn-primary") }}
+    <table>
+        <tbody>
+        <tr>
+            <td>{{ form.news_item}}</td><td>&nbsp;</td><td>{{ form.edit_news(class="btn btn-primary") }}</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td align=right>or</td><td></td><td>{{ form.add_news(class="btn btn-primary") }}</td>
+        </tr>
+        </tbody>
+    </table>
 </form>
 {% endblock %}

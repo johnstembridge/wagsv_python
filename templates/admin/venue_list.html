@@ -7,11 +7,20 @@
 </div>
 <form method="POST">
     {{ form.csrf_token }}
-
-    {{ form.venue.label}} {{ form.venue}}
-    {%if form.editable %}
-        <hr/>
-        {{ form.edit_venue(class="btn btn-primary") }} {{ form.add_venue(class="btn btn-primary") }}
-    {% endif %}
+    <table>
+        <tbody>
+        <tr>
+            <td>{{ form.venue}}</td><td>&nbsp;</td><td>{{ form.edit_venue(class="btn btn-primary") }}</td>
+        </tr>
+        {%if form.editable %}
+            <tr>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td align=right>or</td><td></td><td>{{ form.add_venue(class="btn btn-primary") }}</td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
 </form>
 {% endblock %}

@@ -3,33 +3,24 @@
 {% block title %}WAGS admin{% endblock %}
 
 {% block navbar %}
-<div class="navbar navbar-inverse" role="navigation">
-    <div class="container">
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
             <a class="navbar-brand" href="{{ url_for('index') }}">WAGS admin</a>
         </div>
-        <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-                <li><a href="{{ url_for('events_main') }}">Events</a></li>
-                <li><a href="{{ url_for('accounts_main') }}">Accounts</a></li>
-                <li><a href="{{ url_for('venues_main') }}">Venues</a></li>
-                <li><a href="{{ url_for('members_main') }}">Members</a></li>
-                <li><a href="{{ url_for('news_main') }}">News</a></li>
-            </ul>
-        </div>
+        <ul class="nav navbar-nav">
+            <li><a href="{{ url_for('events_main') }}">Events</a></li>
+            <li><a href="{{ url_for('accounts_main') }}">Accounts</a></li>
+            <li><a href="{{ url_for('venues_main') }}">Venues</a></li>
+            <li><a href="{{ url_for('members_main') }}">Members</a></li>
+            <li><a href="{{ url_for('news_main') }}">News</a></li>
+        </ul>
     </div>
-</div>
+</nav>
 {% endblock %}
 
 {% block content %}
 <div class="container">
-
     {% with messages = get_flashed_messages(with_categories=true) %}
       <!-- Categories: success (green), info (blue), warning (yellow), danger (red) -->
       {% if messages %}

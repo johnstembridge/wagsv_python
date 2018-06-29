@@ -8,10 +8,19 @@
 </div>
 <form method="POST">
     {{ form.csrf_token }}
-    {{ form.member.label }} {{ form.member }}
-    <hr>
-    {{ form.edit_member(class="btn btn-primary") }}
-    {{ form.add_member(class="btn btn-primary") }}
+    <table>
+        <tbody>
+        <tr>
+            <td>{{ form.member}}</td><td>&nbsp;</td><td>{{ form.edit_member(class="btn btn-primary") }}</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td align=right>or</td><td></td><td>{{ form.add_member(class="btn btn-primary") }}</td>
+        </tr>
+        </tbody>
+    </table>
 </form>
 {% endblock %}
 

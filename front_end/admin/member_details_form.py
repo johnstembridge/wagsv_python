@@ -16,11 +16,11 @@ class MemberListForm(FlaskForm):
     add_member = SubmitField(label='Add member')
 
     def populate_member_list(self):
-        set_select_field(self.member, None, get_member_select_choices())
+        set_select_field(self.member, 'member', get_member_select_choices())
 
 
 class MemberDetailsForm(FlaskForm):
-    member_id = StringField(label='Member Id')
+    member_id = HiddenField(label='Member Id')
     status = SelectField(label='Status', choices= MemberStatus.choices(), coerce=MemberStatus.coerce)
     first_name = StringField(label='First Name', validators=[InputRequired()])
     last_name = StringField(label='last_name', validators=[InputRequired()])
@@ -59,7 +59,8 @@ class MemberDetailsForm(FlaskForm):
     def populate_member(self, member_id):
         new_member = member_id == 0
         if new_member:
-            member = Member()
+            self.first_name.data = 'new'
+            self.last_name.data = 'member'
             set_select_field_new(self.proposer, get_member_select_choices(), item_name='proposer')
         else:
             member = get_member(member_id)

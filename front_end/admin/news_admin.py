@@ -11,10 +11,10 @@ class MaintainNews:
     def list_news():
         form = NewsListForm()
         if form.is_submitted():
-            if form.add_news.data:
-                return redirect(url_for_admin('edit_news', news_date='new'))
-            if form.edit_news.data:
+            if form.edit_news.data and form.news_item.data != '0':
                 return redirect(url_for_admin('edit_news', news_date=form.news_item.data))
+        if form.add_news.data:
+            return redirect(url_for_admin('edit_news', news_date='new'))
         form.populate_news_list()
 
         return render_template('admin/news_list.html', form=form, render_link=render_link)

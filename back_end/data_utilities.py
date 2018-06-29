@@ -342,3 +342,11 @@ def names_from_ids(all, ids):
 def gen_to_list(gen):
     # force evaluation of a generator
     return [x for x in gen]
+
+
+def html_escape(text):
+    return text.replace('<', '&lt;').replace('>', '&gt;').replace('&', '&amp;')
+
+
+def html_unescape(text):
+    return text.replace('&lt;', '<').replace('&gt;', '>').replace('&amp;', '&')

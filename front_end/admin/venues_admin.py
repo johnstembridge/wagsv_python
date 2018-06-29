@@ -12,10 +12,10 @@ class MaintainVenues:
     def list_venues():
         form = VenueListForm()
         if form.is_submitted():
-            if form.add_venue.data:
-                return redirect(url_for_admin('edit_venue', venue_id="0"))
-            if form.edit_venue.data:
+            if form.edit_venue.data and int(form.venue.data) > 0:
                 return redirect(url_for_admin('edit_venue', venue_id=form.venue.data))
+        if form.add_venue.data:
+            return redirect(url_for_admin('edit_venue', venue_id="0"))
         form.populate_venue_list()
 
         return render_template('admin/venue_list.html', form=form, render_link=render_link)

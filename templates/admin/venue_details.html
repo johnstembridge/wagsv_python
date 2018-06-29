@@ -51,11 +51,17 @@
                     {% endfor %}
                     </tbody>
                 </table>
-         {%if form.editable.data %}
+                {%if form.editable.data %}
                 <table>
                     <tr><td>&nbsp;</td></tr>
                     <tr>
-                        <td>{{ form.select_course }}</td><td>&nbsp;{{ form.add_course() }}</td><td>&nbsp;{{ form.remove_course() }}</td>
+                        <td>{{ form.select_course }}</td>
+                        <td>&nbsp;{{ form.add_course(class="btn btn-success") }}</td>
+                        <td>&nbsp;{{ form.remove_course(class="btn btn-danger") }}</td>
+                    </tr>
+                    <tr><td>&nbsp;</td></tr>
+                    <tr>
+                        <td>{{ form.new_course(class="btn btn-success") }}</td>
                     </tr>
                 </table>
                 {% endif %}
@@ -63,7 +69,6 @@
     </table>
     <hr/>
     {%if form.editable.data %}
-        <p>{{ form.new_course() }}
         <p>{{ form.save(class="btn btn-primary") }}
     {% endif %}
 </form>
