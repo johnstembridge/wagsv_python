@@ -1,18 +1,17 @@
 {% extends "user/base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
-
 {% block page_content %}
+
 <div class="page-header">
-    <h2>Wags Members Area - {{ form.member_name.data }}</h2>
+    <h2>Wags members area - {{ form.member_name.data }}</h2>
 </div>
 <form method="POST">
     {{ form.csrf_token }}
     {{ form.hidden_tag() }}
-    <p><b>This is your personal area of the WAGSITE. The following options are available</b></p>
+    <p><b>This is your personal area of the WagSite. The following options are available</b></p>
     <table class="table table-striped" width="100%">
         <tr>
-            <td style="width:45%">Edit your details</td>
-            <td style="width:5%" align="left">
+            <td>Edit your details</td>
+            <td align="left">
                         {{ render_link(
                         url=url_for('edit_contact_details'),
                         image=url_for('static', filename='images/go.png')
