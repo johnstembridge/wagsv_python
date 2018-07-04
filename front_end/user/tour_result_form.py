@@ -39,7 +39,7 @@ class TourResultsForm(FlaskForm):
 
         for res in results.data:
             item_form = TourResultItemForm()
-            guest = ""  # if (res[results.column_index('status')] != "0") else " (guest)"
+            guest = "" if (res[results.column_index('status')] != 0) else " (guest)"
             item_form.position = res[results.column_index('position')]
             item_form.player = player_names[res[results.column_index('player_id')]] + guest
             item_form.total = res[results.column_index('total')]

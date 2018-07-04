@@ -38,10 +38,10 @@ class TrophyForm(FlaskForm):
         trophy = get_trophy(trophy_id)
         self.trophy_name.data = trophy.name
         self.image_url.data = os.path.join(config.get('locations')['base_url'], 'trophies', trophy.name.lower() + '.jpg')
-        hist = trophy.events
         extra_file = 'user/extra/' + trophy.name.lower() + '.htm'
         if template_exists(extra_file):
             self.extra.data = extra_file
+        hist = trophy.events
         for event in hist:
             tour = first_or_default([e for e in hist if e.date.year == event.date.year and e.type == EventType.wags_tour], None)
             if event.date < datetime.date.today() \

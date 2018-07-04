@@ -135,18 +135,20 @@ def get_tour_results(event):
     res = []
     for player_id, event_scores in scores.group_by('player'):
         s = [s for s in event_scores]
+        status = s[0][5]
         missing = list(set(event_ids).difference(set([x[1] for x in s])))  # event ids
         for m in missing:
-            s.append([dates[m], m, 0, 0, None])
+            s.append([dates[m], m, 0, 0, None, 0])
         s.sort()
         p = [int(x[3]) for x in s]  # points
         if trophy and multi:
             tp = sum([int(x[3]) for x in s if x[4] == trophy])  # total points for trophy
         else:
             tp = sum(p)
-        r = (player_id, p, tp)
+
+        r = (player_id, status, p, tp)
         res.append(r)
-    head = ['player_id', 'scores', 'total']
+    head = ['player_id', 'status', 'scores', 'total']
     res = Table(head, res)
     res.sort(['total'], reverse=True)
     res.add_column('position', get_positions(res.get_columns('total')))

@@ -5,6 +5,7 @@ from operator import and_
 
 from back_end.data_utilities import lookup, mean, first_or_default, fmt_date, in_date_range
 from back_end.table import Table
+from front_end.form_helpers import get_elements_from_html
 from globals.enumerations import MemberStatus, PlayerStatus, EventType
 from models.wags_db import Event, Score, Course, CourseData, Trophy, Player, Venue, Handicap, Member, Contact, \
     Schedule, Booking, User, Committee
@@ -12,7 +13,7 @@ from globals.app_setup import db_session
 from sqlalchemy import text
 
 from globals import config
-from back_end.file_access import get_records, update_html_elements
+from back_end.file_access import get_records, update_html_elements, get_file_contents
 
 # region text files
 data_location = config.get('locations')['data']
@@ -448,8 +449,9 @@ def get_tour_scores(event_ids):
     s = text("select * from scores where event_id in {} order by player_id, event_id".format(ids))
     scores = []
     for score in db_session.query(Score).from_statement(s):
-        scores.append([score.event.date, score.event_id, score.player_id, score.points, score.event.trophy])
-    head = ['date', 'event', 'player', 'points', 'trophy']
+        status = score.player.state_as_of(score.event.date).status
+        scores.append([score.event.date, score.event_id, score.player_id, score.points, score.event.trophy, status.value])
+    head = ['date', 'event', 'player', 'points', 'trophy', 'status']
     return head, scores
 
 # endregion
@@ -844,3 +846,8 @@ def get_committee_function(function):
 
 def update_front_page(items):
     update_html_elements(front_page_header_file(), items)
+
+
+def get_front_page_items(items):
+    html = get_file_contents(front_page_header_file())
+    return get_elements_from_html(html, items)
