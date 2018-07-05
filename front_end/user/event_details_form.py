@@ -1,4 +1,5 @@
 import datetime
+import decimal
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, DecimalField, TextAreaField, SubmitField, FieldList, FormField, HiddenField, RadioField
@@ -108,7 +109,7 @@ class EventDetailsForm(FlaskForm):
             name = guest.guest_name.data
             if len(name) > 0:
                 obj = first_or_default([g for g in booking.guests if g.name == name], Guest(name=name))
-                obj.handicap = guest.handicap.data
+                obj.handicap = decimal.Decimal(guest.handicap.data)
                 guests.append(obj)
         booking.guests = guests
         save_booking(booking)

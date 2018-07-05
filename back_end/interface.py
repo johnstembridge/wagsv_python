@@ -579,12 +579,13 @@ def get_player_select_list():
     # return sorted(players, key=lambda tup: tup[1])
 
 
-def add_player(name, hcap, status, date):
+def add_player(name, hcap, status, date, commit=True):
     first, last = name.split(' ')
     player = Player(first_name=first, last_name=last)
     player.handicaps.append(Handicap(date=date, handicap=hcap, status=status))
     db_session.add(player)
-    # db_session.commit()
+    if commit:
+        db_session.commit()
     return player
 
 
@@ -664,7 +665,7 @@ def save_member(member_id, data):
     else:
         player_status = PlayerStatus.ex_member
     if player_id == 0:
-        player = add_player(name, handicap, player_status, date)
+        player = add_player(name, handicap, player_status, date, commit=False)
     else:
         player = get_player(player_id)
         if name != orig_name:

@@ -36,7 +36,7 @@ class EventResultsForm(FlaskForm):
         for player in sorted_players_for_event(event):
             item_form = EventResultItemForm()
             state = player.state_as_of(event.date)
-            guest = " (guest)" if (state.status == PlayerStatus.guest) else ""
+            guest = " (guest)" if (state.status != PlayerStatus.member) else ""
             item_form.player = player.full_name() + guest
             item_form.handicap = state.handicap
             item_form.handicap_return = state.handicap
