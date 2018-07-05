@@ -18,6 +18,7 @@ class MemberListForm(FlaskForm):
 
 
 class EditMemberDetailsForm(FlaskForm):
+    status = HiddenField()
     first_name = StringField(label='First Name', validators=[InputRequired()])
     last_name = StringField(label='Last Name', validators=[InputRequired()])
     email = StringField(label='Email', validators=[InputRequired(), Email("Invalid email address")])
@@ -50,6 +51,7 @@ class EditMemberDetailsForm(FlaskForm):
 class ShowMemberDetailsForm(FlaskForm):
     choose_member = SelectField(label='Choose Member', coerce=int)
     load = SubmitField(label='Load')
+    status = StringField(label='Status')
     first_name = StringField(label='First Name')
     last_name = StringField(label='Last Name')
     email = StringField(label='Email')
@@ -72,6 +74,7 @@ class MemberDetails:
         if member:
             player = member.player
             contact = member.contact
+            form.status.data = member.status.name
             form.first_name.data = player.first_name
             form.last_name.data = player.last_name
             form.email.data = contact.email
