@@ -1,5 +1,5 @@
 from flask_login import UserMixin
-from sqlalchemy import Column, Integer, Date, Time, Numeric, String, ForeignKey, types, Boolean
+from sqlalchemy import Column, Integer, Date, Time, Numeric, String, ForeignKey, types, Boolean, UniqueConstraint
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -294,7 +294,7 @@ class Booking(Base):
     date = Column(Date, nullable=False)
     playing = Column(Boolean, nullable=False)
     comment = Column(String(100), nullable=True)
-    guests = relationship("Guest",  back_populates="booking")
+    guests = relationship("Guest",  back_populates="booking", cascade="all, delete, delete-orphan")
     event = relationship("Event", back_populates="bookings")
     member = relationship("Member", back_populates="bookings")
 

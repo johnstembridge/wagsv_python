@@ -200,10 +200,11 @@ def fmt_num(num):
     return str(int(num) if num == math.floor(num) else num)
 
 
-def parse_float(num):
-    if len(num) == 0:
-        return None
-    return float(num)
+def parse_float(num, default=None):
+    try:
+        return float(num)
+    except:
+        return default
 
 
 def fmt_curr(num):

@@ -30,6 +30,8 @@ def news_file():
 
 def front_page_header_file():
     return os.path.join(html_location, 'header.htm')
+
+
 # endregion
 
 
@@ -107,12 +109,13 @@ def get_event(event_id):
 
 
 def get_event_for_course_and_date(date, course_id):
-    return db_session.query(Event).filter_by(date=date, course_id=course_id).first() or Event(date=date, course_id=course_id)
+    return db_session.query(Event).filter_by(date=date, course_id=course_id).first() or Event(date=date,
+                                                                                              course_id=course_id)
 
 
 def get_all_events():
-    return db_session.query(Event)\
-        .filter(Event.date <= datetime.date.today())\
+    return db_session.query(Event) \
+        .filter(Event.date <= datetime.date.today()) \
         .order_by(Event.date.desc())
 
 
@@ -192,8 +195,10 @@ def save_event_details(event_id, details):
         all_courses = get_all_courses()
         all_venues = get_all_venues()
         for row in details['tour_schedule']:
-            course_id = first_or_default([c.id for c in all_courses.values() if c.name.lower() == row['course'].lower()], None)
-            venue_id = first_or_default([v.id for v in all_venues.values() if v.name.lower() == row['course'].lower()], None)
+            course_id = first_or_default(
+                [c.id for c in all_courses.values() if c.name.lower() == row['course'].lower()], None)
+            venue_id = first_or_default([v.id for v in all_venues.values() if v.name.lower() == row['course'].lower()],
+                                        None)
             if not venue_id:
                 venue_id = all_courses[course_id].venue_id
             trophy_id = None
@@ -253,6 +258,7 @@ def update_event_winner(event, result):
 
     def sel_fn(values):
         return values['status'] == str(MemberStatus.full_member.value)
+
     result = result.select_rows(sel_fn)
     event.winner_id = int(result.get_columns('player_id')[0])
 
@@ -303,7 +309,8 @@ def get_players_for_event(event):
                 if p:
                     state = p.state_as_of(event.date)
                     if state.handicap != guest.handicap:
-                        p.handicaps.append(Handicap(date=event.date, status=PlayerStatus.guest, handicap=guest.handicap))
+                        p.handicaps.append(
+                            Handicap(date=event.date, status=PlayerStatus.guest, handicap=guest.handicap))
                 else:
                     p = add_player(guest.name, guest.handicap, PlayerStatus.guest, event.date)
                 players.append(p)
@@ -450,9 +457,11 @@ def get_tour_scores(event_ids):
     scores = []
     for score in db_session.query(Score).from_statement(s):
         status = score.player.state_as_of(score.event.date).status
-        scores.append([score.event.date, score.event_id, score.player_id, score.points, score.event.trophy, status.value])
+        scores.append(
+            [score.event.date, score.event_id, score.player_id, score.points, score.event.trophy, status.value])
     head = ['date', 'event', 'player', 'points', 'trophy', 'status']
     return head, scores
+
 
 # endregion
 
@@ -573,12 +582,6 @@ def get_players_as_of(date, status):
     return res
 
 
-def get_player_select_list():
-    pass
-    # players = get_fields(players_file(), ['id', 'name'])
-    # return sorted(players, key=lambda tup: tup[1])
-
-
 def add_player(name, hcap, status, date, commit=True):
     first, last = name.split(' ')
     player = Player(first_name=first, last_name=last)
@@ -628,7 +631,7 @@ def get_member_by_email(email):
 
 def get_all_members(current=True):
     if current:
-        return db_session.query(Member)\
+        return db_session.query(Member) \
             .filter(Member.status.in_([MemberStatus.full_member, MemberStatus.overseas_member]))
     else:
         return db_session.query(Member)
@@ -715,16 +718,17 @@ def save_member_details(member_id, data):
     contact = member.contact
     player.first_name = data['first_name']
     player.last_name = data['last_name']
-    contact.email=data['email']
-    contact.address=data['address']
-    contact.post_code=data['post_code']
-    contact.phone=data['phone']
+    contact.email = data['email']
+    contact.address = data['address']
+    contact.post_code = data['post_code']
+    contact.phone = data['phone']
     db_session.commit()
 
 
 def get_member_account(member_name, year):
     file = accounts_file(year)
     return Table(*get_records(file, 'member', member_name))
+
 
 # endregion
 
@@ -816,7 +820,8 @@ def get_all_scores():
 
 # region Bookings
 def get_booking(event_id, member_id):
-    return db_session.query(Booking).filter_by(event_id=event_id, member_id=member_id).first()
+    return db_session.query(Booking).filter_by(event_id=event_id, member_id=member_id).first() \
+            or Booking(event_id=event_id, member_id=member_id, date=datetime.date.today())
 
 
 def get_all_bookings(event_id):
@@ -824,9 +829,11 @@ def get_all_bookings(event_id):
 
 
 def save_booking(booking):
-    if not booking.id:
-        db_session.add(booking)
+    # if not booking.id:
+    #     db_session.add(booking)
     db_session.commit()
+
+
 # endregion
 
 

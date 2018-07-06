@@ -30,5 +30,4 @@ def init_app(app, create=False):
     db = SQLAlchemy(app)
     if create:
         import models.wags_db
-        #Base.metadata.create_all(bind=engine)
         models.wags_db.Base.metadata.create_all(bind=engine)

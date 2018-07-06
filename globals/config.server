@@ -3,6 +3,7 @@
   "apache_group_name": "www-data",
   "SECRET_KEY": "secret squirrel",
   "override": false,
+  "send_mail": true,
   "locations": {
     "base_url": "http://wags.org/",
     "data": "/var/www/html/data",

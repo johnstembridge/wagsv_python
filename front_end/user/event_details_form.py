@@ -1,18 +1,17 @@
 import datetime
-import decimal
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, DecimalField, TextAreaField, SubmitField, FieldList, FormField, HiddenField, RadioField
 from wtforms.fields.html5 import DateField
 from wtforms.validators import Optional
 
-from back_end.data_utilities import encode_date, fmt_date, first_or_default, to_bool
+from back_end.data_utilities import encode_date, fmt_date, first_or_default, to_bool, parse_float
 from back_end.interface import get_event, get_booking, save_booking, is_event_bookable, get_member, \
-    get_committee_function
+    get_committee_function, get_player_by_name
 from front_end.form_helpers import line_break
 from globals.email import send_mail
-from globals.enumerations import Function
-from models.wags_db import Guest, Booking, Contact
+from globals.enumerations import Function, PlayerStatus
+from models.wags_db import Guest, Contact
 
 
 class GuestForm(FlaskForm):
@@ -70,22 +69,23 @@ class EventDetailsForm(FlaskForm):
         post_code = contact.post_code or ''
         self.venue_address.data = line_break(contact.address or '' + ',' + post_code, ',')
         self.venue_phone.data = contact.phone or ''
-        self.map_url.data = 'http://maps.google.co.uk/maps?q={}&title={}&z=12 target="googlemap"'\
+        self.map_url.data = 'http://maps.google.co.uk/maps?q={}&title={}&z=12 target="googlemap"' \
             .format(post_code.replace(' ', '+'), event.venue.name)
         self.venue_directions.data = line_break(event.venue.directions or '', '\n')
-        self.schedule.data = line_break([(s.time.strftime('%H:%M ') + s.text)for s in event.schedule])
+        self.schedule.data = line_break([(s.time.strftime('%H:%M ') + s.text) for s in event.schedule])
         self.member_price.data = event.member_price
         self.guest_price.data = event.guest_price
         self.booking_deadline.data = encode_date(event.booking_end)
         self.notes.data = event.note or ''
 
         booking = get_booking(event_id, member_id)
-        if not booking:
-            booking = Booking(member=get_member(member_id), playing=True)
+        if not booking.id:
+            booking.member = get_member(member_id)
+            booking.playing = True
         else:
-            self.booking_date.data = fmt_date(booking.date)
             self.attend.data = booking.playing
             self.comment.data = booking.comment
+            self.booking_date.data = fmt_date(booking.date)
         self.member_name.data = booking.member.player.full_name()
         count = 1
         for guest in booking.guests + (3 - len(booking.guests)) * [Guest()]:
@@ -100,27 +100,38 @@ class EventDetailsForm(FlaskForm):
         errors = self.errors
         if len(errors) > 0:
             return False
-        booking = get_booking(event_id, member_id) or Booking(event=get_event(event_id), member=get_member(member_id))
+        booking = get_booking(event_id, member_id)
         booking.date = datetime.date.today()
         booking.playing = self.attend.data
         booking.comment = self.comment.data if len(self.comment.data) > 0 else None
         guests = []
-        for guest in self.guests:
-            name = guest.guest_name.data
-            if len(name) > 0:
-                obj = first_or_default([g for g in booking.guests if g.name == name], Guest(name=name))
-                obj.handicap = decimal.Decimal(guest.handicap.data)
-                guests.append(obj)
+        if booking.playing:
+            for guest in self.guests:
+                name = guest.guest_name.data
+                if len(name) > 0:
+                    obj = first_or_default([g for g in booking.guests if g.name == name],
+                                           Guest(name=name, booking=booking))
+                    hcap = parse_float(guest.handicap.data, 28.0)
+                    known_player = get_player_by_name(name)
+                    if known_player:
+                        state = known_player.state_as_of(booking.date)
+                        if state.status == PlayerStatus.member:
+                            hcap = state.handicap
+                    obj.handicap = hcap
+                    guests.append(obj)
         booking.guests = guests
         save_booking(booking)
-        return self.confirm_booking(booking)
+
+        return self.confirm_booking(event_id, member_id)
 
     @staticmethod
-    def confirm_booking(booking):
+    def confirm_booking(event_id, member_id):
+        booking = get_booking(event_id, member_id)
         subject = 'Book event - {}'.format(booking.event.full_name())
         treasurer = get_committee_function(Function.Treasurer)
         cost = 0
         if booking.playing:
+            cost += booking.event.member_price
             message = ['{} will attend'.format(booking.member.player.full_name())]
             if booking.guests:
                 message.append('Guests:')
@@ -128,7 +139,9 @@ class EventDetailsForm(FlaskForm):
                     cost += booking.event.guest_price
                     message.append('{} (handicap {})'.format(guest.name, guest.handicap))
             message.append('Total cost £{}'.format(cost))
-            message.append('(Please send cheque to {} ASAP or pay by on-line credit to the WAGS bank account number 01284487, sort code 40-07-30)'.format(treasurer.member.player.full_name()))
+            message.append(
+                '(Please send cheque to {} ASAP or pay by on-line credit to the WAGS bank account number 01284487, sort code 40-07-30)'.format(
+                    treasurer.member.player.full_name()))
             if booking.comment:
                 message.append(booking.comment)
         else:
@@ -155,5 +168,3 @@ class EventBookingConfirmationForm(FlaskForm):
     def populate(self, title, message):
         self.title.data = title
         self.message.data = message
-
-
