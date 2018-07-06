@@ -69,7 +69,7 @@ class Event(Base):
     course_id = Column(Integer, ForeignKey("courses.id"))
     course = relationship('Course', back_populates='events')
 
-    schedule = relationship('Schedule', back_populates='event')
+    schedule = relationship('Schedule', back_populates='event', cascade="all, delete, delete-orphan")
 
     tour_event_id = Column(Integer, ForeignKey("events.id"))
     tour_events = relationship('Event', order_by=date, backref=backref("tour_event", remote_side=id))
