@@ -13,6 +13,7 @@ from views.admin.events import *
 from views.admin.members import *
 from views.admin.news import *
 from views.admin.venues import *
+from views.admin.minutes import *
 
 
 @app.errorhandler(401)

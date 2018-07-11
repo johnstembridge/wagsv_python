@@ -6,7 +6,7 @@ from operator import and_
 from back_end.data_utilities import lookup, mean, first_or_default, fmt_date, in_date_range
 from back_end.table import Table
 from front_end.form_helpers import get_elements_from_html
-from globals.enumerations import MemberStatus, PlayerStatus, EventType
+from globals.enumerations import MemberStatus, PlayerStatus, EventType, Function
 from models.wags_db import Event, Score, Course, CourseData, Trophy, Player, Venue, Handicap, Member, Contact, \
     Schedule, Booking, User, Committee
 from globals.app_setup import db_session
@@ -845,7 +845,7 @@ def get_all_years():
 
 
 def get_committee():
-    return db_session.query(Committee).all()
+    return db_session.query(Committee).filter(Committee.function < Function.Captain).all()
 
 
 def get_committee_function(function):

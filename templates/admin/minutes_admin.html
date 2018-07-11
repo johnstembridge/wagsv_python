@@ -1,0 +1,45 @@
+{% extends "admin/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Minutes</h1>
+</div>
+
+<form method = "POST" enctype = "multipart/form-data">
+    {{ form.csrf_token }}
+    <table>
+        <tbody>
+            <tr>
+                <td><b>{{ form.meeting_date.label }}</b></td>
+                <td>{{ form.meeting_date(type="date") }}</td>
+                <td></td>
+            </tr>
+            <tr><td>&nbsp;</td></t></tr>
+            <tr>
+                <td><b>Minutes file to upload</b></td>
+                <td>{{ form.file_name }}</td>
+                <td></td>
+            </tr>
+            <tr><td>&nbsp;</td></t></tr>
+            <tr>
+                <td>{{ form.message.label }}</td>
+            <tr>
+            </tr>
+                <td colspan="3">{{ form.message(cols=100, rows=5) }}</td>
+            </tr>
+            <tr><td>&nbsp;</td></t></tr>
+            <tr>
+                 <td align="center">{{ form.submit(class="btn btn-primary") }}</td>
+                 <td>Send link for draft to Wags committtee </td>
+           </tr>
+            <tr><td>&nbsp;</td></t></tr>
+            <tr>
+                <td align="center">{{ form.publish(class="btn btn-primary") }}</td>
+                <td>Publish final version to Wags site </td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+{% endblock %}
+
