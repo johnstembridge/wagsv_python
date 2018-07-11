@@ -13,6 +13,7 @@
   },
     "url_prefix": {
     "admin": "/wagsadmin",
-    "user": "/wagsuser"
+    "user": "/wagsuser",
+    "html": "html"
   }
 }

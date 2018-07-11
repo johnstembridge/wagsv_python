@@ -23,14 +23,18 @@ def url_for_user(endpoint, **values):
     return url_for('user', endpoint, **values)
 
 
-def url_for_wags_site(end):
-    end = end.replace(" ", "%20")
-    return get('locations')['base_url'] + end
-
-
 def url_for(app, endpoint, **values):
     url = flask_url_for(endpoint, **values)
     prefix = get('url_prefix')[app]
     if prefix:
         url = prefix + url
     return url
+
+
+def url_for_wags_site(end):
+    end = end.replace(" ", "%20")
+    return get('locations')['base_url'] + end
+
+
+def url_for_html(*paths):
+    return os.path.join(get('url_prefix')['html'], *paths)

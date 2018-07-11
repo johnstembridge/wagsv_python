@@ -50,10 +50,13 @@ class TrophyForm(FlaskForm):
                 item_form = TrophyItemForm()
                 item_form.venue = event.venue.name
                 item_form.date = fmt_date(event.date)
-                item_form.winner = event.winner.full_name()
-                if event.type == EventType.wags_vl_event:
-                    item_form.score = event.winner.score_for(event.id).points
-                    item_form.average = event.average_score
+                if event.winner:
+                    item_form.winner = event.winner.full_name()
+                    if event.type == EventType.wags_vl_event:
+                        item_form.score = event.winner.score_for(event.id).points
+                        item_form.average = event.average_score
+                    else:
+                        item_form.score = item_form.average = ''
                 else:
-                    item_form.score = item_form.average = ''
+                    item_form.winner = item_form.score = item_form.average = ''
                 self.winners.append_entry(item_form)

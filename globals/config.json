@@ -16,6 +16,7 @@
   },
   "url_prefix": {
     "admin": "",
-    "user": ""
+    "user": "",
+    "html": "file:///C:\\Users\\jstembridge\\wagsite\\html"
   }
 }
