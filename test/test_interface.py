@@ -3,7 +3,7 @@ import datetime
 
 from back_end.file_access import get_record
 from globals.enumerations import PlayerStatus
-from back_end.interface_old import *
+from back_end.interface import *
 from back_end.table import Table
 from test_data import TestData
 
