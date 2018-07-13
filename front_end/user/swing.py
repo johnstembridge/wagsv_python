@@ -1,11 +1,11 @@
-import os
 from flask_wtf import FlaskForm
 from flask import render_template
 from wtforms import StringField, FormField, FieldList
 
 from back_end.calc import get_big_swing
+from back_end.data_utilities import fmt_date
 from front_end.form_helpers import render_link
-from globals import config
+from globals.config import url_for_html
 
 
 class Swing:
@@ -41,11 +41,11 @@ class SwingForm(FlaskForm):
             item_form.position = item[swings.column_index('position')]
             item_form.player = item[swings.column_index('player')]
             item_form.course = item[swings.column_index('course')]
-            item_form.date = item[swings.column_index('date')]
+            item_form.date = fmt_date(item[swings.column_index('date')])
             item_form.points_out = item[swings.column_index('points_out')]
             item_form.points_in = item[swings.column_index('points_in')]
             item_form.swing = item[swings.column_index('swing')]
 
             self.swing.append_entry(item_form)
         self.year_span.data = str(int(year)-1) + '/' + year
-        self.image_url.data = os.path.join(config.get('locations')['base_url'], 'trophies', 'swing.jpg')
+        self.image_url.data = url_for_html('pictures', 'trophies', 'swing.jpg')

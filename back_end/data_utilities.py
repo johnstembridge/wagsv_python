@@ -315,7 +315,7 @@ def de_the(string):
 
 
 def my_round(float_num):
-    return math.floor(float_num + 0.5)
+    return math.floor(float(float_num) + 0.5)
 
 
 def mean(values):

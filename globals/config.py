@@ -37,4 +37,4 @@ def url_for_wags_site(end):
 
 
 def url_for_html(*paths):
-    return os.path.join(get('url_prefix')['html'], *paths)
+    return os.path.join(get('locations')['base_url'], *paths)

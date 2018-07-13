@@ -1,11 +1,10 @@
-import os
 from flask_wtf import FlaskForm
 from flask import render_template
 from wtforms import StringField, FormField, FieldList, HiddenField
 
 from back_end.calc import get_vl
 from front_end.form_helpers import render_link
-from globals import config
+from globals.config import url_for_html
 
 
 class Vl:
@@ -33,7 +32,7 @@ class VlForm(FlaskForm):
 
     def populate_vl(self, year):
         self.year.data = year
-        self.image_url.data = os.path.join(config.get('locations')['base_url'], 'trophies', 'vl.jpg')
+        self.image_url.data = url_for_html('pictures', 'trophies', 'vl.jpg')
         vl = get_vl(year)
         for item in vl.data:
             item_form = VlItemForm()

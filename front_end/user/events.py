@@ -1,9 +1,7 @@
-import datetime
-
 from flask import render_template, redirect, flash
 
 from front_end.user.event_bookings_form import EventBookingsForm
-from front_end.user.event_details_form import EventDetailsForm
+from front_end.user.event_details_form import EventDetailsForm, EventBookingConfirmationForm
 from .event_card_form import EventCardForm
 from .event_list_form import EventListForm, EventSelectForm
 from .event_result_form import EventResultsForm
@@ -11,7 +9,7 @@ from .tour_result_form import TourResultsForm
 from front_end.form_helpers import render_link
 from back_end.interface import get_event
 from globals.enumerations import EventType
-from globals.config import url_for_wags_site, url_for_user
+from globals.config import url_for_html
 
 
 class ReportEvents:
@@ -35,11 +33,12 @@ class ReportEvents:
     def show_or_book_event(event_id, member_id):
         form = EventDetailsForm()
         if form.is_submitted():
-            form = form.book_event(event_id, member_id)
-            if form:
+            booking = form.book_event(event_id, member_id)
+            if booking:
                 flash('Booking saved', 'success')
-                return render_template('user/event_booking_confirmation.html', form=form)
-                #return redirect(url_for_user('list_events', year=datetime.date.today().year))
+                form = EventBookingConfirmationForm()
+                form.populate(booking)
+                return render_template('user/event_booking.html', form=booking)
         else:
             form.populate_event(event_id, member_id)
         return render_template('user/event_details.html', form=form, render_link=render_link)
@@ -61,9 +60,9 @@ class ReportEvents:
     @staticmethod
     def report_event(event_id):
         date = get_event(event_id).date
-        year = date.year
+        year = str(date.year)
         file = 'rp{}.htm'.format(date.strftime('%y%m%d'))
-        return redirect(url_for_wags_site('{}/{}'.format(year, file)))
+        return redirect(url_for_html('reports', year, file))
 
     @staticmethod
     def results_vl_event(event_id):

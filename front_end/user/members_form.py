@@ -1,3 +1,4 @@
+import os
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, HiddenField, SelectField, FieldList, FormField
 from wtforms.validators import InputRequired, Email
@@ -5,7 +6,8 @@ from wtforms.validators import InputRequired, Email
 from back_end.data_utilities import fmt_date, fmt_curr, parse_date, parse_float
 from back_end.interface import get_member_select_choices, save_member_details, get_member, get_member_account
 from front_end.form_helpers import set_select_field, set_select_field_new
-from globals.config import url_for_wags_site
+from globals import config
+from globals.config import url_for_html
 
 
 class MemberListForm(FlaskForm):
@@ -81,7 +83,7 @@ class MemberDetails:
             form.address.data = contact.address
             form.post_code.data = contact.post_code
             form.phone.data = contact.phone
-            form.mugshot.data = "http://www.wags.org/pictures/mugshots/{}.jpg".format(player.first_name + '_' + player.last_name)
+            form.mugshot.data = url_for_html('pictures', 'mugshots', player.full_name().replace(' ', '_') + '.jpg')
 
 
 class AccountItemForm(FlaskForm):
@@ -130,4 +132,4 @@ class MembersAreaForm(FlaskForm):
         member = get_member(member_id)
         self.member_name.data = member.player.full_name()
         self.player_id.data = member.player_id
-        self.inc_bal_url.data = url_for_wags_site(str(year - 1)) + '/incexp.htm'
+        self.inc_bal_url.data = config.url_for_html('reports', str(year - 1), 'incexp.htm')

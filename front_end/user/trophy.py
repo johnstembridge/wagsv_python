@@ -1,4 +1,3 @@
-import os
 import datetime
 from flask_wtf import FlaskForm
 from flask import render_template
@@ -7,7 +6,7 @@ from wtforms import StringField, FormField, FieldList
 from back_end.data_utilities import fmt_date, first_or_default
 from back_end.interface import get_trophy
 from front_end.form_helpers import render_link, template_exists
-from globals import config
+from globals.config import url_for_html
 from globals.enumerations import EventType
 
 
@@ -37,7 +36,7 @@ class TrophyForm(FlaskForm):
     def populate_trophy(self, trophy_id):
         trophy = get_trophy(trophy_id)
         self.trophy_name.data = trophy.name
-        self.image_url.data = os.path.join(config.get('locations')['base_url'], 'trophies', trophy.name.lower() + '.jpg')
+        self.image_url.data = url_for_html('pictures', 'trophies', trophy.name.lower() + '.jpg')
         extra_file = 'user/extra/' + trophy.name.lower() + '.htm'
         if template_exists(extra_file):
             self.extra.data = extra_file

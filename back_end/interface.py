@@ -21,7 +21,7 @@ html_location = config.get('locations')['html']
 
 
 def accounts_file(year):
-    return os.path.join(data_location, '{}/accounts.tab'.format(year))
+    return os.path.join(html_location, 'reports', str(year), 'accounts.tab')
 
 
 def news_file():

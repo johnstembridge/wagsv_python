@@ -1,10 +1,10 @@
-from flask import render_template
+from flask import render_template, flash
 from werkzeug.utils import redirect
 
 from front_end.form_helpers import render_link
 from front_end.user.members_form import EditMemberDetailsForm, ShowMemberDetailsForm, ShowMemberAccountsForm, \
     MembersAreaForm
-from globals.config import url_for_user, url_for_wags_site
+from globals.config import url_for_user, url_for_html
 
 
 class Members:
@@ -17,7 +17,7 @@ class Members:
             form = ShowMemberDetailsForm()
         if form.is_submitted():
             if edit and form.save_details(member_id):
-                #flash('Details saved', 'success')
+                flash('Details saved', 'success')
                 return redirect(url_for_user('edit_contact_details'))
             else:
                 return redirect(url_for_user('show_contact_details', member_id=form.choose_member.data))
@@ -37,4 +37,4 @@ class Members:
     def area(member_id, year):
         form = MembersAreaForm()
         form.populate(member_id, year)
-        return render_template('user/member.html', form=form, year=year, render_link=render_link, url_for_wags_site=url_for_wags_site)
+        return render_template('user/member.html', form=form, year=year, render_link=render_link, url_for_html=url_for_html)

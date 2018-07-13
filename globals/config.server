@@ -5,15 +5,15 @@
   "override": false,
   "send_mail": true,
   "locations": {
-    "base_url": "http://wags.org/",
-    "data": "/var/www/html/data",
-    "minutes": "/var/www/html/minutes",
-    "html": "/var/www/html",
+    "base_url": "http://wags.org/v2/",
+    "data": "/var/www/html/v2/data",
+    "minutes": "/var/www/html/v2/minutes",
+    "html": "/var/www/html/v2",
     "logs": "/var/log/wags"
   },
     "url_prefix": {
     "admin": "/wagsadmin",
     "user": "/wagsuser",
-    "html": "html"
+    "html": ".."
   }
 }

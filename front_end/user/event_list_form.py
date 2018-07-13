@@ -38,7 +38,7 @@ class EventListForm(FlaskForm):
                 item_form.trophy_url = event.trophy.url()
             else:
                 item_form.event = event.venue.name
-                item_form.trophy_url = get_venue_url(event.venue)
+                item_form.trophy_url = None
             item_form.venue = event.course.name if event_type == EventType.wags_vl_event else event.venue.name
             item_form.venue_url = get_venue_url(event.venue)
 

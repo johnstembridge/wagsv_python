@@ -5,10 +5,10 @@
   "send_mail": false,
   "db_path": "sqlite:///C:\\Users\\jstembridge\\wagsite\\wags.db",
   "locations": {
-    "base_url": "http://www.wags.org/",
-    "data": "C:\\Users\\jstembridge\\wagsite\\html\\data",
-    "minutes": "C:\\Users\\jstembridge\\wagsite\\html\\minutes",
-    "html": "C:\\Users\\jstembridge\\wagsite\\html",
+    "base_url": "http://wags.org/v2",
+    "html": "C:\\Users\\jstembridge\\wagsite\\html\\v2",
+    "data": "C:\\Users\\jstembridge\\wagsite\\html\\v2\\data",
+    "minutes": "C:\\Users\\jstembridge\\wagsite\\html\\v2\\minutes",
     "logs": "C:\\Users\\jstembridge\\PycharmProjects\\wagsv\\logs"
 //    "data": "D:\\wagsite_new\\html\\data",
 //    "html": "D:\\wagsite_new\\html",
@@ -17,6 +17,6 @@
   "url_prefix": {
     "admin": "",
     "user": "",
-    "html": "file:///C:\\Users\\jstembridge\\wagsite\\html"
+    "html": ".."
   }
 }

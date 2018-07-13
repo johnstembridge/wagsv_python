@@ -1,8 +1,8 @@
 import itertools
 import datetime
 
-from back_end.interface import get_event, lookup_course, get_event_cards, get_scores, \
-    get_player_names, get_events_in, get_tour_scores
+from back_end.interface import get_event, lookup_course, get_event_cards, get_scores, get_player_names, get_events_in, \
+    get_tour_scores
 from back_end.table import Table
 from back_end.data_utilities import coerce, my_round
 from globals.enumerations import PlayerStatus, EventType
@@ -70,7 +70,7 @@ def calc_event_positions(event_id, result):
 
 
 def calc_stableford_points(player_hcap, player_shots, course_si, course_par):
-    free = [free_shots(si, player_hcap) for si in course_si]
+    free = [free_shots(si, my_round(player_hcap)) for si in course_si]
     net = [coerce(player_shots[i], int) - free[i] for i in range(18)]
     points = [max(0, 2 + course_par[i] - net[i]) for i in range(18)]
     return points
