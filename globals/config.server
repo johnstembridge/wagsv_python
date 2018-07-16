@@ -6,14 +6,14 @@
   "send_mail": true,
   "locations": {
     "base_url": "http://wags.org/v2/",
-    "data": "/var/www/html/v2/data",
-    "minutes": "/var/www/html/v2/minutes",
-    "html": "/var/www/html/v2",
-    "logs": "/var/log/wags"
+    "data": "/var/www/v2/data",
+    "minutes": "/var/www/v2/minutes",
+    "html": "/var/www/v2",
+    "logs": "/var/log/wagsv2"
   },
     "url_prefix": {
-    "admin": "/wagsadmin",
-    "user": "/wagsuser",
+    "admin": "/wagsadminv2",
+    "user": "/wagsuserv2",
     "html": ".."
   }
 }
