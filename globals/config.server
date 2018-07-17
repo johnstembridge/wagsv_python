@@ -9,7 +9,7 @@
     "base_url": "http://wags.org:8100",
     "data": "/var/www/data",
     "minutes": "/var/www/minutes",
-    "html": "/var/www",
+    "html": "/var/www/v2",
     "logs": "/var/log/wagsv2"
   },
     "url_prefix": {
