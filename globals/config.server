@@ -4,7 +4,7 @@
   "SECRET_KEY": "secret squirrel",
   "override": false,
   "send_mail": true,
-  "db_path": "sqlite:///var/www/v2/wags.db",
+  "db_path": "sqlite:////var/www/v2/wags.db",
   "locations": {
     "base_url": "http://wags.org/v2/",
     "data": "/var/www/v2/data",
