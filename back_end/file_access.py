@@ -34,7 +34,7 @@ def get_records(file, key, value, lu_fn=None):
     delimiter = file_delimiter(file)
     keys = None
     res = []
-    with open(file, 'r') as f:
+    with my_open(file, 'r') as f:
         for line in f:
             values = line.rstrip('\n').split(delimiter)
             if keys is None:

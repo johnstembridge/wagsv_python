@@ -6,10 +6,10 @@
   "send_mail": true,
   "db_path": "sqlite:////var/www/v2/wags.db",
   "locations": {
-    "base_url": "http://wags.org/v2/",
-    "data": "/var/www/v2/data",
-    "minutes": "/var/www/v2/minutes",
-    "html": "/var/www/v2",
+    "base_url": "http://wags.org:8100",
+    "data": "/var/www/data",
+    "minutes": "/var/www/minutes",
+    "html": "/var/www",
     "logs": "/var/log/wagsv2"
   },
     "url_prefix": {
