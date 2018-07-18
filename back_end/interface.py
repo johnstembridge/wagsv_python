@@ -257,10 +257,11 @@ def update_event_winner(event, result):
     event.average_score = mean(result.get_columns('points'))
 
     def sel_fn(values):
-        return values['status'] == str(MemberStatus.full_member.value)
+        return values['status'] == PlayerStatus.member
 
     result = result.select_rows(sel_fn)
-    event.winner_id = int(result.get_columns('player_id')[0])
+    if len(result.data) > 0:
+        event.winner_id = int(result.get_columns('player_id')[0])
 
 
 def update_tour_winner(event):
