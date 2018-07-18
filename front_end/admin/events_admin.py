@@ -4,6 +4,7 @@ from flask import render_template, redirect, flash
 from back_end.data_utilities import fmt_date
 from back_end.interface import get_event
 from back_end.file_access import write_file
+from front_end.admin.event_add_player_form import AddPlayerForm
 from .event_report_form import EventReportForm
 from .event_card_form import EventCardForm
 from .event_details_form import EventForm
@@ -60,9 +61,9 @@ class MaintainEvents:
             if form.save_results.data:
                 if form.save_event_results(event_id):
                     flash('results saved', 'success')
-                    return redirect(url_for_admin('results_event', event_id=event_id, event_type=EventType.wags_vl_event.value))
+                    return redirect(url_for_admin('results_event', event_id=event_id))
             if form.add_player.data:
-                return redirect(url_for_admin('results_event', event_id=event_id, event_type=EventType.wags_vl_event.value))
+                return redirect(url_for_admin('add_player_to_event', event_id=event_id))
         else:
             form.populate_event_results(event_id)
         return render_template('admin/event_result.html', form=form, event=event_id, render_link=render_link)
@@ -86,7 +87,7 @@ class MaintainEvents:
             if form.save_card.data:
                 if form.save_event_card(event_id, player_id, form):
                     flash('Card saved', 'success')
-                    return redirect(url_for_admin('results_event', event_id=event_id, event_type=EventType.wags_vl_event.value))
+                    return redirect(url_for_admin('results_event', event_id=event_id))
         else:
             form.populate_card(event_id, player_id, position, handicap, status)
         return render_template('admin/event_card.html', form=form, event=event_id, render_link=render_link)
@@ -132,3 +133,15 @@ class MaintainEvents:
         page_name = 'rp{}.htm'.format(date.replace('/', '')[2:])
         file_name = os.path.join(location, str(event_date.year), page_name)
         return file_name
+
+    @staticmethod
+    def add_player_to_event(event_id, member_id):
+        form = AddPlayerForm()
+        if form.is_submitted():
+            if form.submit.data:
+                form.add_booking(event_id, member_id)
+                return redirect(url_for_admin('results_event', event_id=event_id))
+        else:
+            form.populate_add_player(event_id, member_id)
+        return render_template('admin/event_add_player.html', form=form, event=event_id)
+

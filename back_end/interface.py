@@ -254,7 +254,7 @@ def save_event_result(event_id, result):
 
 
 def update_event_winner(event, result):
-    event.average_score = mean(result.get_columns('points'))
+    event.average_score = mean([x for x in result.get_columns('points') if x > 0])
 
     def sel_fn(values):
         return values['status'] == PlayerStatus.member
@@ -829,9 +829,9 @@ def get_all_bookings(event_id):
     return db_session.query(Booking).filter_by(event_id=event_id)
 
 
-def save_booking(booking):
-    # if not booking.id:
-    #     db_session.add(booking)
+def save_booking(booking, add=False):
+    if add and not booking.id:
+        db_session.add(booking)
     db_session.commit()
 
 

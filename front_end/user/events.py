@@ -37,8 +37,8 @@ class ReportEvents:
             if booking:
                 flash('Booking saved', 'success')
                 form = EventBookingConfirmationForm()
-                form.populate(booking)
-                return render_template('user/event_booking.html', form=booking)
+                form.populate(booking.title, booking.message)
+                return render_template('user/event_booking_confirmation.html', form=booking)
         else:
             form.populate_event(event_id, member_id)
         return render_template('user/event_details.html', form=form, render_link=render_link)

@@ -61,6 +61,8 @@ class MemberDetailsForm(FlaskForm):
         if new_member:
             self.first_name.data = 'new'
             self.last_name.data = 'member'
+            self.status_return.data = MemberStatus.full_member.value
+            self.handicap_return.data = 0
             set_select_field_new(self.proposer, get_member_select_choices(), item_name='proposer')
         else:
             member = get_member(member_id)
