@@ -9,7 +9,7 @@ from .tour_result_form import TourResultsForm
 from front_end.form_helpers import render_link
 from back_end.interface import get_event
 from globals.enumerations import EventType
-from globals.config import url_for_html
+from globals.config import url_for_html, url_for_user
 
 
 class ReportEvents:
@@ -68,7 +68,7 @@ class ReportEvents:
     def results_vl_event(event_id):
         form = EventResultsForm()
         form.populate_event_results(event_id)
-        return render_template('user/event_result.html', form=form, render_link=render_link)
+        return render_template('user/event_result.html', form=form, render_link=render_link, url_for_user=url_for_user)
 
     @staticmethod
     def results_tour_event(event_id):
