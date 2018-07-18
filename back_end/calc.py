@@ -70,6 +70,8 @@ def calc_event_positions(event_id, result):
 
 
 def calc_stableford_points(player_hcap, player_shots, course_si, course_par):
+    if not player_shots:
+        return 18*[0]
     free = [free_shots(si, my_round(player_hcap)) for si in course_si]
     net = [coerce(player_shots[i], int) - free[i] for i in range(18)]
     points = [max(0, 2 + course_par[i] - net[i]) for i in range(18)]
