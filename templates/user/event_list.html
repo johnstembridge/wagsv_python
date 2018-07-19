@@ -63,7 +63,7 @@
                 {%if item.result.data %}
                     <td align="center">
                         {{ render_link(
-                        url=url_for('results_event', event_id=item.num.data),
+                        url=url_for_user('results_event', event_id=item.num.data),
                         image=url_for('static', filename='images/go.png'),
                         text='View results'
                         )|safe }}
