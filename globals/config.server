@@ -11,7 +11,8 @@
     "reports": "/var/www/v2/reports",
     "data": "/var/www/html/data",
     "minutes": "/var/www/v2/minutes",
-    "logs": "/var/log/wagsv2"
+    "logs": "/var/log/wagsv2",
+    "templates": "templates"
   },
     "url_prefix": {
     "admin": "/wagsadminv2",

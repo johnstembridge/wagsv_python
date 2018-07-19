@@ -10,7 +10,8 @@
     "reports": "C:\\Users\\jstembridge\\wagsite\\v2\\reports",
     "data": "C:\\Users\\jstembridge\\wagsite\\v2\\data",
     "minutes": "C:\\Users\\jstembridge\\wagsite\\v2\\minutes",
-    "logs": "C:\\Users\\jstembridge\\PycharmProjects\\wagsv\\logs"
+    "logs": "C:\\Users\\jstembridge\\PycharmProjects\\wagsv\\logs",
+    "templates": "../templates"
 //    "data": "D:\\wagsite_new\\html\\data",
 //    "html": "D:\\wagsite_new\\html",
 //    "logs": "D:\\python\\wagsv_python\\logs"

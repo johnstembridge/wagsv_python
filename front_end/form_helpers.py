@@ -2,6 +2,7 @@ from flask import flash, url_for, current_app
 import os
 
 from back_end.data_utilities import force_list
+from globals import config
 
 
 def flash_errors(form):
@@ -56,7 +57,7 @@ def render_link(url, text="", image=None, icon=None, target=None):
 
 def render_html(template, **kwargs):
     import jinja2
-    env = jinja2.Environment(loader=jinja2.FileSystemLoader(searchpath='templates'))
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(searchpath=config.get('locations')['templates']))
     template = env.get_template(template)
     return template.render(url_for=url_for, **kwargs)
 
