@@ -298,6 +298,9 @@ class Booking(Base):
     event = relationship("Event", back_populates="bookings")
     member = relationship("Member", back_populates="bookings")
 
+    def __repr__(self):
+        return '<Booking - Event: {}, Member: {}>'.format(self.event.full_name(), self.member.player.full_name())
+
 
 class Guest(Base):
     __tablename__ = "guests"

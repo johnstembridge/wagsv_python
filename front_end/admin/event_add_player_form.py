@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, SubmitField, HiddenField, SelectField
+from wtforms import StringField, SubmitField, HiddenField, SelectField
 
-from back_end.interface import get_event, get_member_select_choices, get_booking, save_booking, sorted_players_for_event
+from back_end.interface import get_event, get_member_select_choices, get_booking, save_booking, get_players_for_event
 from front_end.form_helpers import set_select_field_new
 from models.wags_db import Guest
 
@@ -31,7 +31,7 @@ class AddPlayerForm(FlaskForm):
         booking = get_booking(event_id, member)
 
         if guest_name != '':
-            all_players = sorted_players_for_event(booking.event)
+            all_players = get_players_for_event(booking.event)
             if len([x for x in all_players if x.full_name() == guest_name]) > 0:
                 return False  # already there
             if guest_handicap == 0:

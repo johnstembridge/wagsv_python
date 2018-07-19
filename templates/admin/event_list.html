@@ -35,7 +35,7 @@
             {%if item.event_type.data in [EventType.wags_vl_event.value, EventType.wags_tour.value] and item.result.data %}
                 <td align="center">
                     {{ render_link(
-                        url=url_for('results_event', event_id=item.event_id.data),
+                        url=url_for_user('results_event', event_id=item.event_id.data),
                         image=url_for('static', filename='images/right-arrow.png'),
                         text='View/Enter results'
                     )|safe }}

@@ -18,7 +18,7 @@ class ReportEvents:
     def list_events(year):
         form = EventListForm()
         form.populate_event_list(year)
-        return render_template('user/event_list.html', form=form, year=year, render_link=render_link)
+        return render_template('user/event_list.html', form=form, year=year, render_link=render_link, url_for_user=url_for_user)
 
     @staticmethod
     def select_event():

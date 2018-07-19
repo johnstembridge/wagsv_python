@@ -304,7 +304,8 @@ def get_players_for_event(event):
     players = []
     if len(event.bookings) > 0:
         for member in event.bookings:
-            players.append(member.member.player)
+            if member.playing:
+                players.append(member.member.player)
             for guest in member.guests:
                 p = get_player_by_name(guest.name)
                 if p:
