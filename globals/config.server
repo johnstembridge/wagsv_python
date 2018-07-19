@@ -7,9 +7,10 @@
   "db_path": "sqlite:////var/www/v2/wags.db",
   "locations": {
     "base_url": "http://wags.org:8100",
-    "data": "/var/www/data",
-    "minutes": "/var/www/minutes",
     "html": "/var/www/v2",
+    "reports": "/var/www/v2/reports",
+    "data": "/var/www/html/data",
+    "minutes": "/var/www/v2/minutes",
     "logs": "/var/log/wagsv2"
   },
     "url_prefix": {

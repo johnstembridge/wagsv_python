@@ -129,7 +129,7 @@ class MaintainEvents:
     @staticmethod
     def report_file_name(event_date):
         date = fmt_date(event_date)
-        location = config.get('locations')['html']
+        location = config.get('locations')['reports']
         page_name = 'rp{}.htm'.format(date.replace('/', '')[2:])
         file_name = os.path.join(location, str(event_date.year), page_name)
         return file_name

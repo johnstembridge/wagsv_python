@@ -20,16 +20,18 @@ class EventReportForm(FlaskForm):
         event = get_event(event_id)
         self.event_name.data = event.full_name()
 
+        all = get_event_scores(event_id)
+        all.sort(['last_name', 'first_name'])
+
         def lu_fn(values):
             return values['status'] == PlayerStatus.member
-        all = get_event_scores(event_id)
         if len(all.data) == 0:
             raise Exception("Results not yet available")
         members = all.where(lu_fn)
-        players = members.get_columns('player_name')
+        players = all.get_columns('player_name')
         pos = [s for s in members.get_columns('position')]
         pos = pos.index(min(pos))
-        self.winner.data = players[pos]
+        self.winner.data = members.get_columns('player_name')[pos]
         self.winner_return.data = self.winner.data
         set_select_field(self.ntp, 'player', players)
         set_select_field(self.ld, 'player', players)

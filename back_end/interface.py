@@ -135,7 +135,7 @@ def get_events_for_period(start, end):
 
 def get_event_scores(event_id):
     event = get_event(event_id)
-    head = ['player_id', 'position', 'points', 'shots', 'handicap', 'status', 'card', 'player_name']
+    head = ['player_id', 'position', 'points', 'shots', 'handicap', 'status', 'card', 'player_name', 'first_name', 'last_name']
     data = []
     for score in event.scores:
         player_state = score.player.state_as_of(event.date)
@@ -146,7 +146,9 @@ def get_event_scores(event_id):
                player_state.handicap,
                player_state.status,
                score.card,
-               score.player.full_name()]
+               score.player.full_name(),
+               score.player.first_name,
+               score.player.last_name]
         data.append(row)
     return Table(head, data)
 
