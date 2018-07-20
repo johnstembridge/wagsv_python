@@ -41,7 +41,7 @@ class ReportEvents:
                 return render_template('user/event_booking_confirmation.html', form=booking)
         else:
             form.populate_event(event_id, member_id)
-        return render_template('user/event_details.html', form=form, render_link=render_link)
+        return render_template('user/event_details.html', form=form, render_link=render_link, url_for_html=url_for_html)
 
     @staticmethod
     def show_all_bookings(event_id):

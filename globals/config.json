@@ -5,7 +5,7 @@
   "send_mail": false,
   "db_path": "sqlite:///C:\\Users\\jstembridge\\wagsite\\wags.db",
   "locations": {
-    "base_url": "http://wags.org/v2",
+    "base_url": "http://wags.org:8100/",
     "html": "C:\\Users\\jstembridge\\wagsite\\v2",
     "reports": "C:\\Users\\jstembridge\\wagsite\\v2\\reports",
     "data": "C:\\Users\\jstembridge\\wagsite\\v2\\data",
