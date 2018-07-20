@@ -15,6 +15,20 @@
             <li><a href="{{ url_for('members_main') }}">Members</a></li>
             <li><a href="{{ url_for('minutes_main') }}">Minutes</a></li>
             <li><a href="{{ url_for('news_main') }}">News</a></li>
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Help<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ url_for('show_help', subject='Accounts') }}">Accounts</a></li>
+                    <li><a href="{{ url_for('show_help', subject='Members') }}">Members</a></li>
+                    <li><a href="{{ url_for('show_help', subject='Fixtures') }}">Fixtures</a></li>
+                    <li><a href="{{ url_for('show_help', subject='Booking') }}">Open Event Booking</a></li>
+                    <li><a href="{{ url_for('show_help', subject='Handicaps') }}">Handicaps</a></li>
+                    <li><a href="{{ url_for('show_help', subject='Results') }}">Event Results</a></li>
+                    <li><a href="{{ url_for('show_help', subject='Minutes') }}">Minutes</a></li>
+                    <li><a href="{{ url_for('show_help', subject='News') }}">News</a></li>
+                    <li><a href="{{ url_for('show_help', subject='Venues') }}">Venues</a></li>
+                </ul>
+            </li>
         </ul>
     </div>
 </nav>

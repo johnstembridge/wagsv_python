@@ -14,6 +14,7 @@ from views.admin.members import *
 from views.admin.news import *
 from views.admin.venues import *
 from views.admin.minutes import *
+from views.admin.help import *
 
 
 @app.errorhandler(401)
