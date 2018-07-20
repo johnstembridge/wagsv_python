@@ -31,8 +31,8 @@ class AddPlayerForm(FlaskForm):
             member = member_id
         booking = get_booking(event_id, member)
         player_name = guest_name.title() if guest_name != '' else booking.member.player.full_name()
-        all_players = get_players_for_event(booking.event)
-        if len([x for x in all_players if x.full_name() == player_name]) > 0:
+        all_players = [x.full_name() for x in get_players_for_event(booking.event)]
+        if player_name in all_players:
             flash('{} is already in the list of players for this event'.format(player_name), 'danger')
             return False
         if guest_name != '':
