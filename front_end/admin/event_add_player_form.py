@@ -1,3 +1,4 @@
+from flask import flash
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, HiddenField, SelectField
 
@@ -29,13 +30,15 @@ class AddPlayerForm(FlaskForm):
         if member == 0:
             member = member_id
         booking = get_booking(event_id, member)
-
+        player_name = guest_name if guest_name != '' else booking.member.player.full_name()
+        all_players = get_players_for_event(booking.event)
+        if len([x for x in all_players if x.full_name() == player_name]) > 0:
+            flash('{} is already in the list of players for this event'.format(player_name), 'danger')
+            return False
         if guest_name != '':
-            all_players = get_players_for_event(booking.event)
-            if len([x for x in all_players if x.full_name() == guest_name]) > 0:
-                return False  # already there
             if guest_handicap == 0:
-                return False  # no handicap
+                flash('No handicap given for {}'.format(guest_name), 'danger')
+                return False
             else:
                 guest = Guest(name=guest_name, handicap=guest_handicap)
                 booking.guests.append(guest)
@@ -43,4 +46,5 @@ class AddPlayerForm(FlaskForm):
             booking.playing = True
         booking.comment = 'Added to enter score'
         save_booking(booking, add=True)
+        flash('{} added to player list for this event'.format(player_name), 'success')
         return True
