@@ -29,7 +29,7 @@ def news_file():
 
 
 def front_page_header_file():
-    return os.path.join(html_location, 'header.htm')
+    return os.path.join(html_location, 'front/header.htm')
 
 
 # endregion

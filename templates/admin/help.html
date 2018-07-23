@@ -4,12 +4,12 @@
 {% block page_content %}
 <div class="page-header">
     <h1>WAGS admin help</h1>
-    <h2>{{ form.subject.data }}</h2>
 </div>
 <form method="POST">
     {{ form.csrf_token }}
-    <hr/>
-    {{ form.text.data }}
-    <hr/>
+    <div>
+    {%set template = 'admin/help/' + topic + '.html' %}
+    {% include template %}
+    </div>
 </form>
 {% endblock %}
