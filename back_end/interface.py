@@ -881,11 +881,12 @@ def save_member(data):
 
 
 def get_members(as_of):
-    def lu_fn(rec, key, value):
-        date = rec[key]
-        return parse_date(date) > value
-
-    header, data = get_records(members_file(), 'resigned', parse_date(as_of), lu_fn)
+    # def lu_fn(rec, key, value):
+    #     date = rec[key]
+    #     return parse_date(date) > value
+    #
+    # header, data = get_records(members_file(), 'resigned', parse_date(as_of), lu_fn)
+    header, data = get_all_records(members_file())
     i = lookup(header, ['salutation', 'surname'])
     member_names = sort_name_list([' '.join(itemgetter(*i)(m)) for m in data])
     all_players = get_all_player_names()

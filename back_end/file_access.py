@@ -226,7 +226,7 @@ def get_fields(file, fields):
 
 
 def file_delimiter(filename):
-    file_type = (filename.split('.'))[1]
+    file_type = (filename.split('.'))[-1]
     if file_type == 'csv':
         delimiter = ','
     elif file_type == 'tab':
