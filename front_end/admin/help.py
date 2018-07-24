@@ -26,16 +26,15 @@ class WagsHelp:
                 form.add_news_item()
         else:
             form.populate_help(subject)
-        return render_template('admin/help.html', form=form)
+        return render_template('admin/help.html', form=form, topic=subject)
 
 
 class HelpSubjectForm(FlaskForm):
-    subject = StringField(label='Subject')
-    text = TextAreaField()
+    title = StringField(label='Subject')
+    #text = TextAreaField()
 
     def populate_help(self, subject):
-        self.subject.data = 'Help ' + subject
-        self.text.data = 'Nothing at the moment'
+        self.title.data = subject
 
     def save_help(self, subject):
         return ''
