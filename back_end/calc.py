@@ -94,11 +94,12 @@ def get_big_swing(year):
     events = get_events_in(date_range)  # date, course
     richmond = lookup_course('The Richmond')
     first_and_last = [e for e in events if e.course_id == richmond]
+    if len(first_and_last) == 2 and datetime.date.today() > first_and_last[1].date:
+        first_and_last.pop(0)
     if len(first_and_last) == 1:
         first_and_last.append(events[-1])
     events = [e for e in events
-              if e.date >= first_and_last[0].date
-              and e.date <= first_and_last[1].date
+              if first_and_last[0].date <= e.date <= first_and_last[1].date
               and e.type == EventType.wags_vl_event]
     header = ['player', 'course', 'date', 'points_out', 'points_in', 'swing']
     swings = []
