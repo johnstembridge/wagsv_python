@@ -954,12 +954,13 @@ def update_trophy_history(year, event_id, result):
     def sel_fn(values):
         return values['status'] == str(MemberStatus.full_member.value)
     result = result.select_rows(sel_fn)
-    winner = result.get_columns('player')[0]
-    scores = result.get_columns('points')
-    average = "{0:.1f}".format(mean(scores))
-    rec = dict(zip(['trophy', 'date', 'venue', 'winner', 'score', 'average'],
-                   [trophy_id, date, venue_id, winner, scores[0], average]))
-    update_record(trophy_history_file(), ['trophy', 'date'], rec)
+    if len(result.data) > 0:
+        winner = result.get_columns('player')[0]
+        scores = result.get_columns('points')
+        average = "{0:.1f}".format(mean(scores))
+        rec = dict(zip(['trophy', 'date', 'venue', 'winner', 'score', 'average'],
+                       [trophy_id, date, venue_id, winner, scores[0], average]))
+        update_record(trophy_history_file(), ['trophy', 'date'], rec)
 
 # endregion
 
