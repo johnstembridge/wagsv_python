@@ -310,6 +310,9 @@ class Guest(Base):
     handicap = Column(Numeric(precision=3, scale=1), nullable=False)
     booking = relationship("Booking", back_populates="guests")
 
+    def __repr__(self):
+        return '<Guest - Booking: {}, Name: {}, Handicap: {}>'.format(self.booking, self.name, self.handcap)
+
 
 class User(Base, UserMixin):
     __tablename__ = "users"

@@ -1,7 +1,7 @@
 from operator import itemgetter
 import itertools
 
-from .data_utilities import lookup, force_list
+from .data_utilities import lookup, force_list, coerce
 
 
 class Table:
@@ -34,6 +34,18 @@ class Table:
     def add_column(self, col_name, col):
         self.data = [list(itertools.chain(d, [c])) for d, c in zip(self.data, col)]
         self.head.append(col_name)
+
+    def rename_column(self, old, new):
+        self.head[self.column_index(old)] = new
+
+    def coerce_column(self, col, type):
+        i = self.column_index(col)
+        for row in self.data:
+            row[i] =coerce(row[i], type)
+
+    def coerce_columns(self, cols, type):
+        for col in cols:
+            self.coerce_column(col, type)
 
     def where(self, lu_fn):
         return Table(self.head, [d for d in self.data if lu_fn(dict(zip(self.head, d)))])

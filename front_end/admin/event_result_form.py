@@ -55,14 +55,14 @@ class EventResultsForm(FlaskForm):
             return False
 
         fields = ['player_id', 'position', 'points', 'shots', 'handicap', 'status']
-        old_fields = ['player_id', 'position', 'points', 'strokes_return', 'handicap_return', 'status_return']
+        form_fields = ['player_id', 'position', 'points', 'strokes_return', 'handicap_return', 'status_return']
 
         def sel_table_fields(dict, fields):
             res = []
             for i in range(len(fields)):
                 res.append(dict[fields[i]])
             return res
-        result = Table(fields, [sel_table_fields(s, old_fields) for s in self.data['scores']])
+        result = Table(fields, [sel_table_fields(s, form_fields) for s in self.data['scores']])
         result = calc_event_positions(event_id, result)
 
         def sel_fn(values):

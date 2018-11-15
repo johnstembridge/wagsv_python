@@ -3,7 +3,7 @@ import os
 import itertools
 from operator import and_
 
-from back_end.data_utilities import lookup, mean, first_or_default, fmt_date, in_date_range
+from back_end.data_utilities import lookup, mean, first_or_default, fmt_date, in_date_range, coerce
 from back_end.table import Table
 from front_end.form_helpers import get_elements_from_html
 from globals.enumerations import MemberStatus, PlayerStatus, EventType, Function
@@ -224,35 +224,38 @@ def save_event_details(event_id, details):
 def save_event_result(event_id, result):
     event = get_event(event_id)
     scores = []
-    delete = [True] * len(event.scores)
-    for row in result.data:
-        new = dict(zip(result.head, row))
-        score = first_or_default([s for s in event.scores if s.player_id == int(new['player_id'])], None)
+    delete = {s.id: True for s in event.scores}
+    for row in result.rows():
+        score = first_or_default([s for s in event.scores if s.player_id == int(row['player_id'])], None)
         if score:
-            score.position = new['position']
-            score.shots = new['shots']
-            score.points = new['points']
-            delete[lookup(event.scores, score)] = False
+            score.position = row['position']
+            score.shots = row['shots']
+            score.points = row['points']
+            if 'card' in row:
+                score.card = row['card']
+            if score.id in delete:
+                delete[score.id] = False
         else:
             score = Score(event_id=event_id,
-                          player_id=new['player_id'],
-                          position=new['position'],
-                          shots=new['shots'],
-                          points=new['points'],
-                          card=None)
+                          player_id=row['player_id'],
+                          position=row['position'],
+                          shots=row['shots'],
+                          points=row['points'],
+                          card=row.get('card', None)
+                          )
         scores.append(score)
     for score in event.scores:
-        if delete[lookup(event.scores, score)]:
+        if delete.get(score.id, False):
             db_session.delete(score)
     if len(result.data) > 0:
         update_event_winner(event, result)
     else:
         event.winner_id = event.average_score = None
     event.scores = scores
-    db_session.commit()
     if event.tour_event:
         if event.tour_event.trophy and event in event.tour_event.tour_events:
             update_tour_winner(event.tour_event)
+    db_session.commit()
 
 
 def update_event_winner(event, result):
@@ -342,7 +345,7 @@ def normalise_name(all_names, name):
 
 
 def get_results(event, for_edit_hcap=False):
-    '''Returns all results for an event. Adds any players that were booked but without any recorded scores yet.'''
+    """Returns all results for an event. Adds any players that were booked but without any recorded scores yet."""
     players = []
     results = []
     state_date = datetime.date.today() if for_edit_hcap else event.date
@@ -629,6 +632,15 @@ def get_member_by_email(email):
     contact = db_session.query(Contact).filter_by(email=email).first()
     if contact:
         return db_session.query(Member).filter_by(contact_id=contact.id).first()
+    else:
+        return None
+
+
+def get_member_by_name(name):
+    name = name.split(' ')
+    player = db_session.query(Player).filter_by(first_name=name[0],last_name=name[1]).first()
+    if player:
+        return db_session.query(Member).filter_by(player_id=player.id).first()
     else:
         return None
 

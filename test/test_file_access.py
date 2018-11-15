@@ -1,9 +1,9 @@
 import copy
 import unittest
 import datetime
-from back_end.interface import encode_schedule, decode_schedule, get_event_card, front_page_header_file
-from back_end.file_access import get_record, get_field, get_fields, update_record, file_delimiter, get_records, get_all_records, \
-    keys_match, update_html_elements
+from back_end.interface import get_event_card, front_page_header_file
+from back_end.file_access import get_record, get_field, get_fields, update_record, file_delimiter, get_records, \
+    get_all_records, keys_match, update_html_elements
 from back_end.data_utilities import decode_date
 from test_data import TestData
 
@@ -51,32 +51,6 @@ class TestInterface(unittest.TestCase):
         rec = decode_date('Friday 28 April', 2017)
         expected = datetime.date(2017, 4, 28)
         self.assertEqual(rec, expected)
-
-    def test_decode_schedule(self):
-        sched = '10.00 coffee and bacon roles,11.15 tee-off 18 holes,16.00 buffet: lasagne salad desert'
-        ss = decode_schedule(sched)
-        expected = [
-            {'time': datetime.time(10, 0), 'text': 'coffee and bacon roles'},
-            {'time': datetime.time(11, 15), 'text': 'tee-off 18 holes'},
-            {'time': datetime.time(16, 0), 'text': 'buffet: lasagne salad desert'},
-            {'time': datetime.time(0, 0), 'text': None},
-            {'time': datetime.time(0, 0), 'text': None},
-            {'time': datetime.time(0, 0), 'text': None}
-        ]
-        self.assertEqual(ss, expected)
-
-    def test_encode_schedule(self):
-        sched = [
-            {'time': datetime.time(10, 0), 'text': 'coffee and bacon roles'},
-            {'time': datetime.time(11, 15), 'text': 'tee-off 18 holes'},
-            {'time': datetime.time(16, 0), 'text': 'buffet: lasagne salad desert'},
-            {'time': datetime.time(0, 0), 'text': None},
-            {'time': datetime.time(0, 0), 'text': None},
-            {'time': datetime.time(0, 0), 'text': None}
-        ]
-        ss = encode_schedule(sched)
-        expected = '10.00 coffee and bacon roles,11.15 tee-off 18 holes,16.00 buffet- lasagne salad desert'
-        self.assertEqual(ss, expected)
 
     def test_file_delimiter(self):
         d = file_delimiter(r'c:\abc\xyz.csv')
