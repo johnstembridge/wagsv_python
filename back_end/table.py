@@ -41,7 +41,12 @@ class Table:
     def coerce_column(self, col, type):
         i = self.column_index(col)
         for row in self.data:
-            row[i] =coerce(row[i], type)
+            row[i] = coerce(row[i], type)
+
+    def coerce_column_using(self, col, fn):
+        i = self.column_index(col)
+        for row in self.data:
+            row[i] = fn(row[i])
 
     def coerce_columns(self, cols, type):
         for col in cols:

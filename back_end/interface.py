@@ -605,10 +605,11 @@ def save_handicaps(new_table):
     players = set(new_table.get_columns('player_id'))
     dates = set(new_table.get_columns('date'))
     current = db_session.query(Handicap).filter(Handicap.date.in_(dates), Handicap.player_id.in_(players)).all()
-    for record in new_table.data:
-        new = dict(zip(new_table.head, record))
+    for new in new_table.rows():
         hcap = first_or_default([h for h in current if h.player_id == new['player_id'] and h.date == new['date']], None)
         if hcap:
+            if (hcap.handicap == new['handicap'] and hcap.status == new['status']):
+                continue
             hcap.handicap = new['handicap']
             hcap.status = new['status']
         else:
