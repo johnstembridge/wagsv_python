@@ -47,5 +47,5 @@ class SwingForm(FlaskForm):
             item_form.swing = item[swings.column_index('swing')]
 
             self.swing.append_entry(item_form)
-        self.year_span.data = str(int(year)-1) + '/' + year
+        self.year_span.data = year + '/' + str(int(year) + 1)
         self.image_url.data = os.path.join(config.get('locations')['base_url'], 'trophies', 'swing.jpg')
