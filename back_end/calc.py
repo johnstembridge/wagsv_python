@@ -90,7 +90,7 @@ def free_shots(si, hcap):
 
 def get_big_swing(year):
     year = coerce(year, int)
-    date_range = [datetime.date(year - 1, 1, 1), datetime.date(year, 12, 31)]
+    date_range = [datetime.date(year - 1, 1, 1), min(datetime.date.today(), datetime.date(year, 12, 31))]
     events = get_events_in(date_range)  # date, course
     richmond = lookup_course('The Richmond')
     first_and_last = [e for e in events if e.course_id == richmond]

@@ -315,9 +315,12 @@ def get_players_for_event(event):
                 p = get_player_by_name(guest.name)
                 if p:
                     state = p.state_as_of(event.date)
-                    if state.handicap != guest.handicap:
-                        p.handicaps.append(
-                            Handicap(date=event.date, status=PlayerStatus.guest, handicap=guest.handicap))
+                    if state.status == PlayerStatus.guest:
+                        if state.handicap != guest.handicap:
+                            p.handicaps.append(
+                                Handicap(date=event.date, status=PlayerStatus.guest, handicap=guest.handicap))
+                    else:
+                        guest.handicap = state.handicap
                 else:
                     p = add_player(guest.name, guest.handicap, PlayerStatus.guest, event.date)
                 players.append(p)
@@ -445,7 +448,8 @@ def get_next_event(year=None):
 
 
 def get_events_in(date_range):
-    events = db_session.query(Event).filter(and_(Event.date >= date_range[0], Event.date <= date_range[1])).all()
+    events = db_session.query(Event)\
+        .filter(Event.date.between(date_range[0], date_range[1]), Event.type == EventType.wags_vl_event).order_by(Event.date).all()
     return events
 
 
