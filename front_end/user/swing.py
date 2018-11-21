@@ -35,6 +35,8 @@ class SwingForm(FlaskForm):
 
     def populate_swing(self, year):
         self.year.data = str(year)
+        if datetime.date.today().month < 9:
+            year = year - 1
         as_of = datetime.date(year, datetime.date.today().month, datetime.date.today().day)
         swings = get_big_swing(as_of)
         for item in swings.data:
