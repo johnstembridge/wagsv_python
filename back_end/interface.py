@@ -1,16 +1,16 @@
 import datetime
 import os
 import itertools
-from operator import and_
 
-from back_end.data_utilities import lookup, mean, first_or_default, fmt_date, in_date_range, coerce
+from back_end.data_utilities import mean, first_or_default, fmt_date, in_date_range
 from back_end.table import Table
+from data_utilities import normalise_name, gen_to_list
 from front_end.form_helpers import get_elements_from_html
 from globals.enumerations import MemberStatus, PlayerStatus, EventType, Function
 from models.wags_db import Event, Score, Course, CourseData, Trophy, Player, Venue, Handicap, Member, Contact, \
     Schedule, Booking, User, Committee
 from globals.app_setup import db_session
-from sqlalchemy import text
+from sqlalchemy import text, and_
 
 from globals import config
 from back_end.file_access import get_records, update_html_elements, get_file_contents
@@ -130,7 +130,17 @@ def get_events_for_year(year):
 
 
 def get_events_for_period(start, end):
-    return db_session.query(Event).filter(Event.date.between(start, end))
+    return gen_to_list(db_session.query(Event).filter(Event.date.between(start, end)).order_by(Event.date))
+
+
+def get_events_for_course(course_id, period=None):
+    if period:
+        res = db_session.query(Event)\
+            .filter(and_(Event.course_id == course_id, Event.date.between(period[0], period[1])))\
+            .order_by(Event.date)
+    else:
+        res = db_session.query(Event).filter(Event.course_id == course_id).order_by(Event.date)
+    return gen_to_list(res)
 
 
 def get_event_scores(event_id):
@@ -339,59 +349,6 @@ def sorted_players_for_event(event):
     return sorted(players, key=getKey)
 
 
-def normalise_name(all_names, name):
-    i = lookup(all_names, name, case_sensitive=False)
-    if i == -1:
-        return name.title(), i
-    else:
-        return all_names[i], i
-
-
-def get_results(event, for_edit_hcap=False):
-    """Returns all results for an event. Adds any players that were booked but without any recorded scores yet."""
-    players = []
-    results = []
-    state_date = datetime.date.today() if for_edit_hcap else event.date
-    for score in [s for s in event.scores]:
-        player = score.player
-        state = player.state_as_of(state_date)
-        players.append(player.full_name())
-        x = {
-            'player': player.full_name(),
-            'handicap': state.handicap,
-            'points': score.points or 0,
-            'strokes': score.shots,
-            'position': score.position or 0,
-            'player_id': player.id,
-            'status': state.status,
-            'card:': score.card
-        }
-        results.append(x)
-    bookings = event.bookings
-    booked = get_players_for_event(event, for_edit_hcap)
-    for missing in list(set(booked.keys()).difference(set(players))):
-        state = booked[missing]
-        x = {
-            'player': missing,
-            'handicap': state.handicap,
-            'points': 0,
-            'strokes': 0,
-            'position': 0,
-            'player_id': state.player_id,
-            'status': state.status,
-            'card': None
-        }
-        results.append(x)
-
-    results.sort(key=lambda k: k['player'])
-    results.sort(key=lambda k: k['position'] if k['points'] > 0 else 99)
-    i = 0
-    for res in results:
-        i += 1
-        res['position'] = i
-    return results
-
-
 def is_event_result_editable(event):
     override = config.get('override')
     return override or (datetime.date.today() > event.date) and (datetime.date.today().year == event.date.year)
@@ -449,7 +406,8 @@ def get_next_event(year=None):
 
 def get_events_in(date_range):
     events = db_session.query(Event)\
-        .filter(Event.date.between(date_range[0], date_range[1]), Event.type == EventType.wags_vl_event).order_by(Event.date).all()
+        .filter(Event.date.between(date_range[0], date_range[1]), Event.type == EventType.wags_vl_event)\
+        .order_by(Event.date).all()
     return events
 
 

@@ -45,11 +45,6 @@ class TestInterface(unittest.TestCase):
         expected = TestData.example_event_result
         self.assertEqual(res, expected)
 
-    def test_get_event_result(self):
-        res = get_results(2017, 6)
-        expected = TestData.example_event_result
-        self.assertEqual(res, expected)
-
     def test_get_event(self):
         rec = get_event(2017, '4')
         expected = TestData.example_event

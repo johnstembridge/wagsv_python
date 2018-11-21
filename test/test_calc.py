@@ -1,4 +1,5 @@
 import unittest
+from datetime import datetime
 
 from back_end.calc import get_vl, get_big_swing, get_swings
 
@@ -9,13 +10,10 @@ class TestCalc(unittest.TestCase):
         pass
 
     def test_get_big_swing(self):
-        swing = get_big_swing(2018)
+        as_of = datetime(2018, 8, 10).date()
+        #swing = get_big_swing(as_of)
+        swing = get_big_swing()
         pass
-
-    def test_get_swings(self):
-        swings = get_swings(('2017/11/18', '29'))
-        pass
-
 
 if __name__ == '__main__':
     unittest.main()

@@ -147,14 +147,18 @@ def encode_event_type(event_type):
     return EventType[event_type].value
 
 
+def normalise_name(all_names, name):
+    i = lookup(all_names, name, case_sensitive=False)
+    if i == -1:
+        return name.title(), i
+    else:
+        return all_names[i], i
+
+
 def sort_name_list(names):
     fl = [v.split(' ', 2) for v in names]
     fl.sort(key=lambda tup: (tup[1], tup[0]))
     return [n[0] + ' ' + n[1] for n in fl]
-
-
-def normalise_name(name):
-    return name.replace('+', ' ').title()
 
 
 def lookup(item_list, items, index_origin=0, case_sensitive=None):

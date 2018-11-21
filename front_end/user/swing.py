@@ -6,7 +6,7 @@ from back_end.calc import get_big_swing
 from back_end.data_utilities import fmt_date
 from front_end.form_helpers import render_link
 from globals.config import url_for_html
-
+import datetime
 
 class Swing:
 
@@ -34,8 +34,9 @@ class SwingForm(FlaskForm):
     image_url = StringField()
 
     def populate_swing(self, year):
-        self.year.data = year
-        swings = get_big_swing(year)
+        self.year.data = str(year)
+        as_of = datetime.date(year, datetime.date.today().month, datetime.date.today().day)
+        swings = get_big_swing(as_of)
         for item in swings.data:
             item_form = SwingItemForm()
             item_form.position = item[swings.column_index('position')]
@@ -47,5 +48,5 @@ class SwingForm(FlaskForm):
             item_form.swing = item[swings.column_index('swing')]
 
             self.swing.append_entry(item_form)
-        self.year_span.data = year + '/' + str(int(year) + 1)
+        self.year_span.data = str(year) + '/' + str(year + 1)
         self.image_url.data = url_for_html('pictures', 'trophies', 'swing.jpg')

@@ -29,7 +29,7 @@ def vl(year):
 @app.route('/swing/<year>', methods=['GET', 'POST'])
 @login_required
 def swing(year):
-    return Swing.swing_show(year)
+    return Swing.swing_show(int(year))
 
 
 @app.route('/trophies/<trophy_id>', methods=['GET', 'POST'])
