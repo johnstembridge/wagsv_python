@@ -4,7 +4,7 @@ import itertools
 
 from back_end.data_utilities import mean, first_or_default, fmt_date, in_date_range
 from back_end.table import Table
-from data_utilities import normalise_name, gen_to_list
+from back_end.data_utilities import normalise_name, gen_to_list
 from front_end.form_helpers import get_elements_from_html
 from globals.enumerations import MemberStatus, PlayerStatus, EventType, Function
 from models.wags_db import Event, Score, Course, CourseData, Trophy, Player, Venue, Handicap, Member, Contact, \
