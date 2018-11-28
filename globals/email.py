@@ -19,7 +19,7 @@ def send_mail(to, sender, cc=None, subject=None, message=None):
     msg.sender = sender
     msg.recipients = force_list(to)
     msg.cc = force_list(cc)
-    msg.body = message
+    msg.body = '\n'.join(message) if type(message) is list else message
     app = current_app._get_current_object()
     mail = Mail(app)
     if config.get('send_mail'):
