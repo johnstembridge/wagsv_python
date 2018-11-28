@@ -1,14 +1,15 @@
 from flask import current_app
-from flask_sendmail import Message
+from flask_sendmail import Message, Mail
 
 from globals import config
 from globals.decorators import async
 from back_end.data_utilities import force_list
-from globals.app_setup import mail
+# from globals.app_setup import mail
 
 
 @async
 def send_async_email(app, msg):
+    mail = Mail(app)
     with app.app_context():
         mail.send(msg)
 
@@ -20,6 +21,7 @@ def send_mail(to, sender, cc=None, subject=None, message=None):
     msg.cc = force_list(cc)
     msg.body = message
     app = current_app._get_current_object()
+    mail = Mail(app)
     if config.get('send_mail'):
         #send_async_email(app, msg)
         mail.send(msg)
