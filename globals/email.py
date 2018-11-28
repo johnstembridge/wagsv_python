@@ -21,8 +21,8 @@ def send_mail(to, sender, cc=None, subject=None, message=None):
     msg.body = message
     app = current_app._get_current_object()
     if config.get('send_mail'):
-        send_async_email(app, msg)
-        #mail.send(msg)
+        #send_async_email(app, msg)
+        mail.send(msg)
     else:
         out = [
             'Email:',
