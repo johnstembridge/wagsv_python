@@ -14,7 +14,7 @@ from wags_admin import app
 def test_email():
     subject = 'Test email'
     sender = 'john.stembridge@gmail.com'
-    message = ['test message']
+    message = 'test message'
     to = [sender]
     send_mail(to=to,
               sender=sender,
