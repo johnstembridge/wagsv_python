@@ -16,11 +16,11 @@ def test_email():
     sender = 'john.stembridge@gmail.com'
     message = ['test message']
     to = [sender]
-    # send_mail(to=to,
-    #           sender=sender,
-    #           cc=[],
-    #           subject='WAGS: ' + subject,
-    #           message=message)
+    send_mail(to=to,
+              sender=sender,
+              cc=[],
+              subject='WAGS: ' + subject,
+              message=message)
     form = SendEmailConfirmationForm()
     form.populate(subject, message)
     return render_template('user/event_booking_confirmation.html', form=form)
