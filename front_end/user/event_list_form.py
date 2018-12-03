@@ -14,7 +14,7 @@ class EventItemForm(FlaskForm):
     num = HiddenField(label='id')
     date = DateField(label='Date')
     event = StringField(label='Event')
-    trophy_url = StringField(label='Link to Trophy')
+    trophy_id = HiddenField(label='Trophy id')
     venue_url = StringField(label='Link to Venue')
     venue = StringField(label='Venue')
     event_type = HiddenField(label='Event type')
@@ -35,10 +35,10 @@ class EventListForm(FlaskForm):
             item_form.date = encode_date_short(event.date)
             if event.trophy:
                 item_form.event = event.trophy.name
-                item_form.trophy_url = event.trophy.url()
+                item_form.trophy_id = event.trophy.id
             else:
                 item_form.event = event.venue.name
-                item_form.trophy_url = None
+                item_form.trophy_id = None
             item_form.venue = event.course.name if event_type == EventType.wags_vl_event else event.venue.name
             item_form.venue_url = get_venue_url(event.venue)
 
