@@ -34,6 +34,6 @@ def swing(year):
 
 @app.route('/trophies/<trophy_id>', methods=['GET', 'POST'])
 @login_required
-def trophy(trophy_id):
+def trophy_history(trophy_id):
     return Trophy.trophy_show(int(trophy_id))
 # endregion
