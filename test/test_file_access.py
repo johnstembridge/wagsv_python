@@ -1,8 +1,7 @@
-import copy
 import unittest
 import datetime
-from back_end.interface import get_event_card, front_page_header_file
-from back_end.file_access import get_record, get_field, get_fields, update_record, file_delimiter, get_records, \
+from back_end.interface import front_page_header_file
+from back_end.file_access import get_record, get_field, get_fields, file_delimiter, get_records, \
     get_all_records, keys_match, update_html_elements
 from back_end.data_utilities import decode_date
 from test_data import TestData
@@ -25,27 +24,6 @@ class TestInterface(unittest.TestCase):
         res = get_fields(TestData.events_file, ['num', 'venue'])
         expected = TestData.example_venues_fields
         self.assertEqual(res, expected)
-
-    def test_update_record_event(self):
-        old = get_record(TestData.events_file, 'num', '4')
-        new = copy.deepcopy(old)
-        new['member_price'] = '25.00'
-        new['note'] = '*** New note ***'
-        update_record(TestData.events_file, 'num', new)
-        rec = get_record(TestData.events_file, 'num', '4')
-        expected = new
-        self.assertEqual(rec, expected)
-        update_record(TestData.events_file, 'num', old)
-
-    def test_update_record_shots(self):
-        old = get_event_card('2017', '3', '12')
-        new = copy.deepcopy(old)
-        new['12'] = '6'
-        update_record(TestData.shots_file, ['date', 'course', 'player'], new)
-        rec = get_event_card('2017', '3', '12')
-        expected = new
-        self.assertEqual(rec, expected)
-        update_record(TestData.shots_file, ['date', 'course', 'player'], old)
 
     def test_decode_date(self):
         rec = decode_date('Friday 28 April', 2017)

@@ -75,11 +75,6 @@ def decode_date_range(dr, year):
     return [decode_date(d, year) for d in dr]
 
 
-def coerce_date(wdm, y, date):
-    if not wdm: return date
-    return decode_date(wdm, y)
-
-
 def coerce_fmt_date(x):
     if type(x) == datetime.date:
         x = fmt_date(x)
@@ -112,39 +107,6 @@ def in_date_range(date, date_from, date_to):
 
 
 # endregion
-
-
-def decode_price(amount):
-    if not amount: amount = '0'
-    if not is_num(amount): amount = '0'
-    return Decimal(amount)
-
-
-def encode_price(amount):
-    if amount:
-        return '{0:.2f}'.format(amount)
-    else:
-        return ''
-
-
-def decode_time(time):
-    if time and is_num(time):
-        t = time.split('.')
-        if len(t) < 2:
-            t = t + ['0', '0']
-        return datetime.time(int(t[0]), int(t[1]))
-    else:
-        return datetime.time()
-
-
-def decode_event_type(event_type):
-    if not event_type:
-        return EventType.wags_vl_event
-    return EventType(int(event_type))
-
-
-def encode_event_type(event_type):
-    return EventType[event_type].value
 
 
 def normalise_name(all_names, name):
@@ -258,66 +220,6 @@ def enquote(string):
     return string if len(string) == 0 else '"' + string + '"'
 
 
-def decode_address(address):
-    if address and len(address) > 0:
-        address = address.split(",")
-        address = '\n'.join(address)
-    return address
-
-
-def encode_address(address):
-    if not address: address = ''
-    address = address.replace('\r', '')
-    address = address.split('\n')
-    address = ",".join(address)
-    return address
-
-
-def encode_member_address(member: dict):
-    return ', '.join(
-        {k: member[k] for k in ['address1', 'address2', 'address3', 'address4'] if
-         k in member and member[k].strip() != ''}.values())
-
-
-def decode_member_address(address, member: dict):
-    lines = address.split(',')
-    for i in range(0, 4):
-        if i < len(lines):
-            line = lines[i].strip()
-        else:
-            line = ''
-        member['address' + str(i + 1)] = line
-    return member
-
-
-def decode_directions(dir):
-    if dir and len(dir) > 0:
-        dir = decode_newlines(dir)
-    return dir
-
-
-def encode_directions(dir):
-    if not dir: dir = ''
-    dir = encode_newlines(dir)
-    return dir
-
-
-def decode_newlines(string):
-    if not string: string = ''
-    return string.replace('\a', '\r\n')
-
-
-def encode_newlines(string):
-    return string.replace('\r\n', '\a')
-
-
-def de_the(string):
-    if string:
-        if string.startswith('The '):
-            string = string[4:]
-    return string
-
-
 def my_round(float_num):
     return math.floor(float(float_num) + 0.5)
 
@@ -326,22 +228,6 @@ def mean(values):
     if type(first_or_default(values, 0)) == str:
         values = [float(v) for v in values]
     return sum(values)/max(len(values), 1)
-
-
-def ids_from_names(all, names):
-    # all is list of tuples (id, name)
-    all_ids = [item[0] for item in all]
-    all_names = [item[1] for item in all]
-    ids = [all_ids[all_names.index(name)] for name in names]
-    return ids
-
-
-def names_from_ids(all, ids):
-    # all is list of tuples (id, name)
-    all_ids = [item[0] for item in all]
-    all_names = [item[1] for item in all]
-    names = [all_names[all_ids.index(id)] for id in ids]
-    return names
 
 
 def gen_to_list(gen):

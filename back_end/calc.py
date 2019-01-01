@@ -2,7 +2,7 @@ import itertools
 import datetime
 
 from back_end.interface import get_event, lookup_course, get_event_cards, get_scores, get_player_names, get_events_in, \
-    get_tour_scores, get_events_for_course
+    get_tour_scores
 from back_end.table import Table
 from back_end.data_utilities import coerce, my_round
 from globals.enumerations import PlayerStatus, EventType

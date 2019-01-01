@@ -415,11 +415,6 @@ def get_events_in(date_range):
 
 
 # region tours
-def is_tour_event(event):
-    pass
-    # return (not is_num(event['num'])) or float(event['num']) > math.floor(float(event['num']))
-
-
 def get_tour_scores(event_ids):
     ids = '(' + (','.join([str(id) for id in event_ids])) + ')'
     s = text("select * from scores where event_id in {} order by player_id, event_id".format(ids))
@@ -438,10 +433,6 @@ def get_tour_scores(event_ids):
 # region courses
 def get_course_select_choices():
     return [(c.id, c.name) for c in db_session.query(Course).order_by(Course.name)]
-
-
-def get_all_course_names():
-    return [c.name for c in db_session.query(Course).order_by(Course.name)]
 
 
 def get_all_courses():
@@ -486,15 +477,6 @@ def save_course(course_id, data):
     card.par = data['par']
 
     db_session.commit()
-
-
-def save_course_card(course_id, year, fields, data):
-    pass
-    # course_id = coerce(course_id, str)
-    # new = dict(zip(['course', 'year'] + fields, [course_id, year] + data))
-    # update_record(course_data_file(), ['course', 'year'], new)
-
-
 # endregion
 
 
@@ -717,10 +699,6 @@ def get_trophy_select_choices():
     return [(t.id, t.name) for t in db_session.query(Trophy).order_by(Trophy.name)]
 
 
-def get_all_trophy_names():
-    return [t.name for t in db_session.query(Trophy).order_by(Trophy.name)]
-
-
 def get_trophy(trophy_id):
     return db_session.query(Trophy).filter_by(id=trophy_id).first()
 
@@ -801,10 +779,6 @@ def get_all_scores():
 def get_booking(event_id, member_id):
     return db_session.query(Booking).filter_by(event_id=event_id, member_id=member_id).first() \
             or Booking(event_id=event_id, member_id=member_id, date=datetime.date.today())
-
-
-def get_all_bookings(event_id):
-    return db_session.query(Booking).filter_by(event_id=event_id)
 
 
 def save_booking(booking, add=False):

@@ -2,7 +2,7 @@
   "OS": "windows",
   "SECRET_KEY": "secret squirrel",
   "override": true,
-  "send_mail": true,
+  "send_mail": false,
   //"db_path": "sqlite:///C:\\Users\\jstembridge\\wagsite\\wags.db",
   "db_path": "sqlite:///D:\\wagsite_new\\v2\\wags.db",
   "locations": {
@@ -12,7 +12,7 @@
 //    "data": "C:\\Users\\jstembridge\\wagsite\\v2\\data",
 //    "minutes": "C:\\Users\\jstembridge\\wagsite\\v2\\minutes",
 //    "logs": "C:\\Users\\jstembridge\\PycharmProjects\\wagsv\\logs",
-    "templates": "../templates",
+    "templates": "templates",
     "html": "D:\\wagsite_new\\v2",
     "reports": "D:\\wagsite_new\\v2\\reports",
     "minutes": "D:\\wagsite_new\\v2\\minutes",

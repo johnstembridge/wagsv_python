@@ -1,5 +1,5 @@
 from flask_login import UserMixin
-from sqlalchemy import Column, Integer, Date, Time, Numeric, String, ForeignKey, types, Boolean, UniqueConstraint
+from sqlalchemy import Column, Integer, Date, Time, Numeric, String, ForeignKey, types, Boolean
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -102,10 +102,6 @@ class Trophy(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(100), nullable=False)
     events = relationship("Event", order_by="desc(Event.date)", back_populates="trophy")
-
-    def url(self):
-        app = 'user'
-        return config.url_for(app, 'trophy', trophy_id=self.id)
 
     def __repr__(self):
         return '<Trophy: {}>'.format(self.name)
