@@ -42,7 +42,7 @@
     {{ form.note(rows='5',cols='110') }}
     <hr/>
     {{ form.event_type }}
-    {%if form.editable.data %}
+    {%if form.editable %}
         {{ form.submit(class="btn btn-primary") }}
     {% endif %}
 </form>
