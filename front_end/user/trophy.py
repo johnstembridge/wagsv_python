@@ -6,7 +6,7 @@ from wtforms import StringField, FormField, FieldList
 from back_end.data_utilities import fmt_date, first_or_default
 from back_end.interface import get_trophy
 from front_end.form_helpers import render_link, template_exists
-from globals.config import url_for_html
+from globals.config import url_for_html, url_for_user
 from globals.enumerations import EventType
 
 
@@ -16,7 +16,7 @@ class Trophy:
     def trophy_show(trophy_id):
         form = TrophyForm()
         form.populate_trophy(trophy_id)
-        return render_template('user/trophy.html', form=form, render_link=render_link)
+        return render_template('user/trophy.html', form=form, render_link=render_link,url_for_user=url_for_user)
 
 
 class TrophyItemForm(FlaskForm):

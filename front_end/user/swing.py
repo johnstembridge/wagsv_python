@@ -5,7 +5,7 @@ from wtforms import StringField, FormField, FieldList
 from back_end.calc import get_big_swing
 from back_end.data_utilities import fmt_date
 from front_end.form_helpers import render_link
-from globals.config import url_for_html
+from globals.config import url_for_html, url_for_user
 import datetime
 
 class Swing:
@@ -14,7 +14,7 @@ class Swing:
     def swing_show(year):
         form = SwingForm()
         form.populate_swing(year)
-        return render_template('user/swing.html', form=form, year=int(year), render_link=render_link)
+        return render_template('user/swing.html', form=form, year=int(year), render_link=render_link, url_for_user=url_for_user)
 
 
 class SwingItemForm(FlaskForm):

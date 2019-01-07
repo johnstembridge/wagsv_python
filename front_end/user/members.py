@@ -31,10 +31,10 @@ class Members:
     def account(member_id, year):
         form = ShowMemberAccountsForm()
         form.populate_account(member_id, year)
-        return render_template('user/account.html', form=form, year=year, render_link=render_link)
+        return render_template('user/account.html', form=form, year=year, render_link=render_link, url_for_user=url_for_user)
 
     @staticmethod
     def area(member_id, year):
         form = MembersAreaForm()
         form.populate(member_id, year)
-        return render_template('user/member.html', form=form, year=year, render_link=render_link, url_for_html=url_for_html)
+        return render_template('user/member.html', form=form, year=year, render_link=render_link, url_for_html=url_for_html, url_for_user=url_for_user)

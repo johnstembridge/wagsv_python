@@ -18,7 +18,7 @@ class ReportEvents:
     def list_events(year):
         form = EventListForm()
         form.populate_event_list(year)
-        return render_template('user/event_list.html', form=form, year=year, render_link=render_link)
+        return render_template('user/event_list.html', form=form, year=year, render_link=render_link, url_for_user=url_for_user)
 
     @staticmethod
     def select_event():
@@ -41,7 +41,7 @@ class ReportEvents:
                 return render_template('user/event_booking_confirmation.html', form=booking)
         else:
             form.populate_event(event_id, member_id)
-        return render_template('user/event_details.html', form=form, render_link=render_link, url_for_html=url_for_html)
+        return render_template('user/event_details.html', form=form, render_link=render_link, url_for_html=url_for_html, url_for_user=url_for_user)
 
     @staticmethod
     def show_all_bookings(event_id):
@@ -68,7 +68,7 @@ class ReportEvents:
     def results_vl_event(event_id):
         form = EventResultsForm()
         form.populate_event_results(event_id)
-        return render_template('user/event_result.html', form=form, render_link=render_link)
+        return render_template('user/event_result.html', form=form, render_link=render_link, url_for_user=url_for_user)
 
     @staticmethod
     def results_tour_event(event_id):

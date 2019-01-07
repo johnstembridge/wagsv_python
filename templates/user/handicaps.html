@@ -22,7 +22,7 @@
             <td align="center">{{ item.handicap.data }}</td>
             <td align="center">
                 {{ render_link(
-                    url=url_for('handicap_history_player', player_id=item.player_id.data),
+                    url=url_for_user('handicap_history_player', player_id=item.player_id.data),
                     image=url_for('static', filename='images/go.png'),
                     text='Show handicap history for ' + item.player.data
                 )|safe }}
@@ -32,7 +32,7 @@
             <td align="center">{{ item.handicap.data }}</td>
             <td align="center">
                 {{ render_link(
-                    url=url_for('handicap_history_player', player_id=item.player_id.data),
+                    url=url_for_user('handicap_history_player', player_id=item.player_id.data),
                     image=url_for('static', filename='images/go.png'),
                     text='Show handicap history for ' + item.player.data
                 )|safe }}

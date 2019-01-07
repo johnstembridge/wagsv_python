@@ -13,7 +13,7 @@
         <tr>
             <td>{{ form.event.label }}</td><td>{{ form.event.data }}</td>
             <td><b>{{ render_link(
-                    url=url_for('show_all_bookings', event_id=form.event_id.data),
+                    url=url_for_user('show_all_bookings', event_id=form.event_id.data),
                     text='Show all bookings'
                 )|safe }}</b>
             </td>
@@ -52,7 +52,7 @@
         <tr>
             <td>{{ form.organiser.label }}</td>
             <td>{{ render_link(
-                    url=url_for('show_contact_details', member_id=form.organiser_id.data),
+                    url=url_for_user('show_contact_details', member_id=form.organiser_id.data),
                     text=form.organiser.data
                 )|safe }}
             </td>

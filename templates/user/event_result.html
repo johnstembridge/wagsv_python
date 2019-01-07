@@ -25,7 +25,7 @@
         <td align="center">{{ item.handicap.data }}</td>
         <td align="center">
             {{ render_link(
-            url=url_for('card_event_player', event_id=form.event_id.data, player_id=item.player_id.data),
+            url=url_for_user('card_event_player', event_id=form.event_id.data, player_id=item.player_id.data),
             image=url_for('static', filename='images/go.png'),
             text='View card for ' + item.player.data
             )|safe }}

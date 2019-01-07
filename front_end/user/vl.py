@@ -4,7 +4,7 @@ from wtforms import StringField, FormField, FieldList, HiddenField
 
 from back_end.calc import get_vl
 from front_end.form_helpers import render_link
-from globals.config import url_for_html
+from globals.config import url_for_html, url_for_user
 
 
 class Vl:
@@ -13,7 +13,7 @@ class Vl:
     def vl_show(year):
         form = VlForm()
         form.populate_vl(year)
-        return render_template('user/vl.html', form=form, year=year, render_link=render_link)
+        return render_template('user/vl.html', form=form, year=year, render_link=render_link,url_for_user=url_for_user)
 
 
 class VlItemForm(FlaskForm):

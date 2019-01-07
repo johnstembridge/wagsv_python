@@ -13,7 +13,7 @@
             <td>Edit your details</td>
             <td align="left">
                         {{ render_link(
-                        url=url_for('edit_contact_details'),
+                        url=url_for_user('edit_contact_details'),
                         image=url_for('static', filename='images/go.png')
                         )|safe }}
             </td>
@@ -23,7 +23,7 @@
             <td>Show other member's details</td>
             <td align="left">
                         {{ render_link(
-                        url=url_for('show_contact_details', member_id='None'),
+                        url=url_for_user('show_contact_details', member_id='None'),
                         image=url_for('static', filename='images/go.png')
                         )|safe }}
             </td>
@@ -32,7 +32,7 @@
             <td>Your playing history</td>
             <td align="left">
                         {{ render_link(
-                        url=url_for('show_player_events', player_id=form.player_id.data),
+                        url=url_for_user('show_player_events', player_id=form.player_id.data),
                         image=url_for('static', filename='images/go.png')
                         )|safe }}
             </td>
@@ -41,7 +41,7 @@
             <td>Your handicap history</td>
             <td align="left">
                         {{ render_link(
-                        url=url_for('handicap_history_player', player_id=form.player_id.data),
+                        url=url_for_user('handicap_history_player', player_id=form.player_id.data),
                         image=url_for('static', filename='images/go.png')
                         )|safe }}
             </td>
@@ -50,7 +50,7 @@
             <td>Your account</td>
             <td align="left">
                         {{ render_link(
-                        url=url_for('show_member_account', year=form.year.data),
+                        url=url_for_user('show_member_account', year=form.year.data),
                         image=url_for('static', filename='images/go.png')
                         )|safe }}
             </td>
@@ -59,7 +59,7 @@
             <td>Matches played (by member)</td>
             <td align="left">
                         {{ render_link(
-                        url=url_for('players_summary'),
+                        url=url_for_user('players_summary'),
                         image=url_for('static', filename='images/go.png')
                         )|safe }}
             </td>

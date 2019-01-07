@@ -9,14 +9,14 @@
     <h3 class="table-title left">Balance {{ form.balance.data }}</h3>
 {% endif %}
 <h4 class="table-title right">{{ render_link(
-        url=url_for('show_member_account', year=year-1),
+        url=url_for_user('show_member_account', year=year-1),
         text='&#x25C4;'
         )|safe }}
         &nbsp;
         year
         &nbsp;
         {{ render_link(
-        url=url_for('show_member_account', year=year+1),
+        url=url_for_user('show_member_account', year=year+1),
         text='&#x25BA;'
         )|safe }}
 </h4>

@@ -2,6 +2,7 @@ from flask import render_template
 
 from front_end.form_helpers import render_link
 from .player_history_form import PlayerHistoryForm, SummaryHistoryForm
+from globals.config import url_for_user
 
 
 class ReportPlayers:
@@ -16,4 +17,4 @@ class ReportPlayers:
     def playing_history_summary():
         form = SummaryHistoryForm()
         form.populate_summary_history()
-        return render_template('user/summary_history.html', form=form, render_link=render_link)
+        return render_template('user/summary_history.html', form=form, render_link=render_link, url_for_user=url_for_user)
