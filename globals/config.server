@@ -15,8 +15,8 @@
     "templates": "templates"
   },
     "url_prefix": {
-    "admin": "/wagsadminv2",
-    "user": "/wagsuserv2",
+    "admin": "/wagsadmin",
+    "user": "/wagsuser",
     "html": ".."
   }
 }
