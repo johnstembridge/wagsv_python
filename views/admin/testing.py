@@ -13,9 +13,9 @@ from wags_admin import app
 @role_required('admin')
 def test_email():
     subject = 'Test email'
-    sender = 'john.stembridge@gmail.com'
+    sender = 'test@wags.org'
     message = ['test message']
-    to = [sender]
+    to = 'john.stembridge@gmail.com'
     send_mail(to=to,
               sender=sender,
               cc=[],
