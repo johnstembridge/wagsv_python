@@ -15,7 +15,7 @@ def send_async_email(app, msg):
 
 
 def send_mail(to, sender, cc=None, subject=None, message=None):
-    use_sendmail(to, sender, cc, subject, message)
+    # use_sendmail(to, sender, cc, subject, message)
     msg = Message(subject)
     msg.sender = sender
     msg.recipients = force_list(to)
