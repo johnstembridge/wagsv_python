@@ -6,6 +6,7 @@ from globals.decorators import async
 from back_end.data_utilities import force_list
 from globals.app_setup import mail
 
+import os
 
 @async
 def send_async_email(app, msg):
@@ -14,6 +15,7 @@ def send_async_email(app, msg):
 
 
 def send_mail(to, sender, cc=None, subject=None, message=None):
+    use_sendmail(to, sender, cc, subject, message)
     msg = Message(subject)
     msg.sender = sender
     msg.recipients = force_list(to)
@@ -31,3 +33,18 @@ def send_mail(to, sender, cc=None, subject=None, message=None):
             'subject: ' + subject,
             'message:']
         print('\n'.join(out + message))
+
+
+def use_sendmail(to, sender, cc=None, subject='', message=''):
+    sendmail_location = "/usr/sbin/sendmail"
+    p = os.popen("{} -t" .format(sendmail_location), "w")
+    p.write("From: {}\n" .format(to))
+    p.write("To: {}\n" .format(';'.join(sender) if type(sender) is list else sender))
+    if cc:
+        p.write("Cc: {}\n" .format(';'.join(cc) if type(cc) is list else cc))
+    p.write("Subject: {}\n".format(subject))
+    p.write("\n")  # blank line separating headers from body
+    p.write('\n'.join(message) if type(message) is list else message)
+    status = p.close()
+    if status != 0:
+        print("Sendmail exit status", status)
