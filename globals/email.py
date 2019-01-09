@@ -38,13 +38,13 @@ def send_mail(to, sender, cc=None, subject=None, message=None):
 def use_sendmail(to, sender, cc=None, subject='', message=''):
     sendmail_location = "/usr/sbin/sendmail"
     p = os.popen("{} -t" .format(sendmail_location), "w")
-    p.write("From: {}\n" .format(to))
-    p.write("To: {}\n" .format(';'.join(sender) if type(sender) is list else sender))
+    p.write("From: {}\n" .format(sender))
+    p.write("To: {}\n" .format(';'.join(to) if type(to) is list else to))
     if cc:
         p.write("Cc: {}\n" .format(';'.join(cc) if type(cc) is list else cc))
     p.write("Subject: {}\n".format(subject))
     p.write("\n")  # blank line separating headers from body
     p.write('\n'.join(message) if type(message) is list else message)
     status = p.close()
-    if status != 0:
+    if status and status != 0:
         raise ValueError("Sendmail exit status {}".format(status))
