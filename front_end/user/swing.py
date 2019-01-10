@@ -8,6 +8,7 @@ from front_end.form_helpers import render_link
 from globals.config import url_for_html, url_for_user
 import datetime
 
+
 class Swing:
 
     @staticmethod
@@ -35,10 +36,8 @@ class SwingForm(FlaskForm):
 
     def populate_swing(self, year):
         self.year.data = str(year)
-        if datetime.date.today().month < 9:
-            year = year - 1
         as_of = datetime.date(year, datetime.date.today().month, datetime.date.today().day)
-        swings = get_big_swing(as_of)
+        year_range, swings = get_big_swing(as_of)
         for item in swings.data:
             item_form = SwingItemForm()
             item_form.position = item[swings.column_index('position')]
@@ -50,5 +49,5 @@ class SwingForm(FlaskForm):
             item_form.swing = item[swings.column_index('swing')]
 
             self.swing.append_entry(item_form)
-        self.year_span.data = str(year) + '/' + str(year + 1)
+        self.year_span.data = str(year_range[0]) + '/' + str(year_range[1])
         self.image_url.data = url_for_html('pictures', 'trophies', 'swing.jpg')

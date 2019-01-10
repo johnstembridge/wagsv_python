@@ -11,9 +11,9 @@ class TestCalc(unittest.TestCase):
 
     def test_get_big_swing(self):
         as_of = datetime(2018, 8, 10).date()
-        #swing = get_big_swing(as_of)
-        swing = get_big_swing()
+        year_range, swing = get_big_swing(as_of)
         pass
+
 
 if __name__ == '__main__':
     unittest.main()

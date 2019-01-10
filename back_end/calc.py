@@ -105,7 +105,8 @@ def get_big_swing(as_of=datetime.date.today()):
     swings.sort('swing', reverse=True)
     swings.top_n(10)
     swings.add_column('position', get_positions(swings.get_columns('swing')))
-    return swings
+    year_range = [first.year, first.year + 1]
+    return year_range, swings
 
 
 def get_swings(event):
