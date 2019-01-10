@@ -5,7 +5,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 
-from globals.config import url_for
+from globals.config import url_for_app
 from globals.enumerations import UserRole, MemberStatus
 from models.wags_db import User, Role
 from back_end.interface import get_member_by_email, get_user, save_user
@@ -30,7 +30,7 @@ def user_login(app, next_page):
             user = get_user(user_name=form.username.data)
             if user is None or not user.check_password(form.password.data):
                 flash('Invalid username or password', 'danger')
-                return render_template('{}/login.html'.format(app), title='Sign In', form=form, app=app, url_for=url_for)
+                return render_template('{}/login.html'.format(app), title='Sign In', form=form, app=app, url_for_app=url_for_app)
             # if app not in [role.role.name for role in user.roles]:
             #     flash('Sorry, you do not have {} access'.format(app))
             #     return redirect(qualify_url(app))
@@ -43,7 +43,7 @@ def user_login(app, next_page):
     else:
         form.populate()
 
-    return render_template('{}/login.html'.format(app), title='Sign In', form=form, app=app, url_for=url_for)
+    return render_template('{}/login.html'.format(app), title='Sign In', form=form, app=app,  url_for_app=url_for_app)
 
 
 class RegistrationForm(FlaskForm):
@@ -80,7 +80,7 @@ def user_register(app):
                 user.roles.append(role)
                 save_user(user)
                 flash('Congratulations, you are now a registered {}!'.format(app))
-                return redirect(url_for(app, 'user_login'))
+                return redirect(url_for_app(app, 'user_login'))
             else:
                 flash('Cannot find your membership - please give your WAGS contact email address')
     return render_template('{}/register.html'.format(app), title='Register', form=form)
