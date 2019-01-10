@@ -106,6 +106,9 @@ def in_date_range(date, date_from, date_to):
         return False
 
 
+def current_year():
+    return datetime.datetime.now().year
+
 # endregion
 
 

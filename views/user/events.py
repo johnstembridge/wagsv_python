@@ -1,26 +1,25 @@
-import datetime
-
 from flask_login import login_required, current_user
 from wags_user import app
 from front_end.user.events import ReportEvents
 
+from back_end.data_utilities import current_year, coerce
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    current_year = datetime.date.today().year
-    return list_events(current_year)
+    return list_events(current_year())
 
 
 @app.route('/events', methods=['GET', 'POST'])
 @login_required
-def select_event():
-    return ReportEvents.select_event()
+def list_events_():
+    return list_events(current_year())
 
 
 @app.route('/events/<year>', methods=['GET', 'POST'])
 @login_required
 def list_events(year):
-    return ReportEvents.list_events(int(year))
+    return ReportEvents.list_events(coerce(year, int))
 
 
 @app.route('/events/<event_id>/book', methods=['GET', 'POST'])

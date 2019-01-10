@@ -4,6 +4,8 @@ from front_end.user.trophy import Trophy
 from front_end.user.vl import Vl
 from front_end.user.swing import Swing
 
+from back_end.data_utilities import current_year, coerce
+
 
 # region handicaps
 @app.route('/handicaps', methods=['GET', 'POST'])
@@ -20,16 +22,28 @@ def handicap_history_player(player_id):
 
 
 # region reports
+@app.route('/vl', methods=['GET', 'POST'])
+@login_required
+def vl_():
+    return vl(current_year())
+
+
 @app.route('/vl/<year>', methods=['GET', 'POST'])
 @login_required
 def vl(year):
-    return Vl.vl_show(int(year))
+    return Vl.vl_show(coerce(year, int))
+
+
+@app.route('/swing', methods=['GET', 'POST'])
+@login_required
+def swing_():
+    return swing(current_year())
 
 
 @app.route('/swing/<year>', methods=['GET', 'POST'])
 @login_required
 def swing(year):
-    return Swing.swing_show(int(year))
+    return Swing.swing_show(coerce(year, int))
 
 
 @app.route('/trophies/<trophy_id>', methods=['GET', 'POST'])
