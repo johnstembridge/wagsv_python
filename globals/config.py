@@ -16,19 +16,11 @@ def get(key):
 
 
 def url_for_admin(endpoint, **values):
-    return url_for('admin', endpoint, **values)
+    return url_for_app('admin', endpoint, **values)
 
 
 def url_for_user(endpoint, **values):
-    return url_for('user', endpoint, **values)
-
-
-def url_for(app, endpoint, **values):
-    url = flask_url_for(endpoint, **values)
-    prefix = get('url_prefix')[app]
-    if prefix:
-        url = prefix + url
-    return url
+    return url_for_app('user', endpoint, **values)
 
 
 def url_for_app(app, endpoint, **values):
