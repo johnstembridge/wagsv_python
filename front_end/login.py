@@ -30,7 +30,7 @@ def user_login(app, next_page):
             user = get_user(user_name=form.username.data)
             if user is None or not user.check_password(form.password.data):
                 flash('Invalid username or password', 'danger')
-                return render_template('{}/login.html'.format(app), title='Sign In', form=form)
+                return render_template('{}/login.html'.format(app), title='Sign In', form=form, app=app)
             # if app not in [role.role.name for role in user.roles]:
             #     flash('Sorry, you do not have {} access'.format(app))
             #     return redirect(qualify_url(app))
@@ -43,7 +43,7 @@ def user_login(app, next_page):
     else:
         form.populate()
 
-    return render_template('{}/login.html'.format(app), title='Sign In', form=form)
+    return render_template('{}/login.html'.format(app), title='Sign In', form=form, app=app)
 
 
 class RegistrationForm(FlaskForm):
