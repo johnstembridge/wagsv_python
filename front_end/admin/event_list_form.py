@@ -33,7 +33,7 @@ class EventListForm(FlaskForm):
             item_form.event_id = event.id
             item_form.date = fmt_date(event.date)
             item_form.event = event.trophy.name if event.trophy else ''
-            item_form.venue = event.course.name if event_type == EventType.wags_vl_event else event.venue.name or ''
+            item_form.venue = event.venue.name
             item_form.event_type = event_type.value
             item_form.result = override or event.date < datetime.date.today() and event.type in (EventType.wags_vl_event, EventType.wags_tour)
             self.event_list.append_entry(item_form)

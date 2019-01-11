@@ -1,8 +1,16 @@
 from flask import flash, url_for, current_app
+from wtforms import SelectField
 import os
 
 from back_end.data_utilities import force_list
 from globals import config
+
+
+class MySelectField(SelectField):
+
+    def pre_validate(self, form):
+        if self.flags.required and self.data == 0:
+            raise ValueError(self.gettext('Please choose an option'))
 
 
 def flash_errors(form):

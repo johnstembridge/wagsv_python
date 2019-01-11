@@ -39,10 +39,13 @@ class MaintainEvents:
     def edit_event(event_id, event_type):
         form = EventForm()
         if form.is_submitted():
-            if form.save_event(event_id):
-                flash('Event saved', 'success')
-                year = form.date.data.year
-                return redirect(url_for_admin('list_events', year=year))
+            if form.validate_on_submit():
+                if form.save_event(event_id):
+                    flash('Event saved', 'success')
+                    year = form.date.data.year
+                    return redirect(url_for_admin('list_events', year=year))
+            else:
+                form.populate_choices(event_id, event_type)
         else:
             form.populate_event(event_id, event_type)
             event_type = EventType(form.event_type.data)

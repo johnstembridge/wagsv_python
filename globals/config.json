@@ -1,7 +1,7 @@
 {
   "OS": "windows",
   "SECRET_KEY": "secret squirrel",
-  "override": true,
+  "override": false,
   "send_mail": false,
   "db_path": "sqlite:///C:\\Users\\jstembridge\\wagsite\\wags.db",
 //  "db_path": "sqlite:///D:\\wagsite_new\\v2\\wags.db",
