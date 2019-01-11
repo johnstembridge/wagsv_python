@@ -112,7 +112,7 @@ class EventForm(FlaskForm):
         if event_type == EventType.wags_tour:
             event['course_id'] = None
             for item in self.tour_schedule.data:
-                if item['date'] and item['course']:
+                if item['date']: # and item['course']:
                     event['tour_schedule'].append(item)
 
         event_id = save_event_details(event_id, event)
