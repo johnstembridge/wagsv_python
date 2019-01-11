@@ -87,7 +87,7 @@ def user_register(app):
 
 
 def qualify_url(app, page=None):
-    return (url_for(app, 'index') + (page or '')).replace("//", "/")
+    return (url_for_app(app, 'index') + (page or '')).replace("//", "/")
 
 
 def user_logout(app):
