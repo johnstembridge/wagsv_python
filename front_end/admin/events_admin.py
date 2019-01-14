@@ -1,7 +1,7 @@
 import os
 from flask import render_template, redirect, flash
 
-from back_end.data_utilities import fmt_date
+from back_end.data_utilities import fmt_date, coerce
 from back_end.interface import get_event
 from back_end.file_access import write_file
 from front_end.admin.event_add_player_form import AddPlayerForm
@@ -38,6 +38,7 @@ class MaintainEvents:
     @staticmethod
     def edit_event(event_id, event_type):
         form = EventForm()
+
         if form.is_submitted():
             if form.validate_on_submit():
                 if form.save_event(event_id):
@@ -45,10 +46,11 @@ class MaintainEvents:
                     year = form.date.data.year
                     return redirect(url_for_admin('list_events', year=year))
             else:
+                event_type = EventType(coerce(form.event_type.data, int))
                 form.populate_choices(event_id, event_type)
         else:
             form.populate_event(event_id, event_type)
-            event_type = EventType(form.event_type.data)
+            event_type = EventType(coerce(form.event_type.data, int))
         event = event_id if event_id != 0 else "(new)"
         if event_type == EventType.wags_vl_event:
             return render_template('admin/event_details.html', form=form, event_id=event)
