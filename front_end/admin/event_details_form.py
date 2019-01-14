@@ -40,9 +40,9 @@ class EventForm(FlaskForm):
     submit = SubmitField(label='Save')
     editable = HiddenField(label='Editable')
 
-    def populate_event(self, event_id, event_type):
+    def populate_event(self, event_id):
         event = get_event(event_id)
-        event_type = event_type or event.type
+        event_type = event.type
         self.editable = is_event_editable(event.date.year)
         self.date.data = event.date
         self.member_price.data = event.member_price
@@ -67,11 +67,12 @@ class EventForm(FlaskForm):
 
                 self.tour_schedule.append_entry(item_form)
                 pass
-        self.populate_choices(event_id, event_type)
+        self.populate_choices(event_id)
         return event_id
 
-    def populate_choices(self, event_id, event_type):
+    def populate_choices(self, event_id):
         event = get_event(event_id)
+        event_type =event.type
         organiser = event.organiser.id if event.organiser else 0
         trophy = event.trophy.id if event.trophy else 0
         venue = event.venue.id if event.venue else 0
