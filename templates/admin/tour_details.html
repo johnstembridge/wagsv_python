@@ -10,7 +10,13 @@
     {{ form.csrf_token }}
     <table width="100%">
         <tr>
-            <td>{{ form.venue.label }}</td><td>{{ form.venue }}</td>
+            <td>{{ form.venue.label }}</td>
+            <td>
+                {{ form.venue }}
+                {% for error in form.venue.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </td>
             <td>{{ form.organiser.label }}</td><td>{{ form.organiser }}</td>
         </tr>
         <tr>

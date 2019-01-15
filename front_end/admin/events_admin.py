@@ -46,10 +46,10 @@ class MaintainEvents:
                     year = form.date.data.year
                     return redirect(url_for_admin('list_events', year=year))
             else:
-                form.populate_choices(event_id)
+                form.populate_choices(event_id, event_type)
                 event_type = EventType(coerce(form.event_type.data, int))
         else:
-            form.populate_event(event_id)
+            form.populate_event(event_id, event_type)
             event_type = EventType(coerce(form.event_type.data, int))
         event = event_id if event_id != 0 else "(new)"
         if event_type == EventType.wags_vl_event:
