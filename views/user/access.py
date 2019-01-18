@@ -7,7 +7,7 @@ from back_end.interface import get_user
 
 role = 'user'
 login_manager = LoginManager(app)
-login_manager.login_view = config.full_url_for_app(role, 'login')
+login_manager.login_view = config.get('url_prefix')[role]+'/login'
 
 
 @login_manager.user_loader
