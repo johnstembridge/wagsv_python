@@ -40,8 +40,7 @@ def url_for_html(*paths):
     return os.path.join(get('locations')['base_url'], *paths)
 
 
-def full_url_for_app(app, endpoint, **values):
-    url = flask_url_for(endpoint, **values)
+def full_url_for_app(app, url):
     prefix = get('url_prefix')[app]
     url = os.path.join(get('locations')['base_url'], prefix, url)
     return url
