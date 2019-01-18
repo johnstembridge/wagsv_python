@@ -19,7 +19,7 @@ class ScheduleForm(FlaskForm):
 
 class TourScheduleForm(FlaskForm):
     date = DateField('Date', validators=[Optional()])
-    course = MySelectField(label='Course', coerce=int, validators=[Optional()]) # StringField(label='Course')
+    course = MySelectField(label='Course', coerce=int, validators=[Optional()])
 
 
 class EventForm(FlaskForm):
@@ -86,7 +86,6 @@ class EventForm(FlaskForm):
                 course_id = item.course_id if item.course else 0
                 field = self.tour_schedule.entries[item_count].course
                 set_select_field_new(field, courses, default_selection=course_id, item_name='Course')
-                #self.tour_schedule.entries[item_count] = field.object_data
                 item_count += 1
 
     def save_event(self, event_id):
