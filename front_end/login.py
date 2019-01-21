@@ -1,5 +1,5 @@
-from werkzeug.urls import url_parse
-from flask import render_template, flash, redirect
+from werkzeug.urls import url_parse, url_join
+from flask import render_template, flash, redirect, request
 from flask_login import current_user, login_user, logout_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
@@ -93,3 +93,9 @@ def qualify_url(app, page=None):
 def user_logout(app):
     logout_user()
     return redirect(qualify_url(app))
+
+
+def is_safe_url(target):
+    ref_url = url_parse(request.host_url)
+    test_url = url_parse(url_join(request.host_url, target))
+    return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
