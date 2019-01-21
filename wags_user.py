@@ -3,16 +3,8 @@ from flask import Flask
 from globals.app_setup import init_app
 
 
-def _force_https(app):
-    def wrapper(environ, start_response):
-        environ['wsgi.url_scheme'] = 'https'
-        return app(environ, start_response)
-    return wrapper
-
-
 app = Flask(__name__)
 #init_app(app, create=True)
-app = _force_https(app)
 init_app(app)
 
 from views.user.access import *
