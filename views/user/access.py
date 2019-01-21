@@ -9,7 +9,8 @@ from back_end.interface import get_user
 role = 'user'
 login_manager = LoginManager(app)
 #login_endpoint = url_join(config.get('locations')['base_url'], config.get('url_prefix')[role] + '/login')
-login_endpoint = url_for('user_login', _external=True)
+with app.test_request_context():
+    login_endpoint = url_for('user_login', _external=True)
 app.logger.info('Login url: {}'.format(login_endpoint))
 login_manager.login_view = login_endpoint
 #login_manager.login_view = os.path.join(config.get('url_prefix')[role], 'login')
