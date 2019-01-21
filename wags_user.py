@@ -12,8 +12,8 @@ def _force_https(app):
 
 app = Flask(__name__)
 #init_app(app, create=True)
-init_app(app)
 app = _force_https(app)
+init_app(app)
 
 from views.user.access import *
 from views.user.events import *
