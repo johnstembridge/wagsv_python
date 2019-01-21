@@ -1,5 +1,5 @@
-from werkzeug.urls import url_join
-from flask import request, url_for
+
+from flask import request
 from flask_login import LoginManager
 from front_end import login
 from wags_user import app
