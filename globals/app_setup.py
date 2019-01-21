@@ -20,6 +20,7 @@ def init_app(app, create=False):
     app.config['SECRET_KEY'] = config.get('SECRET_KEY')
     app.config['SQLALCHEMY_DATABASE_URI'] = db_path
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['PREFERRED_URL_SCHEME'] = 'https'
 
     bootstrap = Bootstrap(app)
     csrf = CSRFProtect(app)

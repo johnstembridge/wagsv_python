@@ -8,11 +8,8 @@ from back_end.interface import get_user
 
 role = 'user'
 login_manager = LoginManager(app)
-#login_endpoint = url_join(config.get('locations')['base_url'], config.get('url_prefix')[role] + '/login')
 login_endpoint = 'user_login'
 login_manager.login_view = login_endpoint
-#login_manager.login_view = os.path.join(config.get('url_prefix')[role], 'login')
-app.logger.info('Login url: {}'.format(login_manager.login_view ))
 
 
 @login_manager.user_loader
