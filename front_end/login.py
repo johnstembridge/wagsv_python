@@ -23,7 +23,7 @@ class LoginForm(FlaskForm):
 
 def user_login(app, next_page):
     if current_user.is_authenticated:
-        return redirect(adjust_url_for_https(app, next_page))
+        return redirect(config.adjust_url_for_https(app, next_page))
     form = LoginForm()
     if form.is_submitted():
         if form.validate_on_submit():
@@ -33,12 +33,12 @@ def user_login(app, next_page):
                 return render_template('{}/login.html'.format(app), title='Sign In', form=form, app=app, url_for_app=config.url_for_app)
             # if app not in [role.role.name for role in user.roles]:
             #     flash('Sorry, you do not have {} access'.format(app))
-            #     return redirect(adjust_url_for_https(app))
+            #     return redirect(config.adjust_url_for_https(app))
             login_user(user, remember=form.remember_me.data)
             if not next_page or url_parse(next_page).netloc != '':
-                next_page = adjust_url_for_https(app)
+                next_page = config.adjust_url_for_https(app)
             else:
-                next_page = adjust_url_for_https(app, next_page)
+                next_page = config.adjust_url_for_https(app, next_page)
             return redirect(next_page)
     else:
         form.populate()
@@ -62,7 +62,7 @@ class RegistrationForm(FlaskForm):
 
 def user_register(app):
     if current_user.is_authenticated:
-        return redirect(adjust_url_for_https(app))
+        return redirect(config.adjust_url_for_https(app))
     form = RegistrationForm()
     if form.is_submitted():
         if form.validate_on_submit():
@@ -70,7 +70,7 @@ def user_register(app):
             if member:
                 if member.status not in [MemberStatus.full_member, MemberStatus.overseas_member]:
                     flash('Sorry, you are not a current member')
-                    return redirect(adjust_url_for_https(app))
+                    return redirect(config.adjust_url_for_https(app))
                 user = User(user_name=form.username.data, member_id=member.id)
                 user.set_password(form.password.data)
                 if app == 'user':
@@ -86,25 +86,9 @@ def user_register(app):
     return render_template('{}/register.html'.format(app), title='Register', form=form)
 
 
-def adjust_url_for_https(app, url=None):
-    if url:
-        url_ = url_parse(url)
-        new = url_unparse(
-            ('https',
-             url_.netloc,
-             config.path_for_app(app, url_.path),
-             url_.query,
-             url_.fragment
-             )
-        )
-    else:
-        new = config.full_url_for_app(app, 'index')
-    return new
-
-
 def user_logout(app):
     logout_user()
-    return redirect(adjust_url_for_https(app))
+    return redirect(config.adjust_url_for_https(app))
 
 
 def is_safe_url(target):

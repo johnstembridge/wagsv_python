@@ -1,6 +1,7 @@
 import os
 import json
 from flask import url_for as flask_url_for
+from werkzeug.urls import url_parse, url_unparse
 
 
 def read():
@@ -24,11 +25,17 @@ def url_for_user(endpoint, **values):
 
 
 def url_for_app(app, endpoint, **values):
-    url = flask_url_for(endpoint, **values)
-    prefix = get('url_prefix')[app]
-    if prefix:
-        url = prefix + url
-    return url
+    url = flask_url_for(endpoint, _scheme='https', _external=True, **values)
+    url_ = url_parse(url)
+    new = url_unparse(
+        ('https',
+         url_.netloc,
+         path_for_app(app, url_.path),
+         url_.query,
+         url_.fragment
+         )
+    )
+    return new
 
 
 def url_for_wags_site(end):
@@ -50,3 +57,19 @@ def full_url_for_app(app, url):
     prefix = get('url_prefix')[app]
     url = os.path.join(get('locations')['base_url'], prefix, url)
     return url
+
+
+def adjust_url_for_https(app, url=None):
+    if url:
+        url_ = url_parse(url)
+        new = url_unparse(
+            ('https',
+             url_.netloc,
+             path_for_app(app, url_.path),
+             url_.query,
+             url_.fragment
+             )
+        )
+    else:
+        new = full_url_for_app(app, 'index')
+    return new
