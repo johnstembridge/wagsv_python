@@ -40,6 +40,12 @@ def url_for_html(*paths):
     return os.path.join(get('locations')['base_url'], *paths)
 
 
+def path_for_app(app, path):
+    prefix = get('url_prefix')[app]
+    url = os.path.join(prefix, path)
+    return url
+
+
 def full_url_for_app(app, url):
     prefix = get('url_prefix')[app]
     url = os.path.join(get('locations')['base_url'], prefix, url)

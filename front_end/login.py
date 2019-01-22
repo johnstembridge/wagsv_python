@@ -92,13 +92,13 @@ def adjust_url_for_https(app, url=None):
         new = url_unparse(
             ('https',
              url_.netloc,
-             config.url_for_app(app, url_.path),
+             config.path_for_app(app, url_.path),
              url_.query,
              url_.fragment
              )
         )
     else:
-        new = (config.get('locations')['base_url'] + config.url_for_app(app, 'index')).replace("//", "/")
+        new = config.full_url_for_app(app, 'index')
     return new
 
 
