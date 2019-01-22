@@ -64,7 +64,7 @@ def adjust_url_for_https(app, url=None):
         url_ = url_parse(url)
         new = url_unparse(
             ('https',
-             url_.netloc,
+             url_.netloc or "wags.org",
              path_for_app(app, url_.path),
              url_.query,
              url_.fragment
