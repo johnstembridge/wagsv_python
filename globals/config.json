@@ -22,6 +22,7 @@
   "url_prefix": {
     "admin": "",
     "user": "",
-    "html": ".."
+    "html": "..",
+    "test": "test"
   }
 }

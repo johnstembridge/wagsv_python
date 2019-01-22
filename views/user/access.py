@@ -8,7 +8,7 @@ from back_end.interface import get_user
 
 role = 'user'
 login_manager = LoginManager(app)
-login_endpoint = 'https://wags.org/wagsuserv2/login'  # 'user_login'
+login_endpoint = 'user_login'
 login_manager.login_view = login_endpoint
 app.logger.info('Login View: {}'.format(login_manager.login_view))
 
@@ -23,7 +23,9 @@ def user_login():
     next_page = request.args.get('next')
     app.logger.info('Next Page: {}'.format(next_page))
     app.logger.info('Converted Next Page: {}'.format(config.adjust_url_for_https(role, next_page)))
-    return login.user_login(role, next_page)
+    res = login.user_login(role, next_page)
+    app.logger.info('Redirect: {}'.format(res))
+    return res
 
 
 @app.route('/logout', methods=['GET', 'POST'])
