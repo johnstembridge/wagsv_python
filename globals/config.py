@@ -49,7 +49,7 @@ def url_for_html(*paths):
 
 def path_for_app(app, path):
     prefix = get('url_prefix')[app].replace('/', '')
-    url = os.path.join(prefix, path)
+    url = (prefix + '/' + path).replace('//', '/')
     return url
 
 
