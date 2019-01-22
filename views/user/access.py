@@ -8,8 +8,9 @@ from back_end.interface import get_user
 
 role = 'user'
 login_manager = LoginManager(app)
-login_endpoint = 'user_login'
+login_endpoint = 'https://wags.org/wagsuserv2/login'  # 'user_login'
 login_manager.login_view = login_endpoint
+app.logger.info('Login View: {}'.format(login_manager.login_view))
 
 
 @login_manager.user_loader
