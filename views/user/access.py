@@ -22,6 +22,7 @@ def load_user(id):
 def user_login():
     next_page = request.args.get('next')
     app.logger.info('Next Page: {}'.format(next_page))
+    app.logger.info('Converted Next Page: {}'.format(config.adjust_url_for_https(role, next_page)))
     return login.user_login(role, next_page)
 
 
