@@ -89,4 +89,5 @@ def is_safe_url(target):
     test_url = url_parse(url_join(request.host_url, target))
     app.logger.info('ref url: {}'.format(ref_url))
     app.logger.info('test url: {}'.format(test_url))
-    return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
+    return test_url.scheme in ('http', 'https') and \
+        ref_url.netloc.replace('www.', '') == test_url.netloc.replace('www.', '')
