@@ -3,6 +3,7 @@ import json
 from flask import url_for as flask_url_for
 from flask import request
 from werkzeug.urls import url_parse, url_unparse, url_join
+from wags_user import app
 
 
 def read():
@@ -78,13 +79,14 @@ def adjust_url_for_https(app, url=None):
 
 def url_for_index(app):
     if app == 'user':
-        page = 'index.html'
+        return os.path.join(get('locations')['base_url'], 'index.html')
     else:
-        page = ''
-    return adjust_url_for_https(app, page)
+        return adjust_url_for_https(app, '')
 
 
 def is_safe_url(target):
     ref_url = url_parse(request.host_url)
     test_url = url_parse(url_join(request.host_url, target))
+    app.logger.info('ref url: {}'.format(ref_url))
+    app.logger.info('test url: {}'.format(test_url))
     return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
