@@ -18,7 +18,6 @@ mail = Mail()
 
 def init_app(app, create=False):
     app.config['SECRET_KEY'] = config.get('SECRET_KEY')
-    app.config['SERVER_NAME'] = config.get('SERVER_NAME')
     app.config['SQLALCHEMY_DATABASE_URI'] = db_path
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 

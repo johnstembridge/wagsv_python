@@ -5,7 +5,6 @@
   "override": false,
   "send_mail": true,
   "db_path": "sqlite:////var/www/v2/wags.db",
-  "SERVER_NAME": "wags.org",
   "locations": {
     "base_url": "https://wags.org/",
     "html": "/var/www/v2",
@@ -16,8 +15,8 @@
     "templates": "templates"
   },
     "url_prefix": {
-    "admin": "/wagsadminv2",
-    "user": "/wagsuserv2",
+    "admin": "wagsadminv2",
+    "user": "wagsuserv2",
     "html": ".."
   }
 }

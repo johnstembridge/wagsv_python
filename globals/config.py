@@ -1,7 +1,8 @@
 import os
 import json
 from flask import url_for as flask_url_for
-from werkzeug.urls import url_parse, url_unparse
+from flask import request
+from werkzeug.urls import url_parse, url_unparse, url_join
 
 
 def read():
@@ -48,7 +49,7 @@ def url_for_html(*paths):
 
 
 def path_for_app(app, path):
-    prefix = get('url_prefix')[app].replace('/', '')
+    prefix = get('url_prefix')[app]
     url = (prefix + '/' + path).replace('//', '/')
     return url
 
@@ -73,3 +74,17 @@ def adjust_url_for_https(app, url=None):
     else:
         new = full_url_for_app(app, 'index')
     return new
+
+
+def url_for_index(app):
+    if app == 'user':
+        page = 'index.html'
+    else:
+        page = ''
+    return adjust_url_for_https(app, page)
+
+
+def is_safe_url(target):
+    ref_url = url_parse(request.host_url)
+    test_url = url_parse(url_join(request.host_url, target))
+    return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
