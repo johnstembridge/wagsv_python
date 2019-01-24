@@ -66,7 +66,7 @@ def adjust_url_for_https(app, url=None):
         ref_url = url_parse(get('locations')['base_url'])
 
         new = url_unparse(
-            (url_.scheme or ref_url.scheme,
+            (ref_url.scheme,
              url_.netloc or ref_url.netloc,
              path_for_app(app, url_.path),
              url_.query,
