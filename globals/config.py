@@ -73,17 +73,10 @@ def adjust_url_for_https(app, url=None):
              url_.fragment
              )
         )
-        # new = url_unparse(
-        #     ('https',
-        #      url_.netloc or "wags.org",
-        #      path_for_app(app, url_.path),
-        #      url_.query,
-        #      url_.fragment
-        #      )
-        # )
     else:
         new = full_url_for_app(app, 'index')
     return new
+
 
 def url_for_index(app):
     if app == 'user':
