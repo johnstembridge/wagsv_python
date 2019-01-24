@@ -26,10 +26,11 @@ def url_for_user(endpoint, **values):
 
 
 def url_for_app(app, endpoint, **values):
-    url = flask_url_for(endpoint, _scheme='https', _external=True, **values)
+    ref_url = url_parse(get('locations')['base_url'])
+    url = flask_url_for(endpoint, _scheme=ref_url.scheme, _external=True, **values)
     url_ = url_parse(url)
     new = url_unparse(
-        ('https',
+        (ref_url.scheme,
          url_.netloc,
          path_for_app(app, url_.path),
          url_.query,
