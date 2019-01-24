@@ -63,7 +63,7 @@ def full_url_for_app(app, url):
 def adjust_url_for_https(app, url=None):
     if url:
         url_ = url_parse(url)
-        ref_url = url_parse(request.host_url)
+        ref_url = url_parse(get('locations')['base_url'])
 
         new = url_unparse(
             (url_.scheme or ref_url.scheme,
