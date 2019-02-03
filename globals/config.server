@@ -6,7 +6,7 @@
   "send_mail": true,
   "db_path": "sqlite:////var/www/html/wags.db",
   "locations": {
-    "base_url": "http://80.82.115.246/",
+    "base_url": "http://wags.org/",
     "html": "/var/www/html",
     "reports": "/var/www/html/reports",
     "data": "/var/www/html/data",
