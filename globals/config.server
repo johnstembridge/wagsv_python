@@ -4,14 +4,14 @@
   "SECRET_KEY": "secret squirrel",
   "override": false,
   "send_mail": true,
-  "db_path": "sqlite:////var/www/v2/wags.db",
+  "db_path": "sqlite:////var/www/html/wags.db",
   "locations": {
     "base_url": "http://80.82.115.246/",
-    "html": "/var/www/v2",
-    "reports": "/var/www/v2/reports",
+    "html": "/var/www/html",
+    "reports": "/var/www/html/reports",
     "data": "/var/www/html/data",
-    "minutes": "/var/www/v2/minutes",
-    "logs": "/var/log/wagsv2",
+    "minutes": "/var/www/html/minutes",
+    "logs": "/var/log/wags",
     "templates": "templates"
   },
     "url_prefix": {

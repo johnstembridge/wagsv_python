@@ -69,7 +69,7 @@ def user_register(app):
             member = get_member_by_email(form.email.data)
             if member:
                 if member.status not in [MemberStatus.full_member, MemberStatus.overseas_member]:
-                    flash('Sorry, you are not a current member')
+                    flash('Sorry, you are not a current member', 'danger')
                     return redirect(qualify_url(app))
                 user = User(user_name=form.username.data, member_id=member.id)
                 user.set_password(form.password.data)
@@ -79,7 +79,7 @@ def user_register(app):
                     role = Role(role=UserRole.admin)
                 user.roles.append(role)
                 save_user(user)
-                flash('Congratulations, you are now a registered {}!'.format(app))
+                flash('Congratulations, you are now a registered {}!'.format(app), 'success')
                 return redirect(url_for_app(app, 'user_login'))
             else:
                 flash('Cannot find your membership - please give your WAGS contact email address')
