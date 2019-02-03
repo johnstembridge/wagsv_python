@@ -205,26 +205,23 @@ def save_event_details(event_id, details):
     if event_type == EventType.wags_tour:
         tour_events = []
         all_courses = get_all_courses()
-        all_venues = get_all_venues()
         for row in details['tour_schedule']:
-            course_id = first_or_default(
-                [c.id for c in all_courses.values() if c.name.lower() == row['course'].lower()], None)
-            venue_id = first_or_default([v.id for v in all_venues.values() if v.name.lower() == row['course'].lower()],
-                                        None)
-            if not venue_id:
+            date = row['date']
+            course_id = row['course']
+            if course_id > 0:
                 venue_id = all_courses[course_id].venue_id
-            trophy_id = None
-            item = first_or_default([s for s in event.tour_events if s.date == row['date']], None)
+            else:
+                venue_id = event.venue_id
+            item = first_or_default([s for s in event.tour_events if s.date == date], None)
             if item:
                 item.course_id = course_id
                 item.venue_id = venue_id
-                item.trophy_id = trophy_id
+#
             else:
-                item = get_event_for_course_and_date(row['date'], course_id)
+                item = get_event_for_course_and_date(date, course_id)
                 item.type = EventType.wags_vl_event
                 item.tour_event_id = event_id
                 item.venue_id = venue_id
-                item.trophy_id = trophy_id
             tour_events.append(item)
         event.tour_events = tour_events
     db_session.commit()

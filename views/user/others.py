@@ -50,4 +50,12 @@ def swing(year):
 @login_required
 def trophy_history(trophy_id):
     return Trophy.trophy_show(int(trophy_id))
+
+
+@app.route("/log")
+def log_test():
+    app.logger.warning('testing warning log')
+    app.logger.error('testing error log')
+    app.logger.info('testing info log')
+    return "Log testing"
 # endregion

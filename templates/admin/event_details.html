@@ -25,11 +25,29 @@
         </tr>
         <tr>
             <td>{{ form.organiser.label }}</td><td>{{ form.organiser }}</td>
-            <td>{{ form.max.label }}</td><td>{{ form.max(size = 6) }}</td>
+            <td>{{ form.max.label }}</td>
+            <td>
+                {{ form.max(size = 6) }}
+                {% for error in form.max.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </td>
         </tr>
         <tr>
-            <td>{{ form.member_price.label }} £</td><td>{{ form.member_price(size = 6) }}</td>
-            <td>{{ form.guest_price.label }} £</td><td>{{ form.guest_price(size = 6) }}</td>
+            <td>{{ form.member_price.label }} £</td>
+            <td>
+                {{ form.member_price(size = 6) }}
+                {% for error in form.member_price.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </td>
+            <td>{{ form.guest_price.label }} £</td>
+            <td>
+                {{ form.guest_price(size = 6) }}
+                {% for error in form.guest_price.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </td>
         </tr>
         <tr>
             <td>{{ form.start_booking.label }}</td><td>{{ form.start_booking }}</td>

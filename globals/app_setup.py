@@ -23,8 +23,7 @@ def init_app(app, create=False):
 
     bootstrap = Bootstrap(app)
     csrf = CSRFProtect(app)
-    log_handler = logging.log_init()
-    app.logger.addHandler(log_handler)
+    logging.log_init(app)
     mail.init_app(app)
 
     db = SQLAlchemy(app)

@@ -19,7 +19,7 @@ class ScheduleForm(FlaskForm):
 
 class TourScheduleForm(FlaskForm):
     date = DateField('Date', validators=[Optional()])
-    course = StringField(label='Course')
+    course = MySelectField(label='Course', coerce=int, validators=[Optional()])
 
 
 class EventForm(FlaskForm):
@@ -42,7 +42,8 @@ class EventForm(FlaskForm):
 
     def populate_event(self, event_id, event_type):
         event = get_event(event_id)
-        event_type = event_type or event.type
+        if not event_type:
+            event_type = event.type
         self.editable = is_event_editable(event.date.year)
         self.date.data = event.date
         self.member_price.data = event.member_price
@@ -62,15 +63,12 @@ class EventForm(FlaskForm):
             for item in event.tour_events + (6 - len(event.tour_events)) * [Event()]:
                 item_form = TourScheduleForm()
                 item_form.date = item.date
-                course = item.course.name if item.course else ''
-                item_form.course = course
-
                 self.tour_schedule.append_entry(item_form)
-                pass
         self.populate_choices(event_id, event_type)
         return event_id
 
     def populate_choices(self, event_id, event_type):
+        courses = get_course_select_choices()
         event = get_event(event_id)
         organiser = event.organiser.id if event.organiser else 0
         trophy = event.trophy.id if event.trophy else 0
@@ -81,7 +79,14 @@ class EventForm(FlaskForm):
         set_select_field_new(self.trophy, get_trophy_select_choices(), default_selection=trophy, item_name='Trophy')
         set_select_field_new(self.venue, get_venue_select_choices(), default_selection=venue, item_name='Venue')
         if event_type in [EventType.wags_vl_event, EventType.non_event]:
-            set_select_field_new(self.course, get_course_select_choices(), default_selection=course, item_name='Course')
+            set_select_field_new(self.course, courses, default_selection=course, item_name='Course')
+        if event_type == EventType.wags_tour:
+            item_count = 0
+            for item in event.tour_events + (6 - len(event.tour_events)) * [Event()]:
+                course_id = item.course_id if item.course else 0
+                field = self.tour_schedule.entries[item_count].course
+                set_select_field_new(field, courses, default_selection=course_id, item_name='Course')
+                item_count += 1
 
     def save_event(self, event_id):
         errors = self.errors

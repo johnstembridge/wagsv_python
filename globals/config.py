@@ -1,6 +1,8 @@
 import os
 import json
 from flask import url_for as flask_url_for
+from flask import request
+from werkzeug.urls import url_parse, url_unparse, url_join
 
 
 def read():
@@ -24,11 +26,18 @@ def url_for_user(endpoint, **values):
 
 
 def url_for_app(app, endpoint, **values):
-    url = flask_url_for(endpoint, **values)
-    prefix = get('url_prefix')[app]
-    if prefix:
-        url = prefix + url
-    return url
+    ref_url = url_parse(get('locations')['base_url'])
+    url = flask_url_for(endpoint, _scheme=ref_url.scheme, _external=True, **values)
+    url_ = url_parse(url)
+    new = url_unparse(
+        (ref_url.scheme,
+         url_.netloc,
+         path_for_app(app, url_.path),
+         url_.query,
+         url_.fragment
+         )
+    )
+    return new
 
 
 def url_for_wags_site(end):
@@ -38,3 +47,47 @@ def url_for_wags_site(end):
 
 def url_for_html(*paths):
     return os.path.join(get('locations')['base_url'], *paths)
+
+
+def path_for_app(app, path):
+    prefix = get('url_prefix')[app]
+    url = (prefix + '/' + path).replace('//', '/')
+    return url
+
+
+def full_url_for_app(app, url):
+    prefix = get('url_prefix')[app]
+    url = os.path.join(get('locations')['base_url'], prefix, url)
+    return url
+
+
+def adjust_url_for_https(app, url=None):
+    if url:
+        url_ = url_parse(url)
+        ref_url = url_parse(get('locations')['base_url'])
+
+        new = url_unparse(
+            (ref_url.scheme,
+             url_.netloc or ref_url.netloc,
+             path_for_app(app, url_.path),
+             url_.query,
+             url_.fragment
+             )
+        )
+    else:
+        new = full_url_for_app(app, 'index')
+    return new
+
+
+def url_for_index(app):
+    if app == 'user':
+        return os.path.join(get('locations')['base_url'], 'index.html')
+    else:
+        return adjust_url_for_https(app, '')
+
+
+def is_safe_url(target):
+    ref_url = url_parse(request.host_url)
+    test_url = url_parse(url_join(request.host_url, target))
+    return test_url.scheme in ('http', 'https') and \
+        ref_url.netloc.replace('www.', '') == test_url.netloc.replace('www.', '')
