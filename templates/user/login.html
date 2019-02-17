@@ -2,7 +2,7 @@
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block page_content %}
-<p><b>New User? <a href="{{ url_for_app(app, 'user_register') }}">Click here to Register!</a></b></p>
+<p><b>New User? <a href="{{ url_for_app(wags_app, 'user_register') }}">Click here to Register!</a></b></p>
     <h1>Sign In</h1>
     <form action="" method="post">
         {{ form.hidden_tag() }}
