@@ -89,7 +89,7 @@ def user_register(wagsapp):
 
 
 def qualify_url(wagsapp, page=None):
-    return (url_for_app(wagsapp, 'index') + (page or '')).replace("//", "/")
+    return (url_for_app(wagsapp, 'index') + (page or ''))
 
 
 def user_logout(wagsapp):

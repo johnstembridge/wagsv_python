@@ -26,22 +26,19 @@ def url_for_user(endpoint, **values):
 
 
 def url_for_app(app, endpoint, **values):
-    if not 'http' in endpoint:
-        ref_url = url_parse(get('locations')['base_url'])
-        url = flask_url_for(endpoint, _scheme=ref_url.scheme, _external=True, **values)
-        url_ = url_parse(url)
-        new = url_unparse(
-            (ref_url.scheme,
-             url_.netloc,
-             path_for_app(app, url_.path),
-             url_.query,
-             url_.fragment
-             )
-        )
-        new = new.replace('http:', 'https:')
-        return new
-    else:
-        return endpoint.replace('http:', 'https:')
+    ref_url = url_parse(get('locations')['base_url'])
+    url = flask_url_for(endpoint, _scheme=ref_url.scheme, _external=True, **values)
+    url_ = url_parse(url)
+    new = url_unparse(
+        (ref_url.scheme,
+         url_.netloc,
+         path_for_app(app, url_.path),
+         url_.query,
+         url_.fragment
+         )
+    )
+    return new
+
 
 def url_for_wags_site(end):
     end = end.replace(" ", "%20")
