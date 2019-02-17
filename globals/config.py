@@ -91,3 +91,11 @@ def is_safe_url(target):
     test_url = url_parse(url_join(request.host_url, target))
     return test_url.scheme in ('http', 'https') and \
         ref_url.netloc.replace('www.', '') == test_url.netloc.replace('www.', '')
+
+
+def url_path_etc(endpoint):
+    if endpoint:
+        url = url_parse(endpoint)
+        return url.path + (('?' + url.query) if len(url.query) > 0 else '')
+    else:
+        return ''
