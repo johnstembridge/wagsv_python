@@ -57,7 +57,8 @@ def path_for_app(app, path):
 
 def full_url_for_app(app, url):
     prefix = get('url_prefix')[app]
-    url = os.path.join(get('locations')['base_url'], prefix, url)
+    path = (prefix + url).replace('//', '/')
+    url = url_join(get('locations')['base_url'], path)
     return url
 
 
@@ -103,4 +104,4 @@ def url_path_etc(endpoint):
 
 def qualify_url(wags_app, page=None):
     page = url_path_etc(page)
-    return url_join(url_for_app(wags_app, 'index'), (page or ''))
+    return full_url_for_app(wags_app, page or 'index')
