@@ -38,6 +38,7 @@ def url_for_app(app, endpoint, **values):
              url_.fragment
              )
         )
+        new = new.replace('http:', 'https:')
         return new
     else:
         return endpoint
