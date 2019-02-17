@@ -8,7 +8,6 @@ from back_end.interface import get_user
 role = 'user'
 login_manager = LoginManager(app)
 login_manager.login_view = config.qualify_url(role, '/login')
-#login_manager.login_view = config.get('locations')['base_url'] + config.get('url_prefix')[role][1:] + '/login'
 login_manager.login_message = 'You must be a WAGS member to access this page'
 
 

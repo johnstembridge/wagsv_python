@@ -23,8 +23,6 @@ class LoginForm(FlaskForm):
 
 def user_login(wags_app, next_page, app=None):
     if current_user.is_authenticated:
-        app.logger.info('next page: ' + next_page)
-        app.logger.info('qualified next page: ' + qualify_url(wags_app, next_page))
         return redirect(qualify_url(wags_app, next_page))
     form = LoginForm()
     if form.is_submitted():
