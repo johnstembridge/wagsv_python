@@ -35,7 +35,7 @@ def user_login(wags_app, next_page, app=None):
             #     flash('Sorry, you do not have {} access'.format(wags_app))
             #     return redirect(qualify_url(wags_app))
             login_user(user, remember=form.remember_me.data)
-            if not next_page or url_parse(next_page).netloc != '':
+            if not next_page:
                 next_page = qualify_url(wags_app)
             else:
                 next_page = qualify_url(wags_app, next_page)
