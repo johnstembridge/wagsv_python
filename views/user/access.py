@@ -19,7 +19,7 @@ def load_user(id):
 @app.route('/login', methods=['GET', 'POST'])
 def user_login():
     next_page = request.args.get('next')
-    return login.user_login(role, next_page)
+    return login.user_login(role, next_page, app)
 
 
 @app.route('/logout', methods=['GET', 'POST'])

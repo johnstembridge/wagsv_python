@@ -41,7 +41,7 @@ def url_for_app(app, endpoint, **values):
         new = new.replace('http:', 'https:')
         return new
     else:
-        return endpoint
+        return endpoint.replace('http:', 'https:')
 
 def url_for_wags_site(end):
     end = end.replace(" ", "%20")
