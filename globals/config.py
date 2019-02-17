@@ -57,7 +57,7 @@ def path_for_app(app, path):
 
 def full_url_for_app(app, url):
     prefix = get('url_prefix')[app]
-    path = (prefix + url).replace('//', '/')
+    path = (prefix + '/' + url).replace('//', '/')
     url = url_join(get('locations')['base_url'], path)
     return url
 
