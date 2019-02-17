@@ -104,4 +104,4 @@ def url_path_etc(endpoint):
 
 def qualify_url(wags_app, page=None):
     page = url_path_etc(page)
-    return full_url_for_app(wags_app, page or 'index')
+    return full_url_for_app(wags_app, page or '')
