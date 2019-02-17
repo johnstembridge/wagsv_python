@@ -5,7 +5,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 
-from globals.config import url_for_app, url_path_etc
+from globals.config import url_for_app, qualify_url
 from globals.enumerations import UserRole, MemberStatus
 from models.wags_db import User, Role
 from back_end.interface import get_member_by_email, get_user, save_user
@@ -22,7 +22,6 @@ class LoginForm(FlaskForm):
 
 
 def user_login(wags_app, next_page, app=None):
-    next_page = url_path_etc(next_page)
     if current_user.is_authenticated:
         app.logger.info('next page: ' + next_page)
         app.logger.info('qualified next page: ' + qualify_url(wags_app, next_page))
@@ -87,10 +86,6 @@ def user_register(wags_app):
             else:
                 flash('Cannot find your membership - please give your WAGS contact email address')
     return render_template('{}/register.html'.format(wags_app), title='Register', form=form)
-
-
-def qualify_url(wags_app, page=None):
-    return (url_for_app(wags_app, 'index') + (page or ''))
 
 
 def user_logout(wags_app):

@@ -99,3 +99,8 @@ def url_path_etc(endpoint):
         return url.path + (('?' + url.query) if len(url.query) > 0 else '')
     else:
         return ''
+
+
+def qualify_url(wags_app, page=None):
+    page = url_path_etc(page)
+    return url_join(url_for_app(wags_app, 'index'), (page or ''))
