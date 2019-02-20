@@ -47,5 +47,5 @@ def use_sendmail(to, sender, cc=None, subject='', message=''):
     p.write("\n")  # blank line separating headers from body
     p.write('\n'.join(message) if type(message) is list else message)
     status = p.close()
-    if status and status != 0:
-        raise ValueError("Sendmail exit status {}".format(status))
+    #if status and status != 0:
+    #    raise ValueError("Sendmail exit status {}".format(status))
