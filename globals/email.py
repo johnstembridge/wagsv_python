@@ -21,7 +21,7 @@ def send_mail(to, sender, cc=None, subject=None, message=None):
     msg.sender = sender
     msg.recipients = force_list(to)
     msg.cc = force_list(cc)
-    msg.body = ('\n'.join(message) if type(message) is list else message).encode()
+    msg.body = ('\n'.join(message) if type(message) is list else message).encode('utf-8')
     app = current_app._get_current_object()
     if config.get('send_mail'):
         #send_async_email(app, msg)
