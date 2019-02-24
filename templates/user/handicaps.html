@@ -1,7 +1,12 @@
 {% extends "user/report_base.html" %}
 {% block title %}Handicaps{% endblock %}
 {% block content %}
-<h2 class="table-title">Handicaps</h2>
+<h2 class="table-title left">Handicaps</h2>
+<h4 class="table-title right">{{ render_link(
+                        url=url_for('static', filename='hadicap system.htm'),
+                        text='Handicap system explianed'
+                        )|safe }}
+</h4>
 <table width="100%" class="list">
     <thead>
     <tr>
