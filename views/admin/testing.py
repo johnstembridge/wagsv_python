@@ -14,14 +14,14 @@ from wags_admin import app
 def test_email():
     subject = 'Test email'
     sender = 'test@wags.org'
-    message = ['test message']
+    message = ['test message £100']
     to = 'john.stembridge@gmail.com'
-    use_sendmail(to=to, sender=sender, cc=None, subject=subject, message=message)
-    # send_mail(to=to,
-    #           sender=sender,
-    #           cc=[],
-    #           subject='WAGS: ' + subject,
-    #           message=message)
+    #use_sendmail(to=to, sender=sender, cc=None, subject=subject, message=message)
+    send_mail(to=to,
+              sender=sender,
+              cc=[],
+              subject='WAGS: ' + subject,
+              message=message)
     form = SendEmailConfirmationForm()
     form.populate(subject, message)
     return render_template('user/event_booking_confirmation.html', form=form)
