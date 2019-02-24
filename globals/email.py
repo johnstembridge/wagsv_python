@@ -15,8 +15,8 @@ def send_async_email(app, msg):
 
 
 def send_mail(to, sender, cc=None, subject=None, message=None):
-    use_sendmail(to, sender, cc, subject, message)
-    return
+    #use_sendmail(to, sender, cc, subject, message)
+    #return
     msg = Message(subject)
     msg.sender = sender
     msg.recipients = force_list(to)
@@ -24,8 +24,8 @@ def send_mail(to, sender, cc=None, subject=None, message=None):
     msg.body = '\n'.join(message) if type(message) is list else message
     app = current_app._get_current_object()
     if config.get('send_mail'):
-        send_async_email(app, msg)
-        #mail.send(msg)
+        #send_async_email(app, msg)
+        mail.send(msg)
     else:
         out = [
             'Email:',
