@@ -10,7 +10,7 @@ from globals.enumerations import MemberStatus, PlayerStatus, EventType, Function
 from models.wags_db import Event, Score, Course, CourseData, Trophy, Player, Venue, Handicap, Member, Contact, \
     Schedule, Booking, User, Committee
 from globals.app_setup import db_session
-from sqlalchemy import text, and_
+from sqlalchemy import text, and_, func
 
 from globals import config
 from back_end.file_access import get_records, update_html_elements, get_file_contents
@@ -571,7 +571,8 @@ def get_member(member_id):
 
 
 def get_member_by_email(email):
-    contact = db_session.query(Contact).filter_by(email=email).first()
+    # case-insensitive
+    contact = db_session.query(Contact).filter(func.lower(Contact.email) == func.lower(email)).first()
     if contact:
         return db_session.query(Member).filter_by(contact_id=contact.id).first()
     else:
