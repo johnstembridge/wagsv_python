@@ -294,6 +294,9 @@ class Booking(Base):
     event = relationship("Event", back_populates="bookings")
     member = relationship("Member", back_populates="bookings")
 
+    def debug_info(self):
+        return '<Booking: id:{} event id: {}, member id: {}>'.format(self.id, self.event_id, self.member_id)
+
     def __repr__(self):
         return '<Booking - Event: {}, Member: {}>'.format(self.event.full_name(), self.member.player.full_name())
 

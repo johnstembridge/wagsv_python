@@ -12,6 +12,7 @@ from front_end.form_helpers import line_break
 from globals.email import send_mail
 from globals.enumerations import Function, PlayerStatus
 from models.wags_db import Guest, Contact
+from wags_user import app
 
 
 class GuestForm(FlaskForm):
@@ -120,6 +121,7 @@ class EventDetailsForm(FlaskForm):
                     obj.handicap = hcap
                     guests.append(obj)
         booking.guests = guests
+        app.logger.info(booking.debug_info())
         save_booking(booking)
 
         return self.confirm_booking(event_id, member_id)
