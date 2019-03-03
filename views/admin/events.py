@@ -1,8 +1,7 @@
-from flask import request
+from flask import request, redirect
 from flask_login import login_required, current_user
 
 from back_end.interface import get_event
-from front_end.user.events import ReportEvents
 from globals.decorators import role_required
 from globals.enumerations import EventType
 from wags_admin import app
@@ -43,7 +42,7 @@ def results_event(event_id):
     if event_type == EventType.wags_vl_event:
         return MaintainEvents.results_vl_event(event_id)
     else:
-        return ReportEvents.results_tour_event(event_id)
+        return redirect(request.referrer)
 
 
 @app.route('/events/<event_id>/add_player', methods=['GET', 'POST'])

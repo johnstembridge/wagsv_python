@@ -10,7 +10,8 @@ from globals import logging, config
 
 db_path = config.get('db_path')
 engine = create_engine(db_path, convert_unicode=True, echo=True)
-db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
+session_factory = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+db_session = scoped_session(session_factory)
 Base = declarative_base()
 Base.query = db_session.query_property()
 mail = Mail()
@@ -21,12 +22,12 @@ def init_app(app, create=False):
     app.config['SQLALCHEMY_DATABASE_URI'] = db_path
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-    bootstrap = Bootstrap(app)
-    csrf = CSRFProtect(app)
+    Bootstrap(app)
+    CSRFProtect(app)
     logging.log_init(app)
     mail.init_app(app)
+    SQLAlchemy(app)
 
-    db = SQLAlchemy(app)
     if create:
         import models.wags_db
         models.wags_db.Base.metadata.create_all(bind=engine)
