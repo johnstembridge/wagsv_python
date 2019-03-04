@@ -1,20 +1,28 @@
 from flask_login import UserMixin
-from sqlalchemy import Column, Integer, Date, Time, Numeric, String, ForeignKey, types, Boolean
-from sqlalchemy.orm import relationship, backref
-from sqlalchemy.ext.declarative import declarative_base
+from globals.app_setup import db
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from back_end.data_utilities import fmt_date
 from globals.enumerations import EventType, PlayerStatus, MemberStatus, UserRole, Function
-from globals import config
 
 import datetime
 
-Base = declarative_base()
+Base = db.Model
+Column = db.Column
+Integer = db.Integer
+SmallInteger = db.SmallInteger
+Date = db.Date
+Time = db.Time
+Numeric = db.Numeric
+String = db.String
+ForeignKey = db.ForeignKey
+Boolean = db.Boolean
+relationship = db.relationship
+backref = db.backref
 
 
-class EnumType(types.TypeDecorator):
-    impl = types.SmallInteger
+class EnumType(db.TypeDecorator):
+    impl = SmallInteger
 
     def __init__(self, data, **kw):
         self.data = data
@@ -29,8 +37,8 @@ class EnumType(types.TypeDecorator):
         return self.data(value)
 
 
-class IntArray(types.TypeDecorator):
-    impl = types.String
+class IntArray(db.TypeDecorator):
+    impl = String
 
     def process_bind_param(self, value, dialect):
         if value is not None:
@@ -198,7 +206,7 @@ class Player(Base):
 
     def state_as_of(self, date):
         state = [h for h in self.handicaps if h.date <= date]
-        state.sort(key = lambda s: s.date)
+        state.sort(key=lambda s: s.date)
         if len(state) > 0:
             return state[-1]
         else:

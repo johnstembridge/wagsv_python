@@ -1,10 +1,9 @@
 from flask import Flask
 
-from globals.app_setup import init_app
-from front_end.admin.others import page_not_found, internal_error, unauthorised
-
 app = Flask(__name__)
-db = init_app(app)
+from globals.app_setup import init_app
+#init_app(app, create=True)
+init_app(app)
 
 from views.admin.access import *
 from front_end.admin.home import *
@@ -16,6 +15,7 @@ from views.admin.venues import *
 from views.admin.minutes import *
 from views.admin.help import *
 from views.admin.testing import *
+from front_end.admin.others import page_not_found, internal_error, unauthorised
 
 
 @app.errorhandler(401)

@@ -7,7 +7,6 @@ from back_end.interface import get_member, get_member_select_choices, save_membe
     get_current_members_as_players
 from front_end.form_helpers import set_select_field, set_select_field_new
 from globals.enumerations import MemberStatus, PlayerStatus
-from models.wags_db import Member
 
 
 class MemberListForm(FlaskForm):
@@ -24,7 +23,7 @@ class MemberDetailsForm(FlaskForm):
     status = SelectField(label='Status', choices= MemberStatus.choices(), coerce=MemberStatus.coerce)
     first_name = StringField(label='First Name', validators=[InputRequired()])
     last_name = StringField(label='last_name', validators=[InputRequired()])
-    proposer = SelectField(label='Proposer', choices=get_member_select_choices(), coerce=int)
+    proposer = SelectField(label='Proposer', coerce=int)
     email = StringField(label='Email', validators=[InputRequired(), Email("Invalid email address")])
     address = StringField(label='Address')
     post_code = StringField(label='Post Code')
@@ -40,6 +39,7 @@ class MemberDetailsForm(FlaskForm):
     def validate(self):
         new_member = self.member_id.data == 0
         self.member_id.data = self.member_id_return.data
+        self.proposer.choices = get_member_select_choices()
         if not super(MemberDetailsForm, self).validate():
             return False
         result = True

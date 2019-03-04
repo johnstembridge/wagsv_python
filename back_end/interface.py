@@ -9,7 +9,7 @@ from front_end.form_helpers import get_elements_from_html
 from globals.enumerations import MemberStatus, PlayerStatus, EventType, Function
 from models.wags_db import Event, Score, Course, CourseData, Trophy, Player, Venue, Handicap, Member, Contact, \
     Schedule, Booking, User, Committee
-from globals.app_setup import db_session
+from globals.app_setup import db
 from sqlalchemy import text, and_, func
 
 from globals import config
@@ -18,6 +18,8 @@ from back_end.file_access import get_records, update_html_elements, get_file_con
 # region text files
 data_location = config.get('locations')['data']
 html_location = config.get('locations')['html']
+
+db_session = db.session
 
 
 def accounts_file(year):
@@ -135,8 +137,8 @@ def get_events_for_period(start, end):
 
 def get_events_for_course(course_id, period=None):
     if period:
-        res = db_session.query(Event)\
-            .filter(and_(Event.course_id == course_id, Event.date.between(period[0], period[1])))\
+        res = db_session.query(Event) \
+            .filter(and_(Event.course_id == course_id, Event.date.between(period[0], period[1]))) \
             .order_by(Event.date)
     else:
         res = db_session.query(Event).filter(Event.course_id == course_id).order_by(Event.date)
@@ -145,7 +147,8 @@ def get_events_for_course(course_id, period=None):
 
 def get_event_scores(event_id):
     event = get_event(event_id)
-    head = ['player_id', 'position', 'points', 'shots', 'handicap', 'status', 'card', 'player_name', 'first_name', 'last_name']
+    head = ['player_id', 'position', 'points', 'shots', 'handicap', 'status', 'card', 'player_name', 'first_name',
+            'last_name']
     data = []
     for score in event.scores:
         player_state = score.player.state_as_of(event.date)
@@ -216,7 +219,7 @@ def save_event_details(event_id, details):
             if item:
                 item.course_id = course_id
                 item.venue_id = venue_id
-#
+            #
             else:
                 item = get_event_for_course_and_date(date, course_id)
                 item.type = EventType.wags_vl_event
@@ -402,8 +405,8 @@ def get_next_event(year=None):
 
 
 def get_events_in(date_range):
-    events = db_session.query(Event)\
-        .filter(Event.date.between(date_range[0], date_range[1]), Event.type == EventType.wags_vl_event)\
+    events = db_session.query(Event) \
+        .filter(Event.date.between(date_range[0], date_range[1]), Event.type == EventType.wags_vl_event) \
         .order_by(Event.date).all()
     return events
 
@@ -474,6 +477,8 @@ def save_course(course_id, data):
     card.par = data['par']
 
     db_session.commit()
+
+
 # endregion
 
 
@@ -581,11 +586,16 @@ def get_member_by_email(email):
 
 def get_member_by_name(name):
     name = name.split(' ')
-    player = db_session.query(Player).filter_by(first_name=name[0],last_name=name[1]).first()
+    player = db_session.query(Player).filter_by(first_name=name[0], last_name=name[1]).first()
     if player:
         return db_session.query(Member).filter_by(player_id=player.id).first()
     else:
         return None
+
+
+def get_members_by_status(status):
+    members = db_session.query(Member).filter_by(status=status)
+    return members
 
 
 def get_all_members(current=True):
@@ -643,13 +653,13 @@ def save_member(member_id, data):
                 state = Handicap(date=date, status=player_status, handicap=handicap)
                 player.handicaps.append(state)
     # create/update member
-    contact = Contact(
-        email=data['email'],
-        address=data['address'],
-        post_code=data['post_code'],
-        phone=data['phone']
-    )
     if new_member:
+        contact = Contact(
+            email=data['email'],
+            address=data['address'],
+            post_code=data['post_code'],
+            phone=data['phone']
+        )
         member = Member(
             player=player,
             contact=contact,
@@ -658,7 +668,10 @@ def save_member(member_id, data):
         )
     else:
         member = get_member(member_id)
-        member.contact = contact
+        member.contact.email = data['email']
+        member.contact.address = data['address']
+        member.contact.post_code = data['post_code']
+        member.contact.phone = data['phone']
         member.player = player
         member.status = status
         member.proposer_id = data['proposer_id']
@@ -776,7 +789,7 @@ def get_all_scores():
 # region Bookings
 def get_booking(event_id, member_id):
     return db_session.query(Booking).filter_by(event_id=event_id, member_id=member_id).first() \
-            or Booking(event_id=event_id, member_id=member_id, date=datetime.date.today())
+           or Booking(event_id=event_id, member_id=member_id, date=datetime.date.today())
 
 
 def save_booking(booking, add=False):
