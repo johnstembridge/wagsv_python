@@ -7,7 +7,7 @@ from wtforms.validators import Optional
 
 from back_end.data_utilities import encode_date, fmt_date, first_or_default, to_bool, parse_float
 from back_end.interface import get_event, get_booking, save_booking, is_event_bookable, get_member, \
-    get_committee_function, get_player_by_name
+    get_committee_function, get_player_by_name, suspend_flush
 from front_end.form_helpers import line_break
 from globals.email import send_mail
 from globals.enumerations import Function, PlayerStatus
@@ -102,26 +102,27 @@ class EventDetailsForm(FlaskForm):
         if len(errors) > 0:
             return False
         booking = get_booking(event_id, member_id)
-        booking.date = datetime.date.today()
-        booking.playing = self.attend.data
-        booking.comment = self.comment.data if len(self.comment.data) > 0 else None
-        guests = []
-        if booking.playing:
-            for guest in self.guests:
-                name = guest.guest_name.data
-                if len(name) > 0:
-                    obj = first_or_default([g for g in booking.guests if g.name == name],
-                                           Guest(name=name, booking=booking))
-                    hcap = parse_float(guest.handicap.data, 28.0)
-                    known_player = get_player_by_name(name)
-                    if known_player:
-                        state = known_player.state_as_of(booking.date)
-                        if state.status == PlayerStatus.member:
-                            hcap = state.handicap
-                    obj.handicap = hcap
-                    guests.append(obj)
-        booking.guests = guests
-        app.logger.info(booking.debug_info())
+        with suspend_flush():
+            booking.date = datetime.date.today()
+            booking.playing = self.attend.data
+            booking.comment = self.comment.data if len(self.comment.data) > 0 else None
+            guests = []
+            if booking.playing:
+                for guest in self.guests:
+                    name = guest.guest_name.data
+                    if len(name) > 0:
+                        obj = first_or_default([g for g in booking.guests if g.name == name],
+                                               Guest(name=name, booking=booking))
+                        hcap = parse_float(guest.handicap.data, 28.0)
+                        known_player = get_player_by_name(name)
+                        if known_player:
+                            state = known_player.state_as_of(booking.date)
+                            if state.status == PlayerStatus.member:
+                                hcap = state.handicap
+                        obj.handicap = hcap
+                        guests.append(obj)
+            booking.guests = guests
+            app.logger.info(booking.debug_info())
         save_booking(booking)
 
         return self.confirm_booking(event_id, member_id)

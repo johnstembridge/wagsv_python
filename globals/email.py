@@ -20,9 +20,10 @@ def send_mail(to, sender, cc=None, subject=None, message=None):
     #   sm.stdin.write(str.encode(message.dump()))
     #/usr/lib/python3.5/email/mime/text.py[17]
     #   def __init__(self, _text, _subtype='plain', _charset='utf-8'):
+    to = force_list(to)
     msg = Message(subject)
     msg.sender = sender
-    msg.recipients = force_list(to)
+    msg.recipients = to
     msg.cc = force_list(cc)
     msg.body = '\n'.join(message) if type(message) is list else message
     app = current_app._get_current_object()

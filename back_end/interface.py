@@ -15,11 +15,11 @@ from sqlalchemy import text, and_, func
 from globals import config
 from back_end.file_access import get_records, update_html_elements, get_file_contents
 
+db_session = db.session
+
 # region text files
 data_location = config.get('locations')['data']
 html_location = config.get('locations')['html']
-
-db_session = db.session
 
 
 def accounts_file(year):
@@ -823,3 +823,7 @@ def update_front_page(items):
 def get_front_page_items(items):
     html = get_file_contents(front_page_header_file())
     return get_elements_from_html(html, items)
+
+
+def suspend_flush():
+    return db_session.no_autoflush
