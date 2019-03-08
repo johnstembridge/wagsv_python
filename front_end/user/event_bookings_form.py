@@ -24,11 +24,7 @@ class EventBookingsForm(FlaskForm):
         self.event_name.data = event.full_name()
         self.sub_title.data = 'to date' if datetime.date.today() < event.booking_end else ''
         total = 0
-        seen = dict((m, False) for m in set([m.member_id for m in event.bookings]))
         for booking in event.bookings:
-            if seen[booking.member_id]:
-                continue
-            seen[booking.member_id] = True
             item_form = BookingItemForm()
             item_form.date = fmt_date(booking.date)
             item_form.member_name = booking.member.player.full_name()
