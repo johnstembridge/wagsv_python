@@ -107,14 +107,17 @@ class EventDetailsForm(FlaskForm):
 
     @staticmethod
     def booking_message(event, member_id, booking):
+        today = datetime.date.today()
+        booking_start = event.booking_start or event.date
+        booking_end = event.booking_end or event.date
         if member_id == 0:
             return ''
-        if event.booking_start is None:
-            return 'Booking is not available for this event'
-        if event.booking_start > datetime.date.today():
-            return 'Booking is not yet open for this event'
-        if datetime.date.today() > event.booking_end:
+        if today > booking_end:
             return 'Booking is now closed for this event'
+        if booking_start is None:
+            return 'Booking is not available for this event'
+        if booking_start > today:
+            return 'Booking is not yet open for this event'
         if booking.id:
             return 'You responded on {} - see below for details'.format(fmt_date(booking.date))
         return ''
