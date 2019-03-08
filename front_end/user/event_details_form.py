@@ -23,6 +23,7 @@ class GuestForm(FlaskForm):
 
 class EventDetailsForm(FlaskForm):
     bookable = HiddenField(label='Bookable')
+    show_bookings = HiddenField(label='Show Bookings')
     message = StringField(label='Message')
     title = StringField(label='Title')
     event = StringField(label='Event')
@@ -57,6 +58,7 @@ class EventDetailsForm(FlaskForm):
             self.title.data = 'Book Event'
         else:
             self.title.data = 'Event Details'
+        self.show_bookings.data = len(event.bookings) > 0
         self.event_id.data = event_id
         self.event_type.data = event.type
         self.date.data = encode_date(event.date)

@@ -10,7 +10,7 @@
     <table width="100%">
         <tr>
             <td>{{ form.event.label }}</td><td>{{ form.event.data }}</td>
-            <td>{% if form.member_name.data %}
+            <td>{% if form.show_bookings.data %}
                 <b>{{ render_link(
                     url=url_for_user('show_all_bookings', event_id=form.event_id.data),
                     text='Show all bookings'
