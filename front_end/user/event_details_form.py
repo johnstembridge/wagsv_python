@@ -96,7 +96,7 @@ class EventDetailsForm(FlaskForm):
             self.booking_date.data = fmt_date(booking.date)
 
         self.member_name.data = booking.member.player.full_name()
-        self.message.data = self.booking_message(event, member_id, booking)
+        self.message.data = self.booking_message(event, booking)
 
         count = 1
         for guest in booking.guests + (3 - len(booking.guests)) * [Guest()]:
@@ -108,12 +108,10 @@ class EventDetailsForm(FlaskForm):
             count += 1
 
     @staticmethod
-    def booking_message(event, member_id, booking):
+    def booking_message(event, booking):
         today = datetime.date.today()
         booking_start = event.booking_start or event.date
         booking_end = event.booking_end or event.date
-        if member_id == 0:
-            return ''
         if today > booking_end:
             return 'Booking is now closed for this event'
         if booking_start is None:
