@@ -32,7 +32,7 @@ class ReportEvents:
     @staticmethod
     def show_or_book_event(event_id, member_id):
         form = EventDetailsForm()
-        if form.is_submitted():
+        if member_id > 0 and form.is_submitted():
             booking = form.book_event(event_id, member_id)
             if booking:
                 flash('Booking saved', 'success')

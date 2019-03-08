@@ -23,6 +23,7 @@ class GuestForm(FlaskForm):
 
 class EventDetailsForm(FlaskForm):
     bookable = HiddenField(label='Bookable')
+    message = StringField(label='Message')
     title = StringField(label='Title')
     event = StringField(label='Event')
     date = StringField(label='Date')
@@ -79,6 +80,10 @@ class EventDetailsForm(FlaskForm):
         self.booking_deadline.data = encode_date(event.booking_end)
         self.notes.data = event.note or ''
 
+        if member_id == 0:
+            self.message.data = ''
+            return
+
         booking = get_booking(event_id, member_id)
         if not booking.id:
             booking.member = get_member(member_id)
@@ -87,7 +92,10 @@ class EventDetailsForm(FlaskForm):
             self.attend.data = booking.playing
             self.comment.data = booking.comment
             self.booking_date.data = fmt_date(booking.date)
+
         self.member_name.data = booking.member.player.full_name()
+        self.message.data = self.booking_message(event, member_id, booking)
+
         count = 1
         for guest in booking.guests + (3 - len(booking.guests)) * [Guest()]:
             item_form = GuestForm()
@@ -96,6 +104,20 @@ class EventDetailsForm(FlaskForm):
             item_form.handicap = guest.handicap
             self.guests.append_entry(item_form)
             count += 1
+
+    @staticmethod
+    def booking_message(event, member_id, booking):
+        if member_id == 0:
+            return ''
+        if event.booking_start is None:
+            return 'Booking is not available for this event'
+        if event.booking_start > datetime.date.today():
+            return 'Booking is not yet open for this event'
+        if datetime.date.today() > event.booking_end:
+            return 'Booking is now closed for this event'
+        if booking.id:
+            return 'You responded on {} - see below for details'.format(fmt_date(booking.date))
+        return ''
 
     def book_event(self, event_id, member_id):
         errors = self.errors

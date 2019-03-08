@@ -2,9 +2,7 @@
 {% block title %}{{ form.title.data }}{% endblock %}
 {% block content %}
 <h2 class="table-title">{{ form.title.data }}</h2>
-{% if form.booking_date.data %}
-    <b>You responded on {{ form.booking_date.data }} - see below for details</b>
-{% endif %}
+<b>{{ form.message.data }}</b>
 <hr/>
 <form method="POST">
     {{ form.csrf_token }}
@@ -12,10 +10,12 @@
     <table width="100%">
         <tr>
             <td>{{ form.event.label }}</td><td>{{ form.event.data }}</td>
-            <td><b>{{ render_link(
+            <td>{% if form.member_name.data %}
+                <b>{{ render_link(
                     url=url_for_user('show_all_bookings', event_id=form.event_id.data),
                     text='Show all bookings'
                 )|safe }}</b>
+                {% endif %}
             </td>
         </tr>
         <tr>

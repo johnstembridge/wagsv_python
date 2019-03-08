@@ -11,13 +11,11 @@ def index():
 
 
 @app.route('/events', methods=['GET', 'POST'])
-@login_required
 def list_events_():
     return list_events(current_year())
 
 
 @app.route('/events/<year>', methods=['GET', 'POST'])
-@login_required
 def list_events(year):
     return ReportEvents.list_events(coerce(year, int))
 
@@ -30,9 +28,11 @@ def book_event(event_id):
 
 
 @app.route('/events/<event_id>/show', methods=['GET', 'POST'])
-@login_required
 def show_event(event_id):
-    member_id = current_user.member_id
+    if current_user.is_anonymous:
+        member_id = 0
+    else:
+        member_id = current_user.member_id
     return ReportEvents.show_or_book_event(int(event_id), member_id)
 
 
