@@ -365,21 +365,6 @@ def is_event_editable(year):
     return override or year >= datetime.date.today().year
 
 
-def is_event_bookable(event):
-    # result:  1 - booking open, 0 - booking closed, -1 - booking not applicable
-    if event.booking_start:
-        booking_start = event.booking_start
-        booking_end = event.booking_end
-        in_range = in_date_range(datetime.date.today(), booking_start, booking_end)
-    else:
-        in_range = False
-    event_type = event.type
-    if event.tour_event_id or event_type == EventType.non_event:
-        return -1
-    override = config.get('override')
-    return 1 if override or in_range else 0
-
-
 def get_last_event(year=None, include_tours=False):
     today = datetime.date.today()
     if not year:

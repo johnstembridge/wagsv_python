@@ -6,8 +6,7 @@ from back_end.data_utilities import encode_date_short
 from front_end.form_helpers import set_select_field_new
 from globals.config import url_for_user
 from globals.enumerations import EventType
-from back_end.interface import get_venue_url, get_event_select_list, is_event_bookable, \
-    get_events_for_year
+from back_end.interface import get_venue_url, get_event_select_list, get_events_for_year
 
 
 class EventItemForm(FlaskForm):
@@ -45,7 +44,7 @@ class EventListForm(FlaskForm):
             item_form.event_type = event_type.name
             item_form.new_section = not (first or event.tour_event_id)
             first = False
-            item_form.bookable = is_event_bookable(event)
+            item_form.bookable = event.bookable()
             item_form.result = event.date < datetime.date.today() and event.type in (EventType.wags_vl_event, EventType.wags_tour)
             self.event_list.append_entry(item_form)
 

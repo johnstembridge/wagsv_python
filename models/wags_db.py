@@ -2,7 +2,7 @@ from flask_login import UserMixin
 from globals.app_setup import db
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from back_end.data_utilities import fmt_date
+from back_end.data_utilities import fmt_date, in_date_range
 from globals.enumerations import EventType, PlayerStatus, MemberStatus, UserRole, Function
 
 import datetime
@@ -95,6 +95,27 @@ class Event(Base):
             name += self.trophy.name + ' '
         name += self.venue.name + ' ' + fmt_date(self.date)
         return name
+
+    def is_bookable(self):
+        return self.bookable() == 1
+
+    def bookable(self):
+        # result:  1 - booking open, 0 - booking closed, -1 - booking not applicable
+        if self.tour_event_id or self.type == EventType.non_event:
+            return -1
+        if self.booking_start:
+            booking_start = self.booking_start
+            booking_end = self.booking_end
+            in_range = in_date_range(datetime.date.today(), booking_start, booking_end)
+        else:
+            in_range = False
+        return 1 if in_range and not self.at_capacity() else 0
+
+    def total_playing(self):
+        return sum([(1 + len(m.guests)) for m in self.bookings if m.playing])
+
+    def at_capacity(self):
+        return self.max > 0 and self.total_playing() >= 26
 
     def __repr__(self):
         if self.type == EventType.wags_vl_event:

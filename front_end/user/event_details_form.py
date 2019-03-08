@@ -6,7 +6,7 @@ from wtforms.fields.html5 import DateField
 from wtforms.validators import Optional
 
 from back_end.data_utilities import encode_date, fmt_date, first_or_default, to_bool, parse_float
-from back_end.interface import get_event, get_booking, save_booking, is_event_bookable, get_member, \
+from back_end.interface import get_event, get_booking, save_booking, get_member, \
     get_committee_function, get_player_by_name, suspend_flush
 from front_end.form_helpers import line_break
 from globals.email import send_mail
@@ -53,7 +53,7 @@ class EventDetailsForm(FlaskForm):
 
     def populate_event(self, event_id, member_id):
         event = get_event(event_id)
-        self.bookable.data = is_event_bookable(event)
+        self.bookable.data = event.is_bookable()
         if self.bookable.data:
             self.title.data = 'Book Event'
         else:
@@ -87,6 +87,7 @@ class EventDetailsForm(FlaskForm):
             return
 
         booking = get_booking(event_id, member_id)
+        self.message.data = self.booking_message(event, booking)
         if not booking.id:
             booking.member = get_member(member_id)
             booking.playing = True
@@ -96,7 +97,6 @@ class EventDetailsForm(FlaskForm):
             self.booking_date.data = fmt_date(booking.date)
 
         self.member_name.data = booking.member.player.full_name()
-        self.message.data = self.booking_message(event, booking)
 
         count = 1
         for guest in booking.guests + (3 - len(booking.guests)) * [Guest()]:
@@ -109,17 +109,19 @@ class EventDetailsForm(FlaskForm):
 
     @staticmethod
     def booking_message(event, booking):
+        if event.bookable() == -1:
+            return 'Booking is not available for this event'
         today = datetime.date.today()
         booking_start = event.booking_start or event.date
         booking_end = event.booking_end or event.date
         if today > booking_end:
             return 'Booking is now closed for this event'
-        if booking_start is None:
-            return 'Booking is not available for this event'
         if booking_start > today:
             return 'Booking is not yet open for this event'
         if booking.id:
             return 'You responded on {} - see below for details'.format(fmt_date(booking.date))
+        if event.at_capacity():
+            return 'Event is at capacity'
         return ''
 
     def book_event(self, event_id, member_id):
