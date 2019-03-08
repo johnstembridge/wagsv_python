@@ -28,6 +28,7 @@ def book_event(event_id):
 
 
 @app.route('/events/<event_id>/show', methods=['GET', 'POST'])
+@login_required
 def show_event(event_id):
     if current_user.is_anonymous:
         member_id = 0
