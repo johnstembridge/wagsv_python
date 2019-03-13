@@ -2,7 +2,7 @@
 <html>
   <head>
     {% block head %}
-    <link rel="stylesheet" type= "text/css" href="{{ url_for('static',filename='styles/wags.css') }}">
+    <link rel="stylesheet" type= "text/css" href="{{ url_for('.static',filename='styles/wags.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>{% block title %}{% endblock %}</title>
     {% endblock %}
@@ -13,7 +13,7 @@
   </body>
   <div id="footer">
       {% block footer %}
-        &copy; Wimbledon Ancient Golf Society 2018
+        &copy; Wimbledon Ancient Golf Society 2019
       {% endblock %}
   </div>
 </html>

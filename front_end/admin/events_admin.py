@@ -114,7 +114,9 @@ class MaintainEvents:
                 return redirect(url_for_admin('list_events', year=event.date.year))
         else:
             report_file = MaintainEvents.report_file_name(event.date)
-            form.populate_event_report(event_id, report_file)
+            if not form.populate_event_report(event_id, report_file):
+                flash('Results not yet available', 'warning')
+                return redirect(url_for_admin('events_main', event_id=event_id))
         return render_template('admin/event_report.html', form=form, event=event_id)
 
     @staticmethod

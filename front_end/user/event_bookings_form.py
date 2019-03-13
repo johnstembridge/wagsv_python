@@ -22,7 +22,7 @@ class EventBookingsForm(FlaskForm):
     def populate_event_bookings(self, event_id):
         event = get_event(event_id)
         self.event_name.data = event.full_name()
-        self.sub_title.data = 'to date' if datetime.date.today() < event.booking_end else ''
+        self.sub_title.data = 'to date' if datetime.date.today() <= event.booking_end else ''
         total = 0
         for booking in event.bookings:
             item_form = BookingItemForm()

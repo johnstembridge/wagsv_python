@@ -71,7 +71,7 @@ h2.table-title {color: #6E1285; font-size: 20pt; margin-top: 0px; margin-bottom:
 h3.table-title {color: #6E1285; font-size: 16pt; margin-top: 0px; margin-bottom: 10px; font-weight: bold}
 h4.table-title {color: #6E1285; font-size: 12pt; margin-top: 5px; margin-bottom: 5px; font-weight: bold}
 
-table.list {border-spacing: 0px; background-color: white; line-height:23px}
+table.list {overflow-x: auto; white-space: nowrap; border-spacing: 0px; background-color: white; line-height:23px}
 table.list th {color: #6E1285; font-weight: bold; padding: 0px 2px 0px 2px}
 table.list td {padding: 0px 3px 0px 3px}
 table.list.result tr:nth-child(-n+3){color: #6E1285}

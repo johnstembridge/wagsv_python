@@ -1,7 +1,8 @@
 from flask import Flask
+from globals import config
+from globals.app_setup import init_app
 
 app = Flask(__name__)
-from globals.app_setup import init_app
 #init_app(app, create=True)
 init_app(app)
 

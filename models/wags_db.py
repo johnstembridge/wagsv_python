@@ -115,7 +115,7 @@ class Event(Base):
         return sum([(1 + len(m.guests)) for m in self.bookings if m.playing])
 
     def at_capacity(self):
-        return self.max > 0 and self.total_playing() >= 26
+        return self.max > 0 and self.total_playing() >= self.max
 
     def __repr__(self):
         if self.type == EventType.wags_vl_event:

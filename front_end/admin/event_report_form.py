@@ -22,11 +22,11 @@ class EventReportForm(FlaskForm):
 
         all = get_event_scores(event_id)
         all.sort(['last_name', 'first_name'])
+        if len(all.data) == 0:
+            return False
 
         def lu_fn(values):
             return values['status'] == PlayerStatus.member
-        if len(all.data) == 0:
-            raise Exception("Results not yet available")
         members = all.where(lu_fn)
         players = all.get_columns('player_name')
         pos = [s for s in members.get_columns('position')]
@@ -43,6 +43,7 @@ class EventReportForm(FlaskForm):
             self.ntp.data = values['ntp']
             self.ld.data = values['ld']
             self.report.data = values.get('report') or ''
+        return True
 
     @staticmethod
     def alt_get_report_elements_from_html(html, items, ):

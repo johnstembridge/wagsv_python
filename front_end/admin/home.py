@@ -6,7 +6,6 @@ from wags_admin import app
 from back_end.interface import get_all_years, create_events_file
 from front_end.form_helpers import set_select_field
 from front_end.admin.others import get_user_current_year
-from globals import config
 from globals.decorators import role_required
 
 
