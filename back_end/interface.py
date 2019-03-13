@@ -777,7 +777,7 @@ def get_booking(event_id, member_id):
            or Booking(event_id=event_id, member_id=member_id, date=datetime.date.today())
 
 
-def save_booking(booking, add=False):
+def save_booking(booking, add=True):
     if add and not booking.id:
         db_session.add(booking)
     db_session.commit()
