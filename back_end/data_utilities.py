@@ -3,9 +3,6 @@ import datetime
 import time
 import math
 import re
-from decimal import Decimal
-
-from globals.enumerations import EventType
 
 
 # region dates
@@ -85,13 +82,13 @@ def fmt_date(date):
     return date.strftime("%Y/%m/%d")
 
 
-def parse_date(ymd, reverse=False):
+def parse_date(ymd, sep='/', reverse=False):
 
     if type(ymd) is datetime.date:
         return ymd
     else:
         if len(ymd) > 0:
-            date = ymd.split('/')
+            date = ymd.split(sep)
             if reverse:
                 date = date[::-1]
             return datetime.date(int(date[0]), int(date[1]), int(date[2]))

@@ -39,6 +39,7 @@ class NewsItemType(FormEnum):
     event_result = 1
     handicap_update = 2
     account_update = 3
+    publish_minutes = 4
 
 
 class UserRole(FormEnum):

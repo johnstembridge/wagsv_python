@@ -4,7 +4,7 @@ import os
 from flask_wtf.file import FileAllowed, FileRequired
 from werkzeug.datastructures import FileStorage
 from flask_wtf import FlaskForm
-from wtforms import FileField, SubmitField, TextAreaField, DateField
+from wtforms import FileField, SubmitField, TextAreaField, DateField, SelectField
 from wtforms.validators import InputRequired
 
 from back_end.data_utilities import fmt_date, encode_date
@@ -13,9 +13,11 @@ from globals import config
 from globals.config import url_for_html
 from globals.email import send_mail
 from models.news import NewsDay, News
+from front_end.form_helpers import set_select_field
 
 
 class MinutesAdminForm(FlaskForm):
+    meeting_type = SelectField(label='Meeting type')
     meeting_date = DateField(label='Meeting date', validators=[InputRequired()])
     file_name = FileField(label='Minutes file name', validators=[FileRequired(), FileAllowed(['pdf'], 'pdf files only!')])
     message = TextAreaField(label='Message (optional)')
@@ -23,6 +25,7 @@ class MinutesAdminForm(FlaskForm):
     publish = SubmitField(label='Publish')
 
     def populate(self):
+        set_select_field(self.meeting_type, 'meeting type', [('Committee', 'Committee'), ('AGM', 'AGM')], 'Committee')
         self.meeting_date.data = datetime.date.today()
         self.file_name.data = FileStorage(filename='*.pdf')
 
@@ -52,7 +55,8 @@ class MinutesAdminForm(FlaskForm):
     @staticmethod
     def save_file(form, draft=''):
         meeting_date = fmt_date(form.meeting_date.data).replace('/', ' ')
-        new_file_name = 'min ' + meeting_date + '.pdf'
+        meeting_type = 'agm' if form.meeting_type.data == 'AGM' else 'min'
+        new_file_name = meeting_type + ' ' + meeting_date + '.pdf'
         file_path = os.path.join(config.get('locations')['minutes'], draft, new_file_name)
         form.file_name.data.save(file_path)
         link = url_for_html('minutes', draft, new_file_name)

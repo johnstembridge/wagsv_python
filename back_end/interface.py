@@ -2,9 +2,8 @@ import datetime
 import os
 import itertools
 
-from back_end.data_utilities import mean, first_or_default, fmt_date, in_date_range
+from back_end.data_utilities import mean, first_or_default, fmt_date, normalise_name, gen_to_list, parse_date
 from back_end.table import Table
-from back_end.data_utilities import normalise_name, gen_to_list
 from front_end.form_helpers import get_elements_from_html
 from globals.enumerations import MemberStatus, PlayerStatus, EventType, Function
 from models.wags_db import Event, Score, Course, CourseData, Trophy, Player, Venue, Handicap, Member, Contact, \
@@ -20,6 +19,7 @@ db_session = db.session
 # region text files
 data_location = config.get('locations')['data']
 html_location = config.get('locations')['html']
+minutes_location = config.get('locations')['minutes']
 
 
 def accounts_file(year):
@@ -784,6 +784,15 @@ def save_booking(booking, add=True):
 
 
 # endregion
+
+
+def latest_minutes():
+    # get latest minutes info: (type[agm|min], date, full_file_name)
+    files = os.listdir(minutes_location)
+    minutes = [(f[:3], parse_date(f[-14:-4], ' '), f) for f in files if '.' in f and f[:3] in 'agm' 'min']
+    latest_date = max(f[1] for f in minutes)
+    latest = [m for m in minutes if m[1] == latest_date][0]
+    return latest
 
 
 def get_all_years():

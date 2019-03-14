@@ -1,11 +1,12 @@
+import datetime
+import os
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, HiddenField, SelectField, FieldList, FormField, DateField, TextAreaField
-from back_end.data_utilities import parse_date, encode_date
-from back_end.interface import get_last_event, get_next_event
+from back_end.data_utilities import parse_date, fmt_date
+from back_end.interface import get_last_event, get_next_event, latest_minutes
 from front_end.form_helpers import set_select_field
 from globals.enumerations import NewsItemType
 from models.news import News, NewsDay, NewsItem
-import datetime
 
 
 class NewsListForm(FlaskForm):
@@ -89,6 +90,10 @@ class NewsDayForm(FlaskForm):
             item = NewsItem(text='Booking now open for {} {}'.format(event.venue.name, encode_date(event.date)),
                             link='/wagsuser/events/{}/book'.format(event.id),
                             title='book now')
+        elif item_type == NewsItemType.publish_minutes:
+            latest = latest_minutes()
+            message = ('AGM ' if latest[0] is 'agm' else 'Committee meeting ') + fmt_date(latest[1]) + ' minutes published'
+            item = NewsItem(text=message, link=os.path.join('/wagsuser/../minutes', latest[2]), title='show minutes')
         else:
             return
         free = [ind for ind, item in enumerate(self.items.data) if item['text'] == '']
