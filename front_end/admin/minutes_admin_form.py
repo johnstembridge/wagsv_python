@@ -25,7 +25,7 @@ class MinutesAdminForm(FlaskForm):
     publish = SubmitField(label='Publish')
 
     def populate(self):
-        set_select_field(self.meeting_type, 'meeting type', [('Committee', 'Committee'), ('AGM', 'AGM')], 'Committee')
+        set_select_field(self.meeting_type, 'meeting type', ['Committee', 'AGM'], 'Committee')
         self.meeting_date.data = datetime.date.today()
         self.file_name.data = FileStorage(filename='*.pdf')
 
