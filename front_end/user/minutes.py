@@ -31,13 +31,13 @@ class MinutesShowForm(FlaskForm):
     def populate(self):
         type_year = self.minutes_type.data.name + '_' + self.minutes_year.data
         if type_year != self.type_year.data:
-            minutes = Minutes.list_all_minutes(self.minutes_type.data, int(self.minutes_year.data))
+            minutes = Minutes.get_all_minutes(self.minutes_type.data, int(self.minutes_year.data))
             if len(minutes) == 1:
                 return minutes[0]
             choices = [fmt_date(m.date) for m in minutes]
             self.minutes.choices = list(zip(choices, choices))
         if self.minutes.data is not None and self.minutes.data != 'None' and type_year == self.type_year.data:
-            return Minutes(self.minutes_type.data, parse_date(self.minutes.data))
+            return Minutes.get_minutes(self.minutes_type.data, parse_date(self.minutes.data))
         else:
             self.type_year.data = type_year
             return None

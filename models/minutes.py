@@ -35,7 +35,19 @@ class Minutes:
         return os.path.join(minutes_location, draft)
 
     @staticmethod
-    def list_all_minutes(type=None, year=None):
+    def get_minutes(type, date):
+        files = os.listdir(minutes_location)
+        minutes = [
+            Minutes(Minutes.map_file_to_type(f[:3]), parse_date(f[-14:-4], ' '), f[-3:])
+            for f in files
+            if not os.path.isdir(f) and f[:3] in Minutes.map_type_to_file(type)
+        ]
+        minutes = [m for m in minutes if m.date == date]
+        if len(minutes) == 1:
+            return minutes[0]
+
+    @staticmethod
+    def get_all_minutes(type=None, year=None):
         if not type:
             type = [t for t in MinutesType]
         type = [Minutes.map_type_to_file(t) for t in force_list(type)]
@@ -51,7 +63,7 @@ class Minutes:
 
     @staticmethod
     def latest_minutes():
-        minutes = Minutes.list_all_minutes()
+        minutes = Minutes.get_all_minutes()
         latest_date = max(m.date for m in minutes)
         latest = [m for m in minutes if m.date == latest_date][0]
         return latest
