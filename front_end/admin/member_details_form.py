@@ -20,7 +20,7 @@ class MemberListForm(FlaskForm):
 
 class MemberDetailsForm(FlaskForm):
     member_id = HiddenField(label='Member Id')
-    status = SelectField(label='Status', choices= MemberStatus.choices(), coerce=MemberStatus.coerce)
+    status = SelectField(label='Status', choices=MemberStatus.choices(), coerce=MemberStatus.coerce)
     first_name = StringField(label='First Name', validators=[InputRequired()])
     last_name = StringField(label='last_name', validators=[InputRequired()])
     proposer = SelectField(label='Proposer', coerce=int)

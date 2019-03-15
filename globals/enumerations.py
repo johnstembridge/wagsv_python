@@ -59,3 +59,8 @@ class Function(FormEnum):
     Website = 9
     Captain = 10
     Design = 11
+
+
+class MinutesType(FormEnum):
+    Committee = 1
+    AGM = 2

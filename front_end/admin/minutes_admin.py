@@ -8,7 +8,7 @@ from globals.config import url_for_admin
 
 def upload_file(member_id):
     form = MinutesAdminForm()
-    if form.is_submitted():
+    if form.validate_on_submit():
         if form.submit.data:
             if form.upload_minutes(member_id):
                 flash('Draft minutes uploaded successfully, committee emailed', 'success')
