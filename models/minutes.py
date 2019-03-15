@@ -50,7 +50,7 @@ class Minutes:
     def get_all_minutes(type=None, year=None):
         if not type:
             type = [t for t in MinutesType]
-        type = [Minutes.map_type_to_file(t) for t in force_list(type)]
+        type = [Minutes.map_type_to_file(t)[:3] for t in force_list(type)]
         files = os.listdir(minutes_location)
         minutes = [
             Minutes(Minutes.map_file_to_type(f[:3]), parse_date(f[-14:-4], ' '), f[-3:])
@@ -79,7 +79,7 @@ class Minutes:
     def map_file_to_type(file):
         if file == 'min':
             return MinutesType.Committee
-        if file == 'agm min':
+        if file in ['agm', 'agm min']:
             return MinutesType.AGM
 
 
