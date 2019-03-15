@@ -1,0 +1,32 @@
+{% extends "user/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Minutes</h1>
+</div>
+<form method="POST">
+    {{ form.csrf_token }}
+    {{ form.hidden_tag() }}
+    <table>
+        <tbody>
+            <tr>
+                <td><b>{{ form.minutes_type.label }}&nbsp;</b></td>
+                <td>{{ form.minutes_type }}</td>
+            </tr>
+            <tr>
+                <td><b>{{ form.minutes_year.label }} </b></td>
+                <td>{{ form.minutes_year }}</td>
+            </tr>
+            <tr>
+                <td><b>{{ form.minutes.label }} </b></td>
+                <td>{{ form.minutes }}</td>
+            </tr>
+            <tr>
+                <td>{{ form.select(class="btn btn-primary") }}</td>
+                <td>Select minutes to view</td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+{% endblock %}
