@@ -73,13 +73,13 @@ class Minutes:
         if type == MinutesType.Committee:
             return 'min'
         if type == MinutesType.AGM:
-            return 'agm'
+            return 'agm min'
 
     @staticmethod
     def map_file_to_type(file):
         if file == 'min':
             return MinutesType.Committee
-        if file == 'agm':
+        if file == 'agm min':
             return MinutesType.AGM
 
 
