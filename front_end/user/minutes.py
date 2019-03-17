@@ -1,6 +1,6 @@
-from flask import render_template, redirect
+from flask import render_template, redirect, flash
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, SelectField, HiddenField
+from wtforms import StringField, FieldList, FormField, SubmitField, SelectField, HiddenField
 
 from globals.enumerations import MinutesType
 from back_end.data_utilities import fmt_date, parse_date
@@ -21,23 +21,35 @@ class MinutesShow:
         return render_template('user/minutes_show.html', form=form, render_link=render_link, url_for_user=url_for_user)
 
 
+class MinutesShowItemForm(FlaskForm):
+    mtype = StringField(label='Type')
+    mdate = StringField(label='Date')
+    mlink = StringField(label='Link')
+
+
 class MinutesShowForm(FlaskForm):
+    minutes_year = SelectField(label='Year', choices=[(str(y), str(y)) for y in ['all'] + get_all_years()])
     minutes_type = SelectField(label='Meeting type', choices=MinutesType.choices(), coerce=MinutesType.coerce)
-    minutes_year = SelectField(label='Year', choices=[(str(y), str(y)) for y in get_all_years()])
-    minutes = SelectField(label='Minutes', choices=[])
     select = SubmitField(label='Select')
     type_year = HiddenField()
+    choices = FieldList(FormField(MinutesShowItemForm))
 
     def populate(self):
-        type_year = self.minutes_type.data.name + '_' + self.minutes_year.data
-        if type_year != self.type_year.data:
-            minutes = Minutes.get_all_minutes(self.minutes_type.data, int(self.minutes_year.data))
-            if len(minutes) == 1:
-                return minutes[0]
-            choices = [fmt_date(m.date) for m in minutes]
-            self.minutes.choices = list(zip(choices, choices))
-        if self.minutes.data is not None and self.minutes.data != 'None' and type_year == self.type_year.data:
-            return Minutes.get_minutes(self.minutes_type.data, parse_date(self.minutes.data))
-        else:
-            self.type_year.data = type_year
-            return None
+        type = self.minutes_type.data
+        year = self.minutes_year.data
+        type_year = type.name + '_' + year
+        type = None if type.name == 'all' else type
+        year = None if year == 'all' else int(year)
+        minutes = Minutes.get_all_minutes(type, year)
+        if len(minutes) == 0:
+            flash('None found', 'warning')
+        if len(minutes) == 1:
+            return minutes[0]
+        for m in minutes:
+            item_form = MinutesShowItemForm()
+            item_form.mtype = m.full_type()
+            item_form.mdate = fmt_date(m.date)
+            item_form.mlink = m.file_link()
+            self.choices.append_entry(item_form)
+
+        return None

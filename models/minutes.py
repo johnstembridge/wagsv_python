@@ -49,7 +49,7 @@ class Minutes:
     @staticmethod
     def get_all_minutes(type=None, year=None):
         if not type:
-            type = [t for t in MinutesType]
+            type = [t for t in MinutesType][1:]
         type = [Minutes.map_type_to_file(t)[:3] for t in force_list(type)]
         files = os.listdir(minutes_location)
         minutes = [
@@ -59,7 +59,11 @@ class Minutes:
         ]
         if year:
             minutes = [m for m in minutes if m.date.year in force_list(year)]
-        return minutes
+        return sorted(minutes, key=Minutes.take_date, reverse=True)
+
+    @staticmethod
+    def take_date(m):
+        return m.date
 
     @staticmethod
     def latest_minutes():

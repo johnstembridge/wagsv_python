@@ -3,7 +3,7 @@ from enum import Enum
 
 class FormEnum(Enum):
     @classmethod
-    def choices(cls):
+    def choices(cls, all=False):
         return [(choice, choice.name.replace('_', ' ')) for choice in cls]
 
     @classmethod
@@ -62,5 +62,6 @@ class Function(FormEnum):
 
 
 class MinutesType(FormEnum):
+    all = 0
     Committee = 1
     AGM = 2

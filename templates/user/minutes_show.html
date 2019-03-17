@@ -8,25 +8,57 @@
 <form method="POST">
     {{ form.csrf_token }}
     {{ form.hidden_tag() }}
+    <p>&nbsp;</p>
     <table>
         <tbody>
-            <tr>
-                <td><b>{{ form.minutes_type.label }}&nbsp;</b></td>
-                <td>{{ form.minutes_type }}</td>
-            </tr>
-            <tr>
-                <td><b>{{ form.minutes_year.label }} </b></td>
-                <td>{{ form.minutes_year }}</td>
-            </tr>
-            <tr>
-                <td><b>{{ form.minutes.label }} </b></td>
-                <td>{{ form.minutes }}</td>
-            </tr>
-            <tr>
-                <td>{{ form.select(class="btn btn-primary") }}</td>
-                <td>Select minutes to view</td>
-            </tr>
+        <tr style="vertical-align:middle">
+            <td><b>{{ form.minutes_type.label }}&nbsp;</b></td>
+            <td>{{ form.minutes_type }}</td>
+            <td>&nbsp;</td>
+            <td><b>{{ form.minutes_year.label }} </b></td>
+            <td>{{ form.minutes_year }}</td>
+            <td>&nbsp;</td>
+            <td>Select minutes to view</td>
+            <td>&nbsp;</td>
+            <td>{{ form.select( class="btn btn-primary") }}</td>
+        </tr>
         </tbody>
     </table>
+    <p>&nbsp;</p>
+    <table width="100%", class="list">
+        <thead>
+        <tr>
+            <th align="left">Type</th>
+            <th align="left">Date</th>
+            <th style="text-align:center">Show</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td colspan="3">
+                <hr class="bold"/>
+            </td>
+        </tr>
+        {% for item in form.choices %}
+        <tr>
+            <td>{{ item.mtype.data }}</td>
+            <td>{{ item.mdate.data }}</td>
+            <td align="center">
+                {{ render_link(
+                url=item.mlink.data,
+                image=url_for('static', filename='images/go.png'),
+                text='Show minutes for ' + item.mdate.data
+                )|safe }}
+            </td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="3">
+                <hr class="bold"/>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
 </form>
 {% endblock %}
