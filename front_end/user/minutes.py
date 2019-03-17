@@ -14,10 +14,7 @@ class MinutesShow:
     @staticmethod
     def minutes_show():
         form = MinutesShowForm()
-        if form.is_submitted():
-            minutes = form.populate()
-            if minutes:
-                return redirect(minutes.file_link())
+        form.populate()
         return render_template('user/minutes_show.html', form=form, render_link=render_link, url_for_user=url_for_user)
 
 
@@ -31,25 +28,23 @@ class MinutesShowForm(FlaskForm):
     minutes_year = SelectField(label='Year', choices=[(str(y), str(y)) for y in ['all'] + get_all_years()])
     minutes_type = SelectField(label='Meeting type', choices=MinutesType.choices(), coerce=MinutesType.coerce)
     select = SubmitField(label='Select')
-    type_year = HiddenField()
     choices = FieldList(FormField(MinutesShowItemForm))
 
     def populate(self):
         type = self.minutes_type.data
         year = self.minutes_year.data
-        type_year = type.name + '_' + year
-        type = None if type.name == 'all' else type
-        year = None if year == 'all' else int(year)
+        if year == 'None':
+            year = None
+        if type:
+            type = None if type.name == 'all' else type
+        if year:
+            year = None if year == 'all' else int(year)
         minutes = Minutes.get_all_minutes(type, year)
         if len(minutes) == 0:
             flash('None found', 'warning')
-        if len(minutes) == 1:
-            return minutes[0]
         for m in minutes:
             item_form = MinutesShowItemForm()
             item_form.mtype = m.full_type()
             item_form.mdate = fmt_date(m.date)
             item_form.mlink = m.file_link()
             self.choices.append_entry(item_form)
-
-        return None
