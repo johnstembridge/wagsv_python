@@ -16,7 +16,7 @@ from models.minutes import Minutes
 
 
 class MinutesAdminForm(FlaskForm):
-    meeting_type = SelectField(label='Meeting type', choices=MinutesType.choices(), coerce=MinutesType.coerce)
+    meeting_type = SelectField(label='Meeting type', choices=MinutesType.choices()[1:], coerce=MinutesType.coerce)
     meeting_date = DateField(label='Meeting date', validators=[InputRequired()])
     file_name = FileField(label='Minutes file name', validators=[FileRequired(), FileAllowed(['pdf'], 'pdf files only!')])
     message = TextAreaField(label='Message (optional)')
