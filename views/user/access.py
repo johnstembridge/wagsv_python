@@ -30,3 +30,13 @@ def user_logout():
 @app.route('/register', methods=['GET', 'POST'])
 def user_register():
     return login.user_register(role)
+
+
+@app.route('/reset_password_request', methods=['GET', 'POST'])
+def reset_password_request():
+    return login.user_reset_password_request(role, app)
+
+
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    return login.user_reset_password(role, app, token)

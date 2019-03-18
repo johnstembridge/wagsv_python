@@ -25,7 +25,7 @@ def send_mail(to, sender, cc=None, subject=None, message=None):
     msg.sender = sender
     msg.recipients = to
     msg.cc = force_list(cc)
-    msg.body = '\n'.join(message) if type(message) is list else message
+    msg.body = '\n'.join(force_list(message))
     app = current_app._get_current_object()
     if config.get('send_mail'):
         #send_async_email(app, msg)
@@ -37,7 +37,7 @@ def send_mail(to, sender, cc=None, subject=None, message=None):
             'to: ' + ', '.join(to),
             'subject: ' + subject,
             'message:']
-        print('\n'.join(out + message))
+        print('\n'.join(out + force_list(message)))
 
 
 def use_sendmail(to, sender, cc=None, subject='', message=''):

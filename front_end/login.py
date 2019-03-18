@@ -6,6 +6,7 @@ from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 
 from globals.config import url_for_app, qualify_url
 from globals.enumerations import UserRole, MemberStatus
+from globals.email import send_mail
 from models.wags_db import User, Role
 from back_end.interface import get_member_by_email, get_user, save_user
 
@@ -29,7 +30,8 @@ def user_login(wags_app, next_page, app=None):
             user = get_user(user_name=form.username.data)
             if user is None or not user.check_password(form.password.data):
                 flash('Invalid username or password', 'danger')
-                return render_template('{}/login.html'.format(wags_app), title='Sign In', form=form, wags_app=wags_app, url_for_app=url_for_app)
+                return render_template('{}/login.html'.format(wags_app), title='Sign In', form=form, wags_app=wags_app,
+                                       url_for_app=url_for_app)
             # if wags_app not in [role.role.name for role in user.roles]:
             #     flash('Sorry, you do not have {} access'.format(wags_app))
             #     return redirect(qualify_url(wags_app))
@@ -42,7 +44,8 @@ def user_login(wags_app, next_page, app=None):
     else:
         form.populate()
 
-    return render_template('{}/login.html'.format(wags_app), title='Sign In', form=form, wags_app=wags_app,  url_for_app=url_for_app)
+    return render_template('{}/login.html'.format(wags_app), title='Sign In', form=form, wags_app=wags_app,
+                           url_for_app=url_for_app)
 
 
 class RegistrationForm(FlaskForm):
@@ -88,3 +91,59 @@ def user_register(wags_app):
 def user_logout(wags_app):
     logout_user()
     return redirect(qualify_url(wags_app))
+
+
+class ResetPasswordRequestForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField()
+
+
+def user_reset_password_request(wags_app, app):
+    if current_user.is_authenticated:
+        return redirect(url_for_app( 'index'))
+    form = ResetPasswordRequestForm()
+    if form.validate_on_submit():
+        user = get_member_by_email(form.email.data).user
+        if user:
+            expires = send_password_reset_email(user, app)
+            message = 'Check your email for the instructions to reset your password'
+            flash(message, 'success')
+        else:
+            flash('Email not recognised', 'error')
+        return redirect(url_for_app(wags_app, 'user_login'))
+    return render_template('user/reset_password_request.html', title='Reset Password', form=form)
+
+
+def send_password_reset_email(user, app):
+    token, expires = user.get_reset_password_token(app)
+    send_mail(to=user.member.contact.email,
+              sender='admin@wags.org',
+              subject='[WAGS] Reset Your Password',
+              message=render_template('user/reset_password.txt',
+                                      url_for_app=url_for_app,
+                                      user=user,
+                                      token=token,
+                                      expires=expires)
+              )
+
+
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField('Password', validators=[DataRequired()])
+    password2 = PasswordField(
+        'Repeat Password', validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField()
+
+
+def user_reset_password(wags_app, app, token):
+    if current_user.is_authenticated:
+        return redirect(url_for_app(wags_app, 'index'))
+    user = User.verify_reset_password_token(app, token)
+    if not user:
+        return redirect(url_for_app(wags_app, 'index'))
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        user.set_password(form.password.data)
+        save_user(user)
+        flash('Your password has been reset', 'success')
+        return redirect(url_for_app(wags_app, 'user_login'))
+    return render_template('user/reset_password.html', form=form)
