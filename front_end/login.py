@@ -48,44 +48,57 @@ def user_login(wags_app, next_page, app=None):
                            url_for_app=url_for_app)
 
 
+def validate_username(self, username):
+    user = get_user(user_name=username.data)
+    if user is not None:
+        if user.member.contact.email != self.email.data:
+            raise ValidationError('Please use a different username.')
+
+
 class RegistrationForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
+    username = StringField('Username', validators=[DataRequired(), validate_username])
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     password2 = PasswordField(
         'Repeat Password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Register')
 
-    def validate_username(self, username):
-        user = get_user(user_name=username.data)
-        if user is not None:
-            raise ValidationError('Please use a different username.')
 
-
-def user_register(wags_app):
-    if current_user.is_authenticated:
+def user_register(wags_app, new=True):
+    # Register user (new is True) or reset login
+    if new and current_user.is_authenticated:
         return redirect(qualify_url(wags_app))
     form = RegistrationForm()
-    if form.is_submitted():
+    form_title = 'Register' if new else 'Reset login details'
+    if not new and not form.is_submitted():
+        form.username.data = current_user.user_name
+        form.email.data = current_user.member.contact.email
+    else:
         if form.validate_on_submit():
             member = get_member_by_email(form.email.data)
             if member:
                 if member.status not in [MemberStatus.full_member, MemberStatus.overseas_member]:
                     flash('Sorry, you are not a current member', 'danger')
                     return redirect(qualify_url(wags_app))
-                user = User(user_name=form.username.data, member_id=member.id)
+                if not member.user:
+                    user = User(user_name=form.username.data, member_id=member.id)
+                else:
+                    user = member.user # get_user(member.user.id)
+                    user.user_name = form.username.data
                 user.set_password(form.password.data)
-                if wags_app == 'user':
-                    role = Role(role=UserRole.user)
-                if wags_app == 'admin':
-                    role = Role(role=UserRole.admin)
-                user.roles.append(role)
+                role = Role(role=UserRole.admin) if wags_app == 'admin' else Role(role=UserRole.user)
+                if role.role.value not in [r.role.value for r in user.roles]:
+                    user.roles.append(role)
                 save_user(user)
-                flash('Congratulations, you are now a registered {}!'.format(wags_app), 'success')
-                return redirect(url_for_app(wags_app, 'user_login'))
+                if new:
+                    flash('Congratulations, you are now a registered {}!'.format(wags_app), 'success')
+                    return redirect(url_for_app(wags_app, 'user_login'))
+                else:
+                    flash('Login details reset'.format(wags_app), 'success')
+                    return redirect(url_for_app(wags_app, 'members_area'))
             else:
                 flash('Cannot find your membership - please give your WAGS contact email address')
-    return render_template('{}/register.html'.format(wags_app), title='Register', form=form)
+    return render_template('{}/register.html'.format(wags_app), title=form_title, form=form)
 
 
 def user_logout(wags_app):
@@ -109,7 +122,7 @@ def user_reset_password_request(wags_app, app):
             message = 'Check your email for the instructions to reset your password'
             flash(message, 'success')
         else:
-            flash('Email not recognised', 'error')
+            flash('Email not recognised', 'danger')
         return redirect(url_for_app(wags_app, 'user_login'))
     return render_template('user/reset_password_request.html', title='Reset Password', form=form)
 

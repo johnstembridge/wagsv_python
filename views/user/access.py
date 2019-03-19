@@ -32,6 +32,11 @@ def user_register():
     return login.user_register(role)
 
 
+@app.route('/re_register', methods=['GET', 'POST'])
+def user_re_register():
+    return login.user_register(role, new=False)
+
+
 @app.route('/reset_password_request', methods=['GET', 'POST'])
 def reset_password_request():
     return login.user_reset_password_request(role, app)

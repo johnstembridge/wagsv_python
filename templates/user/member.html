@@ -82,6 +82,15 @@
                         )|safe }}
             </td>
         </tr>
+        <tr>
+            <td>Change user name and/or password</td>
+            <td align="left">
+                        {{ render_link(
+                        url=url_for_user('user_re_register'),
+                        image=url_for('static', filename='images/go.png')
+                        )|safe }}
+            </td>
+        </tr>
     </table>
     <hr/>
 </form>

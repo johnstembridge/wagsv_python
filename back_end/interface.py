@@ -50,7 +50,6 @@ def save_user(user):
         db_session.add(user)
     db_session.commit()
 
-
 # endregion
 
 
