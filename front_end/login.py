@@ -73,6 +73,7 @@ def user_register(wags_app, new=True):
     if not new and not form.is_submitted():
         form.username.data = current_user.user_name
         form.email.data = current_user.member.contact.email
+        form.email.render_kw = {'readonly': True}
     else:
         if form.validate_on_submit():
             member = get_member_by_email(form.email.data)
