@@ -203,7 +203,7 @@ def save_event_details(event_id, details):
             schedule.append(item)
         event.schedule = sorted(schedule)
 
-    if event_type == EventType.wags_tour:
+    if event_type in [EventType.wags_tour, EventType.minotaur]:
         tour_events = []
         all_courses = get_all_courses()
         for row in details['tour_schedule']:

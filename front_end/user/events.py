@@ -10,6 +10,7 @@ from front_end.form_helpers import render_link
 from back_end.interface import get_event
 from globals.enumerations import EventType
 from globals.config import url_for_html, url_for_user
+from datetime import datetime
 
 
 class ReportEvents:
@@ -18,7 +19,15 @@ class ReportEvents:
     def list_events(year):
         form = EventListForm()
         form.populate_event_list(year)
-        return render_template('user/event_list.html', form=form, year=year, render_link=render_link, url_for_user=url_for_user)
+        book_or_view = 'Book' if year == datetime.today().year else 'View'
+        return render_template(
+            'user/event_list.html',
+            form=form,
+            year=year,
+            book_or_view=book_or_view,
+            render_link=render_link,
+            url_for_user=url_for_user
+        )
 
     @staticmethod
     def select_event():
@@ -54,7 +63,7 @@ class ReportEvents:
         event_type = get_event(event_id).type
         if event_type == EventType.wags_vl_event:
             return ReportEvents.results_vl_event(event_id)
-        if event_type == EventType.wags_tour:
+        if event_type in [EventType.wags_tour, EventType.minotaur]:
             return ReportEvents.results_tour_event(event_id)
 
     @staticmethod

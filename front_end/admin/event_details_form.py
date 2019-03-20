@@ -59,7 +59,7 @@ class EventForm(FlaskForm):
                 item_form.time = item.time
                 item_form.text = item.text
                 self.schedule.append_entry(item_form)
-        if event_type == EventType.wags_tour:
+        if event_type in [EventType.wags_tour, EventType.minotaur]:
             for item in event.tour_events + (6 - len(event.tour_events)) * [Event()]:
                 item_form = TourScheduleForm()
                 item_form.date = item.date
@@ -80,7 +80,7 @@ class EventForm(FlaskForm):
         set_select_field_new(self.venue, get_venue_select_choices(), default_selection=venue, item_name='Venue')
         if event_type in [EventType.wags_vl_event, EventType.non_event]:
             set_select_field_new(self.course, courses, default_selection=course, item_name='Course')
-        if event_type == EventType.wags_tour:
+        if event_type in [EventType.wags_tour, EventType.minotaur]:
             item_count = 0
             for item in event.tour_events + (6 - len(event.tour_events)) * [Event()]:
                 course_id = item.course_id if item.course else 0
@@ -114,7 +114,7 @@ class EventForm(FlaskForm):
             for item in self.schedule.data:
                 event['schedule'].append(item)
 
-        if event_type == EventType.wags_tour:
+        if event_type in [EventType.wags_tour, EventType.minotaur]:
             event['course_id'] = None
             for item in self.tour_schedule.data:
                 if item['date']: # and item['course']:

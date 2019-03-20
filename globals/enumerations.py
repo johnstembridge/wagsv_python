@@ -32,6 +32,7 @@ class EventType(FormEnum):
     wags_vl_event = 1
     wags_tour = 2
     non_vl_event = 3
+    minotaur = 4
 
 
 class NewsItemType(FormEnum):

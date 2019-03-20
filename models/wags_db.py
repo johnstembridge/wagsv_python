@@ -102,9 +102,12 @@ class Event(Base):
         return self.bookable() == 1
 
     def bookable(self):
-        # result:  1 - booking open, 0 - booking closed, -1 - booking not applicable
-        if self.tour_event_id or self.type == EventType.non_event:
+        # result:  1-booking open, 0-viewable, -1-booking not applicable
+        if self.type in [EventType.non_event, EventType.minotaur]:
             return -1
+        if self.tour_event_id:
+            if self.tour_event.type == EventType.wags_tour:
+                return 0
         if self.booking_start:
             booking_start = self.booking_start
             booking_end = self.booking_end
@@ -123,6 +126,8 @@ class Event(Base):
         if self.type == EventType.wags_vl_event:
             return '<Event: {} {}>'.format(self.course.name, self.date)
         elif self.type == EventType.wags_tour:
+            return '<Tour: {} {}>'.format(self.venue.name, self.date)
+        elif self.type == EventType.minotaur:
             return '<Tour: {} {}>'.format(self.venue.name, self.date)
         else:
             return '<Non-Event: {} {}>'.format(self.venue.name, self.date)

@@ -10,7 +10,7 @@ from back_end.interface import get_event, get_booking, save_booking, get_member,
     get_committee_function, get_player_by_name, suspend_flush
 from front_end.form_helpers import line_break
 from globals.email import send_mail
-from globals.enumerations import Function, PlayerStatus
+from globals.enumerations import Function, PlayerStatus, EventType
 from models.wags_db import Guest, Contact
 from wags_user import app
 
@@ -109,7 +109,7 @@ class EventDetailsForm(FlaskForm):
 
     @staticmethod
     def booking_message(event, booking):
-        if event.bookable() == -1:
+        if event.bookable() == -1 or event.tour_event_id and event.tour_event.type == EventType.wags_tour:
             return 'Booking is not available for this event'
         today = datetime.date.today()
         booking_start = event.booking_start or event.date

@@ -45,7 +45,8 @@ class EventListForm(FlaskForm):
             item_form.new_section = not (first or event.tour_event_id)
             first = False
             item_form.bookable = event.bookable()
-            item_form.result = event.date < datetime.date.today() and event.type in (EventType.wags_vl_event, EventType.wags_tour)
+            item_form.result = event.date < datetime.date.today() and event.type in \
+                (EventType.wags_vl_event, EventType.wags_tour, EventType.minotaur)
             self.event_list.append_entry(item_form)
 
 
@@ -59,4 +60,3 @@ class EventSelectForm(FlaskForm):
     def show_event_result(self):
         event_id = self.event.data
         return url_for_user('results_event', event_id=event_id)
-

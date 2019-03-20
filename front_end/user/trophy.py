@@ -16,7 +16,7 @@ class Trophy:
     def trophy_show(trophy_id):
         form = TrophyForm()
         form.populate_trophy(trophy_id)
-        return render_template('user/trophy.html', form=form, render_link=render_link,url_for_user=url_for_user)
+        return render_template('user/trophy.html', form=form, render_link=render_link, url_for_user=url_for_user)
 
 
 class TrophyItemForm(FlaskForm):
@@ -42,10 +42,11 @@ class TrophyForm(FlaskForm):
             self.extra.data = extra_file
         hist = trophy.events
         for event in hist:
-            tour = first_or_default([e for e in hist if e.date.year == event.date.year and e.type == EventType.wags_tour], None)
+            tour = first_or_default(
+                [e for e in hist if e.date.year == event.date.year and e.type == EventType.wags_tour], None)
             if event.date < datetime.date.today() \
-                    and (event.type == EventType.wags_vl_event and not tour) \
-                    or (tour and event.type == EventType.wags_tour):
+                    and ((event.type == EventType.wags_vl_event and not tour) \
+                         or (event.type == EventType.wags_tour and tour)):
                 item_form = TrophyItemForm()
                 item_form.venue = event.venue.name
                 item_form.date = fmt_date(event.date)
