@@ -1,0 +1,4 @@
+Event Name,Event Date,All Day,Event Start Time,Event End Time,Event Location,Link Description,Link,Event Description,Background Image Link
+{% for item in event_calendar_list %}
+{{ item.name }},{{ item.date }},{{ item.all_day }},{{ item.event_start_time }},{{ item.event_end_time }},{{ item.location }},{{ item.link_description }},{{ item.link }}
+{% endfor %}

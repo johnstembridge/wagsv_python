@@ -78,8 +78,10 @@ def coerce_fmt_date(x):
     return x
 
 
-def fmt_date(date):
-    return date.strftime("%Y/%m/%d")
+def fmt_date(date, fmt=None):
+    if not fmt:
+        fmt = '%Y/%m/%d'
+    return date.strftime(fmt)
 
 
 def parse_date(ymd, sep='/', reverse=False):

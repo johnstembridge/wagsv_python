@@ -24,6 +24,13 @@ def list_events(year):
     return MaintainEvents.list_events(year)
 
 
+@app.route('/events/<year>/calendar', methods=['GET', 'POST'])
+@login_required
+@role_required('admin')
+def events_calendar(year):
+    return MaintainEvents.events_calendar(year)
+
+
 @app.route('/events/<event_id>/details', methods=['GET', 'POST'])
 @login_required
 @role_required('admin')

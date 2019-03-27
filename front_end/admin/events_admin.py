@@ -9,7 +9,7 @@ from .event_report_form import EventReportForm
 from .event_card_form import EventCardForm
 from .event_details_form import EventForm
 from .event_handicap_form import EventHandicapsForm
-from .event_list_form import EventListForm
+from .event_list_form import EventListForm, EventCalendarListForm
 from .event_result_form import EventResultsForm
 from .handicap_history_form import HandicapHistoryForm
 from globals.enumerations import EventType
@@ -24,6 +24,8 @@ class MaintainEvents:
     def list_events(year):
         form = EventListForm()
         if form.is_submitted():
+            if form.publish_calendar.data:
+                return redirect(url_for_admin('events_calendar', year=year))
             if form.add_event.data:
                 event_type = EventType.wags_vl_event.value
             if form.add_tour.data:
@@ -36,6 +38,17 @@ class MaintainEvents:
         form.populate_event_list(int(year))
 
         return render_template('admin/event_list.html', form=form, render_link=render_link, EventType=EventType)
+
+    @staticmethod
+    def events_calendar(year):
+        form = EventCalendarListForm()
+        form.populate_calendar_event_list(int(year))
+        csv = render_template('admin/event_calendar.txt', event_calendar_list=form.event_calendar_list)
+        csv = csv.replace('\n\n', '\n').replace('\n\n', '\n')
+        file = os.path.join(config.get('locations')['output'], 'calendar_' + year + '.csv')
+        write_file(file, csv)
+        flash('Calendar published as ' + file, 'success')
+        return redirect(url_for_admin('list_events', year=year))
 
     @staticmethod
     def edit_event(event_id, event_type):

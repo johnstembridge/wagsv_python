@@ -9,6 +9,7 @@
     "base_url": "https://wags.org/",
     "html": "/var/www/html",
     "reports": "/var/www/html/reports",
+    "output": "/var/www/html/output",
     "data": "/var/www/html/data",
     "minutes": "/var/www/html/minutes",
     "logs": "/var/log/wags",
