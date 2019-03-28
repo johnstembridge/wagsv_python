@@ -4,8 +4,7 @@ from flask_wtf.file import FileAllowed
 from werkzeug.datastructures import FileStorage
 
 from back_end.data_utilities import html_unescape, html_escape
-from back_end.interface import get_front_page_items, update_front_page
-from globals import config
+from back_end.interface import get_front_page_items, update_front_page, accounts_file
 from flask_wtf import FlaskForm
 from werkzeug.utils import secure_filename
 from wtforms import FileField, SubmitField, StringField
@@ -24,7 +23,7 @@ class AccountsAdminForm(FlaskForm):
     def upload(self, year):
         filename = secure_filename(self.file_name.data.filename)
         if filename != '':
-            file_path = os.path.join(config.get('locations')['data'], str(year), filename)
+            file_path = accounts_file(year)
             self.file_name.data.save(file_path)
             return True
         else:
