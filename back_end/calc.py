@@ -53,7 +53,7 @@ def calc_event_positions(event_id, result):
     sort = []
     for row in result.data:
         player = dict(zip(result.head, row))
-        player_id = player['player_id']
+        player_id = int(player['player_id'])
         player_hcap = my_round(float(player['handicap']))
         if player_id in cards:
             shots = [int(s) for s in cards[player_id]]
