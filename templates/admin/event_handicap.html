@@ -8,14 +8,16 @@
 </div>
 <form method="POST">
     {{ form.csrf_token }}
-    <table width="100%" class="table table-striped">
+    <table id="players" width="100%" class="table table-striped">
         <thead>
         <tr>
             <th>#</th>
             <th>Name</th>
             <th>Strokes</th>
             <th>Score</th>
-            <th>Handicap</th>
+            <th>Old Handicap</th>
+            <th>Suggested</th>
+            <th>New Handicap</th>
             <th class="text-center">History</th>
             <th></th>
         </tr>
@@ -27,8 +29,10 @@
             <td>{{ item.player.data }}</td>
             <td>{{ item.strokes.data }}</td>
             <td>{{ item.points.data }}</td>
-            {%if form.editable %}
-                <td>{{ item.handicap(size=10, type="number", min="0.1", max="36", step="0.1") }}</td>
+            <td>{{ item.old_handicap.data }}</td>
+            <td id="{{ 'suggested-' ~ loop.index0 }}">{{ item.suggested.data }}</td>
+            {%if form.editable.data %}
+                <td id="{{ 'handicap-' ~ loop.index0 }}">{{ item.handicap(size=10, type="number", min="0.1", max="36", step="0.1") }}</td>
             {% else %}
                 <td>{{ item.handicap.data }}</td>
             {% endif %}
@@ -39,10 +43,9 @@
                     text='Show handicap history for ' + item.player.data
                 )|safe }}
             </td>
-            {%if form.editable %}
+            {%if form.editable.data %}
                 <td>{{ item.player_id }}</td>
                 <td>{{ item.status_return }}</td>
-                <td>{{ item.old_handicap }}</td>
             {% endif %}
         </tr>
         {% endfor %}
@@ -51,7 +54,12 @@
 
     <hr/>
     {%if form.editable.data %}
-    {{ form.save_handicaps(class="btn btn-primary") }}
+        <button type="button" class="btn btn-info" onclick="acceptSuggestedHandicaps()">Accept Suggested</button>
+        {{ form.save_handicaps(class="btn btn-primary") }}
     {% endif %}
 </form>
+{% block scripts %}
+    <script src="{{url_for('.static', filename='scripts/handicaps.js')}}"></script>
+{{super()}}
+{% endblock %}
 {% endblock %}

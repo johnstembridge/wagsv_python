@@ -352,8 +352,8 @@ def is_event_result_editable(event):
     return override or (datetime.date.today() > event.date) and (datetime.date.today().year == event.date.year)
 
 
-def is_last_event(event):
-    last = get_last_event(event.date.year)
+def is_latest_event(event):
+    last = get_latest_event()
     override = config.get('override')
     return override or event.id == last.id
 
@@ -363,28 +363,26 @@ def is_event_editable(year):
     return override or year >= datetime.date.today().year
 
 
-def get_last_event(year=None, include_tours=False):
+def get_latest_event(include_tours=False):
     today = datetime.date.today()
-    if not year:
-        year = today.year
-    past = [e for e in get_events_for_year(year) if e.type == EventType.wags_vl_event and e.date <= today]
-    if len(past) > 0:
-        if include_tours and past[-1].tour_event:
-            return past[-1].tour_event
-        else:
-            return past[-1]
-    return get_last_event(year - 1)
+    year = today.year
+    previous = [e for e in get_events_for_year(year) if e.type == EventType.wags_vl_event and e.date <= today]
+    if len(previous) == 0:
+        previous = [e for e in get_events_for_year(year-1) if e.type == EventType.wags_vl_event]
+    if include_tours and previous[-1].tour_event:
+        return previous[-1].tour_event
+    else:
+        return previous[-1]
 
 
-def get_next_event(year=None):
-    today = datetime.date.today()
-    if not year:
-        year = today.year
-    future = [e for e in get_events_for_year(year) if e.type == EventType.wags_vl_event and e.date >= today]
-    for event in future:
-        if not event.tour_event:
-            return event
-    return None
+def get_next_event(date=datetime.date.today()):
+    start = date + datetime.timedelta(days=1)
+    end = datetime.date(date.year, 12, 31)
+    next = first_or_default(get_events_in((start, end)), None)
+    if not next:
+        end = datetime.date(date.year + 1, 12, 31)
+        next = first_or_default(get_events_in((start, end)), None)
+    return next
 
 
 def get_events_in(date_range):

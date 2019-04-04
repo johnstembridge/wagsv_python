@@ -4,7 +4,7 @@ import datetime
 from back_end.interface import get_event, lookup_course, get_event_cards, get_scores, get_player_names, get_events_in, \
     get_tour_scores
 from back_end.table import Table
-from back_end.data_utilities import coerce, my_round
+from back_end.data_utilities import coerce, my_round, first_or_default
 from globals.enumerations import PlayerStatus, EventType
 
 
@@ -86,6 +86,46 @@ def free_shots(si, hcap):
         if si <= hcap - 18:
             s += 1
     return s
+
+
+def handicap_category(handicap):
+    if handicap >= 21:
+        return 4
+    if handicap >= 13:
+        return 3
+    if handicap >= 6:
+        return 2
+    if handicap >= 0:
+        return 1
+    return 0
+
+
+def competition_scratch_score(event):
+    position = 2
+    while position != 0:
+        candidates = [s for s in event.scores if s.position == position]
+        if any([c for c in candidates if c.player.state_as_of(event.date).status == PlayerStatus.member]):
+            scratch = first_or_default([c.points for c in candidates], 0) - 1
+            position = 0
+        else:
+            position += 1
+    return scratch
+
+
+def suggested_handicap_change(scratch, handicap, score):
+    if handicap > 28 or score == 0:
+        return handicap
+    handicap = float(handicap)
+    cut = add = 0.0
+    cat = handicap_category(handicap)
+    delta = scratch - score
+    if delta < 0:
+        cut = delta * cat * 0.1
+    else:
+        if delta - cat > 0:
+            add = 0.1
+    new = my_round(min(28.0, handicap + cut + add), 1)
+    return new
 
 
 def get_big_swing(as_of=datetime.date.today()):

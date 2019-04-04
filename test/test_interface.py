@@ -75,7 +75,7 @@ class TestInterface(unittest.TestCase):
         self.assertTrue(len(res) > 0)
 
     def test_get_last_event(self):
-        last = get_last_event()
+        last = get_latest_event()
 
     def test_get_member_select_list(self):
         res = get_member_select_choices()

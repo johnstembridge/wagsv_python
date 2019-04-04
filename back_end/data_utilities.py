@@ -222,8 +222,11 @@ def enquote(string):
     return string if len(string) == 0 else '"' + string + '"'
 
 
-def my_round(float_num):
-    return math.floor(float(float_num) + 0.5)
+def my_round(float_num, dp=0):
+    if dp == 0:
+        return math.floor(float(float_num) + 0.5)
+    else:
+        return (math.floor(float(float_num * 10 ** dp) + 0.5)) / 10 ** dp
 
 
 def mean(values):

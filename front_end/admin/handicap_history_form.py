@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, FormField, FieldList
 from wtforms.fields.html5 import DateField
 import datetime
-from back_end.interface import get_player, is_last_event, get_event
+from back_end.interface import get_player, is_latest_event, get_event
 
 
 class HandicapItemForm(FlaskForm):
@@ -17,7 +17,7 @@ class HandicapHistoryForm(FlaskForm):
 
     def populate_history(self, event_id, player_id):
         event = get_event(event_id)
-        if is_last_event(event):
+        if is_latest_event(event):
             date = datetime.date.today()
         else:
             date = event.date

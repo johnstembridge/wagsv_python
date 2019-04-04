@@ -1,8 +1,8 @@
 import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, HiddenField, SelectField, FieldList, FormField, DateField, TextAreaField
-from back_end.data_utilities import parse_date, fmt_date
-from back_end.interface import get_last_event, get_next_event
+from back_end.data_utilities import parse_date, fmt_date, encode_date
+from back_end.interface import get_latest_event, get_next_event
 from front_end.form_helpers import set_select_field
 from globals.enumerations import NewsItemType
 from models.news import News, NewsDay, NewsItem
@@ -81,7 +81,7 @@ class NewsDayForm(FlaskForm):
         elif item_type == NewsItemType.handicap_update:
             item = NewsItem(text='Handicaps updated', link='/wagsuser/handicaps', title='show current handicaps')
         elif item_type == NewsItemType.event_result:
-            event = get_last_event(include_tours=True)
+            event = get_latest_event(include_tours=True)
             item = NewsItem(text='Results for {} updated'.format(event.venue.name),
                             link='/wagsuser/events/{}/results'.format(event.id),
                             title='show results')
