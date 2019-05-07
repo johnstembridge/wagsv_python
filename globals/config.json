@@ -4,7 +4,7 @@
   "override": false,
   "send_mail": false,
 //  "db_path": "sqlite:///C:\\Users\\jstembridge\\wagsite\\wags.db",
-  "db_path": "sqlite:///D:\\wagsite_new\\v2\\wags.db",
+  "db_path": "sqlite:///D:\\wagsite\\wags.db",
   "locations": {
     "base_url": "http://127.0.0.1:5000/",
     "templates": "templates",

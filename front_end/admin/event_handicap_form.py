@@ -21,6 +21,7 @@ class EventHandicapItemForm(FlaskForm):
     handicap = StringField(label='Handicap')
     player_id = HiddenField(label='Player_id')
     status_return = HiddenField(label='Guest')
+    old_handicap_return = HiddenField(label='Old_Handicap_Return')
 
 
 class EventHandicapsForm(FlaskForm):
@@ -56,6 +57,7 @@ class EventHandicapsForm(FlaskForm):
             guest = " (guest)" if (orig_state.status == PlayerStatus.guest) else ""
             item_form.player = player.full_name() + guest
             item_form.handicap = new_state.handicap
+            item_form.old_handicap = orig_state.handicap
             score = player.score_for(event.id)
             item_form.suggested = suggested_handicap_change(scratch, orig_state.handicap, score.points)
             item_form.points = score.points
@@ -63,7 +65,7 @@ class EventHandicapsForm(FlaskForm):
             item_form.position = score.position
             item_form.player_id = player.id
             item_form.status_return = orig_state.status.value
-            item_form.old_handicap = orig_state.handicap
+            item_form.old_handicap_return = orig_state.handicap
             self.scores.append_entry(item_form)
 
     def save_event_handicaps(self, event_id):
@@ -73,7 +75,7 @@ class EventHandicapsForm(FlaskForm):
         date = get_event(event_id).date + datetime.timedelta(days=1)
         fields = ['player_id', 'date', 'status', 'handicap']
         data = [[int(d['player_id']), date, PlayerStatus(int(d['status_return'])), float(d['handicap'])]
-                for d in self.data['scores'] if d['handicap'] != d['old_handicap']]
+                for d in self.data['scores'] if d['handicap'] != d['old_handicap_return']]
 
         save_handicaps(Table(fields, data))
         return True

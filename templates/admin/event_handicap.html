@@ -8,6 +8,7 @@
 </div>
 <form method="POST">
     {{ form.csrf_token }}
+    {{ form.hidden_tag() }}
     <table id="players" width="100%" class="table table-striped">
         <thead>
         <tr>
@@ -46,6 +47,7 @@
             {%if form.editable.data %}
                 <td>{{ item.player_id }}</td>
                 <td>{{ item.status_return }}</td>
+                <td>{{ item.old_handicap_return }}</td>
             {% endif %}
         </tr>
         {% endfor %}
