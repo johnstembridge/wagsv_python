@@ -71,7 +71,7 @@ class MemberDetailsForm(FlaskForm):
             player = member.player
             contact = member.contact
             state = player.state_as_of(datetime.date.today())
-            set_select_field_new(self.status, MemberStatus.choices(), default_selection=member.status.value)
+            set_select_field_new(self.status, MemberStatus.choices(), default_selection=member.status)
             self.status_return.data = member.status.value
             self.first_name.data = player.first_name
             self.last_name.data = player.last_name
