@@ -158,13 +158,15 @@ class MaintainEvents:
         return file_name
 
     @staticmethod
-    def add_player_to_event(event_id, member_id):
+    def add_player_to_event(event_id):
         form = AddPlayerForm()
         if form.is_submitted():
             if form.submit.data:
-                form.add_booking(event_id, member_id)
-                return redirect(url_for_admin('results_event', event_id=event_id))
+                if form.add_booking(event_id):
+                    return redirect(url_for_admin('results_event', event_id=event_id))
+                else:
+                    return redirect(url_for_admin('add_player_to_event', event_id=event_id))
         else:
-            form.populate_add_player(event_id, member_id)
+            form.populate_add_player(event_id)
         return render_template('admin/event_add_player.html', form=form, event=event_id)
 

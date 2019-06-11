@@ -310,6 +310,10 @@ def save_event_score(event_id, player_id, position, card, shots, points):
     db_session.commit()
 
 
+def get_players_for_event_id(event_id):
+    return get_players_for_event(get_event(event_id))
+
+
 def get_players_for_event(event):
     if event.tour_event_id:
         if len(event.tour_event.bookings) > 0:

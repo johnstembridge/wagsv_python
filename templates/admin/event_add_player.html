@@ -4,21 +4,26 @@
 {% block page_content %}
 <div class="page-header">
     <h1>{{ form.event_name.data }}</h1>
-    <h2>Add Player</h2>
+    <h2>Add a player</h2>
 </div>
 
 <form method="POST">
     {{ form.csrf_token }}
+    <p>To add a <b>member</b> to the list of those playing this event, select the member and click Submit.</p>
+    <p>To add a <b>guest</b>, first select the member whose guest they are then give the guest's name and handicap and click Submit.</p>
     <table>
         <tr>
-            <td>{{ form.member.label }} {{ form.member }}</td>
+            <td>{{ form.member.label }}&nbsp;</td>
+            <td>{{ form.member }}</td>
         </tr>
+        <tr><td>&nbsp;</td></tr>
         <tr>
-            <td><i>or</i></td>
+            <td>{{ form.guest_name.label }}&nbsp;</td>
+            <td>{{ form.guest_name }}</td>
+            <td>&nbsp;{{ form.guest_handicap.label }}&nbsp;</td>
+            <td>{{ form.guest_handicap(size="4") }}</td>
         </tr>
-        <tr>
-            <td>{{ form.guest_name.label }} {{ form.guest_name }}</td><td>&nbsp;</td><td>{{ form.guest_handicap.label }} {{ form.guest_handicap }}</td>
-        </tr>
+        <tr><td>&nbsp;</td></tr>
     </table>
     {{ form.submit(class="btn btn-primary") }}
 </form>

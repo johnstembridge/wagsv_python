@@ -52,12 +52,11 @@ def results_event(event_id):
         return redirect(request.referrer)
 
 
-@app.route('/events/<event_id>/add_player', methods=['GET', 'POST'])
+@app.route('/events/<int:event_id>/add_player', methods=['GET', 'POST'])
 @login_required
 @role_required('admin')
 def add_player_to_event(event_id):
-    member_id = current_user.member_id
-    return MaintainEvents.add_player_to_event(int(event_id), member_id)
+    return MaintainEvents.add_player_to_event(event_id)
 
 
 @app.route('/events/<event_id>/<player_id>/card', methods=['GET', 'POST'])
