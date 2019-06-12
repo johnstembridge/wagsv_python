@@ -71,7 +71,7 @@ class EventDetailsForm(FlaskForm):
         self.venue.data = event.venue.name
         contact = event.venue.contact or Contact()
         post_code = contact.post_code or ''
-        self.venue_address.data = line_break(contact.address or '' + ',' + post_code, ',')
+        self.venue_address.data = line_break((contact.address or '') + ',' + post_code, [',', '\r', '\n'])
         self.venue_phone.data = contact.phone or ''
         self.map_url.data = 'http://maps.google.co.uk/maps?q={}&title={}&z=12 target="googlemap"' \
             .format(post_code.replace(' ', '+'), event.venue.name)

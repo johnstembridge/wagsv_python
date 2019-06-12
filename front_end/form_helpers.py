@@ -94,10 +94,13 @@ def get_elements_from_html(html, ids):
     return result
 
 
-def line_break(text, line_break_character=None):
+def line_break(text, line_break_characters=None):
     br = '<br/>'
     if type(text) is list:
-        res = br.join(text)
+        res = br.join([t for t in text if len(t) > 0])
     else:
-        res = text.replace(line_break_character, br)
+        line_break_characters = force_list(line_break_characters)
+        for r in line_break_characters[1:]:
+            text = text.replace(r, line_break_characters[0])
+        res = line_break(text.split(line_break_characters[0]))
     return res
