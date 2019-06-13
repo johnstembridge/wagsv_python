@@ -34,6 +34,18 @@ class EventType(FormEnum):
     non_vl_event = 3
     minotaur = 4
 
+    def long_description(self):
+        if self == EventType.non_event:
+            return 'Non WAGS event'
+        if self == EventType.wags_vl_event:
+            return 'VL event'
+        if self == EventType.non_vl_event:
+            return 'Non VL event'
+        if self == EventType.wags_tour:
+            return 'WAGS tour'
+        if self == EventType.minotaur:
+            return 'WAGS Minotaur'
+
 
 class NewsItemType(FormEnum):
     open_booking = 0

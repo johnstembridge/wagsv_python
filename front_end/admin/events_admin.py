@@ -30,8 +30,8 @@ class MaintainEvents:
                 event_type = EventType.wags_vl_event.value
             if form.add_tour.data:
                 event_type = EventType.wags_tour.value
-            if form.add_minotaur.data:
-                event_type = EventType.minotaur.value
+            if form.add_non_vl.data:
+                event_type = EventType.non_vl_event.value
             if form.add_non.data:
                 event_type = EventType.non_event.value
             return redirect(url_for_admin('edit_event', event_id=0, event_type=event_type))
@@ -67,13 +67,13 @@ class MaintainEvents:
             form.populate_event(event_id, event_type)
             event_type = EventType(coerce(form.event_type.data, int))
         event = event_id if event_id != 0 else "(new)"
-        if event_type == EventType.wags_vl_event:
-            return render_template('admin/event_details.html', form=form, event_id=event)
+        event_type_desc = event_type.long_description()
+        if event_type in [EventType.wags_vl_event, EventType.non_vl_event]:
+            return render_template('admin/event_details.html', form=form, event_id=event, event_type_desc=event_type_desc)
         if event_type in [EventType.wags_tour, EventType.minotaur]:
-            tour_type = 'Tour' if event_type == EventType.wags_tour else 'Minotaur'
-            return render_template('admin/tour_details.html', form=form, event_id=event, tour_type=tour_type)
+            return render_template('admin/tour_details.html', form=form, event_id=event, event_type_desc=event_type_desc)
         if event_type == EventType.non_event:
-            return render_template('admin/non_event_details.html', form=form, event_id=event)
+            return render_template('admin/non_event_details.html', form=form, event_id=event, event_type_desc=event_type_desc)
 
     @staticmethod
     def results_vl_event(event_id):

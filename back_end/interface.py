@@ -706,14 +706,12 @@ def get_trophy(trophy_id):
 
 def get_scores_for_player(player_id, year=None):
     player = get_player(player_id)
-    scores = player.scores
+    if year:
+        scores = [s for s in player.scores if s.event.type == EventType.wags_vl_event and s.event.date.year == year]
+    else:
+        scores = [s for s in player.scores if s.event.type == EventType.wags_vl_event]
     head = ['date', 'course', 'player_id', 'position', 'shots', 'points', 'handicap', 'status']
     res = Table(head, [extract_score_data(s) for s in scores])
-    if year:
-        def lu_fn(values):
-            return values['date'].year == year
-
-        res = res.where(lu_fn)
     return res
 
 
@@ -737,7 +735,7 @@ def get_scores(year=None, status=None, player_id=None):
         events = get_events_for_period(start, end)
     else:
         events = db_session.query(Event)
-    scores = [e.scores for e in events]
+    scores = [e.scores for e in events if e.type == EventType.wags_vl_event]
     if status:
         scores = [s for ls in scores for s in ls if s.player.state_as_of(s.event.date).status == status]
     if player_id:

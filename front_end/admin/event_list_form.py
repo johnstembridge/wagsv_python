@@ -21,7 +21,7 @@ class EventListForm(FlaskForm):
     event_list = FieldList(FormField(EventItemForm))
     add_event = SubmitField(label='Add Event')
     add_tour = SubmitField(label='Add Tour')
-    add_minotaur = SubmitField(label='Add Minotaur')
+    add_non_vl = SubmitField(label='Add Non-VL Event')
     add_non = SubmitField(label='Add Non Event')
     publish_calendar = SubmitField(label='Publish Calendar')
     editable = HiddenField(label='Editable')
