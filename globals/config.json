@@ -13,11 +13,11 @@
 //    "data": "C:\\Users\\jstembridge\\wagsite\\v2\\data",
 //    "minutes": "C:\\Users\\jstembridge\\wagsite\\v2\\minutes",
 //    "logs": "C:\\Users\\jstembridge\\PycharmProjects\\wagsv\\logs"
-    "html": "D:\\wagsite_new\\v2",
-    "reports": "D:\\wagsite_new\\v2\\reports",
-    "minutes": "D:\\wagsite_new\\v2\\minutes",
-    "output": "D:\\wagsite_new\\v2\\output",
-    "data": "D:\\wagsite_new\\html\\data",
+    "html": "D:\\wagsite",
+    "reports": "D:\\wagsite\\reports",
+    "minutes": "D:\\wagsite\\minutes",
+    "output": "D:\\wagsite\\output",
+    "data": "D:\\wagsite\\html\\data",
     "logs": "D:\\python\\wagsv_python\\logs"
   },
   "url_prefix": {

@@ -84,6 +84,7 @@
     <hr/>
     {%if form.editable %}
         {{ form.save_card(class="btn btn-primary") }}
+        {{ form.add_new_card(class="btn btn-primary") }}
     {% endif %}
     <span>{{ form.editable }} {{ form.new_course }} {{ form.year }}</span>
 </form>

@@ -38,7 +38,7 @@ class EventHandicapsForm(FlaskForm):
         self.event_name.data = event.full_name()
         scratch = competition_scratch_score(event)
         self.new_date.data = fmt_date(event.date + datetime.timedelta(days=1))
-        self.editable.data = is_latest_event(event)
+        self.editable.data = True  # is_latest_event(event)
         if self.editable.data:
             next_event_date = datetime.date.today()
         else:

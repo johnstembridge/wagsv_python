@@ -39,7 +39,10 @@ class MaintainVenues:
     def edit_course(venue_id, course_id):
         form = CourseCardForm()
         if form.validate_on_submit():
-            if form.save_course_card(venue_id, course_id):
+            add_new = False
+            if form.add_new_card.data:
+                add_new = True
+            if form.save_course_card(venue_id, course_id, add_new):
                 flash('card saved', 'success')
                 return redirect(url_for_admin('edit_venue', venue_id=venue_id))
         elif form.errors:

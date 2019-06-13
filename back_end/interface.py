@@ -434,18 +434,25 @@ def get_course(course_id):
         return Course()
 
 
+def save_course(course):
+    if not course.id:
+        db_session.add(course)
+    db_session.commit()
+
+
 def lookup_course(course):
     course_id = db_session.query(Course.id).filter(Course.name == course).first()
     return course_id.id
 
 
 def get_course_data(course_id, year):
-    stmt = text("select * from course_data where course_id=:course_id and year>=:year order by year")
-    stmt = stmt.columns(CourseData.course_id, CourseData.year, CourseData.sss, CourseData.si, CourseData.par)
-    return db_session.query(CourseData).from_statement(stmt).params(course_id=course_id, year=year).first()
+    cd = db_session.query(CourseData).filter(and_(CourseData.course_id == course_id, CourseData.year == year)).first()
+    if not cd:
+        cd = CourseData()
+    return cd
 
 
-def save_course(course_id, data):
+def save_course_data(course_id, data):
     year = data['year']
     if course_id > 0:
         course = get_course(course_id)
@@ -462,7 +469,6 @@ def save_course(course_id, data):
     card.par = data['par']
 
     db_session.commit()
-
 
 # endregion
 

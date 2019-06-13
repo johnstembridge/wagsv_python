@@ -1,7 +1,8 @@
+import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField, HiddenField
 from wtforms.validators import ValidationError
-from back_end.interface import get_course, save_course
+from back_end.interface import get_course, save_course, get_course_data
 
 
 class CourseCardItemForm(FlaskForm):
@@ -21,6 +22,7 @@ class CourseCardForm(FlaskForm):
     totalParIn = StringField(label='TotalParIn')
     totalPar = StringField(label='TotalPar')
     save_card = SubmitField(label='Save')
+    add_new_card = SubmitField(label='Add New Card')
     whole_form = HiddenField(label='Whole Form Validation')
     year = HiddenField(label="CourseData year")
 
@@ -59,38 +61,41 @@ class CourseCardForm(FlaskForm):
         self.totalParIn = par_in
         self.totalPar = par_out + par_in
 
-    def validate_whole_form(self, fields):
-        errors = []
-        count = [0]*18
-        for si in [d['si'] for d in self.holesOut.data] + [d['si'] for d in self.holesIn.data]:
-            if si in range(1, 19):
-                count[si-1] += 1
-            else:
-                errors.append('Stroke index {} out of range'.format(si))
-        for hole in range(1, 19):
-            if count[hole - 1] == 0:
-                errors.append('Stroke index {} missing'.format(hole))
-            if count[hole-1] > 1:
-                errors.append('Duplicate stroke index {}'.format(hole))
-        if errors:
-            raise ValidationError('; '.join(errors))
-
-    def save_course_card(self, venue_id, course_id):
+    def save_course_card(self, venue_id, course_id, add_new_card):
         errors = self.errors
         if len(errors) > 0:
             return False
         year = int(self.year.data)
+        course = get_course(course_id)
+        if course_id == 0:
+            # new course
+            course.name = self.course_name.data
+            course.venue_id = venue_id
+            course_data = get_course_data(0, 0)
+            course_data.year = year
+            course.cards.append(course_data)
+        else:
+            course_data = get_course_data(course_id, year)
+
         sss = self.sss.data
         si = [d['si'] for d in self.holesOut.data] + [d['si'] for d in self.holesIn.data]
         par = [d['par'] for d in self.holesOut.data] + [d['par'] for d in self.holesIn.data]
-        course = {
-            'name': self.course_name.data,
-            'venue_id': venue_id,
-            'sss': sss,
-            'si': si,
-            'par': par,
-            'year': year
-        }
-        save_course(course_id, course)
+        if add_new_card and year == 3000:
+            # rename previous card
+            course_data.year = datetime.date.today().year - 1
+            # create new
+            new_course_data = get_course_data(0, 0)
+            new_course_data.course_id = course_id
+            new_course_data.year = year
+            new_course_data.sss = sss
+            new_course_data.si = si
+            new_course_data.par = par
+            course.cards.append(new_course_data)
+        else:
+            course_data.sss = sss
+            course_data.si = si
+            course_data.par = par
+
+        save_course(course)
 
         return True
