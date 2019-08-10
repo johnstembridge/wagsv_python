@@ -169,9 +169,7 @@ class EventDetailsForm(FlaskForm):
                     cost += booking.event.guest_price
                     message.append('{} (handicap {})'.format(guest.name, guest.handicap))
             message.append('Total cost £{}'.format(cost))
-            message.append(
-                '(Please send cheque to {} ASAP or pay by on-line credit to the WAGS bank account number 01284487, sort code 40-07-30)'.format(
-                    treasurer.member.player.full_name()))
+            message.append('(Please pay by on-line credit to the WAGS bank account number 01284487, sort code 40-07-30)')
             if booking.comment:
                 message.append(booking.comment)
         else:
