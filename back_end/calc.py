@@ -131,12 +131,23 @@ def suggested_handicap_change(scratch, handicap, score):
 def get_big_swing(as_of=datetime.date.today()):
     year = as_of.year
     date_range = (datetime.date(year - 1, 1, 1), datetime.date(year + 1, 12, 31))
-    richmond = lookup_course('The Richmond')
     events = get_events_in(date_range)  # date, course
-    first = [e for e in events if e.course_id == richmond and as_of > e.date][-1].date + datetime.timedelta(days=1)
-    events = [e for e in events
-              if e.date >= first and e.date <= as_of
-              and e.type == EventType.wags_vl_event]
+    if len(events) > 0:
+        richmond = lookup_course('The Richmond')
+        richmond_events = [e for e in events if e.course_id == richmond]
+        first = [e for e in richmond_events if as_of > e.date][-1].date + datetime.timedelta(days=1)
+        last = [e for e in richmond_events if as_of <= e.date]
+        if len(last) == 0:
+            last = [e for e in events if as_of <= e.date]
+            if len(last) == 0:
+                last = as_of
+            else:
+                last = last[-1].date
+        else:
+            last = last[0].date
+        events = [e for e in events if e.date >= first and e.date <= last and e.type == EventType.wags_vl_event]
+    else:
+        first = as_of
     header = ['player', 'course', 'date', 'points_out', 'points_in', 'swing']
     swings = []
     for event in events:

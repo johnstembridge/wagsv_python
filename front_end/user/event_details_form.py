@@ -1,4 +1,5 @@
 import datetime
+import string
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, DecimalField, TextAreaField, SubmitField, FieldList, FormField, HiddenField, RadioField
@@ -136,7 +137,7 @@ class EventDetailsForm(FlaskForm):
             guests = []
             if booking.playing:
                 for guest in self.guests:
-                    name = guest.guest_name.data
+                    name = string.capwords(guest.guest_name.data)
                     if len(name) > 0:
                         obj = first_or_default([g for g in booking.guests if g.name == name],
                                                Guest(name=name, booking=booking))
