@@ -353,7 +353,7 @@ def sorted_players_for_event(event):
 
 def is_event_result_editable(event):
     override = config.get('override')
-    return override or (datetime.date.today() > event.date) and (datetime.date.today().year == event.date.year)
+    return override or (datetime.date.today() >= event.date) and (datetime.date.today().year == event.date.year)
 
 
 def is_latest_event(event):
@@ -655,7 +655,8 @@ def save_member(member_id, data):
             player=player,
             contact=contact,
             status=status,
-            proposer_id=data['proposer_id']
+            proposer_id=data['proposer_id'],
+            accepted=data['accepted']
         )
     else:
         member = get_member(member_id)
@@ -671,7 +672,8 @@ def save_member(member_id, data):
             member.accepted = date
         elif status in (MemberStatus.ex_member, MemberStatus.rip):
             member.resigned = date
-
+    else:
+        member.accepted = data['accepted']
     db_session.commit()
 
 
@@ -746,7 +748,7 @@ def get_scores(year=None, status=None, player_id=None):
         scores = [s for ls in scores for s in ls if s.player.state_as_of(s.event.date).status == status]
     if player_id:
         scores = [s for ls in scores for s in ls if s.player.id == player_id]
-
+    scores = [s for s in scores if s.player.member.qualifying_date() <= s.event.date]
     head = ['date', 'course', 'player_id', 'position', 'shots', 'points', 'handicap', 'status']
     return Table(head, [extract_score_data(s) for s in scores])
 

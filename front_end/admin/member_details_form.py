@@ -28,6 +28,7 @@ class MemberDetailsForm(FlaskForm):
     address = StringField(label='Address')
     post_code = StringField(label='Post Code')
     phone = StringField(label='Phone')
+    accepted_date = DateField(label='accepted')
     handicap = StringField(label='Handicap')
     as_of = DateField(label='as of')
     save = SubmitField(label='Save')
@@ -80,6 +81,7 @@ class MemberDetailsForm(FlaskForm):
             self.address.data = contact.address
             self.post_code.data = contact.post_code
             self.phone.data = contact.phone
+            self.accepted_date.data = member.accepted
             self.handicap_return.data = self.handicap.data = state.handicap
             self.as_of.data = state.date
 
@@ -95,6 +97,7 @@ class MemberDetailsForm(FlaskForm):
             'address': self.address.data,
             'post_code': self.post_code.data,
             'phone': self.phone.data,
+            'accepted': self.accepted_date.data,
             'orig_name': self.name_return.data,
             'orig_status': int(self.status_return.data),
             'orig_handicap': float(self.handicap_return.data)

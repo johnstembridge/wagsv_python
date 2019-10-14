@@ -18,6 +18,8 @@ class PlayerStatus(FormEnum):
     guest = 0
     member = 1
     ex_member = 2
+    new = 3
+    non_vl = 4
 
 
 class MemberStatus(FormEnum):

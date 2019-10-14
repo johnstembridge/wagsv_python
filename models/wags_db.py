@@ -87,7 +87,7 @@ class Event(Base):
     winner_id = Column(Integer, ForeignKey("players.id"))
     winner = relationship('Player', back_populates="events_won")
 
-    bookings = relationship("Booking",  back_populates="event")
+    bookings = relationship("Booking", back_populates="event")
 
     average_score = Column(Numeric(precision=3, scale=1))
 
@@ -225,8 +225,8 @@ class Player(Base):
     first_name = Column(String(25), nullable=False)
     last_name = Column(String(25), nullable=False)
     member = relationship('Member', uselist=False, back_populates="player")
-    events_won = relationship("Event",  back_populates="winner")
-    scores = relationship("Score",  back_populates="player")
+    events_won = relationship("Event", back_populates="winner")
+    scores = relationship("Score", back_populates="player")
     handicaps = relationship("Handicap", order_by="Handicap.date", back_populates="player")
 
     def full_name(self):
@@ -236,7 +236,13 @@ class Player(Base):
         state = [h for h in self.handicaps if h.date <= date]
         state.sort(key=lambda s: s.date)
         if len(state) > 0:
-            return state[-1]
+            state = state[-1]
+            if state.status in [PlayerStatus.member, PlayerStatus.new, PlayerStatus.non_vl] and date < self.member.qualifying_date():
+                state.status = PlayerStatus.non_vl
+                if len([s for s in self.scores if
+                        s.event.type == EventType.wags_vl_event and s.event.date >= self.member.accepted and s.event.date <= date]) <= 3:
+                    state.status = PlayerStatus.new
+            return state
         else:
             return Handicap(player_id=self.id, status=PlayerStatus.guest, handicap=0, date=datetime.date.today())
 
@@ -271,10 +277,16 @@ class Member(Base):
     player = relationship("Player", back_populates="member")
     proposer_id = Column(Integer, ForeignKey("members.id"), nullable=False)
     proposed = relationship("Member", backref=backref("proposer", remote_side=id))
-    events_organised = relationship("Event",  back_populates="organiser")
-    bookings = relationship("Booking",  back_populates="member")
+    events_organised = relationship("Event", back_populates="organiser")
+    bookings = relationship("Booking", back_populates="member")
     user = relationship('User', uselist=False, back_populates="member")
-    committee = relationship("Committee",  back_populates="member")
+    committee = relationship("Committee", back_populates="member")
+
+    def qualifying_date(self):
+        if self.accepted:
+            return self.accepted.replace(year=self.accepted.year + 1)
+        else:
+            return datetime.date(1992, 9, 12)
 
     def __repr__(self):
         return '<Member: {}>'.format(self.player.full_name())
@@ -326,7 +338,7 @@ class Booking(Base):
     date = Column(Date, nullable=False)
     playing = Column(Boolean, nullable=False)
     comment = Column(String(100), nullable=True)
-    guests = relationship("Guest",  back_populates="booking", cascade="all, delete, delete-orphan")
+    guests = relationship("Guest", back_populates="booking", cascade="all, delete, delete-orphan")
     event = relationship("Event", back_populates="bookings")
     member = relationship("Member", back_populates="bookings")
 
@@ -355,7 +367,7 @@ class User(Base, UserMixin):
     member_id = Column(Integer, ForeignKey('members.id'), nullable=False)
     user_name = Column(String(25), nullable=False)
     password = Column(String(100), nullable=False)
-    roles = relationship("Role",  back_populates="user")
+    roles = relationship("Role", back_populates="user")
     member = relationship('Member', back_populates="user")
 
     def set_password(self, password):

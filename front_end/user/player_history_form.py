@@ -21,7 +21,8 @@ class PlayerHistoryForm(FlaskForm):
     history = FieldList(FormField(PlayerEventForm))
 
     def populate_history(self, player_id, year=None):
-        self.player.data = get_player(player_id).full_name()
+        player = get_player(player_id)
+        self.player.data = player.full_name()
         self.year.data = year or ''
         events = self.get_player_history(player_id, year)
         for item in events.data:
@@ -32,7 +33,7 @@ class PlayerHistoryForm(FlaskForm):
             item_form.points = item[events.column_index('points')]
             item_form.strokes = item[events.column_index('shots')]
             item_form.handicap = item[events.column_index('handicap')]
-            item_form.status = item[events.column_index('status')].name
+            item_form.status = player.state_as_of(item[events.column_index('date')]).status.name # item[events.column_index('status')].name
             self.history.append_entry(item_form)
 
     @staticmethod
