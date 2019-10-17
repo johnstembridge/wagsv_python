@@ -33,7 +33,7 @@ class PlayerHistoryForm(FlaskForm):
             item_form.points = item[events.column_index('points')]
             item_form.strokes = item[events.column_index('shots')]
             item_form.handicap = item[events.column_index('handicap')]
-            item_form.status = player.state_as_of(item[events.column_index('date')]).status.name # item[events.column_index('status')].name
+            item_form.status = player.state_as_of(item[events.column_index('date')]).status.name
             self.history.append_entry(item_form)
 
     @staticmethod

@@ -20,7 +20,7 @@ class HandicapHistoryForm(FlaskForm):
         player = get_player(player_id)
         event = get_event(event_id)
         self.player.data = player.full_name()
-        for item in player.state_up_to(event.date):
+        for item in player.states_up_to(event.date):
             item_form = HandicapItemForm()
             item_form.date = fmt_date(item.date)
             item_form.handicap = item.handicap

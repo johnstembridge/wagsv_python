@@ -11,9 +11,9 @@ db = SQLAlchemy()
 mail = Mail()
 
 
-def init_app(app, create=False):
+def init_app(app, create=False, multi_thread=True):
     app.config['SECRET_KEY'] = config.get('SECRET_KEY')
-    app.config['SQLALCHEMY_DATABASE_URI'] = db_path
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_path + ( '' if multi_thread else'?check_same_thread=False')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     Bootstrap(app)

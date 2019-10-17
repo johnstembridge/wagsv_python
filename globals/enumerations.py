@@ -21,6 +21,14 @@ class PlayerStatus(FormEnum):
     new = 3
     non_vl = 4
 
+    def qualify(self):
+        # for appending to player name in a list
+        if self != PlayerStatus.member:
+            qual = " (" + self.name + ")"
+        else:
+            qual = ""
+        return qual
+
 
 class MemberStatus(FormEnum):
     full_member = 1

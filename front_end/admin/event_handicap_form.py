@@ -54,8 +54,7 @@ class EventHandicapsForm(FlaskForm):
             item_form.num = str(num)
             orig_state = player.state_as_of(event.date)
             new_state = player.state_as_of(next_event_date)
-            guest = " (guest)" if (orig_state.status == PlayerStatus.guest) else ""
-            item_form.player = player.full_name() + guest
+            item_form.player = player.full_name() + orig_state.status.qualify()
             item_form.handicap = new_state.handicap
             item_form.old_handicap = orig_state.handicap
             score = player.score_for(event.id)

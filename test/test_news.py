@@ -29,7 +29,3 @@ class TestNews(unittest.TestCase):
     #     item = NewsItem(text='news item', link='link/to/referred/item')
     #     day = NewsDay(date='2018/03/11', items=[item])
     #     news.publish(day)
-
-
-if __name__ == '__main__':
-    unittest.main()

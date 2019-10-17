@@ -24,7 +24,7 @@ class MemberDetailsForm(FlaskForm):
     first_name = StringField(label='First Name', validators=[InputRequired()])
     last_name = StringField(label='last_name', validators=[InputRequired()])
     proposer = SelectField(label='Proposer', coerce=int)
-    email = StringField(label='Email', validators=[InputRequired(), Email("Invalid email address")])
+    email = StringField(label='Email')
     address = StringField(label='Address')
     post_code = StringField(label='Post Code')
     phone = StringField(label='Phone')

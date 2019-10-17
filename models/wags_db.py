@@ -237,17 +237,20 @@ class Player(Base):
         state.sort(key=lambda s: s.date)
         if len(state) > 0:
             state = state[-1]
-            if state.status in [PlayerStatus.member, PlayerStatus.new, PlayerStatus.non_vl] and date < self.member.qualifying_date():
-                state.status = PlayerStatus.non_vl
-                if len([s for s in self.scores if
-                        s.event.type == EventType.wags_vl_event and s.event.date >= self.member.accepted and s.event.date <= date]) <= 3:
-                    state.status = PlayerStatus.new
+            if self.member:
+                if state.status in [PlayerStatus.member, PlayerStatus.new, PlayerStatus.non_vl] and date < self.member.qualifying_date():
+                    state.status = PlayerStatus.non_vl
+                    if len([s for s in self.scores if
+                            s.event.type == EventType.wags_vl_event and s.event.date >= self.member.accepted and s.event.date <= date]) <= 3:
+                        state.status = PlayerStatus.new
+                elif state.status in [PlayerStatus.new, PlayerStatus.non_vl] and date >= self.member.qualifying_date():
+                    state.status = PlayerStatus.member
             return state
         else:
             return Handicap(player_id=self.id, status=PlayerStatus.guest, handicap=0, date=datetime.date.today())
 
-    def state_up_to(self, date):
-        state = [h for h in self.handicaps if h.date <= date]
+    def states_up_to(self, date):
+        state = [self.state_as_of(h.date) for h in self.handicaps if h.date <= date]
         state.sort(key=lambda s: s.date)
         if len(state) > 0:
             return sorted(state, key=lambda s: s.date, reverse=True)

@@ -28,11 +28,7 @@ class EventResultsForm(FlaskForm):
             item_form = EventResultItemForm()
             player = score.player
             state = player.state_as_of(event.date)
-            if state.status != PlayerStatus.member:
-                status = " (" + state.status.name + ")"
-            else:
-                status = ""
-            item_form.player = player.full_name() + status
+            item_form.player = player.full_name() + state.status.qualify()
             item_form.handicap = fmt_num(state.handicap)
             item_form.points = score.points
             item_form.strokes = score.shots
