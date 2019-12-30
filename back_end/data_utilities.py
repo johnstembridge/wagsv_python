@@ -246,3 +246,7 @@ def html_escape(text):
 
 def html_unescape(text):
     return text.replace('&lt;', '<').replace('&gt;', '>').replace('&amp;', '&')
+
+
+def add_http(url):
+    return 'http://' + url

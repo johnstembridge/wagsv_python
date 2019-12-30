@@ -2,7 +2,7 @@ import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, FieldList, FormField, HiddenField
 
-from back_end.data_utilities import fmt_date
+from back_end.data_utilities import fmt_date, add_http
 from back_end.interface import is_event_editable, get_events_for_year
 from globals import config
 from globals.enumerations import EventType
@@ -59,17 +59,18 @@ class EventCalendarListForm():
 
     def populate_calendar_event_list(self, year):
         for event in get_events_for_year(year):
-            item_form = EventCalendarItemForm()
-            item_form.name = "WAGS - " + (event.trophy.name if event.trophy else event.venue.name)
-            item_form.date = fmt_date(event.date, '%Y-%m-%d')
-            item_form.location = event.venue.name
-            item_form.all_day = 'N' if event.type in [EventType.wags_vl_event, EventType.non_vl_event] else 'Y'
-            schedule = event.schedule
-            if item_form.all_day == 'N' and len(schedule) > 0:
-                item_form.event_start_time = schedule[0].time.strftime('%H:%M')
-                item_form.event_end_time = schedule[-1].time.strftime('%H:%M')
-            else:
-                item_form.all_day = 'Y'
-            item_form.link = event.venue.contact.url
-            item_form.link_description = 'Go to venue'
-            self.event_calendar_list.append(item_form)
+            if event.type in [EventType.wags_vl_event, EventType.non_vl_event, EventType.non_event] and event.venue.contact:
+                item_form = EventCalendarItemForm()
+                item_form.name = "WAGS - " + (event.trophy.name if event.trophy else event.venue.name)
+                item_form.date = fmt_date(event.date, '%Y-%m-%d')
+                item_form.location = event.venue.name
+                item_form.all_day = 'N' if event.type in [EventType.wags_vl_event, EventType.non_vl_event] else 'Y'
+                schedule = event.schedule
+                if item_form.all_day == 'N' and len(schedule) > 0:
+                    item_form.event_start_time = schedule[0].time.strftime('%H:%M')
+                    item_form.event_end_time = schedule[-1].time.strftime('%H:%M')
+                else:
+                    item_form.all_day = 'Y'
+                item_form.link = add_http(event.venue.contact.url)
+                item_form.link_description = 'Go to venue'
+                self.event_calendar_list.append(item_form)
