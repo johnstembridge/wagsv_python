@@ -15,12 +15,12 @@ def test_email():
     subject = 'Test email'
     sender = 'test@wags.org'
     message = ['test message £100']
-    # to = 'john.stembridge@gmail.com'
-    to = 'membership@thedonstrust.org'
-    #use_sendmail(to=to, sender=sender, cc=None, subject=subject, message=message)
+    to = 'john.stembridge@gmail.com'
+    cc = ['membership@thedonstrust.org']
+    #use_sendmail(to=to, sender=sender, cc=cc, subject=subject, message=message)
     send_mail(to=to,
               sender=sender,
-              cc=[],
+              cc=cc,
               subject='WAGS: ' + subject,
               message=message)
     form = SendEmailConfirmationForm()
