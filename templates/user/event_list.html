@@ -66,6 +66,14 @@
                         text='View event'
                         )|safe }}
                     </td>
+                {%elif item.bookable.data == -2 %}
+                    <td align="center">
+                        {{ render_link(
+                        url=url_for_user('show_event', event_id=item.num.data),
+                        image=url_for('static', filename='images/covid.png'),
+                        text='Event cancelled'
+                        )|safe }}
+                    </td>
                 {% else %}
                     <td></td>
                 {% endif %}

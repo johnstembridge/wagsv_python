@@ -38,6 +38,7 @@ class MemberStatus(FormEnum):
 
 
 class EventType(FormEnum):
+    cancelled = -1
     non_event = 0
     wags_vl_event = 1
     wags_tour = 2
@@ -45,6 +46,8 @@ class EventType(FormEnum):
     minotaur = 4
 
     def long_description(self):
+        if self == EventType.cancelled:
+            return 'Event cancelled'
         if self == EventType.non_event:
             return 'Non WAGS event'
         if self == EventType.wags_vl_event:

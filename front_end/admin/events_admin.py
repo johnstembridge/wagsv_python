@@ -68,7 +68,7 @@ class MaintainEvents:
             event_type = EventType(coerce(form.event_type.data, int))
         event = event_id if event_id != 0 else "(new)"
         event_type_desc = event_type.long_description()
-        if event_type in [EventType.wags_vl_event, EventType.non_vl_event]:
+        if event_type in [EventType.wags_vl_event, EventType.non_vl_event, EventType.cancelled]:
             return render_template('admin/event_details.html', form=form, event_id=event, event_type_desc=event_type_desc)
         if event_type in [EventType.wags_tour, EventType.minotaur]:
             return render_template('admin/tour_details.html', form=form, event_id=event, event_type_desc=event_type_desc)

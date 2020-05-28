@@ -53,7 +53,7 @@ class EventForm(FlaskForm):
         self.max.data = event.max
         self.event_type.data = event_type.value
         self.note.data = event.note
-        if event_type in [EventType.wags_vl_event, EventType.non_vl_event, EventType.non_event]:
+        if event_type in [EventType.wags_vl_event, EventType.non_vl_event, EventType.non_event, EventType.cancelled]:
             for item in event.schedule + (6 - len(event.schedule)) * [Schedule()]:
                 item_form = ScheduleForm()
                 item_form.time = item.time
@@ -78,7 +78,7 @@ class EventForm(FlaskForm):
                              item_name='Organiser')
         set_select_field_new(self.trophy, get_trophy_select_choices(), default_selection=trophy, item_name='Trophy')
         set_select_field_new(self.venue, get_venue_select_choices(), default_selection=venue, item_name='Venue')
-        if event_type in [EventType.wags_vl_event, EventType.non_vl_event, EventType.non_event]:
+        if event_type in [EventType.wags_vl_event, EventType.non_vl_event, EventType.non_event, EventType.cancelled]:
             set_select_field_new(self.course, courses, default_selection=course, item_name='Course')
         if event_type in [EventType.wags_tour, EventType.minotaur]:
             item_count = 0
