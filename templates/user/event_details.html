@@ -43,7 +43,7 @@
         <tr/>
         <tr><td>&nbsp;<td/><tr/>
         <tr>
-            <td>{{ form.member_price.label }}</td><td>£{{ form.member_price.data }} (net of deposit)</td>
+            <td>{{ form.member_price.label }}</td><td>£{{ form.member_price.data }}{% if form.member_price.data != form.guest_price.data %} (net of deposit){% endif %}</td>
             <td class="top" rowspan=2 width=50%>{{ form.notes.data }}</td>
         <tr/>
         <tr>
