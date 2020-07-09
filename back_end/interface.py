@@ -717,7 +717,7 @@ def get_scores_for_player(player_id, year=None):
     if year:
         scores = [s for s in player.scores if s.event.type == EventType.wags_vl_event and s.event.date.year == year]
     else:
-        scores = [s for s in player.scores if s.event.type == EventType.wags_vl_event]
+        scores = [s for s in player.scores if s.event.type == EventType.wags_vl_event and s.points > 0]
     head = ['date', 'course', 'player_id', 'position', 'shots', 'points', 'handicap', 'status']
     res = Table(head, [extract_score_data(s) for s in scores])
     return res
@@ -759,6 +759,7 @@ def get_all_scores():
     scores = db_session.query(Score.player_id, Event.date) \
         .join(Event) \
         .filter(Score.player_id.in_(current_players)) \
+        .filter(Score.points > 0) \
         .order_by(Score.player_id, Event.date) \
         .all()
     head = ['player_id', 'player', 'status', 'count', 'first_game']
