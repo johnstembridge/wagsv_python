@@ -36,8 +36,9 @@ class EventListForm(FlaskForm):
             item_form.date = fmt_date(event.date)
             item_form.event = event.trophy.name if event.trophy else ''
             item_form.venue = event.venue.name
-            item_form.event_type = event_type.value
-            item_form.result = override or event.date <= datetime.date.today() and event.type == EventType.wags_vl_event
+            item_form.event_type = event_type
+            item_form.result = override or (event.date <= datetime.date.today() and
+                                            event.type in [EventType.wags_vl_event, EventType.non_vl_event, EventType.wags_tour])
             self.event_list.append_entry(item_form)
 
 
@@ -59,7 +60,8 @@ class EventCalendarListForm():
 
     def populate_calendar_event_list(self, year):
         for event in get_events_for_year(year):
-            if event.type in [EventType.wags_vl_event, EventType.non_vl_event, EventType.non_event] and event.venue.contact:
+            if event.type in [EventType.wags_vl_event, EventType.non_vl_event,
+                              EventType.non_event] and event.venue.contact:
                 item_form = EventCalendarItemForm()
                 item_form.name = "WAGS - " + (event.trophy.name if event.trophy else event.venue.name)
                 item_form.date = fmt_date(event.date, '%Y-%m-%d')

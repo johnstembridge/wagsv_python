@@ -46,7 +46,7 @@ def edit_event(event_id):
 def results_event(event_id):
     event_id = int(event_id)
     event_type = get_event(event_id).type
-    if event_type == EventType.wags_vl_event:
+    if event_type in [EventType.wags_vl_event, EventType.non_vl_event]:
         return MaintainEvents.results_vl_event(event_id)
     else:
         return redirect(request.referrer)

@@ -128,8 +128,7 @@ def suggested_handicap_change(scratch, handicap, score):
     return new
 
 
-def get_big_swing(as_of=datetime.date.today()):
-    year = as_of.year
+def get_big_swing(year, as_of=datetime.date.today()):
     date_range = (datetime.date(year - 1, 1, 1), datetime.date(year + 1, 12, 31))
     events = get_events_in(date_range)  # date, course
     if len(events) > 0:

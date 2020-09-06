@@ -32,7 +32,7 @@
                     text='View/Edit event'
                 )|safe }}
             </td>
-            {%if item.event_type.data in [EventType.wags_vl_event.value, EventType.wags_tour.value] and item.result.data %}
+            {%if item.result.data %}
                 <td align="center">
                     {{ render_link(
                         url=url_for('results_event', event_id=item.event_id.data),
@@ -40,7 +40,7 @@
                         text='View/Enter results'
                     )|safe }}
                 </td>
-                {%if item.event_type.data == EventType.wags_vl_event.value and item.result.data %}
+                {%if item.event_type.data in [EventType.wags_vl_event, EventType.non_vl_event] %}
                     <td align="center">
                         {{ render_link(
                             url=url_for('handicaps_event', event_id=item.event_id.data),

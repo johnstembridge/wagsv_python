@@ -37,7 +37,7 @@ class SwingForm(FlaskForm):
     def populate_swing(self, year):
         self.year.data = str(year)
         as_of = datetime.date(year, datetime.date.today().month, datetime.date.today().day)
-        year_range, swings = get_big_swing(as_of)
+        year_range, swings = get_big_swing(year, as_of)
         for item in swings.data:
             item_form = SwingItemForm()
             item_form.position = item[swings.column_index('position')]
