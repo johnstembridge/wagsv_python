@@ -7,7 +7,7 @@ from back_end.table import Table
 from front_end.form_helpers import get_elements_from_html
 from globals.enumerations import MemberStatus, PlayerStatus, EventType, Function
 from models.wags_db import Event, Score, Course, CourseData, Trophy, Player, Venue, Handicap, Member, Contact, \
-    Schedule, Booking, User, Committee
+    Schedule, Booking, User, Committee, Role
 from globals.app_setup import db
 from sqlalchemy import text, and_, func
 
@@ -621,6 +621,7 @@ def save_member(member_id, data):
     status = data['status']
     player_id = get_player_id(name if new_member else orig_name)
     date = data['as_of']
+    access = data['access']
 
     # set player status and handicap
     if status in [MemberStatus.full_member, MemberStatus.overseas_member]:
@@ -674,6 +675,8 @@ def save_member(member_id, data):
             member.resigned = date
     else:
         member.accepted = data['accepted']
+    if not access in [r.role for r in member.user.roles]:
+        member.user.roles.append(Role(user_id=member.user.id, role=access))
     db_session.commit()
 
 

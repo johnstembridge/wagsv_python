@@ -6,7 +6,7 @@ import datetime
 from back_end.interface import get_member, get_member_select_choices, save_member, get_players_as_of, \
     get_current_members_as_players
 from front_end.form_helpers import set_select_field, set_select_field_new
-from globals.enumerations import MemberStatus, PlayerStatus
+from globals.enumerations import MemberStatus, PlayerStatus, UserRole
 
 
 class MemberListForm(FlaskForm):
@@ -31,6 +31,7 @@ class MemberDetailsForm(FlaskForm):
     accepted_date = DateField(label='accepted')
     handicap = StringField(label='Handicap')
     as_of = DateField(label='as of')
+    access = SelectField(label='Access', choices=UserRole.choices(), coerce=UserRole.coerce)
     save = SubmitField(label='Save')
     member_id_return = HiddenField()
     name_return = HiddenField()
@@ -81,9 +82,10 @@ class MemberDetailsForm(FlaskForm):
             self.address.data = contact.address
             self.post_code.data = contact.post_code
             self.phone.data = contact.phone
-            self.accepted_date.data = member.accepted
+            self.accepted_date.data = member.accepted or datetime.date(1992, 6, 17)
             self.handicap_return.data = self.handicap.data = state.handicap
             self.as_of.data = state.date
+            set_select_field_new(self.access, UserRole.choices(), default_selection=member.user.roles[-1].role)
 
     def save_member(self, member_id):
         member = {
@@ -100,7 +102,8 @@ class MemberDetailsForm(FlaskForm):
             'accepted': self.accepted_date.data,
             'orig_name': self.name_return.data,
             'orig_status': int(self.status_return.data),
-            'orig_handicap': float(self.handicap_return.data)
+            'orig_handicap': float(self.handicap_return.data),
+            'access': self.access.data
         }
         save_member(member_id, member)
         return True
