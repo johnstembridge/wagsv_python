@@ -16,6 +16,7 @@ def test_email():
     sender = 'test@wags.org'
     message = ['test message £100']
     to = 'john.stembridge@gmail.com'
+    cc=[]
     #use_sendmail(to=to, sender=sender, cc=cc, subject=subject, message=message)
     send_mail(to=to,
               sender=sender,
