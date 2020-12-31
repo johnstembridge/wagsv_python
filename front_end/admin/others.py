@@ -21,3 +21,7 @@ def get_user_current_year():
         current_year = datetime.date.today().year
         session['current_year'] = current_year
     return current_year
+
+
+def set_user_current_year(year):
+    session['current_year'] = year

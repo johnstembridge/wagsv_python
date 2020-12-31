@@ -5,7 +5,7 @@ from wtforms import SubmitField, SelectField
 from wags_admin import app
 from back_end.interface import get_all_years, create_events_file
 from front_end.form_helpers import set_select_field
-from front_end.admin.others import get_user_current_year
+from front_end.admin.others import get_user_current_year, set_user_current_year
 from globals.decorators import role_required
 
 
@@ -16,6 +16,15 @@ from globals.decorators import role_required
 def index():
     current_year = get_user_current_year()
     return home_main(current_year)
+
+
+@app.route('/<year>', methods=['GET', 'POST'])
+@app.route('/index/<year>')
+@login_required
+@role_required('admin')
+def index_for_year(year):
+    set_user_current_year(year)
+    return home_main(year)
 
 
 def home_main(year):
