@@ -24,6 +24,7 @@ class GuestForm(FlaskForm):
 
 class EventDetailsForm(FlaskForm):
     bookable = HiddenField(label='Bookable')
+    at_capacity = HiddenField(label='At Capacity')
     show_bookings = HiddenField(label='Show Bookings')
     message = StringField(label='Message')
     title = StringField(label='Title')
@@ -55,6 +56,7 @@ class EventDetailsForm(FlaskForm):
     def populate_event(self, event_id, member_id):
         event = get_event(event_id)
         self.bookable.data = event.is_bookable()
+        self.at_capacity.data = event.at_capacity()
         if self.bookable.data:
             self.title.data = 'Book Event'
         else:

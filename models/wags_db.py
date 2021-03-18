@@ -102,7 +102,7 @@ class Event(Base):
         return self.bookable() == 1
 
     def bookable(self):
-        # result:  1-booking open, 0-viewable, -1-booking not applicable, -2-cancelled
+        # result:  1-booking open and within capacity, 0-viewable, -1-booking not applicable, -2-cancelled
         if self.type == EventType.cancelled:
             return -2
         if self.type in [EventType.non_event, EventType.minotaur]:
