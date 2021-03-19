@@ -3,16 +3,11 @@
   "SECRET_KEY": "secret squirrel",
   "override": false,
   "send_mail": false,
-//  "db_path": "sqlite:///C:\\Users\\jstembridge\\wagsite\\wags.db",
   "db_path": "sqlite:///D:\\wagsite\\wags.db",
+  "event_has_reserve_list": 476,
   "locations": {
     "base_url": "http://127.0.0.1:5000/",
     "templates": "templates",
-//    "html": "C:\\Users\\jstembridge\\wagsite\\v2",
-//    "reports": "C:\\Users\\jstembridge\\wagsite\\v2\\reports",
-//    "data": "C:\\Users\\jstembridge\\wagsite\\v2\\data",
-//    "minutes": "C:\\Users\\jstembridge\\wagsite\\v2\\minutes",
-//    "logs": "C:\\Users\\jstembridge\\PycharmProjects\\wagsv\\logs"
     "html": "D:\\wagsite",
     "reports": "D:\\wagsite\\reports",
     "minutes": "D:\\wagsite\\minutes",
