@@ -91,7 +91,7 @@ class EventDetailsForm(FlaskForm):
 
         booking = get_booking(event_id, member_id)
         self.message.data = self.booking_message(event, booking)
-        if event.is_bookable():
+        if event.is_bookable() or (booking.id and booking.playing):
             if not booking.id:
                 booking.member = get_member(member_id)
                 booking.playing = True
