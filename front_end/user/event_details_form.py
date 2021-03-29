@@ -91,24 +91,25 @@ class EventDetailsForm(FlaskForm):
 
         booking = get_booking(event_id, member_id)
         self.message.data = self.booking_message(event, booking)
-        if not booking.id:
-            booking.member = get_member(member_id)
-            booking.playing = True
-        else:
-            self.attend.data = booking.playing
-            self.comment.data = booking.comment
-            self.booking_date.data = fmt_date(booking.date)
+        if event.is_bookable():
+            if not booking.id:
+                booking.member = get_member(member_id)
+                booking.playing = True
+            else:
+                self.attend.data = booking.playing
+                self.comment.data = booking.comment
+                self.booking_date.data = fmt_date(booking.date)
 
-        self.member_name.data = booking.member.player.full_name()
+            self.member_name.data = booking.member.player.full_name()
 
-        count = 1
-        for guest in booking.guests + (3 - len(booking.guests)) * [Guest()]:
-            item_form = GuestForm()
-            item_form.item_pos = count
-            item_form.guest_name = guest.name
-            item_form.handicap = guest.handicap
-            self.guests.append_entry(item_form)
-            count += 1
+            count = 1
+            for guest in booking.guests + (3 - len(booking.guests)) * [Guest()]:
+                item_form = GuestForm()
+                item_form.item_pos = count
+                item_form.guest_name = guest.name
+                item_form.handicap = guest.handicap
+                self.guests.append_entry(item_form)
+                count += 1
 
     @staticmethod
     def booking_message(event, booking):

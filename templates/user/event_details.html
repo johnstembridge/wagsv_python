@@ -64,7 +64,7 @@
         </tr>
     </table>
     <hr/>
-    {% if form.bookable.data or form.at_capacity.data %}
+    {% if form.bookable.data or (form.at_capacity.data and form.member_name.data) %}
         {{ form.member_name.data }}
         {% for option in form.attend %}
             &nbsp;{{ option }}&nbsp;{{ option.label }}
