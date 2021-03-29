@@ -123,8 +123,10 @@ class Event(Base):
         return sum([(1 + len(m.guests)) for m in self.bookings if m.playing])
 
     def at_capacity(self):
-        reserve = config.get('event_has_reserve_list')
-        return (self.id == reserve) or (self.max > 0 and self.total_playing() >= self.max)
+        return self.max > 0 and self.total_playing() >= self.max
+
+    def has_reserve_list(self):
+        return self.id in config.get('event_has_reserve_list')
 
     def __repr__(self):
         if self.type == EventType.wags_vl_event:

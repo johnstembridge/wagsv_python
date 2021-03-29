@@ -127,7 +127,8 @@ class EventDetailsForm(FlaskForm):
         if booking.id:
             return 'You responded on {} - see below for details'.format(fmt_date(booking.date))
         if event.at_capacity():
-            return 'Event is at capacity'
+            return 'Event is at capacity'\
+                   + ': Please contact the organiser to go on the reserve list.' if event.has_reserve_list() else '.'
         return ''
 
     def book_event(self, event_id, member_id):
@@ -175,7 +176,8 @@ class EventDetailsForm(FlaskForm):
                     cost += booking.event.guest_price
                     message.append('{} (handicap {})'.format(guest.name, guest.handicap))
             message.append('Total cost £{}'.format(cost))
-            message.append('(Please pay by on-line credit to the WAGS bank account number 01284487, sort code 40-07-30)')
+            message.append(
+                '(Please pay by on-line credit to the WAGS bank account number 01284487, sort code 40-07-30)')
             if booking.comment:
                 message.append(booking.comment)
         else:

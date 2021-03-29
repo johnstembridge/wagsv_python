@@ -4,7 +4,7 @@
   "override": false,
   "send_mail": false,
   "db_path": "sqlite:///D:\\wagsite\\wags.db",
-  "event_has_reserve_list": 476,
+  "event_has_reserve_list": [476],
   "locations": {
     "base_url": "http://127.0.0.1:5000/",
     "templates": "templates",
