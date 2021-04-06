@@ -16,6 +16,7 @@ class EventItemForm(FlaskForm):
     trophy_id = HiddenField(label='Trophy id')
     venue_url = StringField(label='Link to Venue')
     venue = StringField(label='Venue')
+    slope = StringField(label='Slope Rating')
     event_type = HiddenField(label='Event type')
     bookable = HiddenField(label='Event bookable')
     result = HiddenField(label='Result available')
@@ -40,7 +41,7 @@ class EventListForm(FlaskForm):
                 item_form.trophy_id = None
             item_form.venue = event.venue.name
             item_form.venue_url = get_venue_url(event.venue)
-
+            item_form.slope = event.course.course_data_as_of(year).slope if event.course else ''
             item_form.event_type = event_type.name
             item_form.new_section = not (first or event.tour_event_id)
             first = False

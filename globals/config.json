@@ -1,7 +1,7 @@
 {
   "OS": "windows",
   "SECRET_KEY": "secret squirrel",
-  "override": true,
+  "override": false,
   "send_mail": false,
   "db_path": "sqlite:///D:\\wagsite\\wags.db",
   "event_has_reserve_list": [476],
