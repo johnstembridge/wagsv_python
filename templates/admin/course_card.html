@@ -18,6 +18,12 @@
         </td>
         <td> </td>
         <td>
+            {{ form.rating.label }} {{ form.rating(size=6, required='required') }}
+        </td>
+        <td>
+            {{ form.slope.label }} {{ form.slope(size=3, required='required') }}
+        </td>
+        <td>
             {{ form.sss.label }} {{ form.sss(size=2, required='required') }}
         </td>
     </tbody></table>

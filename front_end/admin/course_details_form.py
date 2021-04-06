@@ -14,6 +14,8 @@ class CourseCardItemForm(FlaskForm):
 class CourseCardForm(FlaskForm):
     course_name = StringField(label='Course Name')
     sss = IntegerField(label='SSS')
+    rating = StringField(label='Course Rating')
+    slope = IntegerField(label='Slope Rating')
     holesOut = FieldList(FormField(CourseCardItemForm))
     holesIn = FieldList(FormField(CourseCardItemForm))
     new_course = HiddenField(label='New Course')
@@ -36,6 +38,8 @@ class CourseCardForm(FlaskForm):
         course_card = course.course_data_as_of(year)
         new = not course_card
         self.sss.data = 0 if new else course_card.sss
+        self.rating.data = '' if new else str(course_card.rating)
+        self.slope.data = 0 if new else course_card.slope
         self.editable.data = True  # datetime.date.today() > event.date and is_latest_event(event_id)
         par_out = 0
         par_in = 0
@@ -78,6 +82,8 @@ class CourseCardForm(FlaskForm):
             course_data = get_course_data(course_id, year)
 
         sss = self.sss.data
+        slope = self.slope.data
+        rating = float(self.rating.data)
         si = [d['si'] for d in self.holesOut.data] + [d['si'] for d in self.holesIn.data]
         par = [d['par'] for d in self.holesOut.data] + [d['par'] for d in self.holesIn.data]
         if add_new_card and year == 3000:
@@ -88,11 +94,15 @@ class CourseCardForm(FlaskForm):
             new_course_data.course_id = course_id
             new_course_data.year = year
             new_course_data.sss = sss
+            new_course_data.rating = rating
+            new_course_data.slope = slope
             new_course_data.si = si
             new_course_data.par = par
             course.cards.append(new_course_data)
         else:
             course_data.sss = sss
+            course_data.rating = rating
+            course_data.slope = slope
             course_data.si = si
             course_data.par = par
 

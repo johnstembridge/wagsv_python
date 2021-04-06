@@ -25,3 +25,8 @@ def get_user_current_year():
 
 def set_user_current_year(year):
     session['current_year'] = year
+
+
+def reset_user_current_year():
+    if 'current_year' in session:
+        session.pop('current_year')

@@ -34,7 +34,7 @@ class EventCardForm(FlaskForm):
         state = player.state_as_of(event.date)
         self.event_name.data = event.full_name()
         self.player.data = player.full_name()
-        self.handicap.data = state.handicap
+        self.handicap.data = state.playing_handicap(event)
 
         holes = range(1, 19)
         for hole in holes:

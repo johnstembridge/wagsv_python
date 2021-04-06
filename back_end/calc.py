@@ -167,7 +167,8 @@ def get_swings(event):
         player = score.player
         state = player.state_as_of(event.date)
         if state.status == PlayerStatus.member:
-            points = calc_stableford_points(state.handicap, score.card, course_data.si, course_data.par)
+            hcap =  state.playing_handicap(event)
+            points = calc_stableford_points(hcap, score.card, course_data.si, course_data.par)
             points_out = sum(points[:9])
             points_in = sum(points[-9:])
             swing = points_in - points_out

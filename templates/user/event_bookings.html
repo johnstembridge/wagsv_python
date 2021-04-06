@@ -2,21 +2,23 @@
 {% block title %}{{ form.event_name.data }} {% endblock %}
 {% block content %}
 {{ form.csrf_token }}
-<h2 class="table-title">{{ form.event_name.data }}</h2>
+<h2 class="table-title">{{ form.event_name.data }} (slope={{ form.slope.data }})</h2>
 <h3 class="table-title">All bookings {{ form.sub_title.data }}</h3>
 <table class="list">
     <tr>
-        <th align="left">Date</th>
-        <th align="left">Name</th>
-        <th>Number</th>
-        <th align="left">Guests</th>
-        <th align="left">Comment</th>
+        <th align="left" class="bottom">Date</th>
+        <th align="left" class="bottom">Name</th>
+        <th align="left" class="bottom">Playing<br>Handicap</th>
+        <th class="bottom">Number</th>
+        <th align="left" class="bottom">Guests</th>
+        <th align="left" class="bottom">Comment</th>
     </tr>
-    <tr><td colspan="5"><hr class="bold"/></td></tr>
+    <tr><td colspan="6"><hr class="bold"/></td></tr>
     {% for item in form.booking_list %}
     <tr>
         <td>{{ item.date.data }}</td>
         <td>{{ item.member_name.data }}</td>
+        <td>{{ item.hcap.data }}</td>
         <td align="center">{{ item.number.data }}</td>
         <td>{{ item.guests.data }}</td>
         <td>{{ item.comment.data }}</td>
@@ -24,9 +26,10 @@
     {% endfor %}
     <tr>
         <td></td>
+        <td></td>
         <td><b>Total</b></td>
         <td align="center">{{ form.total.data }}</td>
         <td></td>
-    <tr><td colspan="5"><hr class="bold"/></td></tr>
+    <tr><td colspan="6"><hr class="bold"/></td></tr>
 </table>
 {% endblock %}

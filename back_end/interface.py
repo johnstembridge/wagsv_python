@@ -154,7 +154,7 @@ def get_event_scores(event_id):
                score.position,
                score.points,
                score.shots,
-               player_state.handicap,
+               player_state.playing_handicap(event),
                player_state.status,
                score.card,
                score.player.full_name(),
@@ -735,7 +735,7 @@ def extract_score_data(score):
             score.position,
             score.shots,
             score.points,
-            state.handicap,
+            state.playing_handicap(score.event),
             state.status]
 
 

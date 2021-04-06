@@ -8,6 +8,7 @@ from back_end.interface import get_event
 class BookingItemForm(FlaskForm):
     date = StringField(label='Date')
     member_name = StringField(label='Name')
+    hcap = StringField(label='Playing handicap')
     number = StringField(label='Number')
     guests = StringField(label='Guests')
     comment = StringField(label='Comment')
@@ -15,6 +16,7 @@ class BookingItemForm(FlaskForm):
 
 class EventBookingsForm(FlaskForm):
     event_name = StringField(label='Event Name')
+    slope = StringField(label='Course slope rating')
     sub_title = StringField(label='SubTitle')
     booking_list = FieldList(FormField(BookingItemForm))
     total = StringField(label='Total')
@@ -23,17 +25,20 @@ class EventBookingsForm(FlaskForm):
         event = get_event(event_id)
         self.event_name.data = event.full_name()
         self.sub_title.data = 'to date' if datetime.date.today() <= event.booking_end else ''
+        cd = event.course.course_data_as_of(event.date.year)
+        self.slope.data = cd.slope
         total = 0
         for booking in event.bookings:
             item_form = BookingItemForm()
             item_form.date = fmt_date(booking.date)
             item_form.member_name = booking.member.player.full_name()
             if booking.playing:
+                item_form.hcap = booking.member.player.state_as_of(event.date).playing_handicap(event)
                 number = 1 + len(booking.guests)
                 item_form.number = number
                 total += number
-                item_form.guests = ', '.join([g.name + ' ({})'.format(g.handicap) for g in booking.guests])
+                item_form.guests = ', '.join(
+                    [g.name + ' ({})'.format(cd.apply_slope_factor(g.handicap, cd.slope)) for g in booking.guests])
                 item_form.comment = booking.comment or ''
                 self.booking_list.append_entry(item_form)
         self.total.data = total
-

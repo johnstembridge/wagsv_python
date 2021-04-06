@@ -23,4 +23,4 @@ def init_app(app, create=False, multi_thread=True):
     db.init_app(app)
 
     if create:
-        db.create_all()
+        db.create_all(app=app)

@@ -6,7 +6,7 @@ from wtforms import StringField, DecimalField, TextAreaField, SubmitField, Field
 from wtforms.fields.html5 import DateField
 from wtforms.validators import Optional
 
-from back_end.data_utilities import encode_date, fmt_date, first_or_default, to_bool, parse_float
+from back_end.data_utilities import encode_date, fmt_date, first_or_default, parse_float, my_round
 from back_end.interface import get_event, get_booking, save_booking, get_member, \
     get_committee_function, get_player_by_name, suspend_flush
 from front_end.form_helpers import line_break
@@ -44,7 +44,7 @@ class EventDetailsForm(FlaskForm):
     notes = StringField(label='Notes', default='')
     member_name = StringField(label='Member Name')
     booking_date = DateField(label='Booking Date')
-    attend = RadioField('Attending', choices=[(True, 'will attend'), (False, 'will not attend')], coerce=to_bool)
+    attend = RadioField('Attending', choices=[(1, 'will attend'), (0, 'will not attend')], coerce=int)
     guests = FieldList(FormField(GuestForm))
     comment = TextAreaField(label='Comments')
 
@@ -94,7 +94,6 @@ class EventDetailsForm(FlaskForm):
         if event.is_bookable() or (booking.id and booking.playing):
             if not booking.id:
                 booking.member = get_member(member_id)
-                booking.playing = True
             else:
                 self.attend.data = booking.playing
                 self.comment.data = booking.comment
@@ -127,7 +126,7 @@ class EventDetailsForm(FlaskForm):
         if booking.id:
             return 'You responded on {} - see below for details'.format(fmt_date(booking.date))
         if event.at_capacity():
-            return 'Event is at capacity'\
+            return 'Event is at capacity' \
                    + ': Please contact the organiser to go on the reserve list.' if event.has_reserve_list() else '.'
         return ''
 
@@ -167,9 +166,13 @@ class EventDetailsForm(FlaskForm):
         subject = 'Book event - {}'.format(booking.event.full_name())
         treasurer = get_committee_function(Function.Treasurer)
         cost = 0
+        cd = booking.event.course.course_data_as_of(booking.event.date.year)
         if booking.playing:
             cost += booking.event.member_price
             message = ['{} will attend'.format(booking.member.player.full_name())]
+            message.append(
+                'Note: the slope rating of this course is {} so your handicap for this event will be factored by {}'
+                    .format(cd.slope, my_round(cd.handicap_slope_factor(), 2)))
             if booking.guests:
                 message.append('Guests:')
                 for guest in booking.guests:

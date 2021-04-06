@@ -4,7 +4,7 @@ from globals import config
 from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 
-from back_end.data_utilities import fmt_date, in_date_range
+from back_end.data_utilities import fmt_date, in_date_range, my_round
 from globals.enumerations import EventType, PlayerStatus, MemberStatus, UserRole, Function
 
 import datetime
@@ -191,6 +191,18 @@ class CourseData(Base):
     si = Column(IntArray(60), nullable=False)
     par = Column(IntArray(60), nullable=False)
     course = relationship("Course", back_populates="cards")
+    rating = Column(Numeric(precision=3, scale=1))
+    slope = Column(Integer)
+
+    def handicap_slope_factor(self, slope=None):
+        if not slope:
+            slope = self.slope
+        return (slope if slope > 0 else 113) / 113
+
+    def apply_slope_factor(self, handicap_index, slope=None):
+        if not slope:
+            slope = self.slope
+        return my_round(float(handicap_index) * self.handicap_slope_factor(), 1)
 
     def __repr__(self):
         return '<Course Data: {} {}>'.format(self.course.name, self.year)
@@ -318,6 +330,14 @@ class Handicap(Base):
     status = Column(EnumType(PlayerStatus), nullable=False)
     handicap = Column(Numeric(precision=3, scale=1))
     player = relationship("Player", back_populates="handicaps")
+
+    def playing_handicap(self, event):
+        year = event.date.year
+        if year < 2021:
+            return self.handicap
+        else:
+            cd = event.course.course_data_as_of(year)
+            return cd.apply_slope_factor(self.handicap)
 
     def __repr__(self):
         return '<Handicap - Player: {}, Date: {}>'.format(self.player.full_name(), self.date)
