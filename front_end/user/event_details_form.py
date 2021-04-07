@@ -90,15 +90,14 @@ class EventDetailsForm(FlaskForm):
             return
 
         booking = get_booking(event_id, member_id)
+        if not booking.id:
+            booking.member = get_member(member_id)
+            booking.playing = True
         self.message.data = self.booking_message(event, booking)
-        if event.is_bookable() or (booking.id and booking.playing):
-            if not booking.id:
-                booking.member = get_member(member_id)
-            else:
-                self.attend.data = booking.playing
-                self.comment.data = booking.comment
-                self.booking_date.data = fmt_date(booking.date)
-
+        if event.is_bookable() or booking.playing:
+            self.attend.data = booking.playing
+            self.comment.data = booking.comment
+            self.booking_date.data = fmt_date(booking.date)
             self.member_name.data = booking.member.player.full_name()
 
             count = 1
