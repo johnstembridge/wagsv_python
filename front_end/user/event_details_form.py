@@ -94,7 +94,7 @@ class EventDetailsForm(FlaskForm):
             booking.member = get_member(member_id)
             booking.playing = True
         self.message.data = self.booking_message(event, booking)
-        if event.is_bookable() or booking.playing:
+        if event.is_bookable() or booking.id:
             self.attend.data = booking.playing
             self.comment.data = booking.comment
             self.booking_date.data = fmt_date(booking.date)
@@ -126,7 +126,7 @@ class EventDetailsForm(FlaskForm):
             return 'You responded on {} - see below for details'.format(fmt_date(booking.date))
         if event.at_capacity():
             return 'Event is at capacity' \
-                   + ': Please contact the organiser to go on the reserve list.' if event.has_reserve_list() else '.'
+                   + (': Please contact the organiser to go on the reserve list.' if event.has_reserve_list() else '.')
         return ''
 
     def book_event(self, event_id, member_id):
