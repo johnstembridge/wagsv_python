@@ -85,6 +85,9 @@ def free_shots(si, hcap):
     if hcap > 18:
         if si <= hcap - 18:
             s += 1
+    if hcap > 36:
+        if si <= hcap - 36:
+            s += 1
     return s
 
 

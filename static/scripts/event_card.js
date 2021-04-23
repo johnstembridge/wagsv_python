@@ -10,6 +10,11 @@ function freeShots(si, hcap) {
             s += 1;
             }
     }
+    if (hcap > 36) {
+        if (si <= hcap-36) {
+            s += 1;
+            }
+    }
     return s;
 }
 
