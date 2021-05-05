@@ -202,7 +202,7 @@ class CourseData(Base):
     def apply_slope_factor(self, handicap_index, slope=None):
         if not slope:
             slope = self.slope
-        return my_round(float(handicap_index) * self.handicap_slope_factor(), 1)
+        return my_round(min(54, float(handicap_index) * self.handicap_slope_factor()), 1)
 
     def __repr__(self):
         return '<Course Data: {} {}>'.format(self.course.name, self.year)

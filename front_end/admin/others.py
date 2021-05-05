@@ -17,9 +17,10 @@ def internal_error(e):
 def get_user_current_year():
     if 'current_year' in session:
         current_year = session['current_year']
-    else:
-        current_year = datetime.date.today().year
-        session['current_year'] = current_year
+        if isinstance(current_year, int):
+            return current_year
+    current_year = datetime.date.today().year
+    session['current_year'] = current_year
     return current_year
 
 
