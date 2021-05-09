@@ -33,7 +33,7 @@
             <td>{{ item.old_handicap.data }}</td>
             <td id="{{ 'suggested-' ~ loop.index0 }}">{{ item.suggested.data }}</td>
             {%if form.editable.data %}
-                <td id="{{ 'handicap-' ~ loop.index0 }}">{{ item.handicap(size=10, type="number", min="0.1", max="36", step="0.1") }}</td>
+                <td id="{{ 'handicap-' ~ loop.index0 }}">{{ item.handicap(size=10, type="number", min="0.1", max="54", step="0.1") }}</td>
             {% else %}
                 <td>{{ item.handicap.data }}</td>
             {% endif %}
