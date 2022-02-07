@@ -12,7 +12,7 @@ from globals.app_setup import db
 from sqlalchemy import text, and_, func
 
 from globals import config
-from back_end.file_access import get_records, update_html_elements, get_file_contents
+from back_end.file_access import get_records, update_html_elements, get_file_contents, create_data_file
 
 db_session = db.session
 
@@ -22,7 +22,12 @@ html_location = config.get('locations')['html']
 
 
 def accounts_file(year):
-    return os.path.join(html_location, 'reports', str(year), 'accounts.tab')
+    path = os.path.join(html_location, 'reports', str(year))
+    if not os.path.exists(path):
+        os.mkdir(path, 755)
+        fields = ['Member', 'Date', 'Item', 'Debit', 'Credit']
+        create_data_file(os.path.join(path, 'accounts.tab'), fields)
+    return os.path.join(path, 'accounts.tab')
 
 
 def news_file():

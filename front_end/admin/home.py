@@ -18,7 +18,7 @@ def index():
     return home_main(current_year)
 
 
-@app.route('/<year>', methods=['GET', 'POST'])
+@app.route('/<int:year>', methods=['GET', 'POST'])
 @app.route('/index/<year>')
 @login_required
 @role_required('admin')
