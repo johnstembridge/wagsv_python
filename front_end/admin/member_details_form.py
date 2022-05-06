@@ -1,10 +1,10 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, HiddenField, SelectField, DateField
-from wtforms.validators import InputRequired, Email
+from wtforms.validators import InputRequired, Optional
 import datetime
 
 from back_end.interface import get_member, get_member_select_choices, save_member, get_players_as_of, \
-    get_current_members_as_players
+    get_current_members_as_players, get_player_by_name
 from front_end.form_helpers import set_select_field, set_select_field_new
 from globals.enumerations import MemberStatus, PlayerStatus, UserRole
 
@@ -24,13 +24,13 @@ class MemberDetailsForm(FlaskForm):
     first_name = StringField(label='First Name', validators=[InputRequired()])
     last_name = StringField(label='last_name', validators=[InputRequired()])
     proposer = SelectField(label='Proposer', coerce=int)
-    email = StringField(label='Email')
+    email = StringField(label='Email', validators=[InputRequired()])
     address = StringField(label='Address')
     post_code = StringField(label='Post Code')
     phone = StringField(label='Phone')
     accepted_date = DateField(label='accepted')
     handicap = StringField(label='Handicap')
-    as_of = DateField(label='as of')
+    as_of = DateField(label='as of', validators=[Optional()])
     access = SelectField(label='Access', choices=UserRole.choices(), coerce=UserRole.coerce)
     save = SubmitField(label='Save')
     member_id_return = HiddenField()
@@ -56,6 +56,11 @@ class MemberDetailsForm(FlaskForm):
             if not name.lower() in current_guests:
                 self.first_name.errors.append('{} has not been a guest'.format(name))
                 result = False
+            else:
+                player = get_player_by_name(name)
+                self.handicap_return.data = player.handicaps[-1].handicap
+                self.status_return.data = str(player.handicaps[-1].status.value)
+
         return result
 
     def populate_member(self, member_id):
@@ -92,7 +97,7 @@ class MemberDetailsForm(FlaskForm):
         member = {
             'first_name': self.first_name.data,
             'last_name': self.last_name.data,
-            'handicap': self.handicap.data,
+            'handicap': float(self.handicap.data or self.handicap_return.data),
             'status': self.status.data,
             'as_of': self.as_of.data,
             'proposer_id': self.proposer.data,

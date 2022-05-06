@@ -636,7 +636,7 @@ def save_member(member_id, data):
     handicap = data['handicap']
     status = data['status']
     player_id = get_player_id(name if new_member else orig_name)
-    date = data['as_of']
+    date = data['as_of'] or data['accepted']
     access = data['access']
 
     # set player status and handicap
@@ -691,8 +691,9 @@ def save_member(member_id, data):
             member.resigned = date
     else:
         member.accepted = data['accepted']
-    if not access in [r.role for r in member.user.roles]:
-        member.user.roles.append(Role(user_id=member.user.id, role=access))
+    if member.user:
+        if not access in [r.role for r in member.user.roles]:
+            member.user.roles.append(Role(user_id=member.user.id, role=access))
     db_session.commit()
 
 
