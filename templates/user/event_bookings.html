@@ -16,10 +16,10 @@
     <tr><td colspan="6"><hr class="bold"/></td></tr>
     {% for item in form.booking_list %}
     <tr>
-        <td>{{ item.date.data }}</td>
+        <td>{{ item.date.data or '' }}</td>
         <td>{{ item.member_name.data }}</td>
-        <td>{{ item.hcap.data }}</td>
-        <td align="center">{{ item.number.data }}</td>
+        <td>{{ item.hcap.data or '' }}</td>
+        <td align="center">{{ item.number.data or '' }}</td>
         <td>{{ item.guests.data }}</td>
         <td>{{ item.comment.data }}</td>
     </tr>

@@ -340,7 +340,7 @@ class Handicap(Base):
             return cd.apply_slope_factor(self.handicap)
 
     def __repr__(self):
-        return '<Handicap - Player: {}, Date: {}>'.format(self.player.full_name(), self.date)
+        return '<Handicap - Player: {}, Date: {}, Status: {}, Handicap: {}>'.format(self.player.full_name(), self.date, self.status.name, self.handicap)
 
 
 class Score(Base):

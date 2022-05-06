@@ -5,7 +5,7 @@ import itertools
 from back_end.data_utilities import mean, first_or_default, fmt_date, normalise_name, gen_to_list
 from back_end.table import Table
 from front_end.form_helpers import get_elements_from_html
-from globals.enumerations import MemberStatus, PlayerStatus, EventType, Function
+from globals.enumerations import MemberStatus, PlayerStatus, EventType, Function, UserRole
 from models.wags_db import Event, Score, Course, CourseData, Trophy, Player, Venue, Handicap, Member, Contact, \
     Schedule, Booking, User, Committee, Role
 from globals.app_setup import db
@@ -541,6 +541,10 @@ def add_player(name, hcap, status, date, commit=True):
     return player
 
 
+def new_handicap(player, status, handicap, date):
+    return Handicap(player_id=player.id, status=status, handicap=handicap, date=date)
+
+
 def save_handicaps(new_table):
     if len(new_table.data) == 0:
         return
@@ -568,7 +572,14 @@ def save_handicaps(new_table):
 
 # region Members
 def get_member(member_id):
-    return db_session.query(Member).filter_by(id=member_id).first()
+    member = db_session.query(Member).filter_by(id=member_id).first()
+    # if not member.user:
+    #     member.user = User()
+    #     member.user.roles.append(UserRole.user)
+    #     # member.user.member_id = member_id
+    # if not member.proposer:
+    #     member.proposer = Member()
+    return member
 
 
 def get_member_by_email(email):

@@ -85,7 +85,8 @@ class MemberDetailsForm(FlaskForm):
             self.accepted_date.data = member.accepted or datetime.date(1992, 6, 17)
             self.handicap_return.data = self.handicap.data = state.handicap
             self.as_of.data = state.date
-            set_select_field_new(self.access, UserRole.choices(), default_selection=member.user.roles[-1].role)
+            role = member.user.roles[-1].role if member.user else UserRole.user
+            set_select_field_new(self.access, UserRole.choices(), default_selection=role)
 
     def save_member(self, member_id):
         member = {
