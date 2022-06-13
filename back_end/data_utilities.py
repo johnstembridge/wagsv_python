@@ -3,6 +3,7 @@ import datetime
 import time
 import math
 import re
+import itertools
 
 
 # region dates
@@ -250,3 +251,19 @@ def html_unescape(text):
 
 def add_http(url):
     return 'http://' + url
+
+
+def get_positions(scores):
+    pos = list(itertools.islice(positions(scores), len(scores)))
+    return list(itertools.chain.from_iterable(pos))
+
+
+def positions(scores):
+    c = 1
+    for key, values in itertools.groupby(scores):
+        n = len(list(values))
+        p = str(c)
+        if n > 1:
+            p = '=' + p
+        yield [p] * n
+        c += n

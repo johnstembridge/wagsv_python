@@ -42,6 +42,8 @@ class TrophyForm(FlaskForm):
             self.extra.data = extra_file
         hist = trophy.events
         for event in hist:
+            if event.type == EventType.cancelled:
+                continue
             tour = first_or_default(
                 [e for e in hist if e.date.year == event.date.year and e.type == EventType.wags_tour], None)
             if event.date < datetime.date.today() \

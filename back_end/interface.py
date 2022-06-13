@@ -2,7 +2,7 @@ import datetime
 import os
 import itertools
 
-from back_end.data_utilities import mean, first_or_default, fmt_date, normalise_name, gen_to_list
+from back_end.data_utilities import mean, first_or_default, fmt_date, normalise_name, gen_to_list, get_positions
 from back_end.table import Table
 from front_end.form_helpers import get_elements_from_html
 from globals.enumerations import MemberStatus, PlayerStatus, EventType, Function, UserRole
@@ -283,9 +283,8 @@ def update_event_winner(event, result):
 
 
 def update_tour_winner(event):
-    pass
-    # result = get_tour_results(event)
-    # event.winner_id = int(result.get_columns('player_id')[0])
+    result = get_tour_results(event)
+    event.winner_id = int(result.get_columns('player_id')[0])
 
 
 def get_event_card(event_id, player_id):
@@ -405,6 +404,34 @@ def get_events_in(date_range):
 
 
 # region tours
+def get_tour_results(event):
+    trophy = event.trophy
+    event_ids = [v.id for v in event.tour_events]
+    dates = {v.id: v.date for v in event.tour_events}
+    multi = len([v for v in event.tour_events if v.trophy == trophy]) > 0
+    scores = Table(*get_tour_scores(event_ids))
+    res = []
+    for player_id, event_scores in scores.group_by('player'):
+        s = [s for s in event_scores]
+        status = s[0][5]
+        missing = list(set(event_ids).difference(set([x[1] for x in s])))  # event ids
+        for m in missing:
+            s.append([dates[m], m, 0, 0, None, 0])
+        s.sort()
+        p = [int(x[3]) for x in s]  # points
+        if trophy and multi:
+            tp = sum([int(x[3]) for x in s if x[4] == trophy])  # total points for trophy
+        else:
+            tp = sum(p)
+
+        r = (player_id, status, p, tp)
+        res.append(r)
+    head = ['player_id', 'status', 'scores', 'total']
+    res = Table(head, res)
+    res.sort(['total'], reverse=True)
+    res.add_column('position', get_positions(res.get_columns('total')))
+    return res
+
 def get_tour_scores(event_ids):
     ids = '(' + (','.join([str(id) for id in event_ids])) + ')'
     s = text("select * from scores where event_id in {} order by player_id, event_id".format(ids))

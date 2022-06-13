@@ -1,8 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, FieldList, FormField
 
-from back_end.calc import get_tour_results
-from back_end.interface import get_event, get_player_names_as_dict
+from back_end.interface import get_event, get_player_names_as_dict, get_tour_results
 
 
 class TourEventScoreItemForm(FlaskForm):
