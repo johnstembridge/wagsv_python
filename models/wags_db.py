@@ -4,7 +4,7 @@ from globals import config
 from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 
-from back_end.data_utilities import fmt_date, in_date_range, my_round
+from back_end.data_utilities import fmt_date, in_date_range, apply_slope_factor
 from globals.enumerations import EventType, PlayerStatus, MemberStatus, UserRole, Function
 
 import datetime
@@ -194,16 +194,6 @@ class CourseData(Base):
     rating = Column(Numeric(precision=3, scale=1))
     slope = Column(Integer)
 
-    def handicap_slope_factor(self, slope=None):
-        if not slope:
-            slope = self.slope
-        return (slope if slope > 0 else 113) / 113
-
-    def apply_slope_factor(self, handicap_index, slope=None):
-        if not slope:
-            slope = self.slope
-        return my_round(min(54, float(handicap_index) * self.handicap_slope_factor()), 1)
-
     def __repr__(self):
         return '<Course Data: {} {}>'.format(self.course.name, self.year)
 
@@ -337,7 +327,7 @@ class Handicap(Base):
             return self.handicap
         else:
             cd = event.course.course_data_as_of(year)
-            return cd.apply_slope_factor(self.handicap)
+            return apply_slope_factor(cd.slope, self.handicap)
 
     def __repr__(self):
         return '<Handicap - Player: {}, Date: {}, Status: {}, Handicap: {}>'.format(self.player.full_name(), self.date, self.status.name, self.handicap)

@@ -1,64 +1,74 @@
 {% extends "user/report_base.html" %}
 {% block title %}Handicaps{% endblock %}
 {% block content %}
-<h2 class="table-title left">Handicaps</h2>
-<h4 class="table-title right">{{ render_link(
-    url=url_for('static', filename='handicap system.htm'),
-    text='WAGS handicap system explained'
-    )|safe }}
-</h4>
-<p style="clear:left;"><b>
-    From 2021 we are using WHS (World Handicap System) handicap indices. Your playing handicap for each event will be
-    derived using this base and the Slope Rating of the course
-</b></p>
-<table width="100%" class="list">
-    <thead>
-    <tr>
-        <th align="left">Name</th>
-        <th align="center">Handicap</th>
-        <th align="center">History</th>
-        <th align="left">Name</th>
-        <th align="center">Handicap</th>
-        <th align="center">History</th>
-    </tr>
-    <tr>
-        <td colspan=6>
-            <hr class="bold"/>
-        </td>
-    </tr>
-    </thead>
-    <tbody>
-    {% for item in form.handicaps %}
-    {% if item.item_pos.data == 2 %}
-    <tr>
-        <td>{{ item.player.data }}</td>
-        <td align="center">{{ item.handicap.data }}</td>
-        <td align="center">
-            {{ render_link(
-            url=url_for_user('handicap_history_player', player_id=item.player_id.data),
-            image=url_for('static', filename='images/go.png'),
-            text='Show handicap history for ' + item.player.data
-            )|safe }}
-        </td>
-        {% else %}
-        <td>{{ item.player.data }}</td>
-        <td align="center">{{ item.handicap.data }}</td>
-        <td align="center">
-            {{ render_link(
-            url=url_for_user('handicap_history_player', player_id=item.player_id.data),
-            image=url_for('static', filename='images/go.png'),
-            text='Show handicap history for ' + item.player.data
-            )|safe }}
-        </td>
-    </tr>
-    {% endif %}
-    {% endfor %}
-    <tr>
-        <td colspan=6>
-            <hr class="bold"/>
-        </td>
-    </tr>
-    </tbody>
+<div class="page-header">
+    <h2 class="table-title left">Handicaps</h2>
+    <h4 class="table-title right">{{ render_link(
+        url=url_for('static', filename='handicap system.htm'),
+        text='WAGS handicap system explained'
+        )|safe }}
+    </h4>
+</div>
+<form method="POST">
+    {{ form.csrf_token }}
+    {{ form.hidden_tag() }}
+    <table width="100%">
+        <tr>
+            <td>The <b>Handicap Index</b> for all current members based on reference slope index 113.</td>
+            <td>{{ form.slope.label(class='right bold') }}</td>
+            <td>&nbsp;{{ form.slope(size=3) }}</td>
+        </tr>
+    </table>
+    To show <b>Playing Handicaps</b> for any slope index, enter the slope index and press <i>Enter</i>.
+    <p></p>
+    <table width="100%" class="list">
+        <tr>
+            <th align="left">Name</th>
+            <th align="center">Handicap</th>
+            <th align="center">History</th>
+            <th align="left">Name</th>
+            <th align="center">Handicap</th>
+            <th align="center">History</th>
+        </tr>
+        <tr>
+            <td colspan=6>
+                <hr class="bold"/>
+            </td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in form.handicaps %}
+        {% if item.item_pos.data == 2 %}
+        <tr>
+            <td>{{ item.player.data }}</td>
+            <td align="center">{{ item.handicap.data }}</td>
+            <td align="center">
+                {{ render_link(
+                url=url_for_user('handicap_history_player', player_id=item.player_id.data),
+                image=url_for('static', filename='images/go.png'),
+                text='Show handicap history for ' + item.player.data
+                )|safe }}
+            </td>
+            {% else %}
+            <td>{{ item.player.data }}</td>
+            <td align="center">{{ item.handicap.data }}</td>
+            <td align="center">
+                {{ render_link(
+                url=url_for_user('handicap_history_player', player_id=item.player_id.data),
+                image=url_for('static', filename='images/go.png'),
+                text='Show handicap history for ' + item.player.data
+                )|safe }}
+            </td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+        <tr>
+            <td colspan=6>
+                <hr class="bold"/>
+            </td>
+        </tr>
+        </tbody>
 
-</table>
+    </table>
+</form>
 {% endblock %}

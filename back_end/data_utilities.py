@@ -267,3 +267,13 @@ def positions(scores):
             p = '=' + p
         yield [p] * n
         c += n
+
+
+def handicap_slope_factor(slope=None):
+    if not slope:
+        slope = 113
+    return (slope if slope > 0 else 113) / 113
+
+
+def apply_slope_factor(handicap_index, slope):
+    return my_round(min(54, float(handicap_index) * handicap_slope_factor(slope)), 1)

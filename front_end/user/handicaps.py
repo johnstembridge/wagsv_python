@@ -6,6 +6,7 @@ from .handicap_history_form import HandicapHistoryForm
 from front_end.form_helpers import render_link
 from globals.config import url_for_user
 
+
 class Handicaps:
 
     @staticmethod
