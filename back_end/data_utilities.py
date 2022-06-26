@@ -276,4 +276,4 @@ def handicap_slope_factor(slope=None):
 
 
 def apply_slope_factor(handicap_index, slope):
-    return my_round(min(54, float(handicap_index) * handicap_slope_factor(slope)), 1)
+    return my_round(min(54, float(handicap_index) * float(handicap_slope_factor(slope))), 1)
