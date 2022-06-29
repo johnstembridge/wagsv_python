@@ -6,7 +6,7 @@ from wtforms import StringField, DecimalField, TextAreaField, SubmitField, Field
 from wtforms.fields.html5 import DateField
 from wtforms.validators import Optional
 
-from back_end.data_utilities import encode_date, fmt_date, first_or_default, parse_float, my_round
+from back_end.data_utilities import encode_date, fmt_date, first_or_default, parse_float, my_round, handicap_slope_factor
 from back_end.interface import get_event, get_booking, save_booking, get_member, \
     get_committee_function, get_player_by_name, suspend_flush
 from front_end.form_helpers import line_break
@@ -171,7 +171,7 @@ class EventDetailsForm(FlaskForm):
             message = ['{} will attend'.format(booking.member.player.full_name())]
             message.append(
                 'Note: the slope rating of this course is {} so your handicap for this event will be factored by {}'
-                    .format(cd.slope, my_round(cd.handicap_slope_factor(), 2)))
+                    .format(cd.slope, my_round(handicap_slope_factor(), 2)))
             if booking.guests:
                 message.append('Guests:')
                 for guest in booking.guests:
