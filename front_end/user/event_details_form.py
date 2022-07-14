@@ -171,7 +171,7 @@ class EventDetailsForm(FlaskForm):
             message = ['{} will attend'.format(booking.member.player.full_name())]
             message.append(
                 'Note: the slope rating of this course is {} so your handicap for this event will be factored by {}'
-                    .format(cd.slope, my_round(handicap_slope_factor(), 2)))
+                    .format(cd.slope, my_round(handicap_slope_factor(cd.slope), 2)))
             if booking.guests:
                 message.append('Guests:')
                 for guest in booking.guests:
