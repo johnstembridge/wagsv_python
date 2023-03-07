@@ -324,10 +324,13 @@ class Handicap(Base):
     def playing_handicap(self, event):
         year = event.date.year
         if year < 2021:
-            return self.handicap
+            hcap = self.handicap
         else:
             cd = event.course.course_data_as_of(year)
-            return apply_slope_factor(cd.slope, self.handicap)
+            hcap = apply_slope_factor(cd.slope, self.handicap)
+        if year >= 2023:
+            hcap = hcap * 0.95
+        return hcap
 
     def __repr__(self):
         return '<Handicap - Player: {}, Date: {}, Status: {}, Handicap: {}>'.format(self.player.full_name(), self.date, self.status.name, self.handicap)
