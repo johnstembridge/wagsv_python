@@ -4,7 +4,7 @@ from globals import config
 from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 
-from back_end.data_utilities import fmt_date, in_date_range, apply_slope_factor
+from back_end.data_utilities import fmt_date, in_date_range, apply_slope_factor, my_round
 from globals.enumerations import EventType, PlayerStatus, MemberStatus, UserRole, Function
 
 import datetime
@@ -329,7 +329,7 @@ class Handicap(Base):
             cd = event.course.course_data_as_of(year)
             hcap = apply_slope_factor(cd.slope, self.handicap)
         if year >= 2023:
-            hcap = hcap * 0.95
+            hcap = my_round(min(54, hcap * 0.95), 1)
         return hcap
 
     def __repr__(self):
