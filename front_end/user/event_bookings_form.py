@@ -1,9 +1,9 @@
 import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, FieldList, FormField
-from back_end.data_utilities import fmt_date, apply_slope_factor
-from back_end.interface import get_event
-
+from back_end.data_utilities import fmt_date
+from back_end.interface import get_event, get_player_by_name, add_player
+from globals.enumerations import PlayerStatus
 
 class BookingItemForm(FlaskForm):
     date = StringField(label='Date')
@@ -37,8 +37,14 @@ class EventBookingsForm(FlaskForm):
                 number = 1 + len(booking.guests)
                 item_form.number = number
                 total += number
-                item_form.guests = ', '.join(
-                    [g.name + ' ({})'.format(apply_slope_factor(g.handicap, cd.slope)) for g in booking.guests])
+                item_form.guests = ''
+                for g in booking.guests:
+                    p = get_player_by_name(g.name)
+                    if not p:
+                        p = add_player(name=g.name, hcap=g.handicap, status=PlayerStatus.guest, date=event.date, commit=False)
+                    hcap = p.state_as_of(event.date).playing_handicap(event)
+                    item_form.guests += ',' + g.name + ' ({})'.format(hcap)
+                item_form.guests = item_form.guests[1:]
                 item_form.comment = booking.comment or ''
                 self.booking_list.append_entry(item_form)
         self.total.data = total

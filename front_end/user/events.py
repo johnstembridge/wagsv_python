@@ -6,7 +6,7 @@ from .event_card_form import EventCardForm
 from .event_list_form import EventListForm, EventSelectForm
 from .event_result_form import EventResultsForm
 from .tour_result_form import TourResultsForm
-from front_end.form_helpers import render_link
+from front_end.form_helpers import render_link, flash_errors
 from back_end.interface import get_event
 from globals.enumerations import EventType
 from globals.config import url_for_html, url_for_user
@@ -41,15 +41,18 @@ class ReportEvents:
     @staticmethod
     def show_or_book_event(event_id, member_id):
         form = EventDetailsForm()
-        if member_id > 0 and form.is_submitted():
-            booking = form.book_event(event_id, member_id)
-            if booking:
-                flash('Booking saved', 'success')
-                form = EventBookingConfirmationForm()
-                form.populate(booking.title, booking.message)
-                return render_template('user/event_booking_confirmation.html', form=booking)
-        else:
-            form.populate_event(event_id, member_id)
+        if member_id > 0:
+            if form.validate_on_submit():
+                booking = form.book_event(event_id, member_id)
+                if booking:
+                    flash('Booking saved', 'success')
+                    form = EventBookingConfirmationForm()
+                    form.populate(booking.title, booking.message)
+                    return render_template('user/event_booking_confirmation.html', form=booking)
+            elif form.errors:
+                flash_errors(form)
+            if not form.is_submitted():
+                form.populate_event(event_id, member_id)
         return render_template('user/event_details.html', form=form, render_link=render_link, url_for_html=url_for_html, url_for_user=url_for_user)
 
     @staticmethod
