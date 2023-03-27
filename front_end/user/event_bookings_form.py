@@ -2,8 +2,9 @@ import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, FieldList, FormField
 from back_end.data_utilities import fmt_date
-from back_end.interface import get_event, get_player_by_name, add_player
+from back_end.interface import get_event, get_player_by_name, add_player, new_handicap
 from globals.enumerations import PlayerStatus
+
 
 class BookingItemForm(FlaskForm):
     date = StringField(label='Date')
@@ -40,8 +41,15 @@ class EventBookingsForm(FlaskForm):
                 item_form.guests = ''
                 for g in booking.guests:
                     p = get_player_by_name(g.name)
-                    if not p:
-                        p = add_player(name=g.name, hcap=g.handicap, status=PlayerStatus.guest, date=event.date, commit=False)
+                    if p:
+                        state = p.state_as_of(event.date)
+                        if state.status not in [PlayerStatus.member, PlayerStatus.new,
+                                                PlayerStatus.non_vl] and state.date < event.date:
+                            p.handicaps.append(
+                                new_handicap(p, status=PlayerStatus.guest, handicap=g.handicap, date=event.date))
+                    else:
+                        p = add_player(name=g.name, hcap=g.handicap, status=PlayerStatus.guest, date=event.date,
+                                       commit=False)
                     hcap = p.state_as_of(event.date).playing_handicap(event)
                     item_form.guests += ',' + g.name + ' ({})'.format(hcap)
                 item_form.guests = item_form.guests[1:]
