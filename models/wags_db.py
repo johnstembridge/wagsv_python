@@ -243,10 +243,14 @@ class Player(Base):
     def state_as_of(self, date):
         state = [h for h in self.handicaps if h.date <= date]
         state.sort(key=lambda s: s.date)
-        if len(state) > 0:
+        if state and state[-1].date != date and self.member and \
+                self.member.status not in [MemberStatus.full_member, MemberStatus.overseas_member]:
+            state = state.clear()
+        if state and len(state) > 0:
             state = state[-1]
             if self.member:
-                if state.status in [PlayerStatus.member, PlayerStatus.new, PlayerStatus.non_vl] and date < self.member.qualifying_date():
+                if state.status in [PlayerStatus.member, PlayerStatus.new,
+                                    PlayerStatus.non_vl] and date < self.member.qualifying_date():
                     state.status = PlayerStatus.non_vl
                     if len([s for s in self.scores if
                             s.event.type == EventType.wags_vl_event and s.event.date >= self.member.accepted and s.event.date <= date]) <= 3:
@@ -333,7 +337,8 @@ class Handicap(Base):
         return hcap
 
     def __repr__(self):
-        return '<Handicap - Player: {}, Date: {}, Status: {}, Handicap: {}>'.format(self.player.full_name(), self.date, self.status.name, self.handicap)
+        return '<Handicap - Player: {}, Date: {}, Status: {}, Handicap: {}>'.format(self.player.full_name(), self.date,
+                                                                                    self.status.name, self.handicap)
 
 
 class Score(Base):

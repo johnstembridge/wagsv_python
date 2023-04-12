@@ -43,7 +43,7 @@ class EventBookingsForm(FlaskForm):
                     p = get_player_by_name(g.name)
                     if p:
                         state = p.state_as_of(event.date)
-                        if state.status not in [PlayerStatus.member, PlayerStatus.new,
+                        if state.handicap == 0 or state.status not in [PlayerStatus.member, PlayerStatus.new,
                                                 PlayerStatus.non_vl] and state.date < event.date:
                             p.handicaps.append(
                                 new_handicap(p, status=PlayerStatus.guest, handicap=g.handicap, date=event.date))
