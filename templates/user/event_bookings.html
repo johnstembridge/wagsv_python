@@ -3,7 +3,8 @@
 {% block content %}
 {{ form.csrf_token }}
 <h2 class="table-title">{{ form.event_name.data }} (slope={{ form.slope.data }})</h2>
-<h3 class="table-title">All bookings {{ form.sub_title.data }}</h3>
+<h3 class="table-title">All bookings {{ form.sub_title.data }} -
+all handicaps shown are the <i>playing</i> handicaps for this event</h3>
 <table class="list">
     <tr>
         <th align="left" class="bottom">Date</th>

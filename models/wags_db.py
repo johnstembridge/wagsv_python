@@ -104,6 +104,8 @@ class Event(Base):
 
     def bookable(self):
         # result:  1-booking open and within capacity, 0-viewable, -1-booking not applicable, -2-cancelled
+        if config.get('override'):
+            return 1
         if self.type == EventType.cancelled:
             return -2
         if self.type in [EventType.non_event, EventType.minotaur]:
@@ -194,6 +196,9 @@ class CourseData(Base):
     rating = Column(Numeric(precision=3, scale=1))
     slope = Column(Integer)
 
+    def course_par(self):
+        return sum(self.par)
+
     def __repr__(self):
         return '<Course Data: {} {}>'.format(self.course.name, self.year)
 
@@ -243,23 +248,22 @@ class Player(Base):
     def state_as_of(self, date):
         state = [h for h in self.handicaps if h.date <= date]
         state.sort(key=lambda s: s.date)
-        if state and state[-1].date != date and self.member and \
-                self.member.status not in [MemberStatus.full_member, MemberStatus.overseas_member]:
-            state = state.clear()
-        if state and len(state) > 0:
+        if len(state) > 0:
             state = state[-1]
             if self.member:
-                if state.status in [PlayerStatus.member, PlayerStatus.new,
-                                    PlayerStatus.non_vl] and date < self.member.qualifying_date():
+                if state.status.current_member() and date < self.member.qualifying_date():
                     state.status = PlayerStatus.non_vl
                     if len([s for s in self.scores if
-                            s.event.type == EventType.wags_vl_event and s.event.date >= self.member.accepted and s.event.date <= date]) <= 3:
+                            s.event.type == EventType.wags_vl_event and
+                            s.event.date >= self.member.accepted and
+                            s.event.date <= date]) <= 3:
                         state.status = PlayerStatus.new
                 elif state.status in [PlayerStatus.new, PlayerStatus.non_vl] and date >= self.member.qualifying_date():
                     state.status = PlayerStatus.member
             return state
         else:
-            return Handicap(player_id=self.id, status=PlayerStatus.guest, handicap=0, date=datetime.date.today())
+            status = PlayerStatus.ex_member if self.member else PlayerStatus.guest
+            return Handicap(player_id=self.id, status=status, handicap=0, date=date)
 
     def states_up_to(self, date):
         state = [self.state_as_of(h.date) for h in self.handicaps if h.date <= date]
@@ -326,14 +330,18 @@ class Handicap(Base):
     player = relationship("Player", back_populates="handicaps")
 
     def playing_handicap(self, event):
+        hcap_version = config.get("handicap_version")
         year = event.date.year
+        cd = event.course.course_data_as_of(year)
         if year < 2021:
             hcap = self.handicap
         else:
-            cd = event.course.course_data_as_of(year)
             hcap = apply_slope_factor(cd.slope, self.handicap)
         if year >= 2023:
             hcap = my_round(min(54, hcap * 0.95), 1)
+        if hcap_version == 2:
+            adj = float(cd.rating - cd.course_par())
+            hcap = my_round(min(54, hcap + adj), 1)
         return hcap
 
     def __repr__(self):
