@@ -6,6 +6,7 @@
   "send_mail": true,
   "db_path": "sqlite:////var/www/html/wags.db",
   "event_has_reserve_list": [476],
+  "handicap_version": 1,
   "locations": {
     "base_url": "https://wags.org/",
     "html": "/var/www/html",
