@@ -2,7 +2,7 @@ import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, FieldList, FormField, HiddenField, IntegerField, SubmitField
 from back_end.interface import get_current_members_as_players
-from back_end.data_utilities import apply_slope_factor
+from back_end.calc import apply_slope_factor
 
 
 class HandicapItemForm(FlaskForm):

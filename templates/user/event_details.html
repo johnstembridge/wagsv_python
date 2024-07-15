@@ -47,7 +47,7 @@
             <td class="top" rowspan=2 width=50%>{{ form.notes.data }}</td>
         <tr/>
         <tr>
-            <td>{{ form.guest_price.label }}</td><td>£{{ form.guest_price.data }}</td>
+            <td>{{ form.guest_price.label }}</td><td>{{ form.guest_price.data }}</td>
         </tr>
         <tr>
             <td>{{ form.organiser.label }}</td>
@@ -69,14 +69,14 @@
         {% for option in form.attend %}
             &nbsp;{{ option }}&nbsp;{{ option.label }}
         {% endfor %}
-        {% if not form.at_capacity.data %}
+        {% if not (form.at_capacity.data or form.members_only.data) %}
             <p><b>If adding a guest, please give their WHS handicap index, their playing handicap will be automatically calculated.</b></p>
             <table width="100%">
                 <thead>
                     <tr>
                         <th></th>
                         <th class="bold">Guest</th>
-                        <th class="bold">Handicap</th>
+                        <th class="bold">WHS Handicap</th>
                         <th class="bold">Comments</th>
                     </tr>
                 </thead>

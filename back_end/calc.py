@@ -1,54 +1,7 @@
-import datetime
+import itertools
 
-from back_end.interface import get_event, lookup_course, get_event_cards, get_scores, get_player_names, get_events_in
-from back_end.table import Table
-from back_end.data_utilities import coerce, my_round, first_or_default, get_positions
-from globals.enumerations import PlayerStatus, EventType
-
-
-def get_vl(year):
-    scores = get_scores(year=year, status=PlayerStatus.member)
-    scores.sort(['player_id', 'date'])
-    vl = Table(['player_id', 'points', 'events', 'lowest'],
-               [vl_summary(scores.column_index('points'), key, list(values))
-                for key, values in scores.group_by('player_id')])
-    vl.sort(['points', 'lowest'], reverse=True)
-    vl.add_column('position', get_positions(vl.get_columns('points')))
-    vl.add_column('name', get_player_names(vl.get_columns('player_id')))
-    return vl
-
-
-def vl_summary(pi, player_id, scores):
-    points = [s[pi] for s in scores]
-    points = sorted(points, reverse=True)
-    top_6 = points[:6]
-    return [player_id, sum(top_6), len(top_6), min(top_6)]
-
-
-def calc_event_positions(event_id, result):
-    event = get_event(event_id)
-    course_data = event.course.course_data_as_of(event.date.year)
-    if 'card' not in result.head:
-        cards = get_event_cards(event_id)
-    else:
-        cards = {pc[0]: pc[1] for pc in result.get_columns(['player_id', 'card']) if pc[1]}
-    sort = []
-    for row in result.data:
-        player = dict(zip(result.head, row))
-        player_id = int(player['player_id'])
-        player_hcap = my_round(float(player['handicap']))
-        if player_id in cards and cards[player_id]:
-            shots = [int(s) for s in cards[player_id]]
-            points = calc_stableford_points(player_hcap, shots, course_data.si, course_data.par)
-            # countback
-            tot = (1e6 * sum(points[-18:])) + (1e4 * sum(points[-9:])) + (1e2 * sum(points[-6:])) + sum(points[-3:])
-        else:
-            tot = 1e6 * coerce(player['points'], float)
-        sort.append(tot)
-    result.sort_using(sort, reverse=True)
-    position = list(range(1, len(result.data) + 1))
-    result.update_column('position', position)
-    return result
+from back_end.data_utilities import coerce, my_round, first_or_default
+from globals.enumerations import PlayerStatus
 
 
 def calc_stableford_points(player_hcap, player_shots, course_si, course_par):
@@ -113,38 +66,7 @@ def suggested_handicap_change(scratch, handicap, score):
     return new
 
 
-def get_big_swing(year, as_of=datetime.date.today()):
-    date_range = (datetime.date(year - 1, 1, 1), datetime.date(year + 1, 12, 31))
-    events = get_events_in(date_range)  # date, course
-    if len(events) > 0:
-        richmond = lookup_course('The Richmond')
-        richmond_events = [e for e in events if e.course_id == richmond]
-        first = [e for e in richmond_events if as_of > e.date][-1].date + datetime.timedelta(days=1)
-        last = [e for e in richmond_events if as_of <= e.date]
-        if len(last) == 0:
-            last = [e for e in events if as_of <= e.date]
-            if len(last) == 0:
-                last = as_of
-            else:
-                last = last[-1].date
-        else:
-            last = last[0].date
-        events = [e for e in events if e.date >= first and e.date <= last and e.type == EventType.wags_vl_event]
-    else:
-        first = as_of
-    header = ['player', 'course', 'date', 'points_out', 'points_in', 'swing']
-    swings = []
-    for event in events:
-        swings.extend(get_swings(event))
-    swings = Table(header, swings)
-    swings.sort('swing', reverse=True)
-    swings.top_n(10)
-    swings.add_column('position', get_positions(swings.get_columns('swing')))
-    year_range = [first.year, first.year + 1]
-    return year_range, swings
-
-
-def get_swings(event):
+def calc_swings(event):
     course_data = event.course.course_data_as_of(event.date.year)
     course_name = event.course.name
     res = []
@@ -160,3 +82,45 @@ def get_swings(event):
             if swing > 0:
                 res.append((player.full_name(), course_name, event.date, points_out, points_in, swing))
     return res
+
+
+def calc_playing_handicap(handicap, event):
+    whs_version_2_year = 3000  # not going to be used for now
+    year = event.date.year
+    cd = event.course.course_data_as_of(year)
+    if year < 2021:
+        hcap = handicap  # original (unfactored=WAGS) handicap
+    else:
+        hcap = apply_slope_factor(cd.slope, handicap)
+    if year in range(2023, whs_version_2_year - 1):
+        hcap = min(54, hcap * 0.95)  # original whs handicap (version_1)
+    if year >= whs_version_2_year:
+        adj = cd.rating - cd.course_par()
+        hcap = min(54, (hcap + adj) * 0.95)  # new whs handicap takes course par into account
+    return my_round(hcap,1)
+
+
+def handicap_slope_factor(slope=None):
+    if not slope:
+        slope = 113
+    return (slope if slope > 0 else 113) / 113
+
+
+def apply_slope_factor(handicap_index, slope):
+    return my_round(min(54, float(handicap_index) * float(handicap_slope_factor(slope))), 1)
+
+
+def calc_positions(scores):
+    pos = list(itertools.islice(positions(scores), len(scores)))
+    return list(itertools.chain.from_iterable(pos))
+
+
+def positions(scores):
+    c = 1
+    for key, values in itertools.groupby(scores):
+        n = len(list(values))
+        p = str(c)
+        if n > 1:
+            p = '=' + p
+        yield [p] * n
+        c += n

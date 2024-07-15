@@ -4,7 +4,8 @@ from globals import config
 from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 
-from back_end.data_utilities import fmt_date, in_date_range, apply_slope_factor, my_round
+from back_end.data_utilities import fmt_date, in_date_range
+from back_end.calc import calc_playing_handicap
 from globals.enumerations import EventType, PlayerStatus, MemberStatus, UserRole, Function
 
 import datetime
@@ -65,6 +66,7 @@ class Event(Base):
     booking_start = Column(Date)
     booking_end = Column(Date)
     max = Column(Integer)
+    members_only = Column(Boolean, nullable=False)
 
     scores = relationship('Score', order_by="Score.position", back_populates='event')
 
@@ -99,20 +101,32 @@ class Event(Base):
         name += self.venue.name + ' ' + fmt_date(self.date)
         return name
 
+    def is_editable(self):
+        override = config.get('override')
+        return override or self.date.year >= datetime.date.today().year
+
+    def is_booking_editable(self):
+        override = config.get('override')
+        return override or (datetime.date.today() <= self.date) and (datetime.date.today().year == self.date.year)
+
+    def is_result_editable(self):
+        override = config.get('override')
+        return override or (datetime.date.today() >= self.date) and (datetime.date.today().year == self.date.year)
+
+    def are_tour_bookings_editable(self):
+        return self.type == EventType.wags_tour
+
     def is_bookable(self):
         return self.bookable() == 1
 
     def bookable(self):
-        # result:  1-booking open and within capacity, 0-viewable, -1-booking not applicable, -2-cancelled
+        # result:  0-viewable, 1-booking open and within capacity, -1-booking not applicable, -2-cancelled
         if config.get('override'):
             return 1
         if self.type == EventType.cancelled:
             return -2
-        if self.type in [EventType.non_event, EventType.minotaur]:
+        if self.type in [EventType.non_event, EventType.minotaur, EventType.wags_tour] or self.tour_event_id:
             return -1
-        if self.tour_event_id:
-            if self.tour_event.type == EventType.wags_tour:
-                return 0
         if self.booking_start:
             booking_start = self.booking_start
             booking_end = self.booking_end
@@ -330,19 +344,7 @@ class Handicap(Base):
     player = relationship("Player", back_populates="handicaps")
 
     def playing_handicap(self, event):
-        hcap_version = config.get("handicap_version")
-        year = event.date.year
-        cd = event.course.course_data_as_of(year)
-        if year < 2021:
-            hcap = self.handicap
-        else:
-            hcap = apply_slope_factor(cd.slope, self.handicap)
-        if year >= 2023:
-            hcap = my_round(min(54, hcap * 0.95), 1)
-        if hcap_version == 2:
-            adj = float(cd.rating - cd.course_par())
-            hcap = my_round(min(54, hcap + adj), 1)
-        return hcap
+        return calc_playing_handicap(self.handicap, event)
 
     def __repr__(self):
         return '<Handicap - Player: {}, Date: {}, Status: {}, Handicap: {}>'.format(self.player.full_name(), self.date,

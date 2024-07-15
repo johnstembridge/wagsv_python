@@ -3,10 +3,11 @@ import datetime
 import time
 import math
 import re
-import itertools
 
 
 # region dates
+
+
 def decode_date(wdm, y):
     # wdm is in the form Friday 28 April, y is year
     if wdm:
@@ -86,7 +87,6 @@ def fmt_date(date, fmt=None):
 
 
 def parse_date(ymd, sep='/', reverse=False):
-
     if type(ymd) is datetime.date:
         return ymd
     else:
@@ -165,8 +165,8 @@ def coerce(x, required_type):
     return x
 
 
-def fmt_num(num):
-    return str(int(num) if num == math.floor(num) else num)
+def fmt_num(num, dp):
+    return ('{:,.' + str(dp) + 'f}').format(num)
 
 
 def parse_float(num, default=None):
@@ -251,29 +251,3 @@ def html_unescape(text):
 
 def add_http(url):
     return 'http://' + url
-
-
-def get_positions(scores):
-    pos = list(itertools.islice(positions(scores), len(scores)))
-    return list(itertools.chain.from_iterable(pos))
-
-
-def positions(scores):
-    c = 1
-    for key, values in itertools.groupby(scores):
-        n = len(list(values))
-        p = str(c)
-        if n > 1:
-            p = '=' + p
-        yield [p] * n
-        c += n
-
-
-def handicap_slope_factor(slope=None):
-    if not slope:
-        slope = 113
-    return (slope if slope > 0 else 113) / 113
-
-
-def apply_slope_factor(handicap_index, slope):
-    return my_round(min(54, float(handicap_index) * float(handicap_slope_factor(slope))), 1)

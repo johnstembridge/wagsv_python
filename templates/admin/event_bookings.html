@@ -1,0 +1,48 @@
+{% extends "admin/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block page_content %}
+<div class="page-header">
+    <h2 class="table-title">{{ form.event_name.data }}</h2>
+    <h3 class="table-title">All bookings</h3>
+</div>
+<form method="POST">
+    {{ form.csrf_token }}
+    {{ form.hidden_tag() }}
+
+    <table class="table table-striped">
+        <tr>
+            <th align="left" class="bottom">Date</th>
+            <th align="left" class="bottom">Name</th>
+            <th align="left" class="bottom">Playing?</th>
+            <th align="left" class="bottom">WHS<br>Handicap</th>
+            <th align="left" class="bottom">Comment</th>
+        </tr>
+        {% for item in form.bookings %}
+        <tr>
+            <td>{{ item.date.data or '' }}</td>
+            <td>{{ item.player_name.data }}</td>
+            {%if form.editable.data %}
+                <td>{{ item.playing }}</td>
+            {% else %}
+                <td>{{ item.playing.data }}</td>
+            {% endif %}
+            {%if form.editable.data and item.guest.data.data %}
+                <td>{{ item.hcap(size=8, type="number", min="0.1", max="54", step="0.1") }}</td>
+            {% else %}
+                <td></td>
+            {% endif %}
+            <td>{{ item.comment.data or '' }}</td>
+        </tr>
+        {{ item.member_id }}
+        {{ item.booking_id }}
+        {{ item.guest_id }}
+        {% endfor %}
+    </table>
+    <hr/>
+    {%if form.editable.data %}
+        {{ form.add_player(class="btn btn-primary") }}
+        {{ form.save_bookings(class="btn btn-primary") }}
+    {% endif %}
+</form>
+{% endblock %}

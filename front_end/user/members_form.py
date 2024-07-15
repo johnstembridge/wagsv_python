@@ -64,7 +64,7 @@ class ShowMemberDetailsForm(FlaskForm):
 
     def populate_details(self, member_id):
         MemberDetails.populate(self, member_id)
-        
+
 
 class MemberDetails:
 

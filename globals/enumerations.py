@@ -32,6 +32,7 @@ class PlayerStatus(FormEnum):
     def current_member(self):
         return self in [PlayerStatus.member, PlayerStatus.new, PlayerStatus.non_vl]
 
+
 class MemberStatus(FormEnum):
     full_member = 1
     overseas_member = 2

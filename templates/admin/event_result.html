@@ -47,12 +47,12 @@
                         text='Edit/show card for ' + item.player.data
                     )|safe }}
                 </td>
-
             {%if form.editable.data %}
                 <td>{{ item.player_id }}</td>
                 <td>{{ item.strokes_return }}</td>
                 <td>{{ item.handicap_return }}</td>
                 <td>{{ item.status_return }}</td>
+                <td>{{ item.whs_handicap }}</td>
             {% endif %}
         </tr>
         {% endfor %}

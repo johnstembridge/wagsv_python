@@ -1,9 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, FieldList, FormField, HiddenField
 
-from back_end.calc import calc_event_positions
-from back_end.interface import get_event, save_event_score, get_event_card, \
-    get_player, is_event_result_editable, get_event_scores, save_event_result
+from back_end.interface import get_event, save_event_score, get_event_card, get_player, get_event_scores, \
+    save_event_result, calc_event_positions
 
 
 class EventCardItemForm(FlaskForm):
@@ -45,7 +44,7 @@ class EventCardForm(FlaskForm):
         self.positionReturn.data = position
         self.handicapReturn.data = handicap
         self.statusReturn.data = status
-        self.editable.data = is_event_result_editable(event)
+        self.editable.data = event.is_result_editable()
 
         holes = range(1, 19)
         for hole in holes:

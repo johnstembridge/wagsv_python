@@ -10,19 +10,23 @@
 <form method="POST">
     {{ form.csrf_token }}
     <p>To add a <b>member</b> to the list of those playing this event, select the member and click Submit.</p>
-    <p>To add a <b>guest</b>, first select the member whose guest they are then give the guest's name and handicap and click Submit.</p>
+    {% if not form.members_only.data %}
+        <p>To add a <b>guest</b>, first select the member whose guest they are then give the guest's name and handicap and click Submit.</p>
+    {% endif %}
     <table>
         <tr>
             <td>{{ form.member.label }}&nbsp;</td>
             <td>{{ form.member }}</td>
         </tr>
         <tr><td>&nbsp;</td></tr>
-        <tr>
-            <td>{{ form.guest_name.label }}&nbsp;</td>
-            <td>{{ form.guest_name }}</td>
-            <td>&nbsp;{{ form.guest_handicap.label }}&nbsp;</td>
-            <td>{{ form.guest_handicap(size="4") }}</td>
-        </tr>
+        {% if not form.members_only.data %}
+            <tr>
+                <td>{{ form.guest_name.label }}&nbsp;</td>
+                <td>{{ form.guest_name }}</td>
+                <td>&nbsp;{{ form.guest_handicap.label }}&nbsp;</td>
+                <td>{{ form.guest_handicap(size="4") }}</td>
+            </tr>
+        {% endif %}
         <tr><td>&nbsp;</td></tr>
     </table>
     {{ form.submit(class="btn btn-primary") }}

@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, DecimalField, TextAreaField, IntegerField, SubmitField, FieldList, \
+from wtforms import StringField, BooleanField, DecimalField, TextAreaField, IntegerField, SubmitField, FieldList, \
     FormField, HiddenField
 from wtforms.fields.html5 import DateField
 from wtforms_components import TimeField
@@ -8,7 +8,7 @@ from wtforms.validators import InputRequired, Optional
 from front_end.form_helpers import set_select_field_new, MySelectField
 from globals.enumerations import EventType
 from back_end.interface import get_event, get_trophy_select_choices, save_event_details, \
-    is_event_editable, get_member_select_choices, get_venue_select_choices, get_course_select_choices
+    get_member_select_choices, get_venue_select_choices, get_course_select_choices
 from models.wags_db import Event, Schedule
 
 
@@ -33,6 +33,7 @@ class EventForm(FlaskForm):
     start_booking = DateField(label='Booking Starts', validators=[Optional()])
     end_booking = DateField(label='Booking Ends', validators=[Optional()])
     max = IntegerField(label='Maximum', validators=[Optional()])
+    members_only = BooleanField(label='Members Only Event?')
     event_type = HiddenField(label='Event Type')
     schedule = FieldList(FormField(ScheduleForm))
     tour_schedule = FieldList(FormField(TourScheduleForm))
@@ -44,13 +45,14 @@ class EventForm(FlaskForm):
         event = get_event(event_id)
         if not event_type:
             event_type = event.type
-        self.editable = is_event_editable(event.date.year)
+        self.editable = event.is_editable()
         self.date.data = event.date
         self.member_price.data = event.member_price
         self.guest_price.data = event.guest_price
         self.start_booking.data = event.booking_start
         self.end_booking.data = event.booking_end
         self.max.data = event.max
+        self.members_only.data = event.members_only
         self.event_type.data = event_type.value
         self.note.data = event.note
         if event_type in [EventType.wags_vl_event, EventType.non_vl_event, EventType.non_event, EventType.cancelled]:
@@ -104,6 +106,7 @@ class EventForm(FlaskForm):
             'start_booking': self.start_booking.data,
             'end_booking': self.end_booking.data,
             'max': self.max.data or '0',
+            'members_only': self.members_only.data,
             'event_type': event_type,
             'note': self.note.data,
             'schedule': [],

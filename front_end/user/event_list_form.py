@@ -16,7 +16,9 @@ class EventItemForm(FlaskForm):
     trophy_id = HiddenField(label='Trophy id')
     venue_url = StringField(label='Link to Venue')
     venue = StringField(label='Venue')
-    slope = StringField(label='Slope Rating')
+    slope = StringField(label='Slope')
+    par = StringField(label='Par')
+    rating = StringField(label='Rating')
     event_type = HiddenField(label='Event type')
     bookable = HiddenField(label='Event bookable')
     result = HiddenField(label='Result available')
@@ -29,6 +31,7 @@ class EventListForm(FlaskForm):
     def populate_event_list(self, year):
         first = True
         for event in get_events_for_year(year):
+            cd = event.course.course_data_as_of(year) if event.course else None
             event_type = event.type
             item_form = EventItemForm()
             item_form.num = event.id
@@ -41,11 +44,16 @@ class EventListForm(FlaskForm):
                 item_form.trophy_id = None
             item_form.venue = event.venue.name
             item_form.venue_url = get_venue_url(event.venue)
-            item_form.slope = event.course.course_data_as_of(year).slope if event.course else ''
+            if event.course:
+                item_form.slope = cd.slope
+                item_form.par = cd.course_par()
+                item_form.rating = cd.rating
+            else:
+                item_form.slope = item_form.par = item_form.rating = ''
             item_form.event_type = event_type.name
             item_form.new_section = not (first or event.tour_event_id)
             first = False
-            item_form.bookable = event.bookable()
+            item_form.bookable = event.is_bookable()
             item_form.result = event.date < datetime.date.today() and event.type in \
                 (EventType.wags_vl_event, EventType.wags_tour, EventType.minotaur)
             self.event_list.append_entry(item_form)

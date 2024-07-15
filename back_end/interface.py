@@ -2,17 +2,21 @@ import datetime
 import os
 import itertools
 
-from back_end.data_utilities import mean, first_or_default, fmt_date, normalise_name, gen_to_list, get_positions
+from back_end.file_access import get_records, update_html_elements, get_file_contents, create_data_file
+from back_end.data_utilities import mean, first_or_default, parse_float, normalise_name, gen_to_list, fmt_date, \
+    my_round, coerce
 from back_end.table import Table
+from back_end.calc import calc_stableford_points, calc_swings, calc_positions
+
+from globals.enumerations import MemberStatus, PlayerStatus, EventType, Function
+from globals.app_setup import db
+from globals import config
+
 from front_end.form_helpers import get_elements_from_html
-from globals.enumerations import MemberStatus, PlayerStatus, EventType, Function, UserRole
+
 from models.wags_db import Event, Score, Course, CourseData, Trophy, Player, Venue, Handicap, Member, Contact, \
     Schedule, Booking, User, Committee, Role
-from globals.app_setup import db
 from sqlalchemy import text, and_, func
-
-from globals import config
-from back_end.file_access import get_records, update_html_elements, get_file_contents, create_data_file
 
 db_session = db.session
 
@@ -54,6 +58,7 @@ def save_user(user):
     if not user.id:
         db_session.add(user)
     db_session.commit()
+
 
 # endregion
 
@@ -151,7 +156,7 @@ def get_events_for_course(course_id, period=None):
 def get_event_scores(event_id):
     event = get_event(event_id)
     head = ['player_id', 'position', 'points', 'shots', 'handicap', 'status', 'card', 'player_name', 'first_name',
-            'last_name']
+            'last_name', 'whs']
     data = []
     for score in event.scores:
         player_state = score.player.state_as_of(event.date)
@@ -164,7 +169,8 @@ def get_event_scores(event_id):
                score.card,
                score.player.full_name(),
                score.player.first_name,
-               score.player.last_name]
+               score.player.last_name,
+               player_state.handicap]
         data.append(row)
     return Table(head, data)
 
@@ -191,6 +197,7 @@ def save_event_details(event_id, details):
     event.guest_price = details['guest_price']
     event.booking_start = details['start_booking']
     event.booking_end = details['end_booking']
+    event.members_only = details['members_only']
     event.max = details['max']
     event.note = details['note']
 
@@ -237,6 +244,7 @@ def save_event_details(event_id, details):
 def save_event_result(event_id, result):
     event = get_event(event_id)
     scores = []
+    whs = {}
     delete = {s.id: True for s in event.scores}
     for row in result.rows():
         score = first_or_default([s for s in event.scores if s.player_id == int(row['player_id'])], None)
@@ -257,9 +265,17 @@ def save_event_result(event_id, result):
                           card=row.get('card', None)
                           )
         scores.append(score)
+        whs[int(row['player_id'])] = float(row['whs'])
     for score in event.scores:
         if delete.get(score.id, False):
             db_session.delete(score)
+        else:
+            # add handicap for player if necessary
+            player = get_player(score.player_id)
+            state = player.state_as_of(event.date)
+            if state.handicap == 0 or not state.status.current_member() and state.date < event.date:
+                player.handicaps.append(
+                    new_handicap(player, status=state.status, handicap=whs[player.id], date=event.date))
     if len(result.data) > 0:
         update_event_winner(event, result)
     else:
@@ -268,6 +284,32 @@ def save_event_result(event_id, result):
     if event.tour_event:
         if event.tour_event.trophy and event in event.tour_event.tour_events:
             update_tour_winner(event.tour_event)
+    db_session.commit()
+
+
+def save_event_booking(event_id, new_bookings):
+    event = get_event(event_id)
+    bookings = []
+    delete = {b.id: True for b in event.bookings}
+    for row in new_bookings.rows():
+        booking = first_or_default([b for b in event.bookings if b.id == int(row['booking_id'])], None)
+        if booking:
+            booking.playing = row['playing']
+            if row['hcap']:
+                if booking.guests:
+                    # reset guest handicap or remove guest if not playing
+                    guest_booking = first_or_default([b for b in booking.guests if b.id == int(row['guest_id'])], None)
+                    if guest_booking:
+                        guest_booking.handicap = float(row['hcap'])
+                        if not row['playing']:
+                            db_session.delete(guest_booking)
+            if booking.id in delete:
+                delete[booking.id] = False
+        bookings.append(booking)
+    for booking in event.bookings:
+        if delete.get(booking.id, False):
+            db_session.delete(booking)
+    event.bookings = bookings
     db_session.commit()
 
 
@@ -331,10 +373,10 @@ def get_players_for_event(event):
                 p = get_player_by_name(guest.name)
                 if p:
                     state = p.state_as_of(event.date)
-                    if state.status == PlayerStatus.guest:
+                    if state.status in [PlayerStatus.guest, PlayerStatus.ex_member]:
                         if state.handicap != guest.handicap:
                             p.handicaps.append(
-                                Handicap(date=event.date, status=PlayerStatus.guest, handicap=guest.handicap))
+                                Handicap(date=event.date, status=state.status, handicap=guest.handicap))
                     else:
                         guest.handicap = state.handicap
                 else:
@@ -355,20 +397,10 @@ def sorted_players_for_event(event):
     return sorted(players, key=getKey)
 
 
-def is_event_result_editable(event):
-    override = config.get('override')
-    return override or (datetime.date.today() >= event.date) and (datetime.date.today().year == event.date.year)
-
-
 def is_latest_event(event):
     last = get_latest_event()
     override = config.get('override')
     return override or event.id == last.id
-
-
-def is_event_editable(year):
-    override = config.get('override')
-    return override or year >= datetime.date.today().year
 
 
 def get_latest_event(include_tours=False):
@@ -376,7 +408,7 @@ def get_latest_event(include_tours=False):
     year = today.year
     previous = [e for e in get_events_for_year(year) if e.type == EventType.wags_vl_event and e.date <= today]
     if len(previous) == 0:
-        previous = [e for e in get_events_for_year(year-1) if e.type == EventType.wags_vl_event]
+        previous = [e for e in get_events_for_year(year - 1) if e.type == EventType.wags_vl_event]
     if include_tours and previous[-1].tour_event:
         return previous[-1].tour_event
     else:
@@ -398,6 +430,11 @@ def get_events_in(date_range):
         .filter(Event.date.between(date_range[0], date_range[1]), Event.type == EventType.wags_vl_event) \
         .order_by(Event.date).all()
     return events
+
+
+def is_event_list_editable(year):
+    override = config.get('override')
+    return override or year >= datetime.date.today().year
 
 
 # endregion
@@ -429,8 +466,9 @@ def get_tour_results(event):
     head = ['player_id', 'status', 'scores', 'total']
     res = Table(head, res)
     res.sort(['total'], reverse=True)
-    res.add_column('position', get_positions(res.get_columns('total')))
+    res.add_column('position', calc_positions(res.get_columns('total')))
     return res
+
 
 def get_tour_scores(event_ids):
     ids = '(' + (','.join([str(id) for id in event_ids])) + ')'
@@ -448,6 +486,7 @@ def get_tour_scores(event_ids):
 
 
 # region courses
+
 def get_course_select_choices():
     return [(c.id, c.name) for c in db_session.query(Course).order_by(Course.name)]
 
@@ -501,6 +540,7 @@ def save_course_data(course_id, data):
     card.par = data['par']
 
     db_session.commit()
+
 
 # endregion
 
@@ -600,12 +640,6 @@ def save_handicaps(new_table):
 # region Members
 def get_member(member_id):
     member = db_session.query(Member).filter_by(id=member_id).first()
-    # if not member.user:
-    #     member.user = User()
-    #     member.user.roles.append(UserRole.user)
-    #     # member.user.member_id = member_id
-    # if not member.proposer:
-    #     member.proposer = Member()
     return member
 
 
@@ -644,15 +678,15 @@ def get_current_members_as_players(current=True):
     members = get_all_members(current)
     players = [m.player for m in members]
 
-    def sk(player):
+    def lastname_firstname(player):
         return player.last_name.lower() + player.first_name.lower()
 
-    players.sort(key=sk)
+    players.sort(key=lastname_firstname)
     return players
 
 
 def get_member_select_choices(current=False):
-    choices = [(p.member.id, p.full_name()) for p in get_current_members_as_players(current=current)]
+    choices = [(p.member.id, p.full_name()) for p in get_current_members_as_players(current=True)]
     return choices
 
 
@@ -740,6 +774,17 @@ def save_member_details(member_id, data):
 def get_member_account(member_name, year):
     file = accounts_file(year)
     return Table(*get_records(file, 'member', member_name))
+
+
+def member_account_balance(member_id, year):
+    member = get_member(member_id)
+    balance = 0
+    account = get_member_account(member.player.full_name(), year)
+    for item in account.rows():
+        debit = parse_float(item['debit'])
+        credit = parse_float(item['credit'])
+        balance += (credit or 0) - (debit or 0)
+    return balance
 
 
 # endregion
@@ -831,10 +876,92 @@ def get_booking(event_id, member_id):
            or Booking(event_id=event_id, member_id=member_id, date=datetime.date.today())
 
 
-def save_booking(booking, add=True):
-    if add and not booking.id:
+def save_booking(booking):
+    if not booking.id:
         db_session.add(booking)
     db_session.commit()
+
+
+# endregion
+
+
+# region Reports
+
+def get_vl(year):
+    scores = get_scores(year=year, status=PlayerStatus.member)
+    scores.sort(['player_id', 'date'])
+    vl = Table(['player_id', 'points', 'events', 'lowest'],
+               [vl_summary(scores.column_index('points'), key, list(values))
+                for key, values in scores.group_by('player_id')])
+    vl.sort(['points', 'lowest'], reverse=True)
+    vl.add_column('position', calc_positions(vl.get_columns('points')))
+    vl.add_column('name', get_player_names(vl.get_columns('player_id')))
+    return vl
+
+
+def vl_summary(pi, player_id, scores):
+    points = [s[pi] for s in scores]
+    points = sorted(points, reverse=True)
+    top_6 = points[:6]
+    return [player_id, sum(top_6), len(top_6), min(top_6)]
+
+
+def calc_event_positions(event_id, result):
+    event = get_event(event_id)
+    course_data = event.course.course_data_as_of(event.date.year)
+    if 'card' not in result.head:
+        cards = {s.player_id: s.card for s in event.scores}
+        # cards = get_event_cards(event_id)
+    else:
+        cards = {pc[0]: pc[1] for pc in result.get_columns(['player_id', 'card']) if pc[1]}
+    sort = []
+    for row in result.data:
+        player = dict(zip(result.head, row))
+        player_id = int(player['player_id'])
+        player_hcap = my_round(float(player['handicap']))
+        if player_id in cards and cards[player_id]:
+            shots = [int(s) for s in cards[player_id]]
+            points = calc_stableford_points(player_hcap, shots, course_data.si, course_data.par)
+            # countback
+            tot = (1e6 * sum(points[-18:])) + (1e4 * sum(points[-9:])) + (1e2 * sum(points[-6:])) + sum(points[-3:])
+        else:
+            tot = 1e6 * coerce(player['points'], float)
+        sort.append(tot)
+    result.sort_using(sort, reverse=True)
+    position = list(range(1, len(result.data) + 1))
+    result.update_column('position', position)
+    return result
+
+
+def get_big_swing(year, as_of=datetime.date.today()):
+    date_range = (datetime.date(year - 1, 1, 1), datetime.date(year + 1, 12, 31))
+    events = get_events_in(date_range)  # date, course
+    if len(events) > 0:
+        richmond = lookup_course('The Richmond')
+        richmond_events = [e for e in events if e.course_id == richmond]
+        first = [e for e in richmond_events if as_of > e.date][-1].date + datetime.timedelta(days=1)
+        last = [e for e in richmond_events if as_of <= e.date]
+        if len(last) == 0:
+            last = [e for e in events if as_of <= e.date]
+            if len(last) == 0:
+                last = as_of
+            else:
+                last = last[-1].date
+        else:
+            last = last[0].date
+        events = [e for e in events if e.date >= first and e.date <= last and e.type == EventType.wags_vl_event]
+    else:
+        first = as_of
+    header = ['player', 'course', 'date', 'points_out', 'points_in', 'swing']
+    swings = []
+    for event in events:
+        swings.extend(calc_swings(event))
+    swings = Table(header, swings)
+    swings.sort('swing', reverse=True)
+    swings.top_n(10)
+    swings.add_column('position', calc_positions(swings.get_columns('swing')))
+    year_range = [first.year, first.year + 1]
+    return year_range, swings
 
 
 # endregion

@@ -50,7 +50,12 @@ a.icon-block i {
     clear:both;
 }
 
-IMG		{border-style: none}
+img {
+    border-style: none;
+    max-width: 100%;
+    display: block;
+}
+
 TD.head		{color: #6E1285; font-weight: bold}
 TD.h2		{color: #6E1285; font-size: 20pt}
 TD.h3		{color: #6E1285; font-size: 16pt}

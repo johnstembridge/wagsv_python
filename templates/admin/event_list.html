@@ -14,6 +14,7 @@
             <th>Event</th>
             <th>Venue</th>
             <th class="text-center">Details</th>
+            <th class="text-center">Bookings</th>
             <th class="text-center">Result</th>
             <th class="text-center">Hcaps</th>
             <th class="text-center">Report</th>
@@ -32,6 +33,17 @@
                     text='View/Edit event'
                 )|safe }}
             </td>
+            {%if item.event_bookable.data %}
+                <td align="center">
+                    {{ render_link(
+                        url=url_for('bookings_event', event_id=item.event_id.data),
+                        image=url_for('static', filename='images/right-arrow.png'),
+                        text='View/Edit event bookings'
+                    )|safe }}
+                </td>
+            {% else %}
+                <td></td>
+            {% endif %}
             {%if item.result.data %}
                 <td align="center">
                     {{ render_link(

@@ -1,5 +1,5 @@
 from flask import request, redirect
-from flask_login import login_required, current_user
+from flask_login import login_required
 
 from back_end.interface import get_event
 from globals.decorators import role_required
@@ -38,6 +38,17 @@ def edit_event(event_id):
     event_type = request.args.get('event_type')
     event_type = EventType(int(request.args.get('event_type'))) if event_type else None  # for add event/tour
     return MaintainEvents.edit_event(int(event_id), event_type)
+
+
+@app.route('/events/<event_id>/bookings', methods=['GET', 'POST'])
+@login_required
+@role_required('admin')
+def bookings_event(event_id):
+    event_type = get_event(event_id).type
+    if event_type in [EventType.wags_vl_event, EventType.non_vl_event, EventType.wags_tour]:
+        return MaintainEvents.event_bookings(event_id)
+    else:
+        return redirect(request.referrer)
 
 
 @app.route('/events/<event_id>/results', methods=['GET', 'POST'])

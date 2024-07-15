@@ -15,11 +15,13 @@ class AddPlayerForm(FlaskForm):
     guest_handicap = StringField(label='Handicap')
     submit = SubmitField(label='Submit')
     event_id = HiddenField(label='Event_id')
+    members_only = HiddenField(label='Members Only')
 
     def populate_add_player(self, event_id):
         self.event_id.data = event_id
         self.event_name.data = get_event(event_id).full_name()
         set_select_field_new(self.member, get_member_select_choices(), item_name='Member')
+        self.members_only.data = get_event(event_id).members_only
 
     def add_booking(self, event_id):
         errors = self.errors
@@ -28,33 +30,34 @@ class AddPlayerForm(FlaskForm):
         member_id = int(self.member.data)
         if member_id == 0:
             flash('No member given for booking', 'danger')
-            return False
+            return True
         booking = get_booking(event_id, member_id)
         with suspend_flush():
-            if booking.playing is None:
+            if not booking.id:
                 # new booking for member
                 booking.member = get_member(member_id)
-                booking.playing = False
+                booking.playing = True
             guest_name = self.guest_name.data
-            guest_handicap = float(self.guest_handicap.data or '0')
-            if guest_name != '':
+            guest = guest_name != ''
+            if guest:
                 player_name = guest_name.title()
+                guest_handicap = float(self.guest_handicap.data or '0')
             else:
                 player_name = booking.member.player.full_name()
             all_players = [x.full_name() for x in get_players_for_event_id(event_id)]
             if player_name in all_players:
                 flash('{} is already in the list of players for this event'.format(player_name), 'danger')
                 return False
-            if guest_name != '':
+            if guest:
                 if guest_handicap == 0:
                     flash('No handicap given for {}'.format(guest_name), 'danger')
                     return False
                 else:
-                    guest = Guest(name=guest_name, handicap=guest_handicap)
-                    booking.guests.append(guest)
+                    g = Guest(name=guest_name, handicap=guest_handicap)
+                    booking.guests.append(g)
             else:
                 booking.playing = True
             booking.comment = 'Added to enter score'
-        save_booking(booking, add=True)
+        save_booking(booking)
         flash('{} added to player list for this event'.format(player_name), 'success')
         return True

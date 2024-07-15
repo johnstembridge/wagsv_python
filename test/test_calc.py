@@ -1,7 +1,7 @@
 import unittest
 from datetime import datetime
 
-from back_end.calc import get_vl, get_big_swing, get_swings
+from interface import get_vl, get_big_swing
 
 
 class TestCalc(unittest.TestCase):

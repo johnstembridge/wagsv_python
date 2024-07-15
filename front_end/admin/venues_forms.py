@@ -44,7 +44,7 @@ class VenueDetailsForm(FlaskForm):
         self.name.data = venue.name
         self.directions.data = venue.directions
         course_choices = get_course_select_choices()
-        set_select_field_new(self.select_course, course_choices, item_name='Course')
+        set_select_field_new(self.select_course, course_choices, item_name='Existing Course')
         if venue.contact:
             self.url.data = venue.contact.url
             self.phone.data = venue.contact.phone

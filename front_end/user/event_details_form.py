@@ -6,9 +6,11 @@ from wtforms import StringField, DecimalField, TextAreaField, SubmitField, Field
 from wtforms.fields.html5 import DateField
 from wtforms.validators import Optional
 
-from back_end.data_utilities import encode_date, fmt_date, first_or_default, parse_float, my_round, handicap_slope_factor
-from back_end.interface import get_event, get_booking, save_booking, get_member, \
-    get_committee_function, get_player_by_name, suspend_flush
+from back_end.data_utilities import encode_date, fmt_date, fmt_curr, first_or_default, parse_float
+from back_end.calc import calc_playing_handicap
+from back_end.interface import get_event, get_booking, save_booking, get_member, get_committee_function, \
+    get_player_by_name, suspend_flush
+
 from front_end.form_helpers import line_break
 from globals.email import send_mail
 from globals.enumerations import Function, PlayerStatus, EventType
@@ -36,7 +38,7 @@ class EventDetailsForm(FlaskForm):
     map_url = StringField(label='map_url')
     schedule = TextAreaField(label='Schedule')
     member_price = DecimalField(label='Members')
-    guest_price = DecimalField(label='Guests')
+    guest_price = StringField(label='Guests')
     organiser = StringField(label='Organiser')
     organiser_id = StringField(label='Organiser Id')
     booking_deadline = StringField(label='Booking deadline')
@@ -50,6 +52,7 @@ class EventDetailsForm(FlaskForm):
 
     event_id = HiddenField(label='Event Id')
     event_type = HiddenField(label='Event Type')
+    members_only = HiddenField(label='Members_Only')
 
     submit = SubmitField(label='Save')
 
@@ -81,7 +84,11 @@ class EventDetailsForm(FlaskForm):
         self.venue_directions.data = line_break(event.venue.directions or '', '\n')
         self.schedule.data = line_break([(s.time.strftime('%H:%M ') + s.text) for s in event.schedule])
         self.member_price.data = event.member_price
-        self.guest_price.data = event.guest_price
+        if event.members_only:
+            self.guest_price.data = 'This event is members only'
+        else:
+            self.guest_price.data = fmt_curr(event.guest_price)
+        self.members_only.data = event.members_only
         self.booking_deadline.data = encode_date(event.booking_end)
         self.notes.data = event.note or ''
 
@@ -113,7 +120,7 @@ class EventDetailsForm(FlaskForm):
     def booking_message(event, booking):
         if event.type == EventType.cancelled:
             return 'This event has been cancelled'
-        if event.bookable() == -1 or event.tour_event_id and event.tour_event.type == EventType.wags_tour:
+        if event.bookable() == -1:
             return 'Booking is not available for this event'
         today = datetime.date.today()
         booking_start = event.booking_start or event.date
@@ -162,21 +169,23 @@ class EventDetailsForm(FlaskForm):
     @staticmethod
     def confirm_booking(event_id, member_id):
         booking = get_booking(event_id, member_id)
-        subject = 'Book event - {}'.format(booking.event.full_name())
+        event = booking.event
+        subject = 'Book event - {}'.format(event.full_name())
         treasurer = get_committee_function(Function.Treasurer)
         cost = 0
-        cd = booking.event.course.course_data_as_of(booking.event.date.year)
         if booking.playing:
-            cost += booking.event.member_price
-            message = ['{} will attend'.format(booking.member.player.full_name())]
-            message.append(
-                'Note: the slope rating of this course is {} so your handicap for this event will be factored by {}'
-                    .format(cd.slope, my_round(handicap_slope_factor(cd.slope), 2)))
+            cost += event.member_price
+            hcap = booking.member.player.state_as_of(booking.date).handicap
+            message = ['{} will attend'.format(booking.member.player.full_name()),
+                       'The handicap(s) shown below are Playing Handicap and (WHS) where the Playing Handicap ' \
+                       'is 95% of your WHS handicap factored by the slope index of the course',
+                       'Your handicap: {} ({})'.format(calc_playing_handicap(hcap, event), hcap)]
             if booking.guests:
                 message.append('Guests:')
                 for guest in booking.guests:
-                    cost += booking.event.guest_price
-                    message.append('{} (handicap {})'.format(guest.name, guest.handicap))
+                    cost += event.guest_price
+                    message.append(
+                        '{} {} ({})'.format(guest.name, calc_playing_handicap(guest.handicap, event), guest.handicap))
             message.append('Total cost £{}'.format(cost))
             message.append(
                 '(Please pay by on-line credit to the WAGS bank account number 01284487, sort code 40-07-30)')
@@ -186,14 +195,16 @@ class EventDetailsForm(FlaskForm):
             message = ['{} will not attend'.format(booking.member.player.full_name())]
         sender = 'booking@wags.org'
         to = booking.member.contact.email
+        organiser = event.organiser.contact.email
         fixtures = get_committee_function(Function.Fixtures).member.contact.email
-        organiser = booking.event.organiser.contact.email
+        treasurer = treasurer.member.contact.email
         send_mail(to=to,
                   sender=sender,
-                  cc=[treasurer.member.contact.email, fixtures, organiser],
+                  cc=[organiser, fixtures, treasurer],
                   subject='WAGS: ' + subject,
                   message=message)
-
+        message.append('A confirmation email has been sent to {}'.format(to))
+        message.append('If it does not appear in your inbox, check your spam/junk folder')
         form = EventBookingConfirmationForm()
         form.populate(subject, message)
         return form

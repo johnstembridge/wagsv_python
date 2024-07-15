@@ -4,10 +4,11 @@ from flask import render_template, redirect, flash
 from back_end.data_utilities import fmt_date, coerce
 from back_end.interface import get_event
 from back_end.file_access import write_file
-from front_end.admin.event_add_player_form import AddPlayerForm
+from .event_add_player_form import AddPlayerForm
 from .event_report_form import EventReportForm
 from .event_card_form import EventCardForm
 from .event_details_form import EventForm
+from .event_bookings_form import EventBookingsForm
 from .event_handicap_form import EventHandicapsForm
 from .event_list_form import EventListForm, EventCalendarListForm
 from .event_result_form import EventResultsForm
@@ -74,6 +75,24 @@ class MaintainEvents:
             return render_template('admin/tour_details.html', form=form, event_id=event, event_type_desc=event_type_desc)
         if event_type == EventType.non_event:
             return render_template('admin/non_event_details.html', form=form, event_id=event, event_type_desc=event_type_desc)
+
+    @staticmethod
+    def event_bookings(event_id):
+        form = EventBookingsForm()
+        if form.is_submitted():
+            if form.validate_on_submit():
+                if form.save_bookings.data:
+                    if form.save_event_bookings(event_id):
+                        flash('Bookings saved', 'success')
+                        year = (get_event(event_id).date).year
+                        return redirect(url_for_admin('list_events', year=year))
+                if form.add_player.data:
+                    return redirect(url_for_admin('add_player_to_event', event_id=event_id))
+            else:
+                form.populate_event_bookings(event_id)
+        else:
+            form.populate_event_bookings(event_id)
+        return render_template('admin/event_bookings.html', form=form, event_id=event_id)
 
     @staticmethod
     def results_vl_event(event_id):
@@ -163,7 +182,7 @@ class MaintainEvents:
         if form.is_submitted():
             if form.submit.data:
                 if form.add_booking(event_id):
-                    return redirect(url_for_admin('results_event', event_id=event_id))
+                    return redirect(url_for_admin('bookings_event', event_id=event_id))
                 else:
                     return redirect(url_for_admin('add_player_to_event', event_id=event_id))
         else:

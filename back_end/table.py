@@ -1,7 +1,7 @@
 from operator import itemgetter
 import itertools
 
-from .data_utilities import lookup, force_list, coerce
+from back_end.data_utilities import lookup, force_list, coerce
 
 
 class Table:
