@@ -9,96 +9,110 @@
     {{ form.hidden_tag() }}
     <table width="100%">
         <tr>
-            <td>{{ form.event.label }}</td><td>{{ form.event.data }}</td>
+            <td>{{ form.event.label }}</td>
+            <td>{{ form.event.data }}</td>
             <td>{% if form.show_bookings.data %}
                 <b>{{ render_link(
                     url=url_for_user('show_all_bookings', event_id=form.event_id.data),
                     text='Show all bookings'
-                )|safe }}</b>
+                    )|safe }}</b>
                 {% endif %}
             </td>
         </tr>
         <tr>
-            <td>{{ form.date.label }}</td><td>{{ form.date.data }}</td>
+            <td>{{ form.date.label }}</td>
+            <td>{{ form.date.data }}</td>
             <td>{{ form.booking_deadline.label }}&nbsp;{{ form.booking_deadline.data }}</td>
         </tr>
         <tr>
-            <td>{{ form.venue.label }}</td><td>{{ form.venue.data }}</td>
+            <td>{{ form.venue.label }}</td>
+            <td>{{ form.venue.data }}</td>
             <td><b>{{ render_link(
-                    url=form.map_url.data,
-                    text='Show map',
-                    target='googlemap'
+                url=form.map_url.data,
+                text='Show map',
+                target='googlemap'
                 )|safe }}</b>
             </td>
         </tr>
         <tr>
-            <td></td><td class="middle">{{ form.venue_address.data|safe }}</td>
+            <td></td>
+            <td class="middle">{{ form.venue_address.data|safe }}</td>
             <td class="top" rowspan=2 width=50%>{{ form.venue_directions.data }}</td>
         </tr>
         <tr>
-            <td>{{ form.venue_phone.label }}</td><td>{{ form.venue_phone.data }}</td>
+            <td>{{ form.venue_phone.label }}</td>
+            <td>{{ form.venue_phone.data }}</td>
         <tr/>
         <tr>
-            <td class="top">{{ form.schedule.label }}</td><td colspan=2>{{ form.schedule.data|safe }}</td>
+            <td class="top">{{ form.schedule.label }}</td>
+            <td colspan=2>{{ form.schedule.data|safe }}</td>
         <tr/>
-        <tr><td>&nbsp;<td/><tr/>
         <tr>
-            <td>{{ form.member_price.label }}</td><td>£{{ form.member_price.data }}{% if form.member_price.data != form.guest_price.data %} (net of deposit){% endif %}</td>
+            <td>&nbsp;
+            <td/>
+        <tr/>
+        <tr>
+            <td>{{ form.member_price.label }}</td>
+            <td>£{{ form.member_price.data }}{% if form.member_price.data != form.guest_price.data %} (net of deposit){%
+                endif %}
+            </td>
             <td class="top" rowspan=2 width=50%>{{ form.notes.data }}</td>
         <tr/>
         <tr>
-            <td>{{ form.guest_price.label }}</td><td>{{ form.guest_price.data }}</td>
+            <td>{{ form.guest_price.label }}</td>
+            <td>{{ form.guest_price.data }}</td>
         </tr>
         <tr>
             <td>{{ form.organiser.label }}</td>
             <td>{{ render_link(
-                    url=url_for_user('show_contact_details', member_id=form.organiser_id.data),
-                    text=form.organiser.data
+                url=url_for_user('show_contact_details', member_id=form.organiser_id.data),
+                text=form.organiser.data
                 )|safe }}
             </td>
             <td><b>{{ render_link(
-                    url=url_for_html('static/checklist.htm'),
-                    text="Show organiser's checklist"
+                url=url_for_html('static/checklist.htm'),
+                text="Show organiser's checklist"
                 )|safe }}</b>
             </td>
         </tr>
     </table>
     <hr/>
     {% if form.bookable.data or (form.at_capacity.data and form.member_name.data) %}
-        {{ form.member_name.data }}
-        {% for option in form.attend %}
-            &nbsp;{{ option }}&nbsp;{{ option.label }}
+    {{ form.member_name.data }}
+    {% for option in form.attend %}
+    &nbsp;{{ option }}&nbsp;{{ option.label }}
+    {% endfor %}
+    {% if not (form.at_capacity.data or form.members_only.data) %}
+    <p><b>If adding a guest, please give their name(first name then last name) and WHS handicap index.<br>
+        Their playing handicap will be automatically calculated.</b></p>
+    <table width="100%">
+        <thead>
+        <tr>
+            <th></th>
+            <th class="bold">Guest</th>
+            <th class="bold">WHS Handicap</th>
+            <th class="bold">Comments</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in form.guests %}
+        <tr>
+            <td>{{ item.item_pos.data }}&nbsp;</td>
+            <td>{{ item.guest_name(size="25") }}</td>
+            <td>{{ item.handicap(size="6", type="number", min="0.1", max="36", step="0.1") }}</td>
+            {% if item.item_pos.data == 1 %}
+            <td rowspan="3">{{ form.comment(rows="4", cols="45") }}</td>
+            {% endif %}
+        </tr>
         {% endfor %}
-        {% if not (form.at_capacity.data or form.members_only.data) %}
-            <p><b>If adding a guest, please give their WHS handicap index, their playing handicap will be automatically calculated.</b></p>
-            <table width="100%">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th class="bold">Guest</th>
-                        <th class="bold">WHS Handicap</th>
-                        <th class="bold">Comments</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for item in form.guests %}
-                <tr>
-                    <td>{{ item.item_pos.data }}&nbsp;</td>
-                    <td>{{ item.guest_name(size="25") }}</td>
-                    <td>{{ item.handicap(size="6", type="number", min="0.1", max="36", step="0.1") }}</td>
-                    {% if item.item_pos.data == 1 %}
-                        <td rowspan="3">{{ form.comment(rows="4", cols="45") }}</td>
-                    {% endif %}
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        {% endif %}
-        <hr/>
-        {{ form.submit(class="btn btn-primary")}}
-        {% if form.booking_date.data %}
-            <b>If you wish to change your booking, amend the details and re-submit</b>
-        {% endif %}
+        </tbody>
+    </table>
+    {% endif %}
+    <hr/>
+    {{ form.submit(class="btn btn-primary")}}
+    {% if form.booking_date.data %}
+    <b>If you wish to change your booking, amend the details and re-submit</b>
+    {% endif %}
     {% endif %}
 </form>
 {% endblock %}
