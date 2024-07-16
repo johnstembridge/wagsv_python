@@ -297,9 +297,10 @@ def save_event_booking(event_id, new_bookings):
             booking.playing = row['playing']
             if row['hcap']:
                 if booking.guests:
-                    # reset guest handicap or remove guest if not playing
+                    # reset guest name and handicap or remove guest if not playing
                     guest_booking = first_or_default([b for b in booking.guests if b.id == int(row['guest_id'])], None)
                     if guest_booking:
+                        guest_booking.name = row['name']
                         guest_booking.handicap = float(row['hcap'])
                         if not row['playing']:
                             db_session.delete(guest_booking)

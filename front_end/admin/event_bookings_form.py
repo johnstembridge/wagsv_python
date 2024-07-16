@@ -58,8 +58,8 @@ class EventBookingsForm(FlaskForm):
         if len(errors) > 0:
             return False
 
-        fields = ['member_id', 'booking_id', 'playing', 'guest_id', 'hcap']
-        form_fields = ['member_id', 'booking_id', 'playing', 'guest_id', 'hcap']
+        fields = ['member_id', 'booking_id', 'playing', 'guest_id', 'name', 'hcap']
+        form_fields = ['member_id', 'booking_id', 'playing', 'guest_id', 'player_name', 'hcap']
 
         def sel_table_fields(dict, fields):
             res = []

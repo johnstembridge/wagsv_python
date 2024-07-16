@@ -21,7 +21,11 @@
         {% for item in form.bookings %}
         <tr>
             <td>{{ item.date.data or '' }}</td>
-            <td>{{ item.player_name.data }}</td>
+            {%if form.editable.data and item.guest.data.data %}
+                <td>{{ item.player_name(size="25") }}</td>
+            {% else %}
+                <td>{{ item.player_name.data }}</td>
+            {% endif %}
             {%if form.editable.data %}
                 <td>{{ item.playing }}</td>
             {% else %}
