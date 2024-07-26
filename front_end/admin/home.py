@@ -1,6 +1,6 @@
 from flask_login import login_required
 from flask_wtf import FlaskForm
-from flask import render_template, session
+from flask import render_template, session, flash
 from wtforms import SubmitField, SelectField
 from wags_admin import app
 from back_end.interface import get_all_years, create_events_file
@@ -10,7 +10,7 @@ from globals.decorators import role_required
 
 
 @app.route('/', methods=['GET', 'POST'])
-@app.route('/index')
+@app.route('/index', methods=['GET', 'POST'])
 @login_required
 @role_required('admin')
 def index():
@@ -19,7 +19,7 @@ def index():
 
 
 @app.route('/<int:year>', methods=['GET', 'POST'])
-@app.route('/index/<year>')
+@app.route('/index/int:<year>')
 @login_required
 @role_required('admin')
 def index_for_year(year):
@@ -30,20 +30,26 @@ def index_for_year(year):
 def home_main(year):
     form = HomeForm()
     if form.is_submitted():
-        year = form.new_year.data
+        year = int(form.new_year.data)
         if form.save(year):
-            session['current_year'] = year
+            flash('Current year changed to {}'.format(year), 'success')
     form.populate(year)
+    form.new_year.data = year # have to set default value for selectfield here
     return render_template('admin/home.html', form=form, year=year)
 
 
 class HomeForm(FlaskForm):
-    new_year = SelectField(label='Change year')
+    new_year = SelectField(label='Change current year', coerce=int)
     submit = SubmitField(label='Save')
 
     def populate(self, year):
-        set_select_field(self.new_year, 'year', get_all_years(), year)
+        set_select_field(self.new_year, 'year', get_all_years())
 
     def save(self, year):
-        # create directory and files if necessary
-        return create_events_file(year)
+        if year != get_user_current_year():
+            set_user_current_year(year)
+            # create directory and files if necessary
+            create_events_file(year)
+            return True
+        else:
+            return False

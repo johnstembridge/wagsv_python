@@ -3,23 +3,20 @@
 
 {% block page_content %}
 <div class="page-header">
-    <h1>WAGS admin home {{ year }}</h1>
-
+    <h1>Accounts {{ year }} Hole in one fund</h1>
 </div>
-<form method="POST">
+
+<form method = "POST"  enctype = "multipart/form-data">
     {{ form.csrf_token }}
     <table>
         <tbody>
         <tr>
-            <td>{{ form.new_year.label }}</td>
+            <td>{{ form.hole_in_one.label }} {{ form.hole_in_one }}</td>
             <td>&nbsp;</td>
-            <td>{{ form.new_year}}</td>
-            <td>&nbsp;</td>
-            <td>{{ form.submit(class="btn btn-primary") }}</td>
+            <td>{{ form.submit_hole_in_one(class="btn btn-primary") }}</td>
         </tr>
         </tbody>
     </table>
 </form>
-
 {% endblock %}
 

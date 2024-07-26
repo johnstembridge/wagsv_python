@@ -37,10 +37,14 @@ def get_records(file, key, value, lu_fn=None):
     with my_open(file, 'r') as f:
         for line in f:
             values = line.rstrip('\n').split(delimiter)
+            values = [v.strip() for v in values]
             if keys is None:
                 keys = [k.lower() for k in values]
             else:
                 rec = dict(zip(keys, values))
+                if key == 'all':
+                    res.append(values)
+                    continue
                 if lu_fn is None:
                     if type(value) is list and type(key) is not list:
                         if rec[key] in value:

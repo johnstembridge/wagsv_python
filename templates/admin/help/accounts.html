@@ -1,11 +1,13 @@
 <html>
-    <h2>Accounts</h2>
-    <p>This allows you to update all members accounts to reflect the current contents of the accounts Excel workbook.
-        It also allows you to update the Hole in One Fund figures shown on the web site front page.</p>
-    <h4>Update member accounts</h4>
-    <ol>
-        <li>Load the Excel accounts workbook
-        <li>Depending on your Excel version
+<h2>Accounts</h2>
+<p>This allows you to update all members accounts to reflect the current contents of the accounts Excel workbook.
+    It also allows you to update the Hole in One Fund figures shown on the web site front page and to generate a report
+    of all members' balances.</p>
+
+<h3>Update member accounts</h3>
+<ol>
+    <li>Load the Excel accounts workbook
+    <li>Depending on your Excel version
         <p>either:
         <ul>
             <li>Click on the "Developer" tab
@@ -16,21 +18,31 @@
             <li>Click on "View"
             <li>Click on "Macros" (down arrow) and View Macros
         </ul>
-        <li>Select "ExtractAllTrans" and click "Run"
+    <li>Select "ExtractAllTrans" and click "Run"
         <p>This creates a file called "accounts.tab" in the same directory as the workbook
-        <li>In your browser, go to wags.org/wagsadmin. <i>If you are updating the account for a previous year go to wags.org/wagsadmin/{year} where {year} is the year you wish to update e.g. 2020</i>
-        <li>Click on "Accounts" at the top
+    <li>In your browser, go to wags.org/wagsadmin. <i>If you are updating the account for a previous year go to
+        wags.org/wagsadmin/{year} where {year} is the year you wish to update e.g. 2020</i>
+    <li>Click on "Accounts|Upload" in the top menu
 
-        <li>Click on <b>Choose file</b> and navigate to the workbook directory and select the "accounts.tab" file.
-        <li>Click on <b>Upload</b> This should respond with "file uploaded successfully"
-        <li>Go to News and add a new Accounts Updated item</li>
-    </ol>
-    <h4>Update hole in one funds</h4>
-    <ol>
-        <li>In your browser, go to wags.org/wagsadmin
-        <li>Click on "Accounts" at the top
-        <li>Enter new values for the <b>Hole in one fund</b>
-        <li>Click on <b>Update</b>
-        <p>This should respond with "Hole in one fund updated successfully"
-    </ol>
+    <li>Click on <b>Choose file</b> and navigate to the workbook directory and select the "accounts.tab" file.
+    <li>Click on <b>Upload</b> This should respond with "file uploaded successfully"
+    <li>Go to News and add a new Accounts Updated item</li>
+</ol>
+
+<h3>Update hole in one funds</h3>
+<ol>
+    <li>In your browser, go to wags.org/wagsadmin
+    <li>Click on "Accounts|Hole in one fund" in the top menu
+    <li>Enter new values for the <b>Hole in one fund</b>
+    <li>Click on <b>Update</b>
+</ol>
+<p>This should respond with "Hole in one fund updated successfully"
+
+<h3>Show account balance for all members</h3>
+<ol>
+    <li>In your browser, go to wags.org/wagsadmin
+    <li>Click on "Accounts|Balances" in the top menu
+</ol>
+<p>This will show a report of all members with their account balances together with a link to show each member's
+    transactions for the year
 </html>

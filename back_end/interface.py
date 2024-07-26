@@ -4,7 +4,7 @@ import itertools
 
 from back_end.file_access import get_records, update_html_elements, get_file_contents, create_data_file
 from back_end.data_utilities import mean, first_or_default, parse_float, normalise_name, gen_to_list, fmt_date, \
-    my_round, coerce
+    my_round, coerce, last_name_first_name
 from back_end.table import Table
 from back_end.calc import calc_stableford_points, calc_swings, calc_positions
 
@@ -786,6 +786,27 @@ def member_account_balance(member_id, year):
         credit = parse_float(item['credit'])
         balance += (credit or 0) - (debit or 0)
     return balance
+
+
+def all_members_account_balance(year):
+    file = accounts_file(year)
+    dat = Table(*get_records(file, 'all', None))
+    credit_index, debit_index = dat.column_index(['credit', 'debit'])
+    all = []
+    for member, transactions in dat.group_by('member'):
+        player = get_player_by_name(member)
+        if player:
+            member_id = player.member.id
+        else:
+            member_id = 0 # This means a name mismatch between the accounts file and the database
+        details = list(transactions)
+        balance = 0
+        for item in details:
+            balance += parse_float(item[credit_index], 0) - parse_float(item[debit_index], 0)
+        all.append([member, balance, member_id])
+    res = Table(['member', 'balance', 'member_id'], all)
+    res.sort_using(last_name_first_name(res.get_columns('member')))
+    return res
 
 
 # endregion

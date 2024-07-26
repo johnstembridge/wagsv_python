@@ -5,7 +5,7 @@ import datetime
 
 from back_end.interface import get_member, get_member_select_choices, save_member, get_players_as_of, \
     get_current_members_as_players, get_player_by_name, member_account_balance
-from back_end.data_utilities import fmt_num
+from back_end.data_utilities import fmt_curr
 from front_end.form_helpers import set_select_field, set_select_field_new
 from globals.enumerations import MemberStatus, PlayerStatus, UserRole
 
@@ -35,6 +35,7 @@ class MemberDetailsForm(FlaskForm):
     access = SelectField(label='Access', choices=UserRole.choices(), coerce=UserRole.coerce)
     save = SubmitField(label='Save')
     account_balance = StringField(label='Account Balance')
+    negative_balance = HiddenField(label='Negative Balance')
     member_id_return = HiddenField()
     name_return = HiddenField()
     status_return = HiddenField()
@@ -94,7 +95,9 @@ class MemberDetailsForm(FlaskForm):
             self.as_of.data = state.date
             role = member.user.roles[-1].role if member.user else UserRole.user
             set_select_field_new(self.access, UserRole.choices(), default_selection=role)
-            self.account_balance.data = '£' + fmt_num(member_account_balance(member_id, datetime.date.today().year), 2)
+            balance = member_account_balance(member_id, datetime.date.today().year)
+            self.account_balance.data = fmt_curr(balance)
+            self.negative_balance.data = balance < 0
 
     def save_member(self, member_id):
         member = {

@@ -1,0 +1,35 @@
+{% extends "admin/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Accounts {{ year }}</h1>
+</div>
+
+<h2 class="table-title">{{ form.title.data }}</h2>
+{%if form.negative_balance.data %}
+    <h3 class="table-title left">Balance <font color="red">{{ form.balance.data }}</font></h3>
+{% else %}
+    <h3 class="table-title left">Balance {{ form.balance.data }}</h3>
+{% endif %}
+<table width="100%" class="table table-striped">
+    <thead>
+    <tr>
+        <th>Date</th>
+        <th>Item</th>
+        <th>Debit</th>
+        <th>Credit</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in form.items %}
+        <tr>
+            <td>{{ item.date.data }}</td>
+            <td>{{ item.item.data }}</td>
+            <td>{{ item.debit.data }}</td>
+            <td>{{ item.credit.data }}</td>
+        <tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

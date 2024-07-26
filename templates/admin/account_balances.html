@@ -1,0 +1,40 @@
+{% extends "admin/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Account Balances {{ year }}</h1>
+</div>
+<form>
+    {{ form.csrf_token }}
+    <table width="100%" class="table table-striped">
+        <thead>
+        <tr>
+            <th>Member</th>
+            <th>Balance</th>
+            <th class="text-center">Details</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in form.balances %}
+        <tr>
+            <td>{{ item.member.data }}</td>
+            <td>
+            {%if item.negative_balance.data %}
+                <font color="red">{{ item.balance.data }}</font>
+            {% else %}
+                {{ item.balance.data }}
+            {% endif %}
+            </td>
+            <td align="center">
+                {{ render_link(
+                    url=url_for_admin('member_account', member_id=item.member_id.data, year=year),
+                    text='&#x25BA;'
+                    )|safe }}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</form>
+{% endblock %}

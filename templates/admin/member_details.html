@@ -44,7 +44,12 @@
             <td>{{ form.access.label }}</td><td>{{ form.access }}</td>
         </tr>
         <tr>
-            <td>{{ form.account_balance.label }}</td><td>{{ form.account_balance.data }}</td>
+            <td>{{ form.account_balance.label }}</td>
+            {%if form.negative_balance.data %}
+                <td><font color="red">{{ form.account_balance.data }}</font></td>
+            {% else %}
+                <td>{{ form.account_balance.data }}</td>
+            {% endif %}
         </tr>
     </table>
     <hr/>

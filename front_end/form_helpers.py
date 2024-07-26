@@ -48,7 +48,7 @@ def set_select_field(field, item_name, choices, default_selection=None):
     if default_selection:
         default = [c for c in items if c[1] == default_selection]
         if len(default) > 0:
-            field.data = default[0][0]
+            field.data = field.default = default[0]
 
 
 def render_link(url, text="", image=None, icon=None, target=None):

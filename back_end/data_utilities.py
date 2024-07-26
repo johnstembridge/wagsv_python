@@ -113,11 +113,16 @@ def current_year():
 
 
 def normalise_name(all_names, name):
-    i = lookup(all_names, name, case_sensitive=False)
+    i = lookup(all_names, name.strip(), case_sensitive=False)
     if i == -1:
         return name.title(), i
     else:
         return all_names[i], i
+
+
+def last_name_first_name(names):
+    fl = [v.split(' ', 2) for v in names]
+    return [n[1] + ' ' + n[0] for n in fl]
 
 
 def sort_name_list(names):
@@ -177,7 +182,7 @@ def parse_float(num, default=None):
 
 
 def fmt_curr(num):
-    if num:
+    if num or num == 0:
         res = '£{:,.2f}'.format(abs(num))
         if num < 0:
             res = '({})'.format(res)

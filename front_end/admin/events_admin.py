@@ -38,7 +38,8 @@ class MaintainEvents:
             return redirect(url_for_admin('edit_event', event_id=0, event_type=event_type))
         form.populate_event_list(int(year))
 
-        return render_template('admin/event_list.html', form=form, render_link=render_link, EventType=EventType)
+        return render_template('admin/event_list.html', form=form, render_link=render_link, EventType=EventType,
+                               year=year)
 
     @staticmethod
     def events_calendar(year):
@@ -70,11 +71,14 @@ class MaintainEvents:
         event = event_id if event_id != 0 else "(new)"
         event_type_desc = event_type.long_description()
         if event_type in [EventType.wags_vl_event, EventType.non_vl_event, EventType.cancelled]:
-            return render_template('admin/event_details.html', form=form, event_id=event, event_type_desc=event_type_desc)
+            return render_template('admin/event_details.html', form=form, event_id=event,
+                                   event_type_desc=event_type_desc)
         if event_type in [EventType.wags_tour, EventType.minotaur]:
-            return render_template('admin/tour_details.html', form=form, event_id=event, event_type_desc=event_type_desc)
+            return render_template('admin/tour_details.html', form=form, event_id=event,
+                                   event_type_desc=event_type_desc)
         if event_type == EventType.non_event:
-            return render_template('admin/non_event_details.html', form=form, event_id=event, event_type_desc=event_type_desc)
+            return render_template('admin/non_event_details.html', form=form, event_id=event,
+                                   event_type_desc=event_type_desc)
 
     @staticmethod
     def event_bookings(event_id):
@@ -118,7 +122,7 @@ class MaintainEvents:
                     return redirect(url_for_admin('handicaps_event', event_id=event_id))
         else:
             form.populate_event_handicaps(event_id)
-        return render_template('admin/event_handicap.html', form=form,  event_id=event_id, render_link=render_link)
+        return render_template('admin/event_handicap.html', form=form, event_id=event_id, render_link=render_link)
 
     @staticmethod
     def card_event_player(event_id, player_id, position='0', handicap=0, status=''):
@@ -188,4 +192,3 @@ class MaintainEvents:
         else:
             form.populate_add_player(event_id)
         return render_template('admin/event_add_player.html', form=form, event=event_id)
-
