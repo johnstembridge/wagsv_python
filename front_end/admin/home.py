@@ -39,8 +39,8 @@ def home_main(year):
 
 
 class HomeForm(FlaskForm):
-    new_year = SelectField(label='Change current year', coerce=int)
-    submit = SubmitField(label='Save')
+    new_year = SelectField(label='Change current year to', coerce=int)
+    submit = SubmitField(label='Change')
 
     def populate(self, year):
         set_select_field(self.new_year, 'year', get_all_years())
