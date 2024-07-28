@@ -91,7 +91,7 @@ def calc_playing_handicap(handicap, event):
     if year < 2021:
         hcap = handicap  # original (unfactored=WAGS) handicap
     else:
-        hcap = apply_slope_factor(cd.slope, handicap)
+        hcap = apply_slope_factor(handicap, cd.slope)
     if year in range(2023, whs_version_2_year - 1):
         hcap = min(54, hcap * 0.95)  # original whs handicap (version_1)
     if year >= whs_version_2_year:
