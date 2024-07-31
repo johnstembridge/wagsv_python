@@ -272,10 +272,7 @@ def save_event_result(event_id, result):
         else:
             # add handicap for player if necessary
             player = get_player(score.player_id)
-            state = player.state_as_of(event.date)
-            if state.handicap == 0 or not state.status.current_member() and state.date < event.date:
-                player.handicaps.append(
-                    new_handicap(player, status=state.status, handicap=whs[player.id], date=event.date))
+            whs[player.id] = update_guest_handicap_if_necessary(player, event.date, whs[player.id])
     if len(result.data) > 0:
         update_event_winner(event, result)
     else:
@@ -373,13 +370,7 @@ def get_players_for_event(event):
             for guest in member.guests:
                 p = get_player_by_name(guest.name)
                 if p:
-                    state = p.state_as_of(event.date)
-                    if state.status in [PlayerStatus.guest, PlayerStatus.ex_member]:
-                        if state.handicap != guest.handicap:
-                            p.handicaps.append(
-                                Handicap(date=event.date, status=state.status, handicap=guest.handicap))
-                    else:
-                        guest.handicap = state.handicap
+                    guest.handicap = update_guest_handicap_if_necessary(p, event.date, guest.handicap)
                 else:
                     p = add_player(guest.name, guest.handicap, PlayerStatus.guest, event.date)
                 players.append(p)
@@ -635,6 +626,19 @@ def save_handicaps(new_table):
     db_session.commit()
 
 
+def update_guest_handicap_if_necessary(player, date, handicap):
+    # add handicap for player if necessary
+    state = player.state_as_of(date)
+    non_member = not state.status.current_member()
+    prev_handicap = state.date < date
+    new_handicap = state.handicap != handicap
+    if non_member and prev_handicap and new_handicap:
+        player.handicaps.append(Handicap(status=state.status, handicap=handicap, date=date))
+    else:
+        handicap = state.handicap
+    return handicap
+
+
 # endregion
 
 
@@ -798,7 +802,7 @@ def all_members_account_balance(year):
         if player:
             member_id = player.member.id
         else:
-            member_id = 0 # This means a name mismatch between the accounts file and the database
+            member_id = 0  # This means a name mismatch between the accounts file and the database
         details = list(transactions)
         balance = 0
         for item in details:
