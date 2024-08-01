@@ -1,7 +1,7 @@
 import itertools
 
 from back_end.data_utilities import coerce, my_round, first_or_default
-from globals.enumerations import PlayerStatus
+from globals.enumerations import PlayerStatus, HandicapRegime
 
 
 def calc_stableford_points(player_hcap, player_shots, course_si, course_par):
@@ -85,18 +85,20 @@ def calc_swings(event):
 
 
 def calc_playing_handicap(handicap, event):
-    whs_version_2_year = 3000  # not going to be used for now
     year = event.date.year
+    handicap_regime = HandicapRegime.regime_for_year(year)
     cd = event.course.course_data_as_of(year)
-    if year < 2021:
-        hcap = handicap  # original (unfactored=WAGS) handicap
-    else:
-        hcap = apply_slope_factor(handicap, cd.slope)
-    if year in range(2023, whs_version_2_year - 1):
-        hcap = min(54, hcap * 0.95)  # original whs handicap (version_1)
-    if year >= whs_version_2_year:
-        adj = cd.rating - cd.course_par()
-        hcap = min(54, (hcap + adj) * 0.95)  # new whs handicap takes course par into account
+    hcap = None
+    # ToDo: upgrade to match/case when Python version 2.10
+    if handicap_regime == HandicapRegime.wags0:
+        hcap = handicap                                                         # unfactored handicap
+    if handicap_regime == HandicapRegime.wags1:
+        hcap = apply_slope_factor(handicap, cd.slope)                           # apply slope factor
+    if handicap_regime == HandicapRegime.wags2:
+        hcap = min(54, apply_slope_factor(handicap, cd.slope) * 0.95)           # apply slope factor, 95%
+    if handicap_regime == HandicapRegime.wags3:
+        adj = cd.rating - cd.course_par()                                       # adjust by course par and rating
+        hcap = min(54, (apply_slope_factor(handicap, cd.slope) + adj) * 0.95)   # apply slope factor and adjustment, 95%
     return my_round(hcap,1)
 
 

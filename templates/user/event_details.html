@@ -22,7 +22,9 @@
         <tr>
             <td>{{ form.date.label }}</td>
             <td>{{ form.date.data }}</td>
-            <td>{{ form.booking_deadline.label }}&nbsp;{{ form.booking_deadline.data }}</td>
+            <td>{% if form.show_bookings.data %}
+                    {{ form.booking_deadline.label }}&nbsp;{{ form.booking_deadline.data }}</td>
+                {% endif %}
         </tr>
         <tr>
             <td>{{ form.venue.label }}</td>

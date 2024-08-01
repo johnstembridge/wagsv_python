@@ -22,8 +22,10 @@
         <th align="left">Event</th>
         <th align="left">Venue</th>
         <th align="left">Slope</th>
-        <th align="left">Rating</th>
-        <th align="left">Par</th>
+        {% if form.handicap_regime.data == HandicapRegime.wags3 %}
+            <th align="left">Rating</th>
+            <th align="left">Par</th>
+        {% endif %}
         <th align="center">{{ book_or_view }}</th>
         <th align="center">Result</th>
         <th align="center">Report</th>
@@ -53,8 +55,11 @@
             </td>
             <td><a href={{ item.venue_url.data }} target="_blank">{{ item.venue.data }}</a></td>
             <td>{{ item.slope.data }}</td>
-            <td>{{ item.rating.data }}</td>
-            <td>{{ item.par.data }}</td>
+            {% if form.handicap_regime.data == HandicapRegime.wags3 %}
+                <td>{{ item.rating.data }}</td>
+                <td>{{ item.par.data }}</td>
+            {% endif %}
+
             {%if item.event_type.data != 'non_event' %}
                 {%if item.bookable.data == 1 %}
                     <td align="center">

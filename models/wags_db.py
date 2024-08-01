@@ -6,7 +6,7 @@ import jwt
 
 from back_end.data_utilities import fmt_date, in_date_range
 from back_end.calc import calc_playing_handicap
-from globals.enumerations import EventType, PlayerStatus, MemberStatus, UserRole, Function
+from globals.enumerations import EventType, EventBooking, PlayerStatus, MemberStatus, UserRole, Function
 
 import datetime
 from time import time, localtime, strftime
@@ -117,23 +117,23 @@ class Event(Base):
         return self.type == EventType.wags_tour
 
     def is_bookable(self):
-        return self.bookable() == 1
+        return self.bookable() == EventBooking.open
 
     def bookable(self):
-        # result:  0-viewable, 1-booking open and within capacity, -1-booking not applicable, -2-cancelled
+        # result:  see EventBooking enum
         if config.get('override'):
-            return 1
+            return EventBooking.open
         if self.type == EventType.cancelled:
-            return -2
+            return EventBooking.cancelled
         if self.type in [EventType.non_event, EventType.minotaur, EventType.wags_tour] or self.tour_event_id:
-            return -1
+            return EventBooking.not_applicable
         if self.booking_start:
             booking_start = self.booking_start
             booking_end = self.booking_end
             in_range = in_date_range(datetime.date.today(), booking_start, booking_end)
         else:
             in_range = False
-        return 1 if in_range and not self.at_capacity() else 0
+        return EventBooking.open if in_range and not self.at_capacity() else EventBooking.viewable
 
     def total_playing(self):
         return sum([(1 + len(m.guests)) for m in self.bookings if m.playing])

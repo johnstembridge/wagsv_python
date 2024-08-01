@@ -5,7 +5,7 @@ from wtforms.fields.html5 import DateField
 from back_end.data_utilities import encode_date_short
 from front_end.form_helpers import set_select_field_new
 from globals.config import url_for_user
-from globals.enumerations import EventType
+from globals.enumerations import EventType, HandicapRegime
 from back_end.interface import get_venue_url, get_event_select_list, get_events_for_year
 
 
@@ -27,8 +27,10 @@ class EventItemForm(FlaskForm):
 
 class EventListForm(FlaskForm):
     event_list = FieldList(FormField(EventItemForm))
+    handicap_regime = HiddenField(label='Wags handicap version')
 
     def populate_event_list(self, year):
+        self.handicap_regime.data = HandicapRegime.regime_for_year(year)
         first = True
         for event in get_events_for_year(year):
             cd = event.course.course_data_as_of(year) if event.course else None
@@ -46,8 +48,9 @@ class EventListForm(FlaskForm):
             item_form.venue_url = get_venue_url(event.venue)
             if event.course:
                 item_form.slope = cd.slope
-                item_form.par = cd.course_par()
-                item_form.rating = cd.rating
+                if HandicapRegime.regime_for_year(year) == HandicapRegime.wags3:
+                    item_form.par = cd.course_par()
+                    item_form.rating = cd.rating
             else:
                 item_form.slope = item_form.par = item_form.rating = ''
             item_form.event_type = event_type.name

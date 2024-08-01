@@ -63,6 +63,13 @@ class EventType(FormEnum):
             return 'WAGS Minotaur'
 
 
+class EventBooking(FormEnum):
+    viewable = 0
+    open = 1
+    not_applicable = -1
+    cancelled = -2
+
+
 class NewsItemType(FormEnum):
     open_booking = 0
     event_result = 1
@@ -94,3 +101,24 @@ class MinutesType(FormEnum):
     all = 0
     Committee = 1
     AGM = 2
+
+
+class HandicapRegime(FormEnum):
+    wags0 = 0       # straight handicap
+    wags1 = 1       # apply slope factor
+    wags2 = 2       # apply slope factor, take 95%
+    wags3 = 3       # apply slope factor, course rating and par, take 95%
+
+    @classmethod
+    def regime_for_year(cls, year):
+        wags_version_1_year = 2021
+        wags_version_2_year = 2023
+        wags_version_3_year = 3000
+        if year < wags_version_1_year:
+            return HandicapRegime.wags0
+        if year in range(wags_version_1_year, wags_version_2_year):
+            return HandicapRegime.wags1
+        if year in range(wags_version_2_year, wags_version_3_year):
+            return HandicapRegime.wags2
+        else:
+            return HandicapRegime.wags3

@@ -8,7 +8,7 @@ from .event_result_form import EventResultsForm
 from .tour_result_form import TourResultsForm
 from front_end.form_helpers import render_link, flash_errors
 from back_end.interface import get_event
-from globals.enumerations import EventType
+from globals.enumerations import EventType, HandicapRegime
 from globals.config import url_for_html, url_for_user
 from datetime import datetime
 
@@ -26,6 +26,7 @@ class ReportEvents:
             year=year,
             book_or_view=book_or_view,
             render_link=render_link,
+            HandicapRegime = HandicapRegime,
             url_for_user=url_for_user
         )
 

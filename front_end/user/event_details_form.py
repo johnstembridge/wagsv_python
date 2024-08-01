@@ -13,7 +13,7 @@ from back_end.interface import get_event, get_booking, save_booking, get_member,
 
 from front_end.form_helpers import line_break
 from globals.email import send_mail
-from globals.enumerations import Function, PlayerStatus, EventType
+from globals.enumerations import Function, PlayerStatus, EventType, EventBooking
 from models.wags_db import Guest, Contact
 from wags_user import app
 
@@ -64,7 +64,8 @@ class EventDetailsForm(FlaskForm):
             self.title.data = 'Book Event'
         else:
             self.title.data = 'Event Details'
-        self.show_bookings.data = len(event.bookings) > 0
+        self.show_bookings.data = event.bookable() in [EventBooking.open, EventBooking.viewable] and \
+                                  len(event.bookings) > 0
         self.event_id.data = event_id
         self.event_type.data = event.type
         self.date.data = encode_date(event.date)
@@ -120,7 +121,7 @@ class EventDetailsForm(FlaskForm):
     def booking_message(event, booking):
         if event.type == EventType.cancelled:
             return 'This event has been cancelled'
-        if event.bookable() == -1:
+        if event.bookable() == EventBooking.not_applicable:
             return 'Booking is not available for this event'
         today = datetime.date.today()
         booking_start = event.booking_start or event.date
