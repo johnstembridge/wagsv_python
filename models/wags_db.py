@@ -119,6 +119,9 @@ class Event(Base):
     def is_bookable(self):
         return self.bookable() == EventBooking.open
 
+    def is_viewable(self):
+        return self.bookable() == EventBooking.viewable
+
     def bookable(self):
         # result:  see EventBooking enum
         if config.get('override'):

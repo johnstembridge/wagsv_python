@@ -34,6 +34,7 @@ def accounts_balances(year=None):
 
 @app.route('/members/<member_id>/<year>/account', methods=['GET', 'POST'])
 @login_required
+@role_required('admin')
 def member_account(member_id, year=None):
     if not year:
         year = get_user_current_year()

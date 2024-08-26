@@ -14,9 +14,9 @@
         <tr>
             <th align="left" class="bottom">Date</th>
             <th align="left" class="bottom">Name</th>
-            <th align="left" class="bottom">Playing?</th>
-            <th align="left" class="bottom">WHS<br>Handicap</th>
-            <th align="left" class="bottom">Comment</th>
+            <th class="text-center">Playing?</th>
+            <th align="left" class="bottom">Guests - WHS<br>Handicap</th>
+            <th align="left" class="bottom" style="width:40%">Comment</th>
         </tr>
         {% for item in form.bookings %}
         <tr>
@@ -27,9 +27,9 @@
                 <td>{{ item.player_name.data }}</td>
             {% endif %}
             {%if form.editable.data %}
-                <td>{{ item.playing }}</td>
+                <td align="center">{{ item.playing }}</td>
             {% else %}
-                <td>{{ item.playing.data }}</td>
+                <td align="center">{%if item.playing.data %}y{% else %}n{% endif %}</td>
             {% endif %}
             {%if form.editable.data and item.guest.data.data %}
                 <td>{{ item.hcap(size=8, type="number", min="0.1", max="54", step="0.1") }}</td>
