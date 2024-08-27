@@ -1,4 +1,4 @@
-from flask import current_app
+#from flask import current_app
 from flask_sendmail import Message
 
 from globals import config
@@ -26,7 +26,7 @@ def send_mail(to, sender, cc=None, subject=None, message=None):
     msg.recipients = to
     msg.cc = force_list(cc)
     msg.body = '\n'.join(force_list(message))
-    app = current_app._get_current_object()
+    #app = current_app._get_current_object()
     if config.get('send_mail'):
         #send_async_email(app, msg)
         mail.send(msg)

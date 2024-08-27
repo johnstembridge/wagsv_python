@@ -12,12 +12,37 @@ from wags_admin import app
 @login_required
 @role_required('admin')
 def test_email():
+    #return test_email_std()
+    return test_email_to_andy()
+
+
+def test_email_std():
     subject = 'Test email'
     sender = 'test@wags.org'
     message = ['test message £100']
     to = 'john.stembridge@gmail.com'
     cc=[]
     #use_sendmail(to=to, sender=sender, cc=cc, subject=subject, message=message)
+    send_mail(to=to,
+              sender=sender,
+              cc=cc,
+              subject='WAGS: ' + subject,
+              message=message)
+    form = SendEmailConfirmationForm()
+    form.populate(subject, message)
+    return render_template('user/event_booking_confirmation.html', form=form)
+
+
+def test_email_to_andy():
+    subject = 'Test email'
+    sender = 'test@wags.org'
+    message = ['Hi Andy']
+    message.append('I noticed from logs on the wagsite that booking confirmation emails are being rejected by your email server.')
+    message.append('I think the problem was at my end so have made a change and this is a test to see if the change worked.')
+    message.append('If you receive this email, please let me know at john.stembridge@gmail.com')
+    message.append('Thanks, John')
+    to = 'andy@consult-lake.co.uk'
+    cc=['john.stembridge@gmail.com']
     send_mail(to=to,
               sender=sender,
               cc=cc,
