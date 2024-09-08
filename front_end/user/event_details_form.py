@@ -121,7 +121,7 @@ class EventDetailsForm(FlaskForm):
     def booking_message(event, booking):
         if event.type == EventType.cancelled:
             return 'This event has been cancelled'
-        if event.bookable() == EventBooking.not_applicable:
+        if event.bookable() == EventBooking.not_applicable or event.type == EventType.wags_tour :
             return 'Booking is not available for this event'
         today = datetime.date.today()
         booking_start = event.booking_start or event.date
