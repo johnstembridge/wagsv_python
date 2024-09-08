@@ -16,7 +16,7 @@ class MemberListForm(FlaskForm):
     add_member = SubmitField(label='Add member')
 
     def populate_member_list(self):
-        set_select_field(self.member, 'member', get_member_select_choices())
+        set_select_field(self.member, 'member', get_member_select_choices(current=False))
 
 
 class MemberDetailsForm(FlaskForm):

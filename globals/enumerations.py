@@ -39,6 +39,9 @@ class MemberStatus(FormEnum):
     ex_member = 3
     rip = 4
 
+    def current_member(self):
+        return self in [MemberStatus.full_member, MemberStatus.overseas_member]
+
 
 class EventType(FormEnum):
     cancelled = -1

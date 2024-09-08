@@ -2,7 +2,7 @@ import datetime
 import os
 import itertools
 
-from back_end.file_access import get_records, update_html_elements, get_file_contents, create_data_file
+from back_end.file_access import get_records, update_html_elements, get_file_contents, create_data_file, get_lastupdated
 from back_end.data_utilities import mean, first_or_default, parse_float, normalise_name, gen_to_list, fmt_date, \
     my_round, coerce, last_name_first_name
 from back_end.table import Table
@@ -41,6 +41,9 @@ def news_file():
 def front_page_header_file():
     return os.path.join(html_location, 'front/header.htm')
 
+
+def accounts_last_updated(year):
+    return get_lastupdated(accounts_file(year))
 
 # endregion
 
@@ -676,7 +679,8 @@ def get_all_members(current=True):
         return db_session.query(Member) \
             .filter(Member.status.in_([MemberStatus.full_member, MemberStatus.overseas_member]))
     else:
-        return db_session.query(Member)
+        return db_session.query(Member)\
+            .filter(Member.status.notin_([MemberStatus.rip]))
 
 
 def get_current_members_as_players(current=True):
@@ -690,8 +694,8 @@ def get_current_members_as_players(current=True):
     return players
 
 
-def get_member_select_choices(current=False):
-    choices = [(p.member.id, p.full_name()) for p in get_current_members_as_players(current=True)]
+def get_member_select_choices(current=True):
+    choices = [(p.member.id, p.full_name()) for p in get_current_members_as_players(current)]
     return choices
 
 

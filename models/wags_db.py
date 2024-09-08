@@ -128,7 +128,7 @@ class Event(Base):
             return EventBooking.open
         if self.type == EventType.cancelled:
             return EventBooking.cancelled
-        if self.type in [EventType.non_event, EventType.minotaur, EventType.wags_tour] or self.tour_event_id:
+        if self.type in [EventType.non_event, EventType.minotaur] or self.tour_event_id:
             return EventBooking.not_applicable
         if self.booking_start:
             booking_start = self.booking_start

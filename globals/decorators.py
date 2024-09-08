@@ -18,6 +18,20 @@ def role_required(*role):
     return wrapper
 
 
+def function_required(*function):
+    def wrapper(f):
+        @wraps(f)
+        def wrapped(*args, **kwargs):
+            if current_user:
+                if current_user.member.committee:
+                    if current_user.member.committee[0].function.name not in function[0]:
+                        # flash('Sorry, you do not have {} access'.format(function))
+                        abort(401)
+            return f(*args, **kwargs)
+        return wrapped
+    return wrapper
+
+
 def async(f):
     def wrapper(*args, **kwargs):
         thr = Thread(target=f, args=args, kwargs=kwargs)

@@ -3,7 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, FieldList, FormField
 from back_end.data_utilities import fmt_date
 from back_end.interface import get_event, get_player_by_name, add_player, new_handicap
-from globals.enumerations import PlayerStatus
+from globals.enumerations import PlayerStatus, EventType
 
 
 class BookingItemForm(FlaskForm):
@@ -24,17 +24,18 @@ class EventBookingsForm(FlaskForm):
 
     def populate_event_bookings(self, event_id):
         event = get_event(event_id)
+        tour = event.type == EventType.wags_tour
         self.event_name.data = event.full_name()
         self.sub_title.data = 'to date' if datetime.date.today() <= event.booking_end else ''
-        cd = event.course.course_data_as_of(event.date.year)
-        self.slope.data = cd.slope
+        cd = None if tour else event.course.course_data_as_of(event.date.year)
+        self.slope.data = None if tour else cd.slope
         total = 0
         for booking in event.bookings:
             item_form = BookingItemForm()
             item_form.date = fmt_date(booking.date)
             item_form.member_name = booking.member.player.full_name()
             if booking.playing:
-                item_form.hcap = booking.member.player.state_as_of(event.date).playing_handicap(event)
+                item_form.hcap = 'n/a' if tour else booking.member.player.state_as_of(event.date).playing_handicap(event)
                 number = 1 + len(booking.guests)
                 item_form.number = number
                 total += number

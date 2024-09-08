@@ -32,9 +32,6 @@ def user_login(wags_app, next_page, app=None):
                 flash('Invalid username or password', 'danger')
                 return render_template('{}/login.html'.format(wags_app), title='Sign In', form=form, wags_app=wags_app,
                                        url_for_app=url_for_app)
-            # if wags_app not in [role.role.name for role in user.roles]:
-            #     flash('Sorry, you do not have {} access'.format(wags_app))
-            #     return redirect(qualify_url(wags_app))
             login_user(user, remember=form.remember_me.data)
             if not next_page:
                 next_page = qualify_url(wags_app)

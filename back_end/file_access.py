@@ -1,4 +1,4 @@
-import os
+import os, datetime
 from tempfile import mkstemp
 from shutil import move
 from collections import OrderedDict
@@ -7,6 +7,11 @@ from operator import itemgetter
 
 from front_end.form_helpers import update_html
 from globals import config
+
+
+def get_lastupdated(file):
+    last_update = datetime.datetime.fromtimestamp(os.path.getmtime(file))
+    return last_update
 
 
 def get_record(file, key, value):

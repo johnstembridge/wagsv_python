@@ -8,7 +8,7 @@ from back_end.interface import get_user
 role = 'admin'
 login_manager = LoginManager(app)
 login_manager.login_view = config.qualify_url(role, '/login')
-login_manager.login_message = 'You must be a WAGS member to access this page'
+login_manager.login_message = 'You must be a WAGS member with Admin rights to access this page'
 
 
 @login_manager.user_loader
