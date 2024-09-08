@@ -4,7 +4,8 @@ from wtforms import StringField, SubmitField, HiddenField, SelectField, FieldLis
 from wtforms.validators import InputRequired, Email
 
 from back_end.data_utilities import fmt_date, fmt_curr, parse_date, parse_float
-from back_end.interface import get_member_select_choices, save_member_details, get_member, get_member_account
+from back_end.interface import get_member_select_choices, save_member_details, get_member, get_member_account, \
+    accounts_last_updated
 from front_end.form_helpers import set_select_field, set_select_field_new
 from globals import config
 from globals.config import url_for_html
@@ -95,6 +96,7 @@ class AccountItemForm(FlaskForm):
 
 class ShowMemberAccountsForm(FlaskForm):
     title = StringField(label='Title')
+    last_updated = StringField()
     balance = StringField(label='Balance')
     negative_balance = HiddenField(label='Negative Balance')
     items = FieldList(FormField(AccountItemForm))
@@ -102,6 +104,7 @@ class ShowMemberAccountsForm(FlaskForm):
     def populate_account(self, member_id, year):
         member = get_member(member_id)
         self.title.data = '{} - Account information {}'.format(member.player.full_name(), year)
+        self.last_updated.data = fmt_date(accounts_last_updated(year))
         balance = 0
         account = get_member_account(member.player.full_name(), year)
         for item in account.rows():

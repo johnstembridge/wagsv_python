@@ -4,9 +4,9 @@
 
 <h2 class="table-title">{{ form.title.data }}</h2>
 {%if form.negative_balance.data %}
-    <h3 class="table-title left">Balance <font color="red">{{ form.balance.data }}</font></h3>
+    <h3 class="table-title left">Balance <font color="red">{{ form.balance.data }}</font> (as of {{ form.last_updated.data }})</h3>
 {% else %}
-    <h3 class="table-title left">Balance {{ form.balance.data }}</h3>
+    <h3 class="table-title left">Balance {{ form.balance.data }} (as of {{ form.last_updated.data }})</h3>
 {% endif %}
 <h4 class="table-title right">{{ render_link(
         url=url_for_user('show_member_account', year=year-1),
