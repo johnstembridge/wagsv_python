@@ -66,7 +66,7 @@ class Event(Base):
     booking_start = Column(Date)
     booking_end = Column(Date)
     max = Column(Integer)
-    members_only = Column(Boolean, nullable=False)
+    max_guests = Column(Integer, nullable=False)
 
     scores = relationship('Score', order_by="Score.position", back_populates='event')
 

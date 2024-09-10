@@ -26,16 +26,14 @@
         <tr>
             <td>{{ form.member_price.label }} £</td><td>{{ form.member_price(size = 6) }}</td>
             <td>{{ form.guest_price.label }} £</td><td>{{ form.guest_price(size = 6) }}</td>
+        <tr>
+            <td>{{ form.max.label }}</td><td>{{ form.max(size = 6) }}</td>
+            <td>{{ form.max_guests.label }}</td><td>{{ form.max_guests(size = 6) }}</td>
+        </tr>
         </tr>
         <tr>
             <td>{{ form.start_booking.label }}</td><td>{{ form.start_booking }}</td>
             <td>{{ form.end_booking.label }}</td><td>{{ form.end_booking }}</td>
-        </tr>
-        <tr>
-            <td>{{ form.max.label }}</td><td>{{ form.max(size = 6) }}</td>
-        </tr>
-        <tr>
-            <td>{{ form.members_only.label }}</td><td>{{ form.members_only }}</td>
         </tr>
     </table>
     <h3>Schedule</h3>

@@ -21,7 +21,7 @@ class AddPlayerForm(FlaskForm):
         self.event_id.data = event_id
         self.event_name.data = get_event(event_id).full_name()
         set_select_field_new(self.member, get_member_select_choices(), item_name='Member')
-        self.members_only.data = get_event(event_id).members_only
+        self.members_only.data = get_event(event_id).max_guests == 0
 
     def add_booking(self, event_id):
         errors = self.errors

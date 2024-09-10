@@ -32,8 +32,8 @@ class EventForm(FlaskForm):
     guest_price = DecimalField(label='Guest Price', validators=[Optional()])
     start_booking = DateField(label='Booking Starts', validators=[Optional()])
     end_booking = DateField(label='Booking Ends', validators=[Optional()])
-    max = IntegerField(label='Maximum', validators=[Optional()])
-    members_only = BooleanField(label='Members Only Event?')
+    max = IntegerField(label='Maximum Players', validators=[Optional()])
+    max_guests = IntegerField(label='Max. Guests Per Member', validators=[InputRequired()])
     event_type = HiddenField(label='Event Type')
     schedule = FieldList(FormField(ScheduleForm))
     tour_schedule = FieldList(FormField(TourScheduleForm))
@@ -52,7 +52,7 @@ class EventForm(FlaskForm):
         self.start_booking.data = event.booking_start
         self.end_booking.data = event.booking_end
         self.max.data = event.max
-        self.members_only.data = event.members_only
+        self.max_guests.data = event.max_guests
         self.event_type.data = event_type.value
         self.note.data = event.note
         if event_type in [EventType.wags_vl_event, EventType.non_vl_event, EventType.non_event, EventType.cancelled]:
@@ -106,7 +106,7 @@ class EventForm(FlaskForm):
             'start_booking': self.start_booking.data,
             'end_booking': self.end_booking.data,
             'max': self.max.data or '0',
-            'members_only': self.members_only.data,
+            'max_guests': self.max_guests.data,
             'event_type': event_type,
             'note': self.note.data,
             'schedule': [],

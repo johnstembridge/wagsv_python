@@ -118,12 +118,14 @@ def create_events_file(year):
 
 
 def get_event(event_id):
-    return db_session.query(Event).filter_by(id=event_id).first() or Event(id=0, date=datetime.date.today())
+    max_guests = config.get('max_guests')
+    return db_session.query(Event).filter_by(id=event_id).first() or \
+           Event(id=0, date=datetime.date.today(), max_guests=max_guests)
 
 
 def get_event_for_course_and_date(date, course_id):
-    return db_session.query(Event).filter_by(date=date, course_id=course_id).first() or Event(date=date,
-                                                                                              course_id=course_id)
+    return db_session.query(Event).filter_by(date=date, course_id=course_id).first() or \
+           Event(date=date, course_id=course_id)
 
 
 def get_all_events():
@@ -200,7 +202,7 @@ def save_event_details(event_id, details):
     event.guest_price = details['guest_price']
     event.booking_start = details['start_booking']
     event.booking_end = details['end_booking']
-    event.members_only = details['members_only']
+    event.max_guests = details['max_guests']
     event.max = details['max']
     event.note = details['note']
 

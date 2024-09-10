@@ -52,7 +52,7 @@ class EventDetailsForm(FlaskForm):
 
     event_id = HiddenField(label='Event Id')
     event_type = HiddenField(label='Event Type')
-    members_only = HiddenField(label='Members_Only')
+    max_guests = HiddenField(label='Max Guests per Member')
 
     submit = SubmitField(label='Save')
 
@@ -85,11 +85,11 @@ class EventDetailsForm(FlaskForm):
         self.venue_directions.data = line_break(event.venue.directions or '', '\n')
         self.schedule.data = line_break([(s.time.strftime('%H:%M ') + s.text) for s in event.schedule])
         self.member_price.data = event.member_price
-        if event.members_only:
+        if event.max_guests == 0:
             self.guest_price.data = 'This event is members only'
         else:
             self.guest_price.data = fmt_curr(event.guest_price)
-        self.members_only.data = event.members_only
+        self.max_guests.data = event.max_guests
         self.booking_deadline.data = encode_date(event.booking_end)
         self.notes.data = event.note or ''
 
@@ -109,7 +109,8 @@ class EventDetailsForm(FlaskForm):
             self.member_name.data = booking.member.player.full_name()
 
             count = 1
-            for guest in booking.guests + (3 - len(booking.guests)) * [Guest()]:
+            max = event.max_guests
+            for guest in booking.guests + (max - len(booking.guests)) * [Guest()]:
                 item_form = GuestForm()
                 item_form.item_pos = count
                 item_form.guest_name = guest.name

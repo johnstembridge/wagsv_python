@@ -84,7 +84,7 @@
     {% for option in form.attend %}
     &nbsp;{{ option }}&nbsp;{{ option.label }}
     {% endfor %}
-    {% if not (form.at_capacity.data or form.members_only.data) %}
+    {% if not (form.at_capacity.data or form.max_guests.data == 0) %}
     <p><b>If adding a guest, please give their name(first name then last name) and WHS handicap index.<br>
         Their playing handicap will be automatically calculated.</b></p>
     <table width="100%">
@@ -109,6 +109,9 @@
         {% endfor %}
         </tbody>
     </table>
+    {% else %}
+    <p><b>Comments</b></p>
+    {{ form.comment(rows="4", cols="45") }}
     {% endif %}
     <hr/>
     {{ form.submit(class="btn btn-primary")}}
