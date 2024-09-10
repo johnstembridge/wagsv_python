@@ -50,7 +50,7 @@ class EventBookingsForm(FlaskForm):
                     else:
                         p = add_player(name=g.name, hcap=g.handicap, status=PlayerStatus.guest, date=event.date,
                                        commit=False)
-                    hcap = p.state_as_of(event.date).playing_handicap(event)
+                    hcap = 'n/a' if tour else p.state_as_of(event.date).playing_handicap(event)
                     item_form.guests += ',' + g.name + ' ({})'.format(hcap)
                 item_form.guests = item_form.guests[1:]
                 item_form.comment = booking.comment or ''
