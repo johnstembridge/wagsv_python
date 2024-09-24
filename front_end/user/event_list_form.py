@@ -30,7 +30,7 @@ class EventListForm(FlaskForm):
     handicap_regime = HiddenField(label='Wags handicap version')
 
     def populate_event_list(self, year):
-        self.handicap_regime.data = HandicapRegime.regime_for_year(year)
+        self.handicap_regime.data = HandicapRegime.for_year(year)
         first = True
         for event in get_events_for_year(year):
             cd = event.course.course_data_as_of(year) if event.course else None
@@ -48,7 +48,7 @@ class EventListForm(FlaskForm):
             item_form.venue_url = get_venue_url(event.venue)
             if event.course:
                 item_form.slope = cd.slope
-                if HandicapRegime.regime_for_year(year) == HandicapRegime.wags3:
+                if HandicapRegime.for_year(year) == HandicapRegime.wags3:
                     item_form.par = cd.course_par()
                     item_form.rating = cd.rating
             else:

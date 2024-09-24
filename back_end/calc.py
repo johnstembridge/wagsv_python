@@ -86,20 +86,20 @@ def calc_swings(event):
 
 def calc_playing_handicap(handicap, event):
     year = event.date.year
-    handicap_regime = HandicapRegime.regime_for_year(year)
+    handicap_regime = HandicapRegime.for_year(year)
     cd = event.course.course_data_as_of(year)
     hcap = None
     # ToDo: upgrade to match/case when Python version 2.10
     if handicap_regime == HandicapRegime.wags0:
-        hcap = handicap                                                         # unfactored handicap
+        hcap = handicap                                                 # unfactored handicap
     if handicap_regime == HandicapRegime.wags1:
-        hcap = apply_slope_factor(handicap, cd.slope)                           # apply slope factor
+        hcap = apply_slope_factor(handicap, cd.slope)                   # apply slope factor
     if handicap_regime == HandicapRegime.wags2:
-        hcap = min(54, apply_slope_factor(handicap, cd.slope) * 0.95)           # apply slope factor, 95%
+        hcap = apply_slope_factor(handicap, cd.slope) * 0.95            # apply slope factor, 95%
     if handicap_regime == HandicapRegime.wags3:
-        adj = cd.rating - cd.course_par()                                       # adjust by course par and rating
-        hcap = min(54, (apply_slope_factor(handicap, cd.slope) + adj) * 0.95)   # apply slope factor and adjustment, 95%
-    return my_round(hcap,1)
+        adj = cd.rating - cd.course_par()                               # adjust by course par and rating
+        hcap = (apply_slope_factor(handicap, cd.slope) + adj) * 0.95    # apply slope factor and adjustment, 95%
+    return my_round(min(54, hcap),1)
 
 
 def handicap_slope_factor(slope=None):
@@ -109,7 +109,7 @@ def handicap_slope_factor(slope=None):
 
 
 def apply_slope_factor(handicap_index, slope):
-    return my_round(min(54, float(handicap_index) * float(handicap_slope_factor(slope))), 1)
+    return float(handicap_index) * float(handicap_slope_factor(slope))
 
 
 def calc_positions(scores):

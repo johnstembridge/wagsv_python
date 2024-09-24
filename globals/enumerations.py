@@ -87,6 +87,7 @@ class UserRole(FormEnum):
 
 
 class Function(FormEnum):
+    none = 0
     Chairman = 1
     Communications = 2
     Fixtures = 3
@@ -113,7 +114,7 @@ class HandicapRegime(FormEnum):
     wags3 = 3       # apply slope factor, course rating and par, take 95%
 
     @classmethod
-    def regime_for_year(cls, year):
+    def for_year(cls, year):
         wags_version_1_year = 2021
         wags_version_2_year = 2023
         wags_version_3_year = 3000

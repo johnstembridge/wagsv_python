@@ -8,7 +8,7 @@ from wtforms import FileField, SubmitField, TextAreaField, DateField, SelectFiel
 from wtforms.validators import InputRequired
 
 from back_end.data_utilities import fmt_date
-from back_end.interface import get_member, get_committee
+from back_end.interface import get_member, get_committee_members
 from globals.email import send_mail
 from globals.enumerations import MinutesType
 from models.news import NewsDay, News
@@ -34,7 +34,7 @@ class MinutesAdminForm(FlaskForm):
         subject = '{} {} - draft minutes for review'.format(minutes.full_type(), fmt_date(minutes.date))
         sender = get_member(member_id).contact.email
         message = ['The draft minutes are available here:', link, self.message.data]
-        to = [m.member.contact.email for m in get_committee()]
+        to = [m.member.contact.email for m in get_committee_members()]
         send_mail(to=to,
                   sender=sender,
                   cc=[],

@@ -1005,11 +1005,11 @@ def get_all_years():
     return years
 
 
-def get_committee():
-    return db_session.query(Committee).filter(Committee.function < Function.Captain).all()
+def get_committee_members():
+    return db_session.query(Committee).filter(Committee.function != Function.none).all()
 
 
-def get_committee_function(function):
+def get_committee_function_member(function):
     return db_session.query(Committee).filter_by(function=function).first()
 
 

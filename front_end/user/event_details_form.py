@@ -8,7 +8,7 @@ from wtforms.validators import Optional
 
 from back_end.data_utilities import encode_date, fmt_date, fmt_curr, first_or_default, parse_float
 from back_end.calc import calc_playing_handicap
-from back_end.interface import get_event, get_booking, save_booking, get_member, get_committee_function, \
+from back_end.interface import get_event, get_booking, save_booking, get_member, get_committee_function_member, \
     get_player_by_name, suspend_flush
 
 from front_end.form_helpers import line_break
@@ -122,7 +122,7 @@ class EventDetailsForm(FlaskForm):
     def booking_message(event, booking):
         if event.type == EventType.cancelled:
             return 'This event has been cancelled'
-        if event.bookable() == EventBooking.not_applicable or event.type == EventType.wags_tour :
+        if event.bookable() == EventBooking.not_applicable or event.type == EventType.wags_tour:
             return 'Booking is not available for this event'
         today = datetime.date.today()
         booking_start = event.booking_start or event.date
@@ -173,13 +173,12 @@ class EventDetailsForm(FlaskForm):
         booking = get_booking(event_id, member_id)
         event = booking.event
         subject = 'Book event - {}'.format(event.full_name())
-        treasurer = get_committee_function(Function.Treasurer)
         cost = 0
         if booking.playing:
             cost += event.member_price
             hcap = booking.member.player.state_as_of(booking.date).handicap
             message = ['{} will attend'.format(booking.member.player.full_name()),
-                       'The handicap(s) shown below are Playing Handicap and (WHS) where the Playing Handicap ' \
+                       'The handicap(s) shown below are Playing Handicap and (WHS) where the Playing Handicap '
                        'is 95% of your WHS handicap factored by the slope index of the course',
                        'Your handicap: {} ({})'.format(calc_playing_handicap(hcap, event), hcap)]
             if booking.guests:
@@ -198,8 +197,8 @@ class EventDetailsForm(FlaskForm):
         sender = 'booking@wags.org'
         to = booking.member.contact.email
         organiser = event.organiser.contact.email
-        fixtures = get_committee_function(Function.Fixtures).member.contact.email
-        treasurer = treasurer.member.contact.email
+        fixtures = get_committee_function_member(Function.Fixtures).member.contact.email
+        treasurer = get_committee_function_member(Function.Treasurer).member.contact.email
         send_mail(to=to,
                   sender=sender,
                   cc=[organiser, fixtures, treasurer],

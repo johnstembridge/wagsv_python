@@ -8,7 +8,7 @@ from back_end.data_utilities import fmt_date, in_date_range
 from back_end.calc import calc_playing_handicap
 from globals.enumerations import EventType, EventBooking, PlayerStatus, MemberStatus, UserRole, Function
 
-import datetime
+from datetime import datetime, date, timedelta
 from time import time, localtime, strftime
 
 Base = db.Model
@@ -103,15 +103,15 @@ class Event(Base):
 
     def is_editable(self):
         override = config.get('override')
-        return override or self.date.year >= datetime.date.today().year
+        return override or self.date.year >= date.today().year
 
     def is_booking_editable(self):
         override = config.get('override')
-        return override or (datetime.date.today() <= self.date) and (datetime.date.today().year == self.date.year)
+        return override or (date.today() <= self.date) and (date.today().year == self.date.year)
 
     def is_result_editable(self):
         override = config.get('override')
-        return override or (datetime.date.today() >= self.date) and (datetime.date.today().year == self.date.year)
+        return override or (date.today() >= self.date) and (date.today().year == self.date.year)
 
     def are_tour_bookings_editable(self):
         return self.type == EventType.wags_tour
@@ -133,7 +133,7 @@ class Event(Base):
         if self.booking_start:
             booking_start = self.booking_start
             booking_end = self.booking_end
-            in_range = in_date_range(datetime.date.today(), booking_start, booking_end)
+            in_range = in_date_range(date.today(), booking_start, booking_end)
         else:
             in_range = False
         return EventBooking.open if in_range and not self.at_capacity() else EventBooking.viewable
@@ -270,11 +270,12 @@ class Player(Base):
             if self.member:
                 if state.status.current_member() and date < self.member.qualifying_date():
                     state.status = PlayerStatus.non_vl
-                    if len([s for s in self.scores if
+                    events_played = [s for s in self.scores if
                             s.event.type == EventType.wags_vl_event and
                             s.event.date >= self.member.accepted and
-                            s.event.date <= date]) <= 3:
-                        state.status = PlayerStatus.new
+                            s.event.date <= date]
+                    if len(events_played) <= 3:
+                        state.status = PlayerStatus.new # member must have played at least 3 events to qualify for VL
                 elif state.status in [PlayerStatus.new, PlayerStatus.non_vl] and date >= self.member.qualifying_date():
                     state.status = PlayerStatus.member
             return state
@@ -288,7 +289,7 @@ class Player(Base):
         if len(state) > 0:
             return sorted(state, key=lambda s: s.date, reverse=True)
         else:
-            return [Handicap(player_id=self.id, status=PlayerStatus.guest, handicap=0, date=datetime.date.today())]
+            return [Handicap(player_id=self.id, status=PlayerStatus.guest, handicap=0, date=date.today())]
 
     def score_for(self, event_id):
         scores = [s for s in self.scores if s.event_id == event_id]
@@ -322,7 +323,7 @@ class Member(Base):
         if self.accepted:
             return self.accepted.replace(year=self.accepted.year + 1)
         else:
-            return datetime.date(1992, 9, 12)
+            return datetime.date(1992, 9, 12)  # datetime.date(config.get("first_event_date") - timedelta(months=3))
 
     def __repr__(self):
         return '<Member: {}>'.format(self.player.full_name())
