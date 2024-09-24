@@ -107,7 +107,8 @@ class Event(Base):
 
     def is_booking_editable(self):
         override = config.get('override')
-        return override or (date.today() <= self.date) and (date.today().year == self.date.year)
+        tour_event = self.tour_event_id
+        return override or (date.today() <= self.date) and (date.today().year == self.date.year) and not tour_event
 
     def is_result_editable(self):
         override = config.get('override')

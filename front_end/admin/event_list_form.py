@@ -40,7 +40,7 @@ class EventListForm(FlaskForm):
             item_form.venue = event.venue.name
             item_form.event_type = event.type
             item_form.event_bookable = event.is_bookable() or event.are_tour_bookings_editable()
-            item_form.event_viewable = event.is_viewable()
+            item_form.event_viewable = event.is_viewable() or event.tour_event_id
             item_form.result = override or \
                                (event.date <= datetime.date.today() and
                                 event.type in

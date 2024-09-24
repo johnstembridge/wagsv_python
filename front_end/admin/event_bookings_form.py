@@ -1,9 +1,10 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, FieldList, FormField, HiddenField, BooleanField
 
-from back_end.interface import get_event, save_event_booking
+from back_end.interface import get_event, save_event_booking, get_player_by_name
 from back_end.data_utilities import fmt_date
 from back_end.table import Table
+from globals import enumerations
 
 class EventBookingItemForm(FlaskForm):
     date = StringField(label='Date')
@@ -11,7 +12,8 @@ class EventBookingItemForm(FlaskForm):
     guest = HiddenField(label='Guest')
     guest_id = HiddenField(label='Guest Name')
     playing = BooleanField(label='Playing?')
-    hcap = StringField(label='WHS handicap')
+    playing_hcap = StringField(label='Playing handicap')
+    whs_hcap = StringField(label='WHS handicap')
     comment = StringField(label='Comment')
     member_id = HiddenField(label='member id')
     booking_id = HiddenField(label='booking id')
@@ -27,14 +29,21 @@ class EventBookingsForm(FlaskForm):
     def populate_event_bookings(self, event_id):
         self.event_id.data = event_id
         event = get_event(event_id)
+        tour = event.type == enumerations.EventType.wags_tour
         self.event_name.data = event.full_name()
         self.editable.data = event.is_booking_editable()
-        for booking in event.bookings:
+        if event.tour_event_id:
+            bookings = get_event(event.tour_event_id).bookings
+        else:
+            bookings = event.bookings
+        for booking in bookings:
             item_form = EventBookingItemForm()
             item_form.date = fmt_date(booking.date)
             item_form.player_name = booking.member.player.full_name()
             item_form.guest.data = False
-            item_form.hcap = ""
+            state = booking.member.player.state_as_of(event.date)
+            item_form.playing_hcap = 'n/a' if tour else state.playing_handicap(event)
+            item_form.whs_hcap = ""
             item_form.playing = booking.playing
             item_form.comment = booking.comment
             item_form.member_id = booking.member_id
@@ -46,7 +55,10 @@ class EventBookingsForm(FlaskForm):
                 item_form.guest_id = g.id
                 item_form.date = "..guest"
                 item_form.player_name = g.name
-                item_form.hcap = g.handicap
+                player=get_player_by_name(g.name)
+                state = player.state_as_of(event.date)
+                item_form.playing_hcap = 'n/a' if tour else state.playing_handicap(event)
+                item_form.whs_hcap = g.handicap
                 item_form.playing.data = booking.playing
                 item_form.comment = ""
                 item_form.member_id = booking.member_id
@@ -59,7 +71,7 @@ class EventBookingsForm(FlaskForm):
             return False
 
         fields = ['member_id', 'booking_id', 'playing', 'guest_id', 'name', 'hcap']
-        form_fields = ['member_id', 'booking_id', 'playing', 'guest_id', 'player_name', 'hcap']
+        form_fields = ['member_id', 'booking_id', 'playing', 'guest_id', 'player_name', 'whs_hcap']
 
         def sel_table_fields(dict, fields):
             res = []

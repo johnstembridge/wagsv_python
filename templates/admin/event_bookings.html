@@ -15,6 +15,7 @@
             <th align="left" class="bottom">Date</th>
             <th align="left" class="bottom">Name</th>
             <th class="text-center">Playing?</th>
+            <th align="left" class="bottom">Playing<br>Handicap</th>
             <th align="left" class="bottom">Guests - WHS<br>Handicap</th>
             <th align="left" class="bottom" style="width:40%">Comment</th>
         </tr>
@@ -31,10 +32,11 @@
             {% else %}
                 <td align="center">{%if item.playing.data %}y{% else %}n{% endif %}</td>
             {% endif %}
+            <td>{%if item.playing.data %}{{ item.playing_hcap.data }}{% else %} {% endif %}</td>
             {%if form.editable.data and item.guest.data.data %}
-                <td>{{ item.hcap(size=8, type="number", min="0.1", max="54", step="0.1") }}</td>
+                <td>{{ item.whs_hcap(size=8, type="number", min="0.1", max="54", step="0.1") }}</td>
             {% else %}
-                <td></td>
+                <td>{{ item.whs_hcap.data or '' }}</td>
             {% endif %}
             <td>{{ item.comment.data or '' }}</td>
         </tr>
