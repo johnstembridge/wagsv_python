@@ -324,7 +324,7 @@ class Member(Base):
         if self.accepted:
             return self.accepted.replace(year=self.accepted.year + 1)
         else:
-            return datetime.date(1992, 9, 12)  # datetime.date(config.get("first_event_date") - timedelta(months=3))
+            return date(1992, 9, 12)  # datetime.date(config.get("first_event_date") - timedelta(months=3))
 
     def __repr__(self):
         return '<Member: {}>'.format(self.player.full_name())
