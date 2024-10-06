@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 
 from back_end.data_utilities import fmt_date, in_date_range
-from back_end.calc import calc_playing_handicap
+from back_end.calc import calc_playing_handicap_for_event
 from globals.enumerations import EventType, EventBooking, PlayerStatus, MemberStatus, UserRole, Function
 
 import datetime
@@ -357,7 +357,7 @@ class Handicap(Base):
     player = relationship("Player", back_populates="handicaps")
 
     def playing_handicap(self, event):
-        return calc_playing_handicap(self.handicap, event)
+        return calc_playing_handicap_for_event(self.handicap, event)
 
     def __repr__(self):
         return '<Handicap - Player: {}, Date: {}, Status: {}, Handicap: {}>'.format(self.player.full_name(), self.date,

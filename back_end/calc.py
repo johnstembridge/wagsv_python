@@ -2,7 +2,7 @@ import itertools
 
 from back_end.data_utilities import coerce, my_round, first_or_default
 from globals.enumerations import PlayerStatus, HandicapRegime
-
+from globals import config
 
 def calc_stableford_points(player_hcap, player_shots, course_si, course_par):
     if not player_shots:
@@ -84,28 +84,38 @@ def calc_swings(event):
     return res
 
 
-def calc_playing_handicap(handicap, event):
+def calc_playing_handicap_for_event(handicap, event):
     year = event.date.year
-    handicap_regime = HandicapRegime.for_year(year)
     cd = event.course.course_data_as_of(year)
+    slope = cd.slope
+    course_par = cd.course_par()
+    course_rating = cd.rating
+    return calc_playing_handicap(handicap, year, slope, course_par, course_rating)
+
+
+def calc_playing_handicap(handicap, year, slope, course_par=None, course_rating=None):
+    if not course_par:
+        course_par = course_rating = 0
+    handicap_regime = HandicapRegime.for_year(year)
     hcap = None
     # ToDo: upgrade to match/case when Python version 2.10
     if handicap_regime == HandicapRegime.wags0:
         hcap = handicap                                                 # unfactored handicap
     if handicap_regime == HandicapRegime.wags1:
-        hcap = apply_slope_factor(handicap, cd.slope)                   # apply slope factor
+        hcap = apply_slope_factor(handicap, slope)                   # apply slope factor
     if handicap_regime == HandicapRegime.wags2:
-        hcap = apply_slope_factor(handicap, cd.slope) * 0.95            # apply slope factor, 95%
+        hcap = apply_slope_factor(handicap, slope) * 0.95            # apply slope factor, 95%
     if handicap_regime == HandicapRegime.wags3:
-        adj = cd.rating - cd.course_par()                               # adjust by course par and rating
-        hcap = (apply_slope_factor(handicap, cd.slope) + adj) * 0.95    # apply slope factor and adjustment, 95%
+        adj = course_rating - course_par                              # adjust by course par and rating
+        hcap = (apply_slope_factor(handicap, slope) + adj) * 0.95    # apply slope factor and adjustment, 95%
     return my_round(min(54, hcap),1)
 
 
 def handicap_slope_factor(slope=None):
+    standard_slope = config.get('standard_slope')
     if not slope:
-        slope = 113
-    return (slope if slope > 0 else 113) / 113
+        slope = standard_slope
+    return (slope if slope > 0 else standard_slope) / standard_slope
 
 
 def apply_slope_factor(handicap_index, slope):

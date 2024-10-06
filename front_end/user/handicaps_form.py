@@ -2,7 +2,7 @@ import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, FieldList, FormField, HiddenField, IntegerField, SubmitField
 from back_end.interface import get_current_members_as_players
-from back_end.calc import apply_slope_factor
+from back_end.calc import calc_playing_handicap
 
 
 class HandicapItemForm(FlaskForm):
@@ -28,7 +28,7 @@ class HandicapsForm(FlaskForm):
             item_form.player_id = player.id
             item_form.player = player.full_name()
             if slope != 113:
-                item_form.handicap = apply_slope_factor(state.handicap, slope)
+                item_form.handicap = calc_playing_handicap(state.handicap, datetime.date.today().year, slope)
             else:
                 item_form.handicap = state.handicap
             self.handicaps.append_entry(item_form)

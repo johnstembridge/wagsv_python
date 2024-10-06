@@ -7,7 +7,7 @@ from wtforms.fields.html5 import DateField
 from wtforms.validators import Optional
 
 from back_end.data_utilities import encode_date, fmt_date, fmt_curr, first_or_default, parse_float
-from back_end.calc import calc_playing_handicap
+from back_end.calc import calc_playing_handicap_for_event
 from back_end.interface import get_event, get_booking, save_booking, get_member, get_committee_function_member, \
     get_player_by_name, suspend_flush
 
@@ -180,13 +180,13 @@ class EventDetailsForm(FlaskForm):
             message = ['{} will attend'.format(booking.member.player.full_name()),
                        'The handicap(s) shown below are Playing Handicap and (WHS) where the Playing Handicap '
                        'is 95% of your WHS handicap factored by the slope index of the course',
-                       'Your handicap: {} ({})'.format(calc_playing_handicap(hcap, event), hcap)]
+                       'Your handicap: {} ({})'.format(calc_playing_handicap_for_event(hcap, event), hcap)]
             if booking.guests:
                 message.append('Guests:')
                 for guest in booking.guests:
                     cost += event.guest_price
                     message.append(
-                        '{} {} ({})'.format(guest.name, calc_playing_handicap(guest.handicap, event), guest.handicap))
+                        '{} {} ({})'.format(guest.name, calc_playing_handicap_for_event(guest.handicap, event), guest.handicap))
             message.append('Total cost £{}'.format(cost))
             message.append(
                 '(Please pay by on-line credit to the WAGS bank account number 01284487, sort code 40-07-30)')

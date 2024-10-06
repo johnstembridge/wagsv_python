@@ -7,6 +7,7 @@
   "event_has_reserve_list": [476],
   "max_guests": 1,
   "start_date": [1992,1,1],
+  "standard_slope": 113,
   "locations": {
     "base_url": "http://127.0.0.1:5000/",
     "templates": "templates",
