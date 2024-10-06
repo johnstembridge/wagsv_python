@@ -90,7 +90,7 @@ class MemberDetailsForm(FlaskForm):
             self.address.data = contact.address
             self.post_code.data = contact.post_code
             self.phone.data = contact.phone
-            self.accepted_date.data = member.accepted or datetime.date(1992, 6, 17)
+            self.accepted_date.data = member.accepted_date()
             self.handicap_return.data = self.handicap.data = state.handicap
             self.as_of.data = state.date
             role = member.user.roles[-1].role if member.user else UserRole.user

@@ -8,7 +8,7 @@ from back_end.data_utilities import fmt_date, in_date_range
 from back_end.calc import calc_playing_handicap
 from globals.enumerations import EventType, EventBooking, PlayerStatus, MemberStatus, UserRole, Function
 
-from datetime import datetime, date, timedelta
+import datetime
 from time import time, localtime, strftime
 
 Base = db.Model
@@ -103,16 +103,18 @@ class Event(Base):
 
     def is_editable(self):
         override = config.get('override')
-        return override or self.date.year >= date.today().year
+        return override or self.date.year >= datetime.date.today().year
 
     def is_booking_editable(self):
         override = config.get('override')
         tour_event = self.tour_event_id
-        return override or (date.today() <= self.date) and (date.today().year == self.date.year) and not tour_event
+        today = datetime.date.today()
+        return override or (today <= self.date) and (today.year == self.datetime.date.year) and not tour_event
 
     def is_result_editable(self):
         override = config.get('override')
-        return override or (date.today() >= self.date) and (date.today().year == self.date.year)
+        today = datetime.date.today()
+        return override or (today >= self.date) and (today.year == self.datetime.date.year)
 
     def are_tour_bookings_editable(self):
         return self.type == EventType.wags_tour
@@ -275,7 +277,8 @@ class Player(Base):
                             s.event.type == EventType.wags_vl_event and
                             s.event.date >= self.member.accepted and
                             s.event.date <= date]
-                    if len(events_played) <= 3:
+                    first_year = datetime.date(*config.get('start_date')).year
+                    if len(events_played) <= 3 and date.year > first_year:
                         state.status = PlayerStatus.new # member must have played at least 3 events to qualify for VL
                 elif state.status in [PlayerStatus.new, PlayerStatus.non_vl] and date >= self.member.qualifying_date():
                     state.status = PlayerStatus.member
@@ -320,11 +323,16 @@ class Member(Base):
     user = relationship('User', uselist=False, back_populates="member")
     committee = relationship("Committee", back_populates="member")
 
+    def accepted_date(self):
+        return self.accepted or datetime.date(*config.get('start_date'))
+
+
     def qualifying_date(self):
-        if self.accepted:
+        start_date = datetime.date(*config.get('start_date'))
+        if self.accepted and self.accepted.year > start_date.year:
             return self.accepted.replace(year=self.accepted.year + 1)
         else:
-            return date(1992, 9, 12)  # datetime.date(config.get("first_event_date") - timedelta(months=3))
+            return start_date
 
     def __repr__(self):
         return '<Member: {}>'.format(self.player.full_name())

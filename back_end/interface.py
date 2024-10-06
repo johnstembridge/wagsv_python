@@ -872,7 +872,7 @@ def get_scores(year=None, status=None, player_id=None):
         scores = [s for ls in scores for s in ls if s.player.state_as_of(s.event.date).status == status]
     if player_id:
         scores = [s for ls in scores for s in ls if s.player.id == player_id]
-    scores = [s for s in scores if s.player.member.qualifying_date() <= s.event.date]
+    scores = [s for s in scores if s.player.member and s.player.member.qualifying_date() <= s.event.date]
     head = ['date', 'course', 'player_id', 'position', 'shots', 'points', 'handicap', 'status']
     return Table(head, [extract_score_data(s) for s in scores])
 
@@ -998,10 +998,15 @@ def get_big_swing(year, as_of=datetime.date.today()):
 
 # endregion
 
+def start_date():
+    return datetime.date(*config.get('start_date'))
+
+
 def get_all_years():
+    first_year = start_date().year
     current_year = datetime.datetime.now().year
     inc = 1 if datetime.datetime.now().month > 10 else 0
-    years = [i for i in range(current_year + inc, 1992, -1)]
+    years = [i for i in range(current_year + inc, first_year - 1, -1)]
     return years
 
 
