@@ -136,7 +136,7 @@ class Event(Base):
         if self.booking_start:
             booking_start = self.booking_start
             booking_end = self.booking_end
-            in_range = in_date_range(date.today(), booking_start, booking_end)
+            in_range = in_date_range(datetime.date.today(), booking_start, booking_end)
         else:
             in_range = False
         return EventBooking.open if in_range and not self.at_capacity() else EventBooking.viewable
