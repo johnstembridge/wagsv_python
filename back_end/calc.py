@@ -98,15 +98,15 @@ def calc_playing_handicap(handicap, year, slope, course_par=None, course_rating=
         course_par = course_rating = 0
     handicap_regime = HandicapRegime.for_year(year)
     hcap = None
-    # ToDo: upgrade to match/case when Python version 2.10
+    # ToDo: upgrade to match/case when Python version 3.10
     if handicap_regime == HandicapRegime.wags0:
-        hcap = handicap                                                 # unfactored handicap
+        hcap = handicap                                              # unfactored handicap
     if handicap_regime == HandicapRegime.wags1:
         hcap = apply_slope_factor(handicap, slope)                   # apply slope factor
     if handicap_regime == HandicapRegime.wags2:
         hcap = apply_slope_factor(handicap, slope) * 0.95            # apply slope factor, 95%
     if handicap_regime == HandicapRegime.wags3:
-        adj = course_rating - course_par                              # adjust by course par and rating
+        adj = course_rating - course_par                             # adjust by course par and rating
         hcap = (apply_slope_factor(handicap, slope) + adj) * 0.95    # apply slope factor and adjustment, 95%
     return my_round(min(54, hcap),1)
 
@@ -128,11 +128,11 @@ def calc_positions(scores):
 
 
 def positions(scores):
-    c = 1
+    count = 1
     for key, values in itertools.groupby(scores):
-        n = len(list(values))
-        p = str(c)
-        if n > 1:
-            p = '=' + p
-        yield [p] * n
-        c += n
+        number_tied = len(list(values))
+        position = str(count)
+        if number_tied > 1:
+            position = '=' + position
+        yield [position] * number_tied
+        count += number_tied

@@ -108,10 +108,22 @@ class MinutesType(FormEnum):
 
 
 class HandicapRegime(FormEnum):
-    wags0 = 0       # straight handicap
-    wags1 = 1       # apply slope factor
-    wags2 = 2       # apply slope factor, take 95%
-    wags3 = 3       # apply slope factor, course rating and par, take 95%
+    wags0 = 0
+    wags1 = 1
+    wags2 = 2
+    wags3 = 3
+
+    def long_description(self):
+        if self == HandicapRegime.wags0:
+            return 'straight handicap'
+        if self == HandicapRegime.wags1:
+            return 'apply slope factor'
+        if self == HandicapRegime.wags2:
+            return 'apply slope factor, take 95%'
+        if self == HandicapRegime.wags3:
+            return 'apply slope factor, course rating and par, take 95%'
+        else:
+            return 'unknown'
 
     @classmethod
     def for_year(cls, year):

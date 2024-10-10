@@ -114,7 +114,7 @@ class Event(Base):
     def is_result_editable(self):
         override = config.get('override')
         today = datetime.date.today()
-        return override or (today >= self.date) and (today.year == self.datetime.date.year)
+        return override or (today >= self.date) and (today.year == self.date.year)
 
     def are_tour_bookings_editable(self):
         return self.type == EventType.wags_tour
