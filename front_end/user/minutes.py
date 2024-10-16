@@ -1,12 +1,13 @@
-from flask import render_template, redirect, flash
+from flask import render_template, flash
 from flask_wtf import FlaskForm
 from wtforms import StringField, FieldList, FormField, SubmitField, SelectField, HiddenField
 
 from globals.enumerations import MinutesType
-from back_end.data_utilities import fmt_date, parse_date
+from back_end.data_utilities import fmt_date
 from back_end.interface import get_all_years
-from front_end.form_helpers import render_link
+from front_end.form_helpers import render_link, browser_info
 from globals.config import url_for_user
+from globals.config import get as config_get
 from models.minutes import Minutes
 
 
@@ -22,6 +23,7 @@ class MinutesShowItemForm(FlaskForm):
     mtype = StringField(label='Type')
     mdate = StringField(label='Date')
     mlink = StringField(label='Link')
+    target = HiddenField(label="display target")
 
 
 class MinutesShowForm(FlaskForm):
@@ -33,6 +35,7 @@ class MinutesShowForm(FlaskForm):
     def populate(self):
         type = self.minutes_type.data
         year = self.minutes_year.data
+        target = '_blank' if config_get('override') or browser_info()['platform'] == 'safari' else None
         if year == 'None':
             year = None
         if type:
@@ -47,4 +50,5 @@ class MinutesShowForm(FlaskForm):
             item_form.mtype = m.full_type()
             item_form.mdate = fmt_date(m.date)
             item_form.mlink = m.file_link()
+            item_form.target = target
             self.choices.append_entry(item_form)

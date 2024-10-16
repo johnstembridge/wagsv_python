@@ -45,7 +45,8 @@
                 {{ render_link(
                 url=item.mlink.data,
                 image=url_for('static', filename='images/go.png'),
-                text='Show minutes for ' + item.mdate.data
+                text='Show minutes for ' + item.mdate.data,
+                target=item.target.data
                 )|safe }}
             </td>
         </tr>

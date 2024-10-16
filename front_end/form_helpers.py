@@ -1,4 +1,4 @@
-from flask import flash, url_for, current_app
+from flask import flash, url_for, current_app, request
 from wtforms import SelectField
 import os
 
@@ -24,7 +24,7 @@ def flash_errors(form):
 
 def set_select_field_new(field, choices, item_name=None, default_selection=None):
     if len(choices) > 0 and isinstance(choices[0], tuple):
-            items = choices
+        items = choices
     else:
         items = [(c, c) for c in choices]
     if item_name:
@@ -38,7 +38,7 @@ def set_select_field_new(field, choices, item_name=None, default_selection=None)
 
 def set_select_field(field, item_name, choices, default_selection=None):
     if len(choices) > 0 and isinstance(choices[0], tuple):
-            items = choices
+        items = choices
     else:
         items = [(c, c) for c in choices]
     if item_name:
@@ -104,3 +104,14 @@ def line_break(text, line_break_characters=None):
             text = text.replace(r, line_break_characters[0])
         res = line_break(text.split(line_break_characters[0]))
     return res
+
+
+def browser_info():
+    browser = request.user_agent.browser  # msie/firefox/safari/opera
+    version = request.user_agent.version and int(request.user_agent.version.split('.')[0])
+    platform = request.user_agent.platform  # android/iphone/macos/windows
+    uas = request.user_agent.string
+    return {'browser': browser,
+            'version': version,
+            'platform': platform,
+            'user_agent': uas}
