@@ -921,7 +921,7 @@ def save_booking(booking):
 
 def get_all_vl_winners():
     result = None
-    for year in [2024,2023]:  #get_all_years():
+    for year in get_all_years():
         vl = get_vl_winner(year)
         if result:
             for row in vl.data:
