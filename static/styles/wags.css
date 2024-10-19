@@ -85,8 +85,8 @@ table.list.striped tr:nth-child(odd) { background-color: #ccc;}
 table.list.striped tr:first-child {border-top: none; background-color: white}
 table.list.striped tr:last-child {border-top: none; background-color: white}
 
-.right  {text-align: right;}
-.left   {text-align: left;}
+.right  {float: right;}
+.left   {float: left;}
 .center {text-align: center;}
 
 .top    {vertical-align: top}
