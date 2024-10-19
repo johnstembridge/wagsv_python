@@ -1,0 +1,41 @@
+{% extends "user/report_base.html" %}
+{% block title %}Victor Ludorum History{% endblock %}
+{% block content %}
+{{ form.csrf_token }}
+
+<h2 class="table-title left">Victor Ludorum History</h2>
+<img class="responsive-image center" src="{{ form.image_url.data }}" alt="Victor Ludorum">
+
+<table class="list" width="100%">
+    <thead>
+    <tr>
+        <th align="left">Year</th>
+        <th align="left">Name</th>
+        <th>Points</th>
+        <th>Matches</th>
+        <th>Lowest</th>
+        <th align="center">All</th>
+    </tr>
+    <tr><td colspan=6><hr class="bold"/></td></tr>
+    </thead>
+    <tbody>
+    {% for item in form.vl %}
+    <tr>
+        <td align="left">{{ item.year.data }}</td>
+        <td align="left">{{ item.player.data }}</td>
+        <td align="center">{{ item.points.data }}</td>
+        <td align="center">{{ item.matches.data }}</td>
+        <td align="center">{{ item.lowest.data }}</td>
+        <td align="center">
+            {{ render_link(
+            url=url_for_user('vl', year=item.year.data),
+            image=url_for('static', filename='images/go.png'),
+            text='All VL results for {}'.format(item.year.data)
+            )|safe }}
+        </td>
+    </tr>
+    {% endfor %}
+    <tr><td colspan=6><hr class="bold"/></td></tr>
+    </tbody>
+</table>
+{% endblock %}

@@ -919,6 +919,30 @@ def save_booking(booking):
 
 # region Reports
 
+def get_all_vl_winners():
+    result = None
+    for year in [2024,2023]:  #get_all_years():
+        vl = get_vl_winner(year)
+        if result:
+            for row in vl.data:
+                row.append(year)
+                result.data.append(row)
+        else:
+            vl.add_column('year', [year]*len(vl.data))
+            result = vl
+    return result
+
+
+def get_vl_winner(year):
+    vl = get_vl(year)
+
+    def lu_fn(values):
+        return values['position'] in ['1', '=1']
+
+    winner = vl.where(lu_fn)
+    return winner
+
+
 def get_vl(year):
     scores = get_scores(year=year, status=PlayerStatus.member)
     scores.sort(['player_id', 'date'])

@@ -23,7 +23,6 @@ class MinutesShowItemForm(FlaskForm):
     mtype = StringField(label='Type')
     mdate = StringField(label='Date')
     mlink = StringField(label='Link')
-    target = HiddenField(label="display target")
 
 
 class MinutesShowForm(FlaskForm):
@@ -31,11 +30,12 @@ class MinutesShowForm(FlaskForm):
     minutes_type = SelectField(label='Meeting type', choices=MinutesType.choices(), coerce=MinutesType.coerce)
     select = SubmitField(label='Select')
     choices = FieldList(FormField(MinutesShowItemForm))
+    target = HiddenField(label="display target")
 
     def populate(self):
         type = self.minutes_type.data
         year = self.minutes_year.data
-        target = '_blank' if config_get('override') or browser_info()['platform'] == 'safari' else None
+        self.target.data = '_blank' if config_get('override') or browser_info()['platform'] == 'safari' else None
         if year == 'None':
             year = None
         if type:
@@ -50,5 +50,4 @@ class MinutesShowForm(FlaskForm):
             item_form.mtype = m.full_type()
             item_form.mdate = fmt_date(m.date)
             item_form.mlink = m.file_link()
-            item_form.target = target
             self.choices.append_entry(item_form)

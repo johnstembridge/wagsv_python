@@ -35,6 +35,12 @@ def vl(year):
     return Vl.vl_show(coerce(year, int))
 
 
+@app.route('/vl_history', methods=['GET', 'POST'])
+@login_required
+def vl_history():
+    return Vl.vl_history()
+
+
 @app.route('/swing', methods=['GET', 'POST'])
 @login_required
 def swing_():
