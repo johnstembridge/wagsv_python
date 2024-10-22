@@ -1,6 +1,6 @@
 from flask_login import login_required
 from flask_wtf import FlaskForm
-from flask import render_template, session, flash
+from flask import render_template, flash
 from wtforms import SubmitField, SelectField
 from wags_admin import app
 from back_end.interface import get_all_years, create_events_file
@@ -43,7 +43,7 @@ class HomeForm(FlaskForm):
     submit = SubmitField(label='Change')
 
     def populate(self, year):
-        set_select_field(self.new_year, 'year', get_all_years())
+        set_select_field(self.new_year, get_all_years(), 'year')
 
     def save(self, year):
         if year != get_user_current_year():

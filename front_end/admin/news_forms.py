@@ -16,7 +16,7 @@ class NewsListForm(FlaskForm):
 
     def populate_news_list(self):
         news = News()
-        set_select_field(self.news_item, 'news item', news.news_select_choices(), '')
+        set_select_field(self.news_item, news.news_select_choices(), 'news item', '')
 
 
 class NewsItemForm(FlaskForm):

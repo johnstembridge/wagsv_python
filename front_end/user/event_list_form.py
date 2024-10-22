@@ -3,7 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, FieldList, FormField, HiddenField, SelectField, SubmitField
 from wtforms.fields.html5 import DateField
 from back_end.data_utilities import encode_date_short
-from front_end.form_helpers import set_select_field_new
+from front_end.form_helpers import set_select_field
 from globals.config import url_for_user
 from globals.enumerations import EventType, HandicapRegime
 from back_end.interface import get_venue_url, get_event_select_list, get_events_for_year
@@ -67,7 +67,7 @@ class EventSelectForm(FlaskForm):
     show_result = SubmitField(label='Show Result')
 
     def populate_event_select(self):
-        set_select_field_new(self.event, get_event_select_list(), item_name='Event')
+        set_select_field(self.event, get_event_select_list(), item_name='Event')
 
     def show_event_result(self):
         event_id = self.event.data

@@ -33,8 +33,8 @@ class EventReportForm(FlaskForm):
         pos = pos.index(min(pos))
         self.winner.data = members.get_columns('player_name')[pos]
         self.winner_return.data = self.winner.data
-        set_select_field(self.ntp, 'player', players)
-        set_select_field(self.ld, 'player', players)
+        set_select_field(self.ntp, players, 'player')
+        set_select_field(self.ld, players, 'player')
         report = get_file_contents(report_file)
         if report:
             values = get_elements_from_html(report, ['ld', 'ntp', 'report'])

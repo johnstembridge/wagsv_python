@@ -5,7 +5,7 @@ from wtforms.fields.html5 import DateField
 from wtforms_components import TimeField
 from wtforms.validators import InputRequired, Optional
 
-from front_end.form_helpers import set_select_field_new, MySelectField
+from front_end.form_helpers import set_select_field, MySelectField
 from globals.enumerations import EventType
 from back_end.interface import get_event, get_trophy_select_choices, save_event_details, \
     get_member_select_choices, get_venue_select_choices, get_course_select_choices
@@ -76,18 +76,18 @@ class EventForm(FlaskForm):
         trophy = event.trophy.id if event.trophy else 0
         venue = event.venue.id if event.venue else 0
         course = event.course.id if event.course else 0
-        set_select_field_new(self.organiser, get_member_select_choices(), default_selection=organiser,
-                             item_name='Organiser')
-        set_select_field_new(self.trophy, get_trophy_select_choices(), default_selection=trophy, item_name='Trophy')
-        set_select_field_new(self.venue, get_venue_select_choices(), default_selection=venue, item_name='Venue')
+        set_select_field(self.organiser, get_member_select_choices(), default_selection=organiser,
+                         item_name='Organiser')
+        set_select_field(self.trophy, get_trophy_select_choices(), default_selection=trophy, item_name='Trophy')
+        set_select_field(self.venue, get_venue_select_choices(), default_selection=venue, item_name='Venue')
         if event_type in [EventType.wags_vl_event, EventType.non_vl_event, EventType.non_event, EventType.cancelled]:
-            set_select_field_new(self.course, courses, default_selection=course, item_name='Course')
+            set_select_field(self.course, courses, default_selection=course, item_name='Course')
         if event_type in [EventType.wags_tour, EventType.minotaur]:
             item_count = 0
             for item in event.tour_events + (6 - len(event.tour_events)) * [Event()]:
                 course_id = item.course_id if item.course else 0
                 field = self.tour_schedule.entries[item_count].course
-                set_select_field_new(field, courses, default_selection=course_id, item_name='Course')
+                set_select_field(field, courses, default_selection=course_id, item_name='Course')
                 item_count += 1
 
     def save_event(self, event_id):

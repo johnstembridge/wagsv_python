@@ -4,7 +4,7 @@ from wtforms import StringField, SubmitField, HiddenField, SelectField
 
 from back_end.interface import get_event, get_member_select_choices, get_booking, save_booking, \
     get_players_for_event_id, get_member, suspend_flush
-from front_end.form_helpers import set_select_field_new
+from front_end.form_helpers import set_select_field
 from models.wags_db import Guest
 
 
@@ -20,7 +20,7 @@ class AddPlayerForm(FlaskForm):
     def populate_add_player(self, event_id):
         self.event_id.data = event_id
         self.event_name.data = get_event(event_id).full_name()
-        set_select_field_new(self.member, get_member_select_choices(), item_name='Member')
+        set_select_field(self.member, get_member_select_choices(), item_name='Member')
         self.members_only.data = get_event(event_id).max_guests == 0
 
     def add_booking(self, event_id):

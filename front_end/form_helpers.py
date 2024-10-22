@@ -22,7 +22,7 @@ def flash_errors(form):
             ), 'danger')
 
 
-def set_select_field_new(field, choices, item_name=None, default_selection=None):
+def set_select_field(field, choices, item_name=None, default_selection=None):
     if len(choices) > 0 and isinstance(choices[0], tuple):
         items = choices
     else:
@@ -34,21 +34,6 @@ def set_select_field_new(field, choices, item_name=None, default_selection=None)
     if default_selection:
         field.default = default_selection
         field.data = default_selection
-
-
-def set_select_field(field, item_name, choices, default_selection=None):
-    if len(choices) > 0 and isinstance(choices[0], tuple):
-        items = choices
-    else:
-        items = [(c, c) for c in choices]
-    if item_name:
-        field.choices = [(0, 'Choose {} ...'.format(item_name))] + items
-    else:
-        field.choices = items
-    if default_selection:
-        default = [c for c in items if c[1] == default_selection]
-        if len(default) > 0:
-            field.data = field.default = default[0]
 
 
 def render_link(url, text="", image=None, icon=None, target=None):

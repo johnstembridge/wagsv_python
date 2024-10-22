@@ -1,4 +1,3 @@
-import os
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, HiddenField, SelectField, FieldList, FormField
 from wtforms.validators import InputRequired, Email
@@ -6,18 +5,9 @@ from wtforms.validators import InputRequired, Email
 from back_end.data_utilities import fmt_date, fmt_curr, parse_date, parse_float
 from back_end.interface import get_member_select_choices, save_member_details, get_member, get_member_account, \
     accounts_last_updated
-from front_end.form_helpers import set_select_field, set_select_field_new
+from front_end.form_helpers import set_select_field
 from globals import config
 from globals.config import url_for_html
-
-
-class MemberListForm(FlaskForm):
-    member = SelectField(label='Choose Member')
-    edit_member = SubmitField(label='Edit member')
-    add_member = SubmitField(label='Add member')
-
-    def populate_member_list(self):
-        set_select_field(self.member, None, get_member_select_choices())
 
 
 class EditMemberDetailsForm(FlaskForm):
@@ -72,7 +62,7 @@ class MemberDetails:
     @staticmethod
     def populate(form, member_id, edit=False):
         if not edit:
-            set_select_field_new(form.choose_member, get_member_select_choices(), None, member_id)
+            set_select_field(form.choose_member, get_member_select_choices(), 'member', member_id)
         member = get_member(member_id)
         if member:
             player = member.player

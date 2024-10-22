@@ -6,7 +6,7 @@ import datetime
 from back_end.interface import get_member, get_member_select_choices, save_member, get_players_as_of, \
     get_current_members_as_players, get_player_by_name, member_account_balance
 from back_end.data_utilities import fmt_curr
-from front_end.form_helpers import set_select_field, set_select_field_new
+from front_end.form_helpers import set_select_field
 from globals.enumerations import MemberStatus, PlayerStatus, UserRole
 
 
@@ -16,7 +16,7 @@ class MemberListForm(FlaskForm):
     add_member = SubmitField(label='Add member')
 
     def populate_member_list(self):
-        set_select_field(self.member, 'member', get_member_select_choices(current=False))
+        set_select_field(self.member, get_member_select_choices(current=False), 'member')
 
 
 class MemberDetailsForm(FlaskForm):
@@ -73,15 +73,15 @@ class MemberDetailsForm(FlaskForm):
             self.last_name.data = 'member'
             self.status_return.data = MemberStatus.full_member.value
             self.handicap_return.data = 0
-            set_select_field_new(self.proposer, get_member_select_choices(), item_name='proposer')
+            set_select_field(self.proposer, get_member_select_choices(), item_name='proposer')
         else:
             member = get_member(member_id)
             proposer = member.proposer_id if member.proposer else 0
-            set_select_field_new(self.proposer, get_member_select_choices(), default_selection=proposer, item_name='proposer')
+            set_select_field(self.proposer, get_member_select_choices(), default_selection=proposer, item_name='proposer')
             player = member.player
             contact = member.contact
             state = player.state_as_of(datetime.date.today())
-            set_select_field_new(self.status, MemberStatus.choices(), default_selection=member.status)
+            set_select_field(self.status, MemberStatus.choices(), default_selection=member.status)
             self.status_return.data = member.status.value
             self.first_name.data = player.first_name
             self.last_name.data = player.last_name
@@ -94,7 +94,7 @@ class MemberDetailsForm(FlaskForm):
             self.handicap_return.data = self.handicap.data = state.handicap
             self.as_of.data = state.date
             role = member.user.roles[-1].role if member.user else UserRole.user
-            set_select_field_new(self.access, UserRole.choices(), default_selection=role)
+            set_select_field(self.access, UserRole.choices(), default_selection=role)
             balance = member_account_balance(member_id, datetime.date.today().year)
             self.account_balance.data = fmt_curr(balance)
             self.negative_balance.data = balance < 0

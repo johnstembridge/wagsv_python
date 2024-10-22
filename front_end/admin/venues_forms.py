@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, HiddenField, TextAreaField, SelectField, FieldList, FormField
 from back_end.interface import get_venue_select_choices, get_venue, save_venue, get_course_select_choices, get_course
-from front_end.form_helpers import set_select_field, set_select_field_new
+from front_end.form_helpers import set_select_field
 from models.wags_db import Contact
 
 
@@ -12,7 +12,7 @@ class VenueListForm(FlaskForm):
     editable = HiddenField(label='Editable')
 
     def populate_venue_list(self):
-        set_select_field(self.venue, 'venue', get_venue_select_choices(), '')
+        set_select_field(self.venue, get_venue_select_choices(), 'venue', '')
         self.editable = True
 
 
@@ -44,7 +44,7 @@ class VenueDetailsForm(FlaskForm):
         self.name.data = venue.name
         self.directions.data = venue.directions
         course_choices = get_course_select_choices()
-        set_select_field_new(self.select_course, course_choices, item_name='Existing Course')
+        set_select_field(self.select_course, course_choices, item_name='Existing Course')
         if venue.contact:
             self.url.data = venue.contact.url
             self.phone.data = venue.contact.phone
