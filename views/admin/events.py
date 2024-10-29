@@ -36,7 +36,7 @@ def events_calendar(year):
 @role_required('admin')
 def edit_event(event_id):
     event_type = request.args.get('event_type')
-    event_type = EventType(int(request.args.get('event_type'))) if event_type else None  # for add event/tour
+    event_type = EventType(int(event_type)) if event_type else None  # for add event/tour
     return MaintainEvents.edit_event(int(event_id), event_type)
 
 

@@ -119,8 +119,10 @@ def create_events_file(year):
 
 def get_event(event_id):
     max_guests = config.get('max_guests')
-    return db_session.query(Event).filter_by(id=event_id).first() or \
+    event = db_session.query(Event).filter_by(id=event_id).first() or \
            Event(id=0, date=datetime.date.today(), max_guests=max_guests)
+    event.max_guests = event.max_guests or max_guests
+    return event
 
 
 def get_event_for_course_and_date(date, course_id):
@@ -831,6 +833,11 @@ def get_trophy(trophy_id):
     return db_session.query(Trophy).filter_by(id=trophy_id).first()
 
 
+def lookup_trophy(name):
+    trophy_id = db_session.query(Trophy.id).filter(Trophy.name == name).first()
+    return trophy_id.id
+
+
 # endregion
 
 
@@ -989,25 +996,19 @@ def calc_event_positions(event_id, result):
     return result
 
 
-def get_big_swing(year, as_of=datetime.date.today()):
-    date_range = (datetime.date(year - 1, 1, 1), datetime.date(year + 1, 12, 31))
-    events = get_events_in(date_range)  # date, course
+def get_big_swing(year):
+    # year is the year that the trophy is awarded
+    date_range = (datetime.date(year - 1, 1, 1), datetime.date(year, 12, 31))
+    events = get_events_in(date_range)
     if len(events) > 0:
-        richmond = lookup_course('The Richmond')
-        richmond_events = [e for e in events if e.course_id == richmond]
-        first = [e for e in richmond_events if as_of > e.date][-1].date + datetime.timedelta(days=1)
-        last = [e for e in richmond_events if as_of <= e.date]
-        if len(last) == 0:
-            last = [e for e in events if as_of <= e.date]
-            if len(last) == 0:
-                last = as_of
-            else:
-                last = last[-1].date
-        else:
-            last = last[0].date
-        events = [e for e in events if e.date >= first and e.date <= last and e.type == EventType.wags_vl_event]
-    else:
-        first = as_of
+        waistcoat = lookup_trophy('Wags Waistcoat') # Big Swing is awarded at the Waistcoat event
+        waistcoat_events = [e for e in events if e.trophy_id == waistcoat]
+        first = first_or_default([e.date for e in waistcoat_events if e.date.year == year-1], None)
+        last = first_or_default([e.date for e in waistcoat_events if e.date.year == year], date_range[1])
+        if first and year >= 2018:  # 2018 was the first year for the trophy
+            events = [e for e in events if e.date >= first and e.date <= last and e.type == EventType.wags_vl_event]
+        else:  # requested year before Swing existed
+            events = []
     header = ['player', 'course', 'date', 'points_out', 'points_in', 'swing']
     swings = []
     for event in events:
@@ -1016,7 +1017,7 @@ def get_big_swing(year, as_of=datetime.date.today()):
     swings.sort('swing', reverse=True)
     swings.top_n(10)
     swings.add_column('position', calc_positions(swings.get_columns('swing')))
-    year_range = [first.year, first.year + 1]
+    year_range = [year-1, year]
     return year_range, swings
 
 

@@ -37,4 +37,4 @@ class Members:
     def area(member_id, year):
         form = MembersAreaForm()
         form.populate(member_id, year)
-        return render_template('user/member.html', form=form, year=year, render_link=render_link, url_for_html=url_for_html, url_for_user=url_for_user)
+        return render_template('user/member.html', form=form, year=year, render_link=render_link, url_for_user=url_for_user)
