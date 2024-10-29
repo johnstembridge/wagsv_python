@@ -121,7 +121,8 @@ def get_event(event_id):
     max_guests = config.get('max_guests')
     event = db_session.query(Event).filter_by(id=event_id).first() or \
            Event(id=0, date=datetime.date.today(), max_guests=max_guests)
-    event.max_guests = event.max_guests or max_guests
+    if event.max_guests is None:
+        event.max_guests = max_guests
     return event
 
 

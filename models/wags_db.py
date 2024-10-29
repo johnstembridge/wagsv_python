@@ -109,7 +109,7 @@ class Event(Base):
         override = config.get('override')
         tour_event = self.tour_event_id
         today = datetime.date.today()
-        return override or (today <= self.date) and (today.year == self.date.year) and not tour_event
+        return override or (today <= self.date) and (today.year <= self.date.year) and not tour_event
 
     def is_result_editable(self):
         override = config.get('override')
@@ -131,7 +131,7 @@ class Event(Base):
             return EventBooking.open
         if self.type == EventType.cancelled:
             return EventBooking.cancelled
-        if self.type in [EventType.non_event, EventType.minotaur] or self.tour_event_id:
+        if self.type in [EventType.non_event, EventType.minotaur, EventType.wags_tour] or self.tour_event_id:
             return EventBooking.not_applicable
         if self.booking_start:
             booking_start = self.booking_start
