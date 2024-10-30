@@ -45,6 +45,7 @@ def front_page_header_file():
 def accounts_last_updated(year):
     return get_lastupdated(accounts_file(year))
 
+
 # endregion
 
 
@@ -120,7 +121,7 @@ def create_events_file(year):
 def get_event(event_id):
     max_guests = config.get('max_guests')
     event = db_session.query(Event).filter_by(id=event_id).first() or \
-           Event(id=0, date=datetime.date.today(), max_guests=max_guests)
+            Event(id=0, date=datetime.date.today(), max_guests=max_guests)
     if event.max_guests is None:
         event.max_guests = max_guests
     return event
@@ -684,7 +685,7 @@ def get_all_members(current=True):
         return db_session.query(Member) \
             .filter(Member.status.in_([MemberStatus.full_member, MemberStatus.overseas_member]))
     else:
-        return db_session.query(Member)\
+        return db_session.query(Member) \
             .filter(Member.status.notin_([MemberStatus.rip]))
 
 
@@ -936,7 +937,7 @@ def get_all_vl_winners():
                 row.append(year)
                 result.data.append(row)
         else:
-            vl.add_column('year', [year]*len(vl.data))
+            vl.add_column('year', [year] * len(vl.data))
             result = vl
     return result
 
@@ -1002,23 +1003,32 @@ def get_big_swing(year):
     date_range = (datetime.date(year - 1, 1, 1), datetime.date(year, 12, 31))
     events = get_events_in(date_range)
     if len(events) > 0:
-        waistcoat = lookup_trophy('Wags Waistcoat') # Big Swing is awarded at the Waistcoat event
+        waistcoat = lookup_trophy('Wags Waistcoat')  # Big Swing is awarded at the Waistcoat event
         waistcoat_events = [e for e in events if e.trophy_id == waistcoat]
-        first = first_or_default([e.date for e in waistcoat_events if e.date.year == year-1], None)
+        first = first_or_default([e.date for e in waistcoat_events if e.date.year == year - 1], None)
         last = first_or_default([e.date for e in waistcoat_events if e.date.year == year], date_range[1])
         if first and year >= 2018:  # 2018 was the first year for the trophy
             events = [e for e in events if e.date >= first and e.date <= last and e.type == EventType.wags_vl_event]
         else:  # requested year before Swing existed
             events = []
+        if year > 2024:
+            # post 2024, winner must be present on the day
+            this_years_event = first_or_default([e for e in waistcoat_events if e.date.year == year], Event())
+            players_present = [s.player_id for s in this_years_event.scores if
+                               s.player.state_as_of(last).status == PlayerStatus.member]
+        else:
+            players_present = None
+    else:
+        players_present = None
     header = ['player', 'course', 'date', 'points_out', 'points_in', 'swing']
     swings = []
     for event in events:
-        swings.extend(calc_swings(event))
+        swings.extend(calc_swings(event, players_present))
     swings = Table(header, swings)
     swings.sort('swing', reverse=True)
     swings.top_n(10)
     swings.add_column('position', calc_positions(swings.get_columns('swing')))
-    year_range = [year-1, year]
+    year_range = [year - 1, year]
     return year_range, swings
 
 
@@ -1031,7 +1041,7 @@ def get_all_big_swing_winners():
                 row.append(year)
                 result.data.append(row)
         else:
-            swing.add_column('year', [year]*len(swing.data))
+            swing.add_column('year', [year] * len(swing.data))
             result = swing
     return result
 

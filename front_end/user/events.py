@@ -1,4 +1,4 @@
-from flask import render_template, redirect, flash
+from flask import render_template, redirect, flash, make_response
 
 from front_end.user.event_bookings_form import EventBookingsForm
 from front_end.user.event_details_form import EventDetailsForm, EventBookingConfirmationForm
@@ -11,6 +11,7 @@ from back_end.interface import get_event
 from globals.enumerations import EventType, HandicapRegime
 from globals.config import url_for_html, url_for_user
 from datetime import datetime
+from file_access import get_file_contents
 
 
 class ReportEvents:
@@ -74,8 +75,10 @@ class ReportEvents:
     def report_event(event_id):
         date = get_event(event_id).date
         year = str(date.year)
-        file = 'rp{}.htm'.format(date.strftime('%y%m%d'))
-        return redirect(url_for_html('reports', year, file))
+        file = url_for_html('d:\\', 'wagsite', 'reports', year, 'rp{}.htm'.format(date.strftime('%y%m%d')))
+        # return redirect(url_for_html('reports', year, file))
+        return get_file_contents(file) #, {'Content-Type': 'text/html'}
+        # return '<html><body>Hello World</body></html>' # make_response()
 
     @staticmethod
     def results_vl_event(event_id):

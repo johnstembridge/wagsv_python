@@ -66,21 +66,22 @@ def suggested_handicap_change(scratch, handicap, score):
     return new
 
 
-def calc_swings(event):
+def calc_swings(event, players=None):
     course_data = event.course.course_data_as_of(event.date.year)
     course_name = event.course.name
     res = []
     for score in event.scores:
         player = score.player
-        state = player.state_as_of(event.date)
-        if state.status in [PlayerStatus.non_vl, PlayerStatus.member]:
-            hcap = state.playing_handicap(event)
-            points = calc_stableford_points(hcap, score.card, course_data.si, course_data.par)
-            points_out = sum(points[:9])
-            points_in = sum(points[-9:])
-            swing = points_in - points_out
-            if swing > 0:
-                res.append((player.full_name(), course_name, event.date, points_out, points_in, swing))
+        if (not players) or players and player.id in players:
+            state = player.state_as_of(event.date)
+            if state.status in [PlayerStatus.non_vl, PlayerStatus.member]:
+                hcap = state.playing_handicap(event)
+                points = calc_stableford_points(hcap, score.card, course_data.si, course_data.par)
+                points_out = sum(points[:9])
+                points_in = sum(points[-9:])
+                swing = points_in - points_out
+                if swing > 0:
+                    res.append((player.full_name(), course_name, event.date, points_out, points_in, swing))
     return res
 
 
