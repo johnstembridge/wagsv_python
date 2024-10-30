@@ -76,9 +76,7 @@ class ReportEvents:
         date = get_event(event_id).date
         year = str(date.year)
         file = url_for_html('d:\\', 'wagsite', 'reports', year, 'rp{}.htm'.format(date.strftime('%y%m%d')))
-        # return redirect(url_for_html('reports', year, file))
-        return get_file_contents(file) #, {'Content-Type': 'text/html'}
-        # return '<html><body>Hello World</body></html>' # make_response()
+        return redirect(url_for_html('reports', year, file))
 
     @staticmethod
     def results_vl_event(event_id):
