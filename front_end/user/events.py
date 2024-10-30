@@ -11,7 +11,6 @@ from back_end.interface import get_event
 from globals.enumerations import EventType, HandicapRegime
 from globals.config import url_for_html, url_for_user
 from datetime import datetime
-from file_access import get_file_contents
 
 
 class ReportEvents:
