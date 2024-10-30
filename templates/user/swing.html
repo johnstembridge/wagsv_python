@@ -2,12 +2,20 @@
 {% block title %}The Beament Big Swing {{ form.year_span.data }}{% endblock %}
 {% block content %}
 
-<h2 class="table-title left">The Beament Big Swing {{ form.year_span.data }}</h2>
-<h4 class="table-title right">{{ render_link(url=url_for_user('swing', year=year-1), text='&#x25C4;')|safe }}
-        &nbsp; year &nbsp;
-        {{ render_link(url=url_for_user('swing', year=year+1), text='&#x25BA;')|safe }}
-</h4>
-<img class="responsive-image center" src="{{ form.image_url.data }}" alt="The Beament Big Swing">
+<table width="100%">
+    <tr>
+        <h2 class="table-title left">The Beament Big Swing {{ form.year_span.data }}</h2>
+        <td><h4 class="table-title middle">Trophy History{{ render_link(
+            url=url_for_user('swing_history'),
+            text='&#x25BA;'
+            )|safe }}
+        </h4></td>
+        <td><h4 class="table-title right">
+            {{ render_link(url=url_for_user('swing', year=year-1), text='&#x25C4;')|safe }} year
+            {{ render_link(url=url_for_user('swing', year=year+1), text='&#x25BA;')|safe }}
+        </h4></td>
+    </tr>
+</table>
 <br>
 <table class="list result" width="100%">
     <thead>

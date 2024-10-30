@@ -1,0 +1,52 @@
+{% extends "user/report_base.html" %}
+{% block title %}Big Swing History{% endblock %}
+{% block content %}
+{{ form.csrf_token }}
+
+<table>
+    <tr>
+        <td><h2 class="table-title left">Big Swing History</h2>
+        <td><img class="responsive-image center" src="{{ form.image_url.data }}" alt="Big Swing"></td>
+    </tr>
+    <tr>
+        <td><h3 class="table-title left">Winners</h3></td>
+    </tr>
+</table>
+
+<table class="list" width="100%">
+    <thead>
+    <tr>
+        <th align="left">Year</th>
+        <th align="left">Name</th>
+        <th align="left">Course</th>
+        <th>Date</th>
+        <th>Front</th>
+        <th>Back</th>
+        <th>Swing</th>
+        <th align="center">All</th>
+    </tr>
+    <tr><td colspan=8><hr class="bold"/></td></tr>
+    </thead>
+    <tbody>
+    {% for item in form.swing %}
+    <tr>
+        <td align="left">{{ item.year.data }}</td>
+        <td align="left">{{ item.player.data }}</td>
+        <td align="left">{{ item.course.data }}</td>
+        <td align="center">{{ item.date.data }}</td>
+        <td align="center">{{ item.points_out.data }}</td>
+        <td align="center">{{ item.points_in.data }}</td>
+        <td align="center">{{ item.swing.data }}</td>
+        <td align="center">
+            {{ render_link(
+            url=url_for_user('swing', year=item.year.data),
+            image=url_for('static', filename='images/go.png'),
+            text='All swings results for {}'.format(item.year.data)
+            )|safe }}
+        </td>
+    </tr>
+    {% endfor %}
+    <tr><td colspan=8><hr class="bold"/></td></tr>
+    </tbody>
+</table>
+{% endblock %}

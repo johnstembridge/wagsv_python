@@ -53,6 +53,12 @@ def swing(year):
     return Swing.swing_show(coerce(year, int))
 
 
+@app.route('/swing_history', methods=['GET', 'POST'])
+@login_required
+def swing_history():
+    return Swing.swing_history()
+
+
 @app.route('/trophies/<trophy_id>', methods=['GET', 'POST'])
 @login_required
 def trophy_history(trophy_id):

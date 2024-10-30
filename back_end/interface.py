@@ -1022,16 +1022,43 @@ def get_big_swing(year):
     return year_range, swings
 
 
+def get_all_big_swing_winners():
+    result = None
+    for year in get_all_years(2018):
+        swing = get_big_swing_winner(year)
+        if result:
+            for row in swing.data:
+                row.append(year)
+                result.data.append(row)
+        else:
+            swing.add_column('year', [year]*len(swing.data))
+            result = swing
+    return result
+
+
+def get_big_swing_winner(year):
+    years, swing = get_big_swing(year)
+
+    def lu_fn(values):
+        return values['position'] in ['1', '=1']
+
+    winner = swing.where(lu_fn)
+    return winner
+
+
 # endregion
 
 def start_date():
     return datetime.date(*config.get('start_date'))
 
 
-def get_all_years():
-    first_year = start_date().year
+def get_all_years(year=None):
+    if year:
+        first_year = year
+    else:
+        first_year = start_date().year
     current_year = datetime.datetime.now().year
-    inc = 1 if datetime.datetime.now().month > 10 else 0
+    inc = 1 if datetime.datetime.now().month > 11 else 0
     years = [i for i in range(current_year + inc, first_year - 1, -1)]
     return years
 
