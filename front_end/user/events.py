@@ -74,7 +74,7 @@ class ReportEvents:
     def report_event(event_id):
         date = get_event(event_id).date
         year = str(date.year)
-        file = url_for_html('d:\\', 'wagsite', 'reports', year, 'rp{}.htm'.format(date.strftime('%y%m%d')))
+        file = 'rp{}.htm'.format(date.strftime('%y%m%d'))
         return redirect(url_for_html('reports', year, file))
 
     @staticmethod
