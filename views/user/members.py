@@ -22,8 +22,6 @@ def edit_contact_details():
 @app.route('/members/<int:member_id>', methods=['GET', 'POST'])
 @login_required
 def show_contact_details(member_id):
-    if member_id == 'None':
-        member_id = '0'
     return Members.contact(member_id, edit=False)
 
 

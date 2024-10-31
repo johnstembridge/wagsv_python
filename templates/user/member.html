@@ -23,7 +23,7 @@
             <td>Show other member's details</td>
             <td align="left">
                         {{ render_link(
-                        url=url_for_user('show_contact_details', member_id='None'),
+                        url=url_for_user('show_contact_details', member_id=0),
                         image=url_for('static', filename='images/go.png')
                         )|safe }}
             </td>
