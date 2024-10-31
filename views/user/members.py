@@ -19,18 +19,18 @@ def edit_contact_details():
     return Members.contact(int(member_id), edit=True)
 
 
-@app.route('/members/<member_id>', methods=['GET', 'POST'])
+@app.route('/members/<int:member_id>', methods=['GET', 'POST'])
 @login_required
 def show_contact_details(member_id):
     if member_id == 'None':
         member_id = '0'
-    return Members.contact(int(member_id), edit=False)
+    return Members.contact(member_id, edit=False)
 
 
 @app.route('/members/account/<int:year>', methods=['GET', 'POST'])
 @login_required
 def show_member_account(year=None):
-    member_id = int(current_user.member_id)
+    member_id = current_user.member_id
     if not year:
         year = get_user_current_year()
     return Members.account(member_id, year)

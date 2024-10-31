@@ -12,15 +12,15 @@ def venues_main():
     return MaintainVenues.list_venues()
 
 
-@app.route('/venues/<venue_id>', methods=['GET', 'POST'])
+@app.route('/venues/<int:venue_id>', methods=['GET', 'POST'])
 @login_required
 @role_required('admin')
 def edit_venue(venue_id):
-    return MaintainVenues.edit_venue(int(venue_id))
+    return MaintainVenues.edit_venue(venue_id)
 
 
-@app.route('/venues/<venue_id>/courses/<course_id>', methods=['GET', 'POST'])
+@app.route('/venues/<int:venue_id>/courses/<int:course_id>', methods=['GET', 'POST'])
 @login_required
 @role_required('admin')
 def edit_course(venue_id, course_id):
-    return MaintainVenues.edit_course(int(venue_id), int(course_id))
+    return MaintainVenues.edit_course(venue_id, course_id)

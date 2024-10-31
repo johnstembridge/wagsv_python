@@ -35,7 +35,7 @@ def accounts_balances(year=None):
     return accounts_admin.accounts_member_balances(year)
 
 
-@app.route('/members/<member_id>/<year>/account', methods=['GET', 'POST'])
+@app.route('/members/<int:member_id>/<int:year>/account', methods=['GET', 'POST'])
 @login_required
 @role_required('admin')
 @function_required(['Treasurer', 'Chairman', 'Website'])

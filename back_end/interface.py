@@ -998,22 +998,31 @@ def calc_event_positions(event_id, result):
     return result
 
 
-def get_big_swing(year):
-    # year is the year that the trophy is awarded
+def get_big_swing(year=None):
+    # year is the year that the trophy is awarded (at the WAGS Waistcoat event - WW)
+    # year=0: if request is made before WW, show results up to and including then. If after, show results after WW
+    current = year is None
+    if current:
+        today = datetime.date.today()
+        year = today.year
     date_range = (datetime.date(year - 1, 1, 1), datetime.date(year, 12, 31))
     events = get_events_in(date_range)
+    waistcoat = lookup_trophy('Wags Waistcoat')  # Big Swing is awarded at the Waistcoat event
+    ww_events = [e for e in events if e.trophy_id == waistcoat]
+    if current:
+        ww_this_year = first_or_default([e for e in ww_events if today <= e.date], None)
+        if ww_this_year == None:
+            year = year + 1
     if len(events) > 0:
-        waistcoat = lookup_trophy('Wags Waistcoat')  # Big Swing is awarded at the Waistcoat event
-        waistcoat_events = [e for e in events if e.trophy_id == waistcoat]
-        first = first_or_default([e.date for e in waistcoat_events if e.date.year == year - 1], None)
-        last = first_or_default([e.date for e in waistcoat_events if e.date.year == year], date_range[1])
+        first = first_or_default([e.date + datetime.timedelta(days=1) for e in ww_events if e.date.year == year - 1], None)
+        last = first_or_default([e.date for e in ww_events if e.date.year == year], date_range[1])
         if first and year >= 2018:  # 2018 was the first year for the trophy
             events = [e for e in events if e.date >= first and e.date <= last and e.type == EventType.wags_vl_event]
         else:  # requested year before Swing existed
             events = []
         if year > 2024:
             # post 2024, winner must be present on the day
-            this_years_event = first_or_default([e for e in waistcoat_events if e.date.year == year], Event())
+            this_years_event = first_or_default([e for e in ww_events if e.date.year == year], Event())
             players_present = [s.player_id for s in this_years_event.scores if
                                s.player.state_as_of(last).status == PlayerStatus.member]
         else:

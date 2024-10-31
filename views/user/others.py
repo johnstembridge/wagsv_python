@@ -5,7 +5,7 @@ from front_end.user.vl import Vl
 from front_end.user.swing import Swing
 from front_end.user.minutes import MinutesShow
 
-from back_end.data_utilities import current_year, coerce
+from back_end.data_utilities import current_year
 
 
 # region handicaps
@@ -15,10 +15,10 @@ def handicaps():
     return Handicaps.list_handicaps()
 
 
-@app.route('/handicaps/<player_id>', methods=['GET', 'POST'])
+@app.route('/handicaps/<int:player_id>', methods=['GET', 'POST'])
 @login_required
 def handicap_history_player(player_id):
-    return Handicaps.handicap_history_player(int(player_id))
+    return Handicaps.handicap_history_player(player_id)
 # endregion
 
 
@@ -29,10 +29,10 @@ def vl_():
     return vl(current_year())
 
 
-@app.route('/vl/<year>', methods=['GET', 'POST'])
+@app.route('/vl/<int:year>', methods=['GET', 'POST'])
 @login_required
 def vl(year):
-    return Vl.vl_show(coerce(year, int))
+    return Vl.vl_show(year)
 
 
 @app.route('/vl_history', methods=['GET', 'POST'])
@@ -44,13 +44,13 @@ def vl_history():
 @app.route('/swing', methods=['GET', 'POST'])
 @login_required
 def swing_():
-    return swing(current_year())
+    return swing()
 
 
-@app.route('/swing/<year>', methods=['GET', 'POST'])
+@app.route('/swing/<int:year>', methods=['GET', 'POST'])
 @login_required
-def swing(year):
-    return Swing.swing_show(coerce(year, int))
+def swing(year=None):
+    return Swing.swing_show(year)
 
 
 @app.route('/swing_history', methods=['GET', 'POST'])
@@ -59,10 +59,10 @@ def swing_history():
     return Swing.swing_history()
 
 
-@app.route('/trophies/<trophy_id>', methods=['GET', 'POST'])
+@app.route('/trophies/<int:trophy_id>', methods=['GET', 'POST'])
 @login_required
 def trophy_history(trophy_id):
-    return Trophy.trophy_show(int(trophy_id))
+    return Trophy.trophy_show(trophy_id)
 # endregion
 
 

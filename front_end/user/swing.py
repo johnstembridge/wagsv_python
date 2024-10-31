@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask import render_template
-from wtforms import StringField, FormField, FieldList, HiddenField
+from wtforms import StringField, FormField, FieldList
 
 from back_end.interface import get_big_swing, get_all_big_swing_winners
 from back_end.data_utilities import fmt_date
@@ -13,7 +13,7 @@ class Swing:
     @staticmethod
     def swing_show(year):
         form = SwingForm()
-        form.populate_swing(year)
+        year = form.populate_swing(year)
         return render_template('user/swing.html', form=form, year=int(year), render_link=render_link, url_for_user=url_for_user)
 
 
@@ -40,9 +40,10 @@ class SwingForm(FlaskForm):
     year_span = StringField()
     image_url = StringField()
 
-    def populate_swing(self, year):
-        self.year.data = str(year)
+    def populate_swing(self, year=None):
         year_range, swings = get_big_swing(year)
+        year = year_range[1]
+        self.year.data = str(year)
         for item in swings.data:
             item_form = SwingItemForm()
             item_form.position = item[swings.column_index('position')]
@@ -56,6 +57,7 @@ class SwingForm(FlaskForm):
             self.swing.append_entry(item_form)
         self.year_span.data = str(year_range[0]) + '/' + str(year_range[1])
         self.image_url.data = url_for_html('pictures', 'trophies', 'swing.jpg')
+        return year
 
 class SwingHistoryItemForm(FlaskForm):
     year = StringField(label='year')

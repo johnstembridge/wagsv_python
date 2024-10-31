@@ -8,13 +8,13 @@ def players_summary():
     return ReportPlayers.playing_history_summary()
 
 
-@app.route('/players/<player_id>', methods=['GET', 'POST'])
+@app.route('/players/<int:player_id>', methods=['GET', 'POST'])
 @login_required
 def show_player_events(player_id):
-    return ReportPlayers.playing_history_player(int(player_id))
+    return ReportPlayers.playing_history_player(player_id)
 
 
-@app.route('/players/<player_id>/<year>', methods=['GET', 'POST'])
+@app.route('/players/<int:player_id>/<int:year>', methods=['GET', 'POST'])
 @login_required
 def show_player_events_for_year(player_id, year):
-    return ReportPlayers.playing_history_player(int(player_id), int(year))
+    return ReportPlayers.playing_history_player(player_id, year)
