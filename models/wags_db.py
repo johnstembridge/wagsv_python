@@ -205,7 +205,7 @@ class Course(Base):
         course = self.name
         if '(' in course:
             course = first_or_default(extract_substrings(course, '()'), course)
-        if course != self.venue.name:
+        if self.venue and course != self.venue.name:
             return '{} ({})'.format (self.venue.name, course)
         else:
             return self.name
