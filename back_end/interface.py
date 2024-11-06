@@ -426,7 +426,9 @@ def get_next_event(date=datetime.date.today()):
     return next
 
 
-def get_events_in(date_range):
+def get_events_in(date_range=None):
+    if not date_range:
+        date_range = [config.get('start_date'), datetime.today()]
     events = db_session.query(Event) \
         .filter(Event.date.between(date_range[0], date_range[1]), Event.type == EventType.wags_vl_event) \
         .order_by(Event.date).all()
@@ -1076,8 +1078,8 @@ def get_all_years(year=None):
         first_year = year
     else:
         first_year = start_date().year
-    current_year = datetime.datetime.now().year
-    inc = 1 if datetime.datetime.now().month > 11 else 0
+    current_year = datetime.date.today().year
+    inc = 1 if datetime.date.today().month > 11 else 0
     years = [i for i in range(current_year + inc, first_year - 1, -1)]
     return years
 

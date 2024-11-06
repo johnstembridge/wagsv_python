@@ -30,7 +30,7 @@ class TourResultsForm(FlaskForm):
         venues = event.tour_events
         for venue in venues:
             venue_form = TourEventVenueItemForm()
-            venue_form.name = venue.course.name
+            venue_form.name = venue.course.full_name()
             self.venues.append_entry(venue_form)
 
         results = get_tour_results(event)

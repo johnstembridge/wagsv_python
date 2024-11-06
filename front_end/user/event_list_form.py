@@ -44,7 +44,10 @@ class EventListForm(FlaskForm):
             else:
                 item_form.event = event.venue.name
                 item_form.trophy_id = None
-            item_form.venue = event.venue.name
+            if event.course:
+                item_form.venue = event.course.full_name()
+            else:
+                item_form.venue = event.venue.name
             item_form.venue_url = get_venue_url(event.venue)
             if event.course:
                 item_form.slope = cd.slope

@@ -96,7 +96,7 @@ def parse_date(ymd, sep='/', reverse=False):
                 date = date[::-1]
             return datetime.date(int(date[0]), int(date[1]), int(date[2]))
         else:
-            return datetime.datetime.now().date()
+            return datetime.date.today()
 
 
 def in_date_range(date, date_from, date_to):
@@ -107,7 +107,7 @@ def in_date_range(date, date_from, date_to):
 
 
 def current_year():
-    return datetime.datetime.now().year
+    return datetime.date.today().year
 
 # endregion
 
@@ -147,6 +147,12 @@ def lookup(item_list, items, index_origin=0, case_sensitive=None):
     if type(items) is not list:
         res = res[0]
     return res
+
+
+def extract_substrings(str, delimiters):
+    # extract_substrings('abcd(xyz)efg(123)', '()') --> ['xyz', '123']
+    expr = "\\{}(.*?{}\\)".format(delimiters[0], delimiters[1])
+    return re.findall(expr,str)
 
 
 def force_list(x):

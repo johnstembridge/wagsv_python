@@ -4,7 +4,7 @@ from globals import config
 from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 
-from back_end.data_utilities import fmt_date, in_date_range
+from back_end.data_utilities import fmt_date, in_date_range, extract_substrings, first_or_default
 from back_end.calc import calc_playing_handicap_for_event
 from globals.enumerations import EventType, EventBooking, PlayerStatus, MemberStatus, UserRole, Function
 
@@ -200,6 +200,15 @@ class Course(Base):
             return data[0]
         else:
             return None
+
+    def full_name(self):
+        course = self.name
+        if '(' in course:
+            course = first_or_default(extract_substrings(course, '()'), course)
+        if course != self.venue.name:
+            return '{} ({})'.format (self.venue.name, course)
+        else:
+            return self.name
 
     def __repr__(self):
         return '<Course: {}>'.format(self.name)

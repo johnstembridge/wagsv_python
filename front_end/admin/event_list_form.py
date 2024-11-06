@@ -37,7 +37,10 @@ class EventListForm(FlaskForm):
             item_form.event_id = event.id
             item_form.date = fmt_date(event.date)
             item_form.event = event.trophy.name if event.trophy else ''
-            item_form.venue = event.venue.name
+            if event.course:
+                item_form.venue = event.course.full_name()
+            else:
+                item_form.venue = event.venue.name
             item_form.event_type = event.type
             item_form.event_bookable = event.is_bookable() or event.are_tour_bookings_editable()
             item_form.event_viewable = event.is_viewable() or event.tour_event_id
