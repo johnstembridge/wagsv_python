@@ -1,0 +1,30 @@
+{% extends "user/report_base.html" %}
+{% block title %}Hole in One History{% endblock %}
+{% block content %}
+{{ form.csrf_token }}
+
+<h2 class="table-title left">Hole in One History</h2></td>
+
+<table class="list" width="100%">
+    <thead>
+    <tr>
+        <th align="left">Date</th>
+        <th align="left">Name</th>
+        <th align="left">Course</th>
+        <th align="center">Hole</th>
+    </tr>
+    <tr><td colspan=4><hr class="bold"/></td></tr>
+    </thead>
+    <tbody>
+    {% for item in form.hist %}
+    <tr>
+        <td align="left">{{ item.date.data }}</td>
+        <td align="left">{{ item.player.data }}</td>
+        <td align="left">{{ item.course.data }}</td>
+        <td align="center">{{ item.hole.data }}</td>
+    </tr>
+    {% endfor %}
+    <tr><td colspan=4><hr class="bold"/></td></tr>
+    </tbody>
+</table>
+{% endblock %}

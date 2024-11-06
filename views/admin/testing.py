@@ -15,6 +15,7 @@ def test_email():
     #return test_email_std()
     return test_email_to_andy()
 
+# region Email
 
 def test_email_std():
     subject = 'Test email'
@@ -60,3 +61,4 @@ class SendEmailConfirmationForm(FlaskForm):
     def populate(self, title, message):
         self.title.data = title
         self.message.data = message
+# endregion

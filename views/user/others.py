@@ -3,6 +3,7 @@ from front_end.user.handicaps import Handicaps
 from front_end.user.trophy import Trophy
 from front_end.user.vl import Vl
 from front_end.user.swing import Swing
+from front_end.user.hole_in_one import HoleInOne
 from front_end.user.minutes import MinutesShow
 
 from back_end.data_utilities import current_year
@@ -77,3 +78,8 @@ def log_test():
     app.logger.error('testing error log')
     app.logger.info('testing info log')
     return "Log testing"
+
+
+@app.route("/hio", methods=['GET', 'POST'])
+def show_holes_in_one():
+    return HoleInOne.history()

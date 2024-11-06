@@ -1067,6 +1067,26 @@ def get_big_swing_winner(year):
     return winner
 
 
+def get_all_holes_in_one():
+    result = []
+    for event in get_all_events():
+        if event.type in [EventType.wags_vl_event, EventType.non_vl_event]:
+            for hio in get_hole_in_one(event):
+                result.append(hio)
+    return result
+
+def get_hole_in_one(event):
+    result = []
+    if event.scores and len(event.scores) > 0:
+        hio = [s for s in event.scores if s.card and 1 in s.card]
+        for score in hio:
+            hole = score.card.index(1) + 1
+            result.append((event.date, score.player.full_name(), event.course.full_name(), hole))
+    else:
+        pass
+    return result
+
+
 # endregion
 
 def start_date():
