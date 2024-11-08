@@ -1073,6 +1073,9 @@ def get_all_holes_in_one():
         if event.type in [EventType.wags_vl_event, EventType.non_vl_event]:
             for hio in get_hole_in_one(event):
                 result.append(hio)
+    # add in Peter's from non-vl event
+    result.append((datetime.date(2007, 4, 29), 'Peter Berring', 'El Chapperal', 10))
+    result.sort(key=lambda tup: tup[0])
     return result
 
 def get_hole_in_one(event):
@@ -1093,6 +1096,10 @@ def start_date():
     return datetime.date(*config.get('start_date'))
 
 
+def last_event_date():
+    return datetime.date(*config.get('start_date'))
+
+
 def get_all_years(year=None):
     if year:
         first_year = year
@@ -1101,6 +1108,16 @@ def get_all_years(year=None):
     current_year = datetime.date.today().year
     inc = 1 if datetime.date.today().month > 11 else 0
     years = [i for i in range(current_year + inc, first_year - 1, -1)]
+    return years
+
+
+def get_all_years_(first=None, last=None):
+    if not first:
+        first = start_date().year
+    if not last:
+        last = datetime.date.today().year
+    inc = 1 if datetime.date.today().month > 11 else 0
+    years = [i for i in range(last + inc, first - 1, -1)]
     return years
 
 
