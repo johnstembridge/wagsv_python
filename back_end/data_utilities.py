@@ -204,6 +204,13 @@ def first_or_default(list, default):
         return default
 
 
+def last_or_default(list, default):
+    if len(list) > 0:
+        return list[-1]
+    else:
+        return default
+
+
 def is_num(s):
     return isinstance(s, str) and s.replace('.', '', 1).isdigit()
 

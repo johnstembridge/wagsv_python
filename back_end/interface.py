@@ -4,7 +4,7 @@ import itertools
 
 from back_end.file_access import get_records, update_html_elements, get_file_contents, create_data_file, get_lastupdated
 from back_end.data_utilities import mean, first_or_default, parse_float, normalise_name, gen_to_list, fmt_date, \
-    my_round, coerce, last_name_first_name
+    my_round, coerce, last_name_first_name, last_or_default
 from back_end.table import Table
 from back_end.calc import calc_stableford_points, calc_swings, calc_positions
 
@@ -426,13 +426,23 @@ def get_next_event(date=datetime.date.today()):
     return next
 
 
-def get_events_in(date_range=None):
+def get_last_event_in_year(year):
+    start = datetime.date(year, 1, 1)
+    end = datetime.date(year, 12, 31)
+    last = last_or_default(get_events_in((start, end)), None)
+    return last
+
+
+def get_events_in(date_range=None, completed=False):
     if not date_range:
-        date_range = [config.get('start_date'), datetime.today()]
+        date_range = (datetime.date(*config.get('start_date')), datetime.date.today())
     events = db_session.query(Event) \
         .filter(Event.date.between(date_range[0], date_range[1]), Event.type == EventType.wags_vl_event) \
         .order_by(Event.date).all()
-    return events
+    if completed:
+        return [e for e in events if e.winner]
+    else:
+        return events
 
 
 def is_event_list_editable(year):
@@ -932,7 +942,7 @@ def save_booking(booking):
 
 def get_all_vl_winners():
     result = None
-    for year in get_all_years():
+    for year in get_all_years(completed=True):
         vl = get_vl_winner(year)
         if result:
             for row in vl.data:
@@ -1002,7 +1012,8 @@ def calc_event_positions(event_id, result):
 
 def get_big_swing(year=None):
     # year is the year that the trophy is awarded (at the WAGS Waistcoat event - WW)
-    # year=0: if request is made before WW, show results up to and including then. If after, show results after WW
+    # year=0: if request is made before WW for the current year, show results up to and including then.
+    # If after, show results after WW
     current = year is None
     if current:
         today = datetime.date.today()
@@ -1045,7 +1056,7 @@ def get_big_swing(year=None):
 
 def get_all_big_swing_winners():
     result = None
-    for year in get_all_years(2018):
+    for year in get_all_years(first=2018):
         swing = get_big_swing_winner(year)
         if result:
             for row in swing.data:
@@ -1096,28 +1107,19 @@ def start_date():
     return datetime.date(*config.get('start_date'))
 
 
-def last_event_date():
-    return datetime.date(*config.get('start_date'))
-
-
-def get_all_years(year=None):
-    if year:
-        first_year = year
-    else:
-        first_year = start_date().year
-    current_year = datetime.date.today().year
-    inc = 1 if datetime.date.today().month > 11 else 0
-    years = [i for i in range(current_year + inc, first_year - 1, -1)]
-    return years
-
-
-def get_all_years_(first=None, last=None):
+def get_all_years(first=None, completed=False):
+    today = datetime.date.today()
     if not first:
         first = start_date().year
-    if not last:
-        last = datetime.date.today().year
-    inc = 1 if datetime.date.today().month > 11 else 0
-    years = [i for i in range(last + inc, first - 1, -1)]
+    if not completed:
+        last = today.year
+    else:
+        last = get_last_event_in_year(today.year)
+        if last.winner: # completed?
+            last = last.date.year
+        else:
+            last = last.date.year - 1
+    years = [i for i in range(last, first - 1, -1)]
     return years
 
 
