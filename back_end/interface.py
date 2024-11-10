@@ -1111,14 +1111,16 @@ def get_all_years(first=None, completed=False):
     today = datetime.date.today()
     if not first:
         first = start_date().year
-    if not completed:
-        last = today.year
-    else:
+    if completed:
         last = get_last_event_in_year(today.year)
-        if last.winner: # completed?
+        if last and last.winner: # completed?
             last = last.date.year
-        else:
+        elif last:
             last = last.date.year - 1
+        else:
+            last = today.year
+    else:
+        last = today.year
     years = [i for i in range(last, first - 1, -1)]
     return years
 
