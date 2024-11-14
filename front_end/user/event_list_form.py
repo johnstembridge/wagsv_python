@@ -34,7 +34,6 @@ class EventListForm(FlaskForm):
         first = True
         for event in get_events_for_year(year):
             cd = event.course.course_data_as_of(year) if event.course else None
-            event_type = event.type
             item_form = EventItemForm()
             item_form.num = event.id
             item_form.date = encode_date_short(event.date)
@@ -42,7 +41,7 @@ class EventListForm(FlaskForm):
                 item_form.event = event.trophy.name
                 item_form.trophy_id = event.trophy.id
             else:
-                item_form.event = event.venue.name
+                item_form.event = event.venue.name if event.type == EventType.wags_tour else ''
                 item_form.trophy_id = None
             if event.course:
                 item_form.venue = event.course.full_name()
@@ -56,12 +55,11 @@ class EventListForm(FlaskForm):
                     item_form.rating = cd.rating
             else:
                 item_form.slope = item_form.par = item_form.rating = ''
-            item_form.event_type = event_type.name
+            item_form.event_type = event.type.name
             item_form.new_section = not (first or event.tour_event_id)
             first = False
-            item_form.bookable = event.bookable().value
-            item_form.result = event.date < datetime.date.today() and event.type in \
-                (EventType.wags_vl_event, EventType.wags_tour, EventType.minotaur)
+            item_form.bookable = event.bookable().name
+            item_form.result = event.completed()
             self.event_list.append_entry(item_form)
 
 

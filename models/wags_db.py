@@ -150,6 +150,9 @@ class Event(Base):
     def has_reserve_list(self):
         return self.id in config.get('event_has_reserve_list')
 
+    def completed(self):
+        return self.winner != None # scoring event and scores entered
+
     def __repr__(self):
         if self.type == EventType.wags_vl_event:
             return '<Event: {} {}>'.format(self.course.name, self.date)

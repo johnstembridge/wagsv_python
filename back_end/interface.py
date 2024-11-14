@@ -148,8 +148,16 @@ def get_events_for_year(year):
     return db_session.query(Event).from_statement(stmt)
 
 
-def get_events_for_period(start, end):
-    return gen_to_list(db_session.query(Event).filter(Event.date.between(start, end)).order_by(Event.date))
+def get_events_in(date_range=None, completed=False):
+    if not date_range:
+        date_range = (datetime.date(*config.get('start_date')), datetime.date.today())
+    events = db_session.query(Event) \
+        .filter(Event.date.between(date_range[0], date_range[1]), Event.type == EventType.wags_vl_event) \
+        .order_by(Event.date).all()
+    if completed:
+        return [e for e in events if e.completed()]
+    else:
+        return events
 
 
 def get_events_for_course(course_id, period=None):
@@ -431,18 +439,6 @@ def get_last_event_in_year(year):
     end = datetime.date(year, 12, 31)
     last = last_or_default(get_events_in((start, end)), None)
     return last
-
-
-def get_events_in(date_range=None, completed=False):
-    if not date_range:
-        date_range = (datetime.date(*config.get('start_date')), datetime.date.today())
-    events = db_session.query(Event) \
-        .filter(Event.date.between(date_range[0], date_range[1]), Event.type == EventType.wags_vl_event) \
-        .order_by(Event.date).all()
-    if completed:
-        return [e for e in events if e.winner]
-    else:
-        return events
 
 
 def is_event_list_editable(year):
@@ -881,14 +877,11 @@ def extract_score_data(score):
             state.status]
 
 
-def get_scores(year=None, status=None, player_id=None):
-    if year:
-        start = datetime.date(year, 1, 1)
-        end = min(datetime.date(year, 12, 31), datetime.date.today())
-        events = get_events_for_period(start, end)
-    else:
-        events = db_session.query(Event)
-    scores = [e.scores for e in events if e.type == EventType.wags_vl_event]
+def get_scores(year, status=None, player_id=None):
+    start = datetime.date(year, 1, 1)
+    end = min(datetime.date(year, 12, 31), datetime.date.today())
+    events = get_events_in((start, end), completed=True)
+    scores = [e.scores for e in events]
     if status:
         scores = [s for ls in scores for s in ls if s.player.state_as_of(s.event.date).status == status]
     if player_id:
@@ -1113,7 +1106,7 @@ def get_all_years(first=None, completed=False):
         first = start_date().year
     if completed:
         last = get_last_event_in_year(today.year)
-        if last and last.winner: # completed?
+        if last and last.completed():
             last = last.date.year
         elif last:
             last = last.date.year - 1
