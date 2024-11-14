@@ -1,0 +1,29 @@
+{% extends "admin/base.html" %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Send an email</h1>
+</div>
+
+<form method = "POST"  enctype = "multipart/form-data">
+    {{ form.csrf_token }}
+    <table>
+        <tbody>
+        <tr>
+            <td>{{ form.recipient.label }} </td><td>{{ form.recipient(size='50') }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.from_address.label }} </td><td>{{ form.from_address(size='50') }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.subject.label }}</td><td>{{ form.subject(size='50') }}</td>
+        </tr>
+        <tr>
+            <td valign="top">{{ form.message.label }}</td><td>{{ form.message(rows=6, cols=80) }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.send(class="btn btn-primary") }}</td>
+        </tr>
+    </table>
+</form>
+{% endblock %}

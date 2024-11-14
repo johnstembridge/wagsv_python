@@ -6,14 +6,14 @@ from wtforms import StringField
 from globals.decorators import role_required
 from globals.email import send_mail, use_sendmail
 from wags_admin import app
-
+from front_end.admin import test_email_form
 
 @app.route('/test/email', methods=['GET', 'POST'])
 @login_required
 @role_required('admin')
 def test_email():
     #return test_email_std()
-    return test_email_to_andy()
+    return test_email_form.test_email()
 
 # region Email
 
