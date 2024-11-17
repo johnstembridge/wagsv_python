@@ -12,10 +12,15 @@ from front_end.admin import test_email_form
 @login_required
 @role_required('admin')
 def test_email():
-    #return test_email_std()
     return test_email_form.test_email()
 
 # region Email
+
+@app.route('/test/email_andy', methods=['GET', 'POST'])
+@login_required
+@role_required('admin')
+def test_email_andy():
+    return test_email_to_andy()
 
 def test_email_std():
     subject = 'Test email'

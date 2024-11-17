@@ -49,10 +49,7 @@ def render_link(url, text="", image=None, icon=None, target=None):
 
 
 def render_html(template, **kwargs):
-    import jinja2
-    env = jinja2.Environment(loader=jinja2.FileSystemLoader(searchpath=config.get('locations')['templates']))
-    template = env.get_template(template)
-    return template.render(url_for=url_for, **kwargs)
+    return update_html(template, kwargs)
 
 
 def template_exists(template):

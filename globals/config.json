@@ -13,6 +13,7 @@
     "templates": "templates",
     "html": "D:\\wagsite",
     "reports": "D:\\wagsite\\reports",
+    "static": "D:\\wagsite\\static",
     "minutes": "D:\\wagsite\\minutes",
     "output": "D:\\wagsite\\output",
     "data": "D:\\wagsite\\html\\data",

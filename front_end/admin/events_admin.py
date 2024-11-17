@@ -3,7 +3,7 @@ from flask import render_template, redirect, flash
 
 from back_end.data_utilities import fmt_date, coerce
 from back_end.interface import get_event
-from back_end.file_access import write_file
+from back_end.file_access import get_file_contents, write_file
 from .event_add_player_form import AddPlayerForm
 from .event_report_form import EventReportForm
 from .event_card_form import EventCardForm
@@ -148,7 +148,8 @@ class MaintainEvents:
         form = EventReportForm()
         if form.is_submitted():
             if form.save:
-                MaintainEvents.save_report_page('static/event_report.html', event, form)
+                template = os.path.join(config.get('locations')['static'], 'event_report.htm')
+                MaintainEvents.save_report_page(template, event, form)
                 flash('report saved', 'success')
                 return redirect(url_for_admin('list_events', year=event.date.year))
         else:
@@ -161,13 +162,13 @@ class MaintainEvents:
     @staticmethod
     def save_report_page(template_name, event, form):
         title = event.full_name()
-        html = render_html(template_name,
+        html = render_html(get_file_contents(template_name),
                            title=title,
                            winner=form.winner_return.data,
                            ld=form.ld.data,
                            ntp=form.ntp.data,
                            report=form.report.data,
-                           month_year=str(event.date.year)
+                           year=str(event.date.year)
                            )
         file_name = MaintainEvents.report_file_name(event.date)
         write_file(file_name, html, access_all=True)
