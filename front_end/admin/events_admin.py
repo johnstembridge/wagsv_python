@@ -47,7 +47,7 @@ class MaintainEvents:
         form.populate_calendar_event_list(int(year))
         csv = render_template('admin/event_calendar.txt', event_calendar_list=form.event_calendar_list)
         csv = csv.replace('\n\n', '\n').replace('\n\n', '\n')
-        file = os.path.join(config.get('locations')['output'], 'calendar_' + year + '.csv')
+        file = os.path.join(config.get('locations')['output'], 'calendar_' + str(year) + '.csv')
         write_file(file, csv)
         flash('Calendar published as ' + file, 'success')
         return redirect(url_for_admin('list_events', year=year))
