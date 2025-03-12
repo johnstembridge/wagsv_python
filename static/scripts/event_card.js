@@ -58,6 +58,7 @@ function updatePointsForHole(hole){
 
 //Update all totals: shots and points
 function updateTotals(){
+    alert("update called");
     var totalInShots, totalInPoints, totalOutShots, totalOutPoints, totalShots, totalPoints;
     totalInShots = totalInPoints = totalOutShots = totalOutPoints = totalShots = totalPoints = 0;
     var i = 0;
