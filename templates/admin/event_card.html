@@ -1,7 +1,7 @@
 {% extends "admin/base.html" %}
 
-{% block body %}
-    <body onLoad="updateAll()">
+{% block body_attribs %}
+    onLoad="updateAll()"
     {{ super() }}
 {% endblock %}
 
