@@ -52,9 +52,7 @@ def report_event(event_id):
     return ReportEvents.report_event(event_id)
 
 
-@app.route('/events/<int:event_id>/<player_id>/card', methods=['GET', 'POST'])
+@app.route('/events/<int:event_id>/<int:player_id>/card', methods=['GET', 'POST'])
 @login_required
 def card_event_player(event_id, player_id):
-    return ReportEvents.card_event_player(event_id, int(player_id))
-
-
+    return ReportEvents.card_event_player(event_id, player_id)
