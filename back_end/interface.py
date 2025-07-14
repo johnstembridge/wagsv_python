@@ -961,7 +961,7 @@ def get_vl(year):
     scores = get_scores(year=year, status=PlayerStatus.member)
     scores.sort(['player_id', 'date'])
     vl = Table(['player_id', 'points', 'events', 'lowest'],
-               [vl_summary(scores.column_index('points'), key, list(values))
+               [vl_summary(scores.column_index('points'), key, list(values), year)
                 for key, values in scores.group_by('player_id')])
     vl.sort(['points', 'lowest'], reverse=True)
     vl.add_column('position', calc_positions(vl.get_columns('points')))
@@ -969,11 +969,12 @@ def get_vl(year):
     return vl
 
 
-def vl_summary(pi, player_id, scores):
+def vl_summary(pi, player_id, scores, year):
     points = [s[pi] for s in scores]
     points = sorted(points, reverse=True)
-    top_6 = points[:6]
-    return [player_id, sum(top_6), len(top_6), min(top_6)]
+    number_of_events = 6 if year < 2025 else 7
+    top_n = points[:number_of_events]
+    return [player_id, sum(top_n), len(top_n), min(top_n)]
 
 
 def calc_event_positions(event_id, result):
