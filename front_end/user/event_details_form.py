@@ -9,7 +9,7 @@ from wtforms.validators import Optional
 from back_end.data_utilities import encode_date, fmt_date, fmt_curr, first_or_default, parse_float
 from back_end.calc import calc_playing_handicap_for_event
 from back_end.interface import get_event, get_booking, save_booking, get_member, get_committee_function_member, \
-    get_player_by_name, suspend_flush
+    get_player_by_name, suspend_flush, member_account_balance, accounts_last_updated
 
 from front_end.form_helpers import line_break
 from globals.email import send_mail
@@ -186,8 +186,14 @@ class EventDetailsForm(FlaskForm):
                 for guest in booking.guests:
                     cost += event.guest_price
                     message.append(
-                        '{} {} ({})'.format(guest.name, calc_playing_handicap_for_event(guest.handicap, event), guest.handicap))
+                        '{} {} ({})'.format(guest.name, calc_playing_handicap_for_event(guest.handicap, event),
+                                            guest.handicap))
             message.append('Total cost £{}'.format(cost))
+            if member_account_balance(member_id, event.date.year) < 0:
+                update = fmt_date(accounts_last_updated(event.date.year))
+                msg = '*** As of {}, your account was in Debit. Please ensure the account is settled before playing ***' \
+                    .format(update)
+                message.append(msg)
             message.append(
                 '(Please pay by on-line credit to the WAGS bank account number 01284487, sort code 40-07-30)')
             if booking.comment:
