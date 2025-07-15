@@ -56,11 +56,14 @@ class EventBookingsForm(FlaskForm):
                 item_form.date = "..guest"
                 item_form.player_name = g.name
                 player=get_player_by_name(g.name)
-                state = player.state_as_of(event.date)
-                item_form.playing_hcap = 'n/a' if tour else state.playing_handicap(event)
+                if player:
+                    state = player.state_as_of(event.date)
+                    item_form.playing_hcap = 'n/a' if tour else state.playing_handicap(event)
+                    item_form.comment = ""
+                else:
+                    item_form.comment = "*** not found ***"
                 item_form.whs_hcap = g.handicap
                 item_form.playing.data = booking.playing
-                item_form.comment = ""
                 item_form.member_id = booking.member_id
                 item_form.booking_id = booking.id
                 self.bookings.append_entry(item_form)
