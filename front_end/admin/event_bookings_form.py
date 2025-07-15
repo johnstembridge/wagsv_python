@@ -61,7 +61,7 @@ class EventBookingsForm(FlaskForm):
                     item_form.playing_hcap = 'n/a' if tour else state.playing_handicap(event)
                     item_form.comment = ""
                 else:
-                    item_form.comment = "*** not found ***"
+                    item_form.comment = "*** not found - check name spelling ***"
                 item_form.whs_hcap = g.handicap
                 item_form.playing.data = booking.playing
                 item_form.member_id = booking.member_id
