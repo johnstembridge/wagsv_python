@@ -18,6 +18,7 @@ class EditMemberDetailsForm(FlaskForm):
     address = StringField(label='Address')
     post_code = StringField(label='Post Code')
     phone = StringField(label='Phone')
+    club_membership = StringField(label='Club Membership')
     member_id_return = HiddenField()
     mugshot = HiddenField()
     name_return = HiddenField()
@@ -36,6 +37,7 @@ class EditMemberDetailsForm(FlaskForm):
             'address': self.address.data,
             'post_code': self.post_code.data,
             'phone': self.phone.data,
+            'club_membership': self.club_membership.data,
         }
         save_member_details(member_id, member)
         return True
@@ -51,6 +53,7 @@ class ShowMemberDetailsForm(FlaskForm):
     address = StringField(label='Address')
     post_code = StringField(label='Post Code')
     phone = StringField(label='Phone')
+    club_membership = StringField(label='Club Membership')
     mugshot = HiddenField()
 
     def populate_details(self, member_id):
@@ -74,6 +77,7 @@ class MemberDetails:
             form.address.data = contact.address
             form.post_code.data = contact.post_code
             form.phone.data = contact.phone
+            form.club_membership.data = member.club_membership
             form.mugshot.data = url_for_html('pictures', 'mugshots', player.full_name().replace(' ', '_') + '.jpg')
 
 
