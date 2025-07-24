@@ -19,6 +19,7 @@ class EditMemberDetailsForm(FlaskForm):
     post_code = StringField(label='Post Code')
     phone = StringField(label='Phone')
     club_membership = StringField(label='Club Membership')
+    whs_handicap = StringField(label='WHS Handicap')
     member_id_return = HiddenField()
     mugshot = HiddenField()
     name_return = HiddenField()
@@ -38,6 +39,7 @@ class EditMemberDetailsForm(FlaskForm):
             'post_code': self.post_code.data,
             'phone': self.phone.data,
             'club_membership': self.club_membership.data,
+            'whs_handicap': float(self.whs_handicap.data)
         }
         save_member_details(member_id, member)
         return True
@@ -54,6 +56,7 @@ class ShowMemberDetailsForm(FlaskForm):
     post_code = StringField(label='Post Code')
     phone = StringField(label='Phone')
     club_membership = StringField(label='Club Membership')
+    whs_handicap = StringField(label='WHS Handicap')
     mugshot = HiddenField()
 
     def populate_details(self, member_id):
@@ -78,6 +81,7 @@ class MemberDetails:
             form.post_code.data = contact.post_code
             form.phone.data = contact.phone
             form.club_membership.data = member.club_membership
+            form.whs_handicap.data = member.whs_handicap
             form.mugshot.data = url_for_html('pictures', 'mugshots', player.full_name().replace(' ', '_') + '.jpg')
 
 

@@ -766,6 +766,7 @@ def save_member(member_id, data):
         member.contact.post_code = data['post_code']
         member.contact.phone = data['phone']
         member.club_membership = data['club_membership']
+        member.whs_handicap = data['whs_handicap']
         member.player = player
         member.status = status
         member.proposer_id = data['proposer_id']
@@ -793,6 +794,7 @@ def save_member_details(member_id, data):
     contact.post_code = data['post_code']
     contact.phone = data['phone']
     member.club_membership = data['club_membership']
+    member.whs_handicap = data['whs_handicap']
     db_session.commit()
 
 

@@ -330,6 +330,7 @@ class Member(Base):
     player = relationship("Player", back_populates="member")
     proposer_id = Column(Integer, ForeignKey("members.id"), nullable=False)
     club_membership = Column(String(100))
+    whs_handicap = Column(Numeric(precision=3, scale=1))
     proposed = relationship("Member", backref=backref("proposer", remote_side=id))
     events_organised = relationship("Event", back_populates="organiser")
     bookings = relationship("Booking", back_populates="member")

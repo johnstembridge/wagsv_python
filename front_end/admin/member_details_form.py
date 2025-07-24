@@ -5,7 +5,7 @@ import datetime
 
 from back_end.interface import get_member, get_member_select_choices, save_member, get_players_as_of, \
     get_current_members_as_players, get_player_by_name, member_account_balance
-from back_end.data_utilities import fmt_curr
+from back_end.data_utilities import fmt_curr, parse_float
 from front_end.form_helpers import set_select_field
 from globals.enumerations import MemberStatus, PlayerStatus, UserRole
 
@@ -32,6 +32,7 @@ class MemberDetailsForm(FlaskForm):
     club_membership = StringField(label='Club Membership')
     accepted_date = DateField(label='Accepted')
     handicap = StringField(label='Handicap')
+    whs_handicap = StringField(label='WHS Handicap')
     as_of = DateField(label='as of', validators=[Optional()])
     access = SelectField(label='Access', choices=UserRole.choices(), coerce=UserRole.coerce)
     save = SubmitField(label='Save')
@@ -95,6 +96,7 @@ class MemberDetailsForm(FlaskForm):
             self.accepted_date.data = member.accepted_date()
             self.handicap_return.data = self.handicap.data = state.handicap
             self.as_of.data = state.date
+            self.whs_handicap.data = member.whs_handicap
             role = member.user.roles[-1].role if member.user else UserRole.user
             set_select_field(self.access, UserRole.choices(), default_selection=role)
             balance = member_account_balance(member_id, datetime.date.today().year)
@@ -114,6 +116,7 @@ class MemberDetailsForm(FlaskForm):
             'post_code': self.post_code.data,
             'phone': self.phone.data,
             'club_membership': self.club_membership.data,
+            'whs_handicap': parse_float(self.whs_handicap.data),
             'accepted': self.accepted_date.data,
             'orig_name': self.name_return.data,
             'orig_status': int(self.status_return.data),
