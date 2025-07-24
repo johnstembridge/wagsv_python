@@ -6,7 +6,7 @@ import datetime
 from back_end.interface import get_member, get_member_select_choices, save_member, get_players_as_of, \
     get_current_members_as_players, get_player_by_name, member_account_balance
 from back_end.data_utilities import fmt_curr, parse_float
-from front_end.form_helpers import set_select_field
+from front_end.form_helpers import MySelectField, set_select_field
 from globals.enumerations import MemberStatus, PlayerStatus, UserRole
 
 
@@ -24,7 +24,7 @@ class MemberDetailsForm(FlaskForm):
     status = SelectField(label='Status', choices=MemberStatus.choices(), coerce=MemberStatus.coerce)
     first_name = StringField(label='First Name', validators=[InputRequired()])
     last_name = StringField(label='Last Name', validators=[InputRequired()])
-    proposer = SelectField(label='Proposer', coerce=int)
+    proposer = MySelectField(label='Proposer', coerce=int, validators=[Optional()])
     email = StringField(label='Email', validators=[InputRequired()])
     address = StringField(label='Address')
     post_code = StringField(label='Post Code')
