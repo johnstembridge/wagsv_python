@@ -1,33 +1,31 @@
-from flask import render_template, redirect, flash
+from flask import render_template, flash, redirect
 
-from front_end.admin.member_details_form import MemberDetailsForm, MemberListForm
+from front_end.admin.member_details_form import MemberDetailsForm
+from front_end.admin.member_list_form import MemberListForm
 from front_end.form_helpers import flash_errors, render_link
 from globals.config import url_for_admin
-
 
 class MaintainMembers:
 
     @staticmethod
-    def list_members():
-        form = MemberListForm()
-        if form.is_submitted():
-            if form.edit_member.data and int(form.member.data) > 0:
-                return redirect(url_for_admin('edit_member', member_id=form.member.data))
-            if form.add_member.data:
-                return redirect(url_for_admin('edit_member', member_id=0))
-        form.populate_member_list()
+    def list_members(status):
 
+        form = MemberListForm()
+        form.populate_member_list(status)
         return render_template('admin/member_list.html', form=form, render_link=render_link)
 
     @staticmethod
-    def edit_member(member_id):
+    def edit_member(member_id, from_form):
         form = MemberDetailsForm()
         form.member_id.data = member_id
         if form.validate_on_submit():
             if form.save.data:
                 if form.save_member(member_id):
                     flash('member saved', 'success')
-                    return redirect(url_for_admin('members_main'))
+                    if from_form == 'add':
+                        return redirect(url_for_admin('index'))
+                    else:
+                        return redirect(url_for_admin('members_list_' + from_form))
         elif form.errors:
             flash_errors(form)
         if not form.is_submitted():

@@ -1,7 +1,7 @@
 import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, FieldList, FormField, HiddenField, IntegerField, SubmitField
-from back_end.interface import get_current_members_as_players
+from back_end.interface import get_members_as_players
 from back_end.calc import calc_playing_handicap
 
 
@@ -21,7 +21,7 @@ class HandicapsForm(FlaskForm):
         date = datetime.date.today()
         count = 1
         slope = self.slope.data
-        for player in get_current_members_as_players():
+        for player in get_members_as_players():
             state = player.state_as_of(date)
             item_form = HandicapItemForm()
             item_form.item_pos = 1 + count % 2

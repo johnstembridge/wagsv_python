@@ -696,8 +696,8 @@ def get_all_members(current=True):
         return db_session.query(Member) \
             .filter(Member.status.notin_([MemberStatus.rip]))
 
-
-def get_current_members_as_players(current=True):
+def get_members_as_players(current=True):
+    #Returns a list of players sorted by player name
     members = get_all_members(current)
     players = [m.player for m in members]
 
@@ -709,7 +709,7 @@ def get_current_members_as_players(current=True):
 
 
 def get_member_select_choices(current=True):
-    choices = [(p.member.id, p.full_name()) for p in get_current_members_as_players(current)]
+    choices = [(p.member.id, p.full_name()) for p in get_members_as_players(current)]
     return choices
 
 

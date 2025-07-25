@@ -19,7 +19,15 @@
                 </ul>
             </li>
             <li><a href="{{ url_for('venues_main') }}">Venues</a></li>
-            <li><a href="{{ url_for('members_main') }}">Members</a></li>
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Members<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ url_for('members_list_current') }}">List all current members</a></li>
+                    <li><a href="{{ url_for('members_list_all') }}">List all past and present members</a></li>
+                    <li><a href="{{ url_for('add_new_member') }}">Add a new member</a></li>
+                    <li><a href="/static/wagsappl.htm">New member application form</a></li>
+                </ul>
+            </li>
             <li><a href="{{ url_for('minutes_main') }}">Minutes</a></li>
             <li><a href="{{ url_for('news_main') }}">News</a></li>
             <li>

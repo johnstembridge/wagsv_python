@@ -2,27 +2,45 @@
 
 {% block page_content %}
 <div class="page-header">
-    <h1>WAGS Members {{ year }}</h1>
+    <h1>WAGS Members ({{ form.list_type }})</h1>
 
 </div>
 <form method="POST">
     {{ form.csrf_token }}
-    <table>
+    <table width="100%" class="table table-striped">
+        <thead>
+        <tr>
+            <th>Member</th>
+            <th>Type</th>
+            <th class="text-center">Handicap</th>
+            <th>Club</th>
+            <th class="text-center">WHS</th>
+            <th>Proposer</th>
+            <th>Accepted</th>
+            <th class="text-center">Edit</th>
+        </tr>
+        </thead>
         <tbody>
+        {% for item in form.member_list %}
         <tr>
-            <td>{{ form.member}}</td><td>&nbsp;</td><td>{{ form.edit_member(class="btn btn-primary") }}</td>
+            <td>{{ item.member.data }}</td>
+            <td>{{ item.member_type.data }}</td>
+            <td align="center">{{ item.handicap.data }}</td>
+            <td>{{ item.club.data }}</td>
+            <td align="center">{{ item.whs_handicap.data }}</td>
+            <td>{{ item.proposer.data }}</td>
+            <td>{{ item.accepted.data }}</td>
+            <td align="center">
+                {{ render_link(
+                    url=url_for('edit_member_' + form.list_type, member_id=item.member_id.data),
+                    image=url_for('static', filename='images/right-arrow.png'),
+                    text='View/Edit event'
+                )|safe }}
+            </td>
         </tr>
-        <tr>
-            <td>&nbsp;</td>
-        </tr>
-        <tr>
-            <td align=right>or</td><td></td><td>{{ form.add_member(class="btn btn-primary") }}</td>
-        </tr>
+        {% endfor %}
         </tbody>
     </table>
+    <hr/>
 </form>
-<p>&nbsp;</p>
-<p>
-    <a href="/static/wagsappl.htm">Membership Application Form (printable)</a>
-</p>
 {% endblock %}

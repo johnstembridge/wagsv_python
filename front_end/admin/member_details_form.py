@@ -1,10 +1,10 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, HiddenField, SelectField, DateField
-from wtforms.validators import InputRequired, Optional
+from wtforms.validators import InputRequired, Optional, Email
 import datetime
 
 from back_end.interface import get_member, get_member_select_choices, save_member, get_players_as_of, \
-    get_current_members_as_players, get_player_by_name, member_account_balance
+    get_members_as_players, get_player_by_name, member_account_balance
 from back_end.data_utilities import fmt_curr, parse_float
 from front_end.form_helpers import MySelectField, set_select_field
 from globals.enumerations import MemberStatus, PlayerStatus, UserRole
@@ -25,7 +25,7 @@ class MemberDetailsForm(FlaskForm):
     first_name = StringField(label='First Name', validators=[InputRequired()])
     last_name = StringField(label='Last Name', validators=[InputRequired()])
     proposer = MySelectField(label='Proposer', coerce=int, validators=[Optional()])
-    email = StringField(label='Email', validators=[InputRequired()])
+    email = StringField(label='Email', validators=[InputRequired(), Email()])
     address = StringField(label='Address')
     post_code = StringField(label='Post Code')
     phone = StringField(label='Phone')
@@ -46,12 +46,14 @@ class MemberDetailsForm(FlaskForm):
     def validate(self):
         new_member = self.member_id.data == 0
         self.member_id.data = self.member_id_return.data
-        self.proposer.choices = get_member_select_choices()
+        proposer = self.proposer.data if self.proposer.data else 0
+        set_select_field(self.proposer, get_member_select_choices(), default_selection=proposer,
+                         item_name='proposer')
         if not super(MemberDetailsForm, self).validate():
             return False
         result = True
         if new_member:
-            current_members = [n.full_name().lower() for n in get_current_members_as_players()]
+            current_members = [n.full_name().lower() for n in get_members_as_players()]
             name = self.first_name.data + ' ' + self.last_name.data
             if name.lower() in current_members:
                 self.first_name.errors.append('{} is already a member'.format(name))
