@@ -693,8 +693,9 @@ def get_all_members(current=True):
         return db_session.query(Member) \
             .filter(Member.status.in_([MemberStatus.full_member, MemberStatus.overseas_member]))
     else:
-        return db_session.query(Member) \
-            .filter(Member.status.notin_([MemberStatus.rip]))
+        return db_session.query(Member)
+        # return db_session.query(Member) \
+        #     .filter(Member.status.notin_([MemberStatus.rip]))
 
 def get_members_as_players(current=True):
     #Returns a list of players sorted by player name

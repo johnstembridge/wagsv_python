@@ -10,15 +10,6 @@ from front_end.form_helpers import MySelectField, set_select_field
 from globals.enumerations import MemberStatus, PlayerStatus, UserRole
 
 
-class MemberListForm(FlaskForm):
-    member = SelectField(label='Choose Member')
-    edit_member = SubmitField(label='Edit member')
-    add_member = SubmitField(label='Add member')
-
-    def populate_member_list(self):
-        set_select_field(self.member, get_member_select_choices(current=False), 'member')
-
-
 class MemberDetailsForm(FlaskForm):
     member_id = HiddenField(label='Member Id')
     status = SelectField(label='Status', choices=MemberStatus.choices(), coerce=MemberStatus.coerce)
@@ -70,7 +61,7 @@ class MemberDetailsForm(FlaskForm):
 
         return result
 
-    def populate_member(self, member_id):
+    def populate_member(self, member_id, from_form):
         new_member = member_id == 0
         if new_member:
             self.first_name.data = 'new'
@@ -81,7 +72,8 @@ class MemberDetailsForm(FlaskForm):
         else:
             member = get_member(member_id)
             proposer = member.proposer_id if member.proposer else 0
-            set_select_field(self.proposer, get_member_select_choices(), default_selection=proposer, item_name='proposer')
+            set_select_field(self.proposer, get_member_select_choices(from_form == 'current'),
+                             default_selection=proposer, item_name='proposer')
             player = member.player
             contact = member.contact
             state = player.state_as_of(datetime.date.today())

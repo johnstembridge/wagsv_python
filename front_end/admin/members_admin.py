@@ -29,6 +29,6 @@ class MaintainMembers:
         elif form.errors:
             flash_errors(form)
         if not form.is_submitted():
-            form.populate_member(member_id)
+            form.populate_member(member_id, from_form)
         return render_template('admin/member_details.html', form=form, render_link=render_link)
 
