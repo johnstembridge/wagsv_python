@@ -15,6 +15,11 @@ def list_events_():
     return list_events(current_year())
 
 
+@app.route('/events/cards', methods=['GET', 'POST'])
+def list_fixture_cards():
+    return ReportEvents.list_fixture_cards()
+
+
 @app.route('/events/<int:year>', methods=['GET', 'POST'])
 def list_events(year):
     return ReportEvents.list_events(year)

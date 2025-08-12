@@ -1,7 +1,8 @@
-from flask import render_template, redirect, flash, make_response
+from flask import render_template, redirect, flash
 
 from front_end.user.event_bookings_form import EventBookingsForm
 from front_end.user.event_details_form import EventDetailsForm, EventBookingConfirmationForm
+from front_end.user.fixture_card_list_form import FixtureCardListForm
 from .event_card_form import EventCardForm
 from .event_list_form import EventListForm, EventSelectForm
 from .event_result_form import EventResultsForm
@@ -14,6 +15,17 @@ from datetime import datetime
 
 
 class ReportEvents:
+
+    @staticmethod
+    def list_fixture_cards():
+        form = FixtureCardListForm()
+        form.populate_card_list()
+        return render_template(
+            'user/fixture_card_list.html',
+            form=form,
+            render_link=render_link,
+            url_for_user=url_for_user
+        )
 
     @staticmethod
     def list_events(year):
