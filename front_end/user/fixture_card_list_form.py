@@ -13,7 +13,8 @@ class FixtureCardListForm(FlaskForm):
 
     def populate_card_list(self):
         path = os.path.join(config.get('locations')['pictures'], 'fixture_cards')
-        for file in os.listdir(path)[1:]:
+        files = (os.listdir(path)[1:]).sort(reverse=True)
+        for file in files:
             item_form = FixtureCardItemForm()
             year = file[-8:][:4]
             item_form.year.data = year
