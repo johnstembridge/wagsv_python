@@ -17,6 +17,7 @@
     "output": "/var/www/html/output",
     "data": "/var/www/html/data",
     "minutes": "/var/www/html/minutes",
+    "pictures": "/var/www/html/pictures",
     "logs": "/var/log/wags",
     "templates": "templates"
   },
