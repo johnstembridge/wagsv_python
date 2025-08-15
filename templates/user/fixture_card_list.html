@@ -1,18 +1,20 @@
 {% extends "bootstrap/base.html" %}
 {% block title %}Fixture Cards{% endblock %}
 {% block content %}
-<hr class="bold">
  <div class="container">
         <div class="row">
-        <div class="gallery col-lg-12 col-md-6 col-sm-6 col-xs-1">
-            <h2 class="gallery-title">Fixture Cards</h2>
-        </div>
-            {% for item in form.card_list %}
-            <div class="gallery_product col-lg-4 col-md-4 col-sm-4 col-xs-6">
-                <a href = "{{ item.image_url.data.data }} ">
-                <img src="{{ item.image_url.data.data }}" class="img-responsive">
-                </a>
+            <div class="gallery col-lg-4 col-md-4 col-sm-4 col-xs-6">
+                <h2 class="gallery-title">Fixture Cards</h2>
             </div>
-        {% endfor %}
-<hr class="bold">
+            <hr class="bold">
+                {% for item in form.card_list %}
+                    <div class="gallery_product col-lg-4 col-md-4 col-sm-4 col-xs-6">
+                        <a href = "{{ item.image_url.data.data }} ">
+                            <img src="{{ item.image_url.data.data }}" class="img-responsive">
+                        </a>
+                    </div>
+                {% endfor %}
+            <hr class="bold">
+        </div>
+ </div>
 {% endblock %}
