@@ -3,16 +3,16 @@
 {% block content %}
 <h2 class="gallery-title">Fixture Cards</h2>
 <hr class="bold">
-<div class="container">
+<div class="container-fluid">
     {% for item in form.card_list %}
-    <div class="row">
+        <div class="row">
             <div class="gallery_product col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <a href = "{{ item.image_url.data.data }} ">
                     <img src="{{ item.image_url.data.data }}" class="img-responsive">
                 </a>
             </div>
-        {% endfor %}
-    </div>
+        </div>
+    {% endfor %}
 </div>
 <hr class="bold">
 {% endblock %}
