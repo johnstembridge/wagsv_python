@@ -5,7 +5,7 @@
 <hr class="bold">
 <div class="container-fluid">
     {% for item in form.card_list %}
-    {% if item.new_row.data %}
+    {% if item.new_row.data == "y" %}
     <div class="row">
     {% endif %}
        <div class="gallery_product col-lg-3 col-md-3 col-sm-6 col-xs-6">
@@ -13,7 +13,7 @@
                 <img src="{{ item.image_url.data.data }}" class="img-responsive">
             </a>
         </div>
-    {% if item.new_row.data %}
+    {% if item.new_row.data == "y %}
     </div>
     {% endif %}
     {% endfor %}
