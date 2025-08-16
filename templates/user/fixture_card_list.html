@@ -4,18 +4,14 @@
 <h2 class="gallery-title">Fixture Cards</h2>
 <hr class="bold">
 <div class="container-fluid">
-    {% set count = 0 %}
+    <div class="row">
     {% for item in form.card_list %}
-    {% if count%3 == 0 %}
-        <div class="row">
-    {% endif %}
-    {% set count = count + 1 %}
-           <div class="gallery_product col-lg-4 col-md-4 col-sm-4 col-xs-6">
-                <a href = "{{ item.image_url.data.data }} ">
-                    <img src="{{ item.image_url.data.data }}" class="img-responsive">
-                </a>
-            </div>
+       <div class="gallery_product col-lg-4 col-md-4 col-sm-4 col-xs-6">
+            <a href = "{{ item.image_url.data.data }} ">
+                <img src="{{ item.image_url.data.data }}" class="img-responsive">
+            </a>
         </div>
+    </div>
     {% endfor %}
 </div>
 <hr class="bold">
