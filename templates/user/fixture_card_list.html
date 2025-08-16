@@ -5,15 +5,15 @@
 <hr class="bold">
 <div class="container-fluid">
     {% for item in form.card_list %}
-    {% if item.new_row.data =="y" %}
+    {% if item.new_row.data %}
     <div class="row">
     {% endif %}
        <div class="gallery_product col-lg-3 col-md-3 col-sm-6 col-xs-6">
             <a href = "{{ item.image_url.data.data }} ">
-                <img src="{{ item.image_url.data.data }}" class="img-responsive">
+                <img src="{{ item.image_url.data.data }}">
             </a>
         </div>
-    {% if item.new_row.data == "y" %}
+    {% if item.new_row.data %}
     </div>
     {% endif %}
     {% endfor %}
