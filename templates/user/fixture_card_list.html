@@ -4,12 +4,12 @@
 <h2 class="gallery-title">Fixture Cards</h2>
 <hr class="bold">
 <div class="container-fluid">
-    {% count = 0 %}
+    {% set count = 0 %}
     {% for item in form.card_list %}
     {% if count%3 == 0 }}
         <div class="row">
     {% endif %}
-    {% count += 1 %}
+    {% set count += 1 %}
            <div class="gallery_product col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <a href = "{{ item.image_url.data.data }} ">
                     <img src="{{ item.image_url.data.data }}" class="img-responsive">
