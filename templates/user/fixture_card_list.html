@@ -13,6 +13,9 @@
                 <img src="{{ item.image_url.data.data }}" class="img-responsive">
             </a>
         </div>
+    {% if item.new_row.data %}
+    </div>
+    {% endif %}
     {% endfor %}
     </div>
 </div>
