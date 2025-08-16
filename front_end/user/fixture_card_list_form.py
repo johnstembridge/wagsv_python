@@ -22,4 +22,5 @@ class FixtureCardListForm(FlaskForm):
             item_form.year.data = year
             item_form.image_url.data = url_for_html('pictures', 'fixture_cards', file)
             item_form.new_row.data = count %4 == 0
+            count += 1
             self.card_list.append_entry(item_form)
