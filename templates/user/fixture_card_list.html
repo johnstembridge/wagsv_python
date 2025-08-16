@@ -7,7 +7,7 @@
     {% for item in form.card_list %}
     {% if item.new_row.data %}
     <div class="row">
-    {% end if %}
+    {% endif %}
        <div class="gallery_product col-lg-4 col-md-4 col-sm-4 col-xs-6">
             <a href = "{{ item.image_url.data.data }} ">
                 <img src="{{ item.image_url.data.data }}" class="img-responsive">
