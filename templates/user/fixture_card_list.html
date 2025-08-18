@@ -7,7 +7,7 @@
     {% if item.start_row.data %}<div class="row">{% endif %}
     <div class="column">
         <a href = "{{ item.image_url.data.data }} ">
-            <img src="{{ item.image_url.data.data }}" class="responsive-image">
+            <img src="{{ item.thumb_url.data.data }}" class="responsive-image">
         </a>
     </div>
     {% if item.end_row.data %}</div>{% endif %}
