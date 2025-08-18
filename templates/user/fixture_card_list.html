@@ -4,16 +4,13 @@
 <h2>Fixture Cards</h2>
 <hr class="bold">
 {% for item in form.card_list %}
-    {% if item.new_row.data %}<span>{% endif %}
-    <div class="responsive">
-       <div class="gallery">
-            <a href = "{{ item.image_url.data.data }} ">
-                <img src="{{ item.image_url.data.data }}" width="434" height="670">
-            </a>
-        </div>
+    {% if item.start_row.data %}<div class="row">{% endif %}
+    <div class="column">
+        <a href = "{{ item.image_url.data.data }} ">
+            <img src="{{ item.image_url.data.data }}">
+        </a>
     </div>
-    {% if item.new_row.data %}</span>{% endif %}
+    {% if item.end_row.data %}</div>{% endif %}
 {% endfor %}
-<div class="clearfix"></div>
 <hr class="bold">
 {% endblock %}
