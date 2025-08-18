@@ -1,21 +1,18 @@
-{% extends "bootstrap/base.html" %}
+{% extends "user/report_base.html" %}
 {% block title %}Fixture Cards{% endblock %}
 {% block content %}
-<h2 class="gallery-title">Fixture Cards</h2>
+<h2>Fixture Cards</h2>
 <hr class="bold">
-<div class="container-fluid">
+<div class="responsive">
     {% for item in form.card_list %}
     {% if item.new_row.data %}
-    <div class="row">
+    <br>
     {% endif %}
-       <div class="gallery_product col-lg-3 col-md-3 col-sm-6 col-xs-6">
+       <div class="gallery">
             <a href = "{{ item.image_url.data.data }} ">
                 <img src="{{ item.image_url.data.data }}" class="img-responsive">
             </a>
         </div>
-    {% if item.new_row.data %}
-    </div>
-    {% endif %}
     {% endfor %}
     </div>
 </div>
