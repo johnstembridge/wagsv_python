@@ -4,6 +4,7 @@
 <h2>Fixture Cards</h2>
 <hr class="bold">
 {% for item in form.card_list %}
+    {% if item.new_row.data %}<p>
     <div class="responsive">
        <div class="gallery">
             <a href = "{{ item.image_url.data.data }} ">
@@ -11,6 +12,7 @@
             </a>
         </div>
     </div>
+    {% if item.new_row.data %}</p>
 {% endfor %}
 <div class="clearfix"></div>
 <hr class="bold">
