@@ -5,12 +5,9 @@
 <hr class="bold">
 <div class="responsive">
     {% for item in form.card_list %}
-    {% if item.new_row.data %}
-    <br>
-    {% endif %}
        <div class="gallery">
             <a href = "{{ item.image_url.data.data }} ">
-                <img src="{{ item.image_url.data.data }}" class="img-responsive">
+                <img src="{{ item.image_url.data.data }}">
             </a>
         </div>
     {% endfor %}
