@@ -5,6 +5,12 @@ from front_end.user.events import ReportEvents
 from back_end.data_utilities import current_year
 
 
+@app.route('/events/cards', methods=['GET', 'POST'])
+@login_required
+def list_fixture_cards():
+    return ReportEvents.list_fixture_cards()
+
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     return list_events(current_year())
@@ -13,11 +19,6 @@ def index():
 @app.route('/events', methods=['GET', 'POST'])
 def list_events_():
     return list_events(current_year())
-
-
-@app.route('/events/cards', methods=['GET', 'POST'])
-def list_fixture_cards():
-    return ReportEvents.list_fixture_cards()
 
 
 @app.route('/events/<int:year>', methods=['GET', 'POST'])
