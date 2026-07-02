@@ -83,10 +83,10 @@ def user_register(wags_app, new=True):
                 else:
                     user = member.user # get_user(member.user.id)
                     user.user_name = form.username.data
-                user.set_password(form.password.data)
                 role = Role(role=UserRole.admin) if wags_app == 'admin' else Role(role=UserRole.user)
                 if role.role.value not in [r.role.value for r in user.roles]:
                     user.roles.append(role)
+                user.set_password(form.password.data)
                 save_user(user)
                 if new:
                     flash('Congratulations, you are now a registered {}!'.format(wags_app), 'success')
