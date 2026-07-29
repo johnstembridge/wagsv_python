@@ -13,7 +13,7 @@ def upload_file(year):
         if form.submit_upload.data:
             if form.upload(year):
                 flash('file uploaded successfully', 'success')
-                return redirect(url_for_admin('upload_file'))
+                return redirect(url_for_admin('accounts_upload_file'))
     else:
         return render_template('admin/accounts_upload.html', form=form, year=year, url_for_admin=url_for_admin,
                                render_link=render_link)
