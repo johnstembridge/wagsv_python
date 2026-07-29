@@ -25,6 +25,7 @@ def hole_in_one(year):
         if form.submit_hole_in_one.data:
             if form.update_hole_in_one():
                 flash('Hole in one fund updated successfully', 'success')
+                return redirect(url_for_admin('accounts_hole_in_one'))
     else:
         return render_template('admin/accounts_hio.html', form=form, year=year, url_for_admin=url_for_admin,
                                render_link=render_link)
