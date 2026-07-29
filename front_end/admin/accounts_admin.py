@@ -1,4 +1,4 @@
-from flask import render_template, flash
+from flask import render_template, flash, redirect
 
 from front_end.form_helpers import render_link
 from globals.config import url_for_admin
@@ -13,7 +13,7 @@ def upload_file(year):
         if form.submit_upload.data:
             if form.upload(year):
                 flash('file uploaded successfully', 'success')
-                # return redirect(url_for_admin('upload_file', year=year))
+                return redirect(url_for_admin('upload_file', year=year))
     else:
         return render_template('admin/accounts_upload.html', form=form, year=year, url_for_admin=url_for_admin,
                                render_link=render_link)
