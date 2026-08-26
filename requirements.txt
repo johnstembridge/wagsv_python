@@ -1,6 +1,6 @@
 Wheel==0.30.0
 SQLAlchemy==1.2.7
-Flask==0.12.2
+Flask==1.0
 Flask-Bootstrap==3.3.7.1
 Flask-Login==0.4.1
 Flask-Sendmail==0.1
