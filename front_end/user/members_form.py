@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, HiddenField, SelectField, FieldList, FormField
+from wtforms import StringField, SubmitField, HiddenField, SelectField, FieldList, FormField, FloatField
 from wtforms.validators import InputRequired, Email
 
 from back_end.data_utilities import fmt_date, fmt_curr, parse_date, parse_float
@@ -19,7 +19,7 @@ class EditMemberDetailsForm(FlaskForm):
     post_code = StringField(label='Post Code')
     phone = StringField(label='Phone')
     club_membership = StringField(label='Club Membership')
-    whs_handicap = StringField(label='WHS Handicap')
+    whs_handicap = FloatField(label='WHS Handicap')
     member_id_return = HiddenField()
     mugshot = HiddenField()
     name_return = HiddenField()
@@ -39,7 +39,7 @@ class EditMemberDetailsForm(FlaskForm):
             'post_code': self.post_code.data,
             'phone': self.phone.data,
             'club_membership': self.club_membership.data,
-            'whs_handicap': float(self.whs_handicap.data)
+            'whs_handicap': self.whs_handicap.data
         }
         save_member_details(member_id, member)
         return True
@@ -56,7 +56,7 @@ class ShowMemberDetailsForm(FlaskForm):
     post_code = StringField(label='Post Code')
     phone = StringField(label='Phone')
     club_membership = StringField(label='Club Membership')
-    whs_handicap = StringField(label='WHS Handicap')
+    whs_handicap = FloatField(label='WHS Handicap')
     mugshot = HiddenField()
 
     def populate_details(self, member_id):
